@@ -18,7 +18,13 @@ Guidance on onboarding samples to docs.microsoft.com/samples: https://review.doc
 Taxonomies for products and languages: https://review.docs.microsoft.com/new-hope/information-architecture/metadata/taxonomies?branch=master
 -->
 
-Give a short description for your sample here. What does it do and why is it important?
+# Azure Log Analytics Examples
+
+Any source code in this repository is licensed under the MIT license as found [here](LICENSE).
+
+## Redistribution
+
+Upon redistribution of this repo, please be respectful of the readers and authors of this documentation, and include a link to the [original repo master branch](https://github.com/MicrosoftDocs/LogAnalyticsExamples).
 
 ## Contents
 
@@ -26,12 +32,10 @@ Outline the file contents of the repository. It helps users navigate the codebas
 
 | File/folder       | Description                                |
 |-------------------|--------------------------------------------|
-| `src`             | Sample source code.                        |
-| `.gitignore`      | Define what to ignore at commit time.      |
-| `CHANGELOG.md`    | List of changes to the sample.             |
-| `CONTRIBUTING.md` | Guidelines for contributing to the sample. |
-| `README.md`       | This README file.                          |
-| `LICENSE`         | The license for the sample.                |
+| `Azure service`   | Samples by Azure services                  |
+| `Solutions`	    | Samples by solutions     					 |
+| `README.md`       | This README file                           |
+| `LICENSE`         | The license for this repo                  |
 
 ## Prerequisites
 
@@ -41,7 +45,7 @@ Outline the required components and tools that a user might need to have on thei
 
 Explain how to prepare the sample once the user clones or downloads the repository. The section should outline every step necessary to install dependencies and set up any settings (for example, API keys and output folders).
 
-## Running the sample
+## Running samples
 
 Outline step-by-step instructions to execute the sample and see its output. Include steps for executing the sample from the IDE, starting specific services in the Azure portal or anything related to the overall launch of the code.
 
@@ -51,7 +55,12 @@ Provide users with more context on the tools and services used in the sample. Ex
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+## How to contribute
+We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models).
+To contribute your own examples, first [fork this repo](https://help.github.com/articles/fork-a-repo/), submit any changes or additions to your forked repo, and then [submit a pull request](https://help.github.com/articles/about-pull-requests/).
+
+### Contributor License Agreement CLA 
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
