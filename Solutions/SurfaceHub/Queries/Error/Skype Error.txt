@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Skype Error
+// Description: SurfaceHub Skype error.
+// Categories: ['workloads']
+// Solutions: ['SurfaceHub']
+// Topic: Error
+DeviceSkypeHeartbeat
+| where State == "Unhealthy" 
+| sort by TimeGenerated desc

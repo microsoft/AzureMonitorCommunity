@@ -1,0 +1,8 @@
+// Author: Microsoft Azure
+// Display name: Find console logs relating to application startup
+// Description: List console logs that contain the term "starting".
+// Categories: ['resources']
+// Resource types: ['App Services']
+// Topic: Console logs
+AppServiceConsoleLogs 
+| where tolower(ResultDescription) contains "starting"

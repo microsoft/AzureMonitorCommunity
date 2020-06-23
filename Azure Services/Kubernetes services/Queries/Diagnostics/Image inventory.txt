@@ -1,0 +1,8 @@
+// Author: Microsoft Azure
+// Display name: Image inventory
+// Description: Lists all the container image with their status.
+// Categories: ['container', 'resources']
+// Resource types: ['Kubernetes services']
+// Topic: Diagnostics
+ContainerImageInventory
+| summarize AggregatedValue = count() by Image, ImageTag, Running, _ResourceId

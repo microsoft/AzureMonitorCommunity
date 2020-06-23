@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Software Alert
+// Description: SurfaceHub software error.
+// Categories: ['workloads']
+// Solutions: ['SurfaceHub']
+// Topic: Error
+DeviceHealth
+| where EventName == "CriticalProcessStatus" and State == "Unhealthy" 
+| sort by TimeGenerated desc

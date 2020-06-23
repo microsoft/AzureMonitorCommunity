@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Exchange Error
+// Description: SurfaceHub Exchange error.
+// Categories: ['workloads']
+// Solutions: ['SurfaceHub']
+// Topic: Error
+DeviceCalendar
+| where EventName == "activesynchealth" and SyncStatus != "Healthy" 
+| sort by TimeGenerated desc
