@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Performance troubleshooting
 // Description: Potentially query or deadlock on the system that could lead to poor performance.
-// Categories: ['databases']
-// Resource types: ['SQL databases']
+// Categories: databases
+// Resource types: SQL databases
 // Topic: Performance
+
 //potentially a query or deadlock on the system that could lead to poor performance
 AzureMetrics
 | where ResourceProvider == "MICROSOFT.SQL"

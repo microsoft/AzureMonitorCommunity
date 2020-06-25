@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Recently connected devices
 // Description: List of devices that IoT Hub saw connect in the specified time period.
-// Categories: ['resources']
-// Resource types: ['IoT Hub']
+// Categories: resources
+// Resource types: IoT Hub
 // Topic: Usage
+
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DEVICES" and ResourceType == "IOTHUBS"
 | where Category == "Connections" and OperationName == "deviceConnect"

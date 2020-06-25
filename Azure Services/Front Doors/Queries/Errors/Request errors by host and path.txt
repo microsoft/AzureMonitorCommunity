@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Request errors by host and path
 // Description: Count number of requests with error responses by host and path.
-// Categories: ['network']
-// Resource types: ['Front Doors']
+// Categories: network
+// Resource types: Front Doors
 // Topic: Errors
+
 // Summarize number of requests by host, path, and status codes >= 400
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorAccessLog"

@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Server restarts
 // Description: Search for server shut down and server ready events.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
+
 AzureDiagnostics
 | where TimeGenerated > ago(7d)
 | where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 

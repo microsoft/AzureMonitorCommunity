@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Unauthorized connections
 // Description: Search for unauthorized (rejected) connection attempts.
-// Categories: ['workloads', 'security']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads,security
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Troubleshooting
+
 AzureDiagnostics
 | where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 
 | where Category == "PostgreSQLLogs"

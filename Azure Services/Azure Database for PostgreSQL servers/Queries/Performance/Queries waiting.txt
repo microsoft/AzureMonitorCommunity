@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Queries waiting
 // Description: Identify if slowest queries wait on anything.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Performance
+
 let top5 = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 //| where LogicalServerName_s == "your server name" // you can run this query for a specific server 

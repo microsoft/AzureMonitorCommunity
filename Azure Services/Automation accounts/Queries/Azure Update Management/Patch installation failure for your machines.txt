@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Patch installation failure for your machines
 // Description: List for each machine the installation status of the updates where the installation was not successful.
-// Categories: ['virtualmachines', 'security']
-// Resource types: ['Automation accounts']
+// Categories: virtualmachines,security
+// Resource types: Automation accounts
 // Topic: Azure Update Management
+
 UpdateRunProgress
 | where TimeGenerated>ago(1d) 
 | where InstallationStatus == "NotStarted" 

@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Slowest pages
 // Description: What are the 3 slowest pages, and how slow are they?
-// Categories: ['applications']
-// Resource types: ['Application Insights']
+// Categories: applications
+// Resource types: Application Insights
 // Topic: Browsing data
+
 pageViews
 | where notempty(duration) and client_Type == 'Browser'
 | extend total_duration=duration*itemCount

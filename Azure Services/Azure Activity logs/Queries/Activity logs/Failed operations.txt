@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Failed operations
 // Description: List all reports of failed operations, over the past hour.
-// Categories: ['audit']
-// Resource types: ['Azure Activity logs']
+// Categories: audit
+// Resource types: Azure Activity logs
 // Topic: Activity logs
+
 AzureActivity 
 | where TimeGenerated > ago(1h)  
 | where ActivityStatus == "Failed"

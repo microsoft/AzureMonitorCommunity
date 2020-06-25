@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Review audit log events in CONNECTION class
 // Description: Identify connection related events for your server.
-// Categories: ['workloads', 'audit']
-// Resource types: ['Azure Database for MariaDB servers']
+// Categories: workloads,audit
+// Resource types: Azure Database for MariaDB servers
 // Topic: Audit
+
 AzureDiagnostics
 | where ResourceProvider =="MICROSOFT.DBFORMARIADB" 
 | where Category == 'MySqlAuditLogs' and event_class_s == "connection_log"

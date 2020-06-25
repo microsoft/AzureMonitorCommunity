@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Hardware Minor
 // Description: SurfaceHub hardware minor.
-// Categories: ['workloads']
-// Solutions: ['SurfaceHub']
+// Categories: workloads
+// Solutions: SurfaceHub
 // Topic: Diagnostics
+
 DeviceHardwareHealth 
 |where EventName != "CameraInUnexpectedState" and EventName != "WiredIngestInUnexpectedState" and EventName != "WiredTouchInUnexpectedState" and EventName != "WifiDirectInUnexpectedState" and EventName != "MicInUnexpectedState" and EventName != "WiredTouchInUnexpectedState" and EventName != "SpeakersInUnexpectedState" and EventName != "WirelessCardInUnexpectedState" 
 | sort by TimeGenerated des

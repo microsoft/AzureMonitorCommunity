@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Backup Items with Protection Status modified
 // Description: Find out if the protection status for any Backup Item has been modified in the selected time range.
-// Categories: ['management', 'security']
-// Resource types: ['Recovery Services vaults']
+// Categories: management,security
+// Resource types: Recovery Services vaults
 // Topic: Backup Settings Changes
+
 //Get Backup Items and their Protection State at the start of the selected time range.
 let BackupItemsAtStartOfPeriod = CoreAzureBackup
 | where OperationName == "BackupItem" 

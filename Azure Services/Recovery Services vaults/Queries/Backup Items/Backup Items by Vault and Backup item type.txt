@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Backup Items by Vault and Backup item type
 // Description: View the different types of items being backed up.
-// Categories: ['management']
-// Resource types: ['Recovery Services vaults']
+// Categories: management
+// Resource types: Recovery Services vaults
 // Topic: Backup Items
+
 CoreAzureBackup
 //get all backup items
 | where OperationName == "BackupItem"

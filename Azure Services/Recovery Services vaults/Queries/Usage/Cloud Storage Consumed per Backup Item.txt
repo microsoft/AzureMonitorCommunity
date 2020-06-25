@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Cloud Storage Consumed per Backup Item
 // Description: View the total Cloud Storage consumed by each Backup Item.
-// Categories: ['management']
-// Resource types: ['Recovery Services vaults']
+// Categories: management
+// Resource types: Recovery Services vaults
 // Topic: Usage
+
 CoreAzureBackup
 //Get all Backup Items
 | where OperationName == "BackupItem"

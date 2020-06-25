@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Threat Intelligence rule log data
 // Description: Parses the Threat Intelligence rule log data.
-// Categories: ['network', 'security']
-// Resource types: ['Firewalls']
+// Categories: network,security
+// Resource types: Firewalls
 // Topic: Firewall Logs
+
 AzureDiagnostics
 | where OperationName  == "AzureFirewallThreatIntelLog"
 | parse msg_s with Protocol " request from " SourceIP ":" SourcePortInt:int " to " TargetIP ":" TargetPortInt:int *

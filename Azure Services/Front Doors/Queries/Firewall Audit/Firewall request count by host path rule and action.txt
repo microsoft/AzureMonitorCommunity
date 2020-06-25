@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Firewall request count by host, path, rule, and action
 // Description: Count firewall processed requests by host, path, rule, and action taken.
-// Categories: ['network', 'security']
-// Resource types: ['Front Doors']
+// Categories: network,security
+// Resource types: Front Doors
 // Topic: Firewall Audit
+
 // Summarize request count by host, path, rule, and action
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorWebApplicationFirewallLog"

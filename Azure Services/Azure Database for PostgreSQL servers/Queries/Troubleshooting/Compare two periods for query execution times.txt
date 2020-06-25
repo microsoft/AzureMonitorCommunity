@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Compare two periods for query execution times
 // Description: Identify queries that have a latency difference exceeding a threshold.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Troubleshooting
+
 let queryExecutionPrev24h = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 | where Category == "QueryStoreRuntimeStatistics"

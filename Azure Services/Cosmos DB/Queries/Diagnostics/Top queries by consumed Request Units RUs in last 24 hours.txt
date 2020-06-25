@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Top queries by consumed Request Units (RUs) in last 24 hours
 // Description: Identify top queries on Cosmos resources by count and RU charge of each query.
-// Categories: ['resources']
-// Resource types: ['Cosmos DB']
+// Categories: resources
+// Resource types: Cosmos DB
 // Topic: Diagnostics
+
 let queryRUChargeData = AzureDiagnostics
 | where Category == "DataPlaneRequests"
 | where OperationName == "Query"

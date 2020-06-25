@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Agent latency spikes - Heartbeat table
 // Description: Check for agent latency spikes in the ingestion of Heartbeats in the last 24 hour.
-// Categories: ['monitor']
-// Resource types: ['Azure Monitor']
-// Solutions: ['LogManagement']
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
 // Topic: Health
+
 // This query calculates ingestion duration every 10 minutes, and looks for spikes
 let StartTime = ago(24h);
 let EndTime = now();

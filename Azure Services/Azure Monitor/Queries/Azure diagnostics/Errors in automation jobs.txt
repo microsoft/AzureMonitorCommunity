@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Errors in automation jobs
 // Description: Find logs reporting errors in automation jobs from the last day.
-// Categories: ['resources']
-// Resource types: ['Azure Monitor']
+// Categories: resources
+// Resource types: Azure Monitor
 // Topic: Azure diagnostics
+
 AzureDiagnostics 
 | where ResourceProvider == "MICROSOFT.AUTOMATION"  
 | where StreamType_s == "Error" 

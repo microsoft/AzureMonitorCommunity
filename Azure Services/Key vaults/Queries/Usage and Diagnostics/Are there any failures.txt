@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Are there any failures?
 // Description: Count of failed KeyVault requests by status code.
-// Categories: ['security']
-// Resource types: ['Key vaults']
+// Categories: security
+// Resource types: Key vaults
 // Topic: Usage and Diagnostics
+
 AzureDiagnostics
 | where ResourceProvider =="MICROSOFT.KEYVAULT" 
 | where httpStatusCode_d >= 300 and not(OperationName == "Authentication" and httpStatusCode_d == 401)

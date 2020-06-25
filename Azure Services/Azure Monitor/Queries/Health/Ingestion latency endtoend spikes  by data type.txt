@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Ingestion latency (end-to-end) spikes - by data type
 // Description: Check for ingestion latency spikes per data type, in the last 24 hour.
-// Categories: ['monitor']
-// Resource types: ['Azure Monitor']
-// Solutions: ['LogManagement']
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
 // Topic: Health
+
 let StartTime = ago(24h);
 let EndTime = now();
 let MinRSquare = 0.8; // Tune the sensitivity of the detection sensor

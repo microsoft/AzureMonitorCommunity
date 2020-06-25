@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Execution count trends
 // Description: Execution trend by query aggregated by 15 minute-intervals.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
+
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 | where Category == "QueryStoreRuntimeStatistics"

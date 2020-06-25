@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: View data ingested by completed jobs
 // Description: View data ingested size by jobs that are completed.
-// Categories: ['container', 'workloads', 'resources']
-// Resource types: ['Kubernetes services']
-// Solutions: ['ContainerInsights']
+// Categories: container,workloads,resources
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Costing
+
 //Modify StartTime to customize TimeRange for completedjobs inventory.
 let startTime = ago(1h);
 //Find all the jobs which are completed

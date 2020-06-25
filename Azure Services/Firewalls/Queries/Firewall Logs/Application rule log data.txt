@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Application rule log data
 // Description: Parses the application rule log data.
-// Categories: ['network', 'security']
-// Resource types: ['Firewalls']
+// Categories: network,security
+// Resource types: Firewalls
 // Topic: Firewall Logs
+
 AzureDiagnostics
 | where Category == "AzureFirewallApplicationRule"
 //using :int makes it easier to pars but later we'll convert to string 

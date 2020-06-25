@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Cleanup Failure
 // Description: SurfaceHub cleanup failure.
-// Categories: ['workloads']
-// Solutions: ['SurfaceHub']
+// Categories: workloads
+// Solutions: SurfaceHub
 // Topic: Error
+
 DeviceCleanup
 | where State == "Fatal" 
 | sort by TimeGenerated desc

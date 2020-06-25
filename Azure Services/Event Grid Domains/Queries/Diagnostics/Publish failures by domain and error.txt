@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Publish failures by domain and error
 // Description: Publish failures logs by domain name and error message.
-// Categories: ['resources']
-// Resource types: ['Event Grid Domains']
+// Categories: resources
+// Resource types: Event Grid Domains
 // Topic: Diagnostics
+
 AegPublishFailureLogs 
 | parse Message with * "), httpStatusCode=" HttpStatusCode "," * ", errorMessage=" ErrorMessage 
 | parse _ResourceId with * "/domains/" DomainName

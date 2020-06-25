@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Missing security or critical updates
 // Description: Count how many security or other critical updates are missing.
-// Categories: ['virtualmachines', 'security']
-// Resource types: ['Virtual machines']
+// Categories: virtualmachines,security
+// Resource types: Virtual machines
 // Topic: Security
+
 Update
 | where Classification in ("Security Updates", "Critical Updates")
 | where UpdateState == 'Needed' and Optional == false and Approved == true

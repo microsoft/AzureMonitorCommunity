@@ -14,10 +14,10 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 
 ## Prerequisites
 
-- Queries - there are no prerequisits to running queries!
+- Queries - there are no prerequisits!
 You can run any query from this repo on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or on your own Log Analytics environment if you have one.
 - Workbooks - the workbooks in this repo can be deployed as ARM templates to your own Azure Monitor environment
-- Alerts - The alerts in this repo are log-based, which means they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alers on your own environment.
+- Alerts - the alerts in this repo are log-based, which means they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alers on your own environment.
 
 ## Key concepts
 

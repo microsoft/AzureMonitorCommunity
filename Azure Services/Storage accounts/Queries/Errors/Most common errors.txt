@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Most common errors
 // Description: List 10 most common errors over the last 3 days.
-// Categories: ['management']
-// Resource types: ['Storage accounts']
+// Categories: management
+// Resource types: Storage accounts
 // Topic: Errors
+
 StorageBlobLogs
 | where TimeGenerated > ago(3d) and StatusText !contains "Success"
 | summarize count() by StatusText

@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Ingested volume spikes and slopes - by Azure resource
 // Description: List the identified ingestion volume spikes and the slope of each spike (positive is upward spike, negative is downward).
-// Categories: ['monitor']
-// Resource types: ['Azure Monitor']
-// Solutions: ['LogManagement']
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
 // Topic: Usage
+
 let StartTime = ago(6h);
 let EndTime = now();
 let MinRSquare = 0.8; // Tune the sensitivity of the detection sensor

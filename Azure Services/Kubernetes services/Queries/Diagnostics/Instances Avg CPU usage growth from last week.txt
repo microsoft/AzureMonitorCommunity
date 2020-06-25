@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Instances Avg CPU usage growth from last week
 // Description: Show Avg CPU growth by instance in the last week by descending order.
-// Categories: ['container', 'resources']
-// Resource types: ['Kubernetes services']
+// Categories: container,resources
+// Resource types: Kubernetes services
 // Topic: Diagnostics
+
 //Show which instances grew CPU usage from last week to current
 Perf
 | where TimeGenerated > ago(7d) //This week Average CPU Usage Nano Cores

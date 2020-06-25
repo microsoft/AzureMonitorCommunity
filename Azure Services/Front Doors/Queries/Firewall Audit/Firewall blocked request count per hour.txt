@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Firewall blocked request count per hour
 // Description: Count number of firewall blocked requests per hour.
-// Categories: ['network', 'security']
-// Resource types: ['Front Doors']
+// Categories: network,security
+// Resource types: Front Doors
 // Topic: Firewall Audit
+
 // Summarize number of firewall blocked requests per hour by policy
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorWebApplicationFirewallLog"

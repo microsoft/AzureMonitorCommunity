@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Network security events
 // Description: Find Network security events reporting blocked incoming traffic.
-// Categories: ['resources']
-// Resource types: ['Azure Monitor']
+// Categories: resources
+// Resource types: Azure Monitor
 // Topic: Azure diagnostics
+
 AzureDiagnostics 
 | where ResourceProvider == "MICROSOFT.NETWORK"  
 | where Category == "NetworkSecurityGroupEvent"  

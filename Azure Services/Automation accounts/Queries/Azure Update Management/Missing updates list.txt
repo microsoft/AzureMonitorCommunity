@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Missing updates list
 // Description: Get a list of all updates that are missing.
-// Categories: ['resources']
-// Resource types: ['Automation accounts']
+// Categories: resources
+// Resource types: Automation accounts
 // Topic: Azure Update Management
+
 Update
 | where TimeGenerated>ago(5h) and OSType=="Linux" and SourceComputerId in ((Heartbeat
 | where TimeGenerated>ago(12h) and OSType=="Linux" and notempty(Computer)

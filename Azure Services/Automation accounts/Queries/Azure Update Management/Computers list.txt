@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Computers list
 // Description: List of computers with Azure Update Management deployed.
-// Categories: ['resources']
-// Resource types: ['Automation accounts']
+// Categories: resources
+// Resource types: Automation accounts
 // Topic: Azure Update Management
+
 Heartbeat
 | where TimeGenerated>ago(12h) and OSType=="Linux" and notempty(Computer)
 | summarize arg_max(TimeGenerated, Solutions, Computer, ResourceId, ComputerEnvironment, VMUUID) by SourceComputerId

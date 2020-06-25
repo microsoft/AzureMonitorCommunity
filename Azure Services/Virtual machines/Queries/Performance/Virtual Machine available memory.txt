@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Virtual Machine available memory
 // Description: Chart the VM's available memory over the last hour.
-// Categories: ['virtualmachines']
-// Resource types: ['Virtual machines']
+// Categories: virtualmachines
+// Resource types: Virtual machines
 // Topic: Performance
+
 Perf
 | where TimeGenerated > ago(1h)
 | where ObjectName == "Memory" and

@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Wait event trends
 // Description: Display wait event trends over time.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
+
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 | where Category == "QueryStoreWaitStatistics"

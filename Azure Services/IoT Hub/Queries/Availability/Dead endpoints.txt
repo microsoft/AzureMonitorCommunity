@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Dead endpoints
 // Description: Identify dead or unhealthy endpoints byt the number times the issue was reported, as well as the reason why.
-// Categories: ['resources']
-// Resource types: ['IoT Hub']
+// Categories: resources
+// Resource types: IoT Hub
 // Topic: Availability
+
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DEVICES" and ResourceType == "IOTHUBS"
 | where Category == "Routes" and OperationName in ("endpointDead", "endpointUnhealthy")

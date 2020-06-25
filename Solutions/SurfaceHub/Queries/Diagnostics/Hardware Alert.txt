@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Hardware Alert
 // Description: SurfaceHubHardwareAlert.
-// Categories: ['workloads']
-// Solutions: ['SurfaceHub']
+// Categories: workloads
+// Solutions: SurfaceHub
 // Topic: Diagnostics
+
 DeviceHardwareHealth
 |where EventName == "CameraInUnexpectedState" or EventName == "WiredIngestInUnexpectedState" or EventName == "WiredTouchInUnexpectedState" or EventName == "WifiDirectInUnexpectedState" or EventName == "MicInUnexpectedState" or EventName == "WiredTouchInUnexpectedState" or EventName == "SpeakersInUnexpectedState" or EventName == "WirelessCardInUnexpectedState" 
 | sort by TimeGenerated desc

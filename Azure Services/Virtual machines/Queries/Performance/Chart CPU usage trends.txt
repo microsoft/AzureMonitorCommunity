@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Chart CPU usage trends
 // Description: Calculate CPU usage patterns over the last day, chart by percentiles.
-// Categories: ['virtualmachines']
-// Resource types: ['Virtual machines']
+// Categories: virtualmachines
+// Resource types: Virtual machines
 // Topic: Performance
+
 Perf
 | where CounterName == "% Processor Time"
 | where ObjectName == "Processor"

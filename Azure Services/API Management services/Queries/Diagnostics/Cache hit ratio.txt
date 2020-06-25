@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Cache hit ratio
 // Description: Statistics of Cache hit/miss ratio.
-// Categories: ['resources']
-// Resource types: ['API Management services']
+// Categories: resources
+// Resource types: API Management services
 // Topic: Diagnostics
+
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
 | summarize Cache_Miss=countif(Cache  == "miss"), Cache_Hit=countif(Cache == "hit") by bin(TimeGenerated, 15m)

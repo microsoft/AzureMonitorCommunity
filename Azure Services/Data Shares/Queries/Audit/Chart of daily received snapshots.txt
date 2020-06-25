@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Chart of daily received snapshots
 // Description: A time chart of the daily snapshots count, over the past week.
-// Categories: ['audit']
-// Resource types: ['Data Shares']
+// Categories: audit
+// Resource types: Data Shares
 // Topic: Audit
+
 // Failed, In Progress and Succeeded Received Snapshots
 MicrosoftDataShareReceivedSnapshotLog 
 | where TimeGenerated > ago(7d)  

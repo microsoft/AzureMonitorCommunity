@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Top 10 Virtual Machines by CPU utilization
 // Description: Find top 10 VM by CPU utilization in the last 7 days.
-// Categories: ['virtualmachines']
-// Resource types: ['Virtual machines']
+// Categories: virtualmachines
+// Resource types: Virtual machines
 // Topic: Performance
+
 Perf
 | where TimeGenerated > ago(7d)
 | where CounterName == "% Processor Time" and InstanceName == "_Total" 

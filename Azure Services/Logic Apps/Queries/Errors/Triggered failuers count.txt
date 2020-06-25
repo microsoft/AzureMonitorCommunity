@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Triggered failuers count
 // Description: Show Action/Trigger failures for all Logic App executions by Resource name.
-// Categories: ['resources']
-// Resource types: ['Logic Apps']
+// Categories: resources
+// Resource types: Logic Apps
 // Topic: Errors
+
 //Action/Trigger failures for all Logic App executions
 AzureDiagnostics
 | where ResourceProvider  == "MICROSOFT.LOGIC"  

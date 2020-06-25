@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Summary of all data errors in the last 7 days
 // Description: Summary of all data errors in the last 7 days.
-// Categories: ['resources']
-// Resource types: ['Stream Analytics jobs']
+// Categories: resources
+// Resource types: Stream Analytics jobs
 // Topic: Other errors and failures
+
 AzureDiagnostics
 | where TimeGenerated > ago(7d) //last 7 days
 | where ResourceProvider == "MICROSOFT.STREAMANALYTICS" and parse_json(properties_s).Type == "DataError"

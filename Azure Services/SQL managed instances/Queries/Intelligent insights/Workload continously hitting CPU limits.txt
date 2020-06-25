@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Workload continously hitting CPU limits
 // Description: Intelligent insights report detecting the workload behavor as continously hitting CPU limits. Please note that SQLInsights log needs to be enabled for each database monitored.
-// Categories: ['management']
-// Resource types: ['SQL managed instances']
+// Categories: management
+// Resource types: SQL managed instances
 // Topic: Intelligent insights
+
 let alert_run_interval = 1h;
 let insights_string = "hitting its CPU limits";
 AzureDiagnostics

@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Prometheus disk read per second per node
 // Description: View Prometheus disk read metrics from the default kubernetes namespace as timechart.
-// Categories: ['container', 'workloads', 'resources']
-// Resource types: ['Kubernetes services']
+// Categories: container,workloads,resources
+// Resource types: Kubernetes services
 // Topic: Diagnostics
+
 // Update TimeGenerated field for custom time range
 InsightsMetrics
 | where Namespace == 'container.azm.ms/diskio'

@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Get failed requests due to issues related to the backend
 // Description: Get the logs of failed requests due to backend issues.
-// Categories: ['resources']
-// Resource types: ['API Management services']
+// Categories: resources
+// Resource types: API Management services
 // Topic: Errors
+
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
 | where IsRequestSuccess == false

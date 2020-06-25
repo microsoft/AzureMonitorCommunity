@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: List all the pods count with phase
 // Description: View pod phase counts based on all phases: Failed, Pending, Unknown, Running, or Succeeded.
-// Categories: ['container']
-// Resource types: ['Kubernetes services']
-// Solutions: ['ContainerInsights']
+// Categories: container
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Availability
+
 //Customize endDateTime, startDateTime to select different time range
    let endDateTime = now();
     let startDateTime = ago(1h);

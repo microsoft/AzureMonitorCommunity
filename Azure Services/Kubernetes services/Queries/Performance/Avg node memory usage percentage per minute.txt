@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Avg node memory usage percentage per minute
 // Description: For your cluster view avg node memory usage percentage per minute over the last hour.
-// Categories: ['container']
-// Resource types: ['Kubernetes services']
-// Solutions: ['ContainerInsights']
+// Categories: container
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Performance
+
 let endDateTime = now();
 let startDateTime = ago(1h);
 let trendBinSize = 1m;

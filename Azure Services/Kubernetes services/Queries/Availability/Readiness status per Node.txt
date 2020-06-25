@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Readiness status per Node
 // Description: For all your cluster view count of all the nodes by readiness.
-// Categories: ['container']
-// Resource types: ['Kubernetes services']
-// Solutions: ['ContainerInsights']
+// Categories: container
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Availability
+
 //Customize startDateTime, endDateTime to select custom time range
 let endDateTime = now();
 let startDateTime = ago(1h);

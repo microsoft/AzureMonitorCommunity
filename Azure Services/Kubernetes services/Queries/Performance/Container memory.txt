@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Container memory
 // Description: View container CPU averaged over 30 mins intervals.
-// Categories: ['container', 'resources']
-// Resource types: ['Kubernetes services']
+// Categories: container,resources
+// Resource types: Kubernetes services
 // Topic: Performance
+
 //Select the Line chart display option: can we calculate percentage?
 let threshold = 75000000; // choose a threshold 
 Perf

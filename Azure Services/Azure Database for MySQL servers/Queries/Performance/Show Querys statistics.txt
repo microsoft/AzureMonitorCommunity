@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Show Query's statistics
 // Description: Construct a summary statistics table by query.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for MySQL servers']
+// Categories: workloads
+// Resource types: Azure Database for MySQL servers
 // Topic: Performance
+
 AzureDiagnostics
 | where ResourceProvider ==  "MICROSOFT.DBFORMYSQL"
 | where Category == 'MySqlSlowLogs'

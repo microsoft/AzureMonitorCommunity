@@ -1,10 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Ingestion volume spikes - by Solution and data type
 // Description: Check for ingestion volume spikes per Solution and data type, in the last 24 hour.
-// Categories: ['monitor']
-// Resource types: ['Azure Monitor']
-// Solutions: ['LogManagement']
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
 // Topic: Usage
+
 let StartTime = ago(24h);
 let EndTime = now();
 let MinRSquare =0.8; // Tune the sensitivity of the detection sensor

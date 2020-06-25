@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Forwarded backend requests by routing rule
 // Description: Count number of requests for each routing rule and backend host per minute.
-// Categories: ['network']
-// Resource types: ['Front Doors']
+// Categories: network
+// Resource types: Front Doors
 // Topic: Usage and Diagnostics
+
 // Summarize number of requests per minute for each routing rule and backend host
 AzureDiagnostics 
 | where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorAccessLog"

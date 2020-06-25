@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Slowest queries
 // Description: Identify top 5 slowest queries.
-// Categories: ['workloads']
-// Resource types: ['Azure Database for PostgreSQL servers']
+// Categories: workloads
+// Resource types: Azure Database for PostgreSQL servers
 // Topic: Performance
+
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 | where Category == "QueryStoreRuntimeStatistics"

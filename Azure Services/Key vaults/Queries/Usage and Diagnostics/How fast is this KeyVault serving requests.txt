@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: How fast is this KeyVault serving requests?
 // Description: Line chart showing trend of request duration over time using different aggregations.
-// Categories: ['security']
-// Resource types: ['Key vaults']
+// Categories: security
+// Resource types: Key vaults
 // Topic: Usage and Diagnostics
+
 AzureDiagnostics
 | where ResourceProvider =="MICROSOFT.KEYVAULT" 
 | where httpStatusCode_d >= 300 and not(OperationName == "Authentication" and httpStatusCode_d == 401)

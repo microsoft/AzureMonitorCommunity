@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Failed backup jobs
 // Description: Find logs reported failed backup jobs from the last day.
-// Categories: ['resources']
-// Resource types: ['Azure Monitor']
+// Categories: resources
+// Resource types: Azure Monitor
 // Topic: Azure diagnostics
+
 AzureDiagnostics  
 | where ResourceProvider == "MICROSOFT.RECOVERYSERVICES" and Category == "AzureBackupReport"  
 | where OperationName == "Job" and JobOperation_s == "Backup" and JobStatus_s == "Failed" 

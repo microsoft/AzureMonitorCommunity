@@ -1,9 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Loading Data
 // Description: Monitor data loading in the last hour.
-// Categories: ['databases']
-// Resource types: ['SQL databases']
+// Categories: databases
+// Resource types: SQL databases
 // Topic: Diagnostics
+
 AzureMetrics
 | where ResourceProvider == "MICROSOFT.SQL"
 | where TimeGenerated >= ago(60min)
