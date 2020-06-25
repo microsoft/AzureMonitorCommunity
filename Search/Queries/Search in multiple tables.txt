@@ -1,0 +1,8 @@
+// Author: Microsoft Azure
+// Display name: Search in multiple tables
+// Description: Search AzureDiagnostics, AzureMetrics and AzureActivity for logs that contain "fail".
+// Categories: resources
+// Resource types: Azure Monitor
+// Topic: Search through the logs
+
+search in (AzureDiagnostics, AzureMetrics, AzureActivity) "*fail*"
