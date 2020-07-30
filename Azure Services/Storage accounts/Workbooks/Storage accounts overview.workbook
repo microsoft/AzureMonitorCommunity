@@ -1,0 +1,768 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "1f74ed9a-e3ed-498d-bd5b-f68f3836a117",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "label": "Subscriptions",
+            "type": 6,
+            "description": "All subscriptions with Storage accounts",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.storage/storageaccounts'\r\n| summarize Count = count() by subscriptionId\r\n| order by Count desc\r\n| extend Rank = row_number()\r\n| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "e94aafa3-c5d9-4523-89f0-4e87aa754511",
+            "version": "KqlParameterItem/1.0",
+            "name": "Resources",
+            "label": "Storage accounts",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.storage/storageaccounts'\n| order by name asc\n| extend Rank = row_number()\n| project value = id, label = id, selected = Rank <= 5",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.storage/storageaccounts": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "c4b69c01-2263-4ada-8d9c-43433b739ff3",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000,
+                  "createdTime": "2018-08-06T23:52:38.870Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 900000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 1800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 3600000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 14400000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 43200000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 86400000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 172800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 259200000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 604800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 14400000
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "9b48988f-dcd2-48cc-b233-5999ed32149f",
+            "version": "KqlParameterItem/1.0",
+            "name": "Message",
+            "type": 1,
+            "query": "where type == 'microsoft.storage/storageaccounts' \n| summarize Selected = countif(id in ({Resources:value})), Total = count()\n| extend Selected = iff(Selected > 200, 200, Selected)\n| project Message = strcat('# ', Selected, ' / ', Total)",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "070b2474-4e01-478d-a7fa-6c20ad8ea1ad",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceName",
+            "type": 1,
+            "isRequired": true,
+            "value": "Storage account",
+            "isHiddenWhenLocked": true,
+            "criteriaData": [
+              {
+                "condition": "else result = 'Storage account'",
+                "criteriaContext": {
+                  "operator": "Default",
+                  "rightValType": "param",
+                  "resultValType": "static",
+                  "resultVal": "Storage account"
+                }
+              }
+            ]
+          },
+          {
+            "id": "c6c32b32-6eb4-44d5-9cad-156d5d50ec3e",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceImageUrl",
+            "type": 1,
+            "description": "used as a parameter for No Subcriptions workbook template",
+            "isHiddenWhenLocked": true
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1",
+      "styleSettings": {
+        "margin": "15px 0 0 0"
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "template",
+        "loadFromTemplateId": "community-Workbooks/Common/noSubscriptions",
+        "items": []
+      },
+      "conditionalVisibility": {
+        "parameterName": "Subscription",
+        "comparison": "isEqualTo",
+        "value": ""
+      },
+      "name": "No Subscriptions group"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "{Message}\r\n_Storage accounts_"
+            },
+            "name": "text - 3",
+            "styleSettings": {
+              "margin": "15px 0 10px 10px"
+            }
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Overview",
+                  "subTarget": "Overview"
+                },
+                {
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Capacity",
+                  "subTarget": "Capacity"
+                }
+              ]
+            },
+            "name": "Navigation links",
+            "styleSettings": {
+              "margin": "10px 0 0 0"
+            }
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "### Overview section"
+            },
+            "conditionalVisibility": {
+              "parameterName": "1",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "text - 4"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": 0,
+              "resourceType": "microsoft.storage/storageaccounts",
+              "metricScope": 0,
+              "resourceParameter": "Resources",
+              "resourceIds": [
+                "{Resources}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.storage/storageaccounts",
+                  "metric": "microsoft.storage/storageaccounts-Transaction-Transactions",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts",
+                  "metric": "microsoft.storage/storageaccounts-Transaction-SuccessE2ELatency",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts",
+                  "metric": "microsoft.storage/storageaccounts-Transaction-SuccessServerLatency",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts",
+                  "metric": "microsoft.storage/storageaccounts-Transaction-Transactions",
+                  "aggregation": 1,
+                  "splitBy": "ResponseType",
+                  "splitBySortOrder": -1,
+                  "splitByLimit": 4,
+                  "columnName": "Errors"
+                }
+              ],
+              "resourceLimit": 200,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "subTarget": "insights",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Transaction-Transactions$|Transactions$",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "showIcon": true,
+                      "aggregation": "Sum"
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Transaction-Transactions Timeline$|Transactions Timeline$",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Transaction-SuccessE2ELatency$|microsoft.storage/storageaccounts-Transaction-SuccessServerLatency$|E2E Latency$|Server Latency$",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "linkTarget": "WorkbookTemplate",
+                      "showIcon": true,
+                      "workbookContext": {
+                        "componentIdSource": "column",
+                        "componentId": "Name",
+                        "resourceIdsSource": "column",
+                        "resourceIds": "Name",
+                        "templateIdSource": "static",
+                        "templateId": "Community-Workbooks/Individual Storage/Performance",
+                        "typeSource": "static",
+                        "type": "workbook",
+                        "gallerySource": "static",
+                        "gallery": "microsoft.storage/storageaccounts"
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 23,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Transaction-SuccessE2ELatency Timeline$|E2E Latency Timeline$",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Transaction-SuccessServerLatency Timeline",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Success/Errors",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "success/Errors",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": ".*\\/Errors",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "gray",
+                      "linkTarget": "WorkbookTemplate",
+                      "showIcon": true,
+                      "workbookContext": {
+                        "componentIdSource": "column",
+                        "componentId": "Name",
+                        "resourceIdsSource": "column",
+                        "resourceIds": "Name",
+                        "templateIdSource": "static",
+                        "templateId": "Community-Workbooks/Individual Storage/Failures",
+                        "typeSource": "static",
+                        "type": "workbook",
+                        "gallerySource": "static",
+                        "gallery": "microsoft.storage/storageaccounts"
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Server Latency Timeline",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "Subscription"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "Name"
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_heatmap_microsoft.storage/storageaccounts-Transaction-Transactions$|Transactions$_3",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "Name",
+                    "label": ""
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Transaction-Transactions",
+                    "label": "Transactions"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Transaction-Transactions Timeline",
+                    "label": "Transactions Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Transaction-SuccessE2ELatency",
+                    "label": "E2E Latency"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Transaction-SuccessE2ELatency Timeline",
+                    "label": "E2E Latency Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Transaction-SuccessServerLatency",
+                    "label": "Server Latency"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Transaction-SuccessServerLatency Timeline",
+                    "label": "Server Latency Timeline"
+                  },
+                  {
+                    "columnId": "Success/Errors"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_heatmap_microsoft.storage/storageaccounts-Transaction-Transactions$|Transactions$_3",
+                  "sortOrder": 2
+                }
+              ],
+              "showExportToExcel": true
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "Overview"
+            },
+            "showPin": true,
+            "name": "storage account metrics",
+            "styleSettings": {
+              "margin": "0 10px 0 10px"
+            }
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## Capacity section"
+            },
+            "conditionalVisibility": {
+              "parameterName": "1",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "text - 6"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 3,
+              "chartType": 0,
+              "resourceType": "microsoft.storage/storageaccounts",
+              "metricScope": 0,
+              "resourceParameter": "Resources",
+              "resourceIds": [
+                "{Resources}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.storage/storageaccounts",
+                  "metric": "microsoft.storage/storageaccounts-Capacity-UsedCapacity",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts/blobservices",
+                  "metric": "microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts/fileservices",
+                  "metric": "microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts/queueservices",
+                  "metric": "microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.storage/storageaccounts/tableservices",
+                  "metric": "microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity",
+                  "aggregation": 4
+                }
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "subTarget": "insights",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Capacity-UsedCapacity$|microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity$|microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity$|microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity$|microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity$",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "linkTarget": "WorkbookTemplate",
+                      "showIcon": true,
+                      "workbookContext": {
+                        "componentIdSource": "column",
+                        "componentId": "Name",
+                        "resourceIdsSource": "column",
+                        "resourceIds": "Name",
+                        "templateIdSource": "static",
+                        "templateId": "Community-Workbooks/Individual Storage/Capacity",
+                        "typeSource": "static",
+                        "type": "workbook",
+                        "gallerySource": "static",
+                        "gallery": "microsoft.storage/storageaccounts"
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts-Capacity-UsedCapacity Timeline$|Account used capacity Timeline$",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity Timeline$|Blob capacity Timeline$",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity Timeline$|File capacity Timeline$",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity Timeline$|Queue capacity Timeline$",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity Timeline$|Table capacity Timeline$",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "Subscription"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "Name"
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_heatmap_microsoft.storage/storageaccounts-Capacity-UsedCapacity$|microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity$|microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity$|microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity$|microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity$_3",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "Name"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Capacity-UsedCapacity",
+                    "label": "Account used capacity"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts-Capacity-UsedCapacity Timeline",
+                    "label": "Account used capacity timeline"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity",
+                    "label": "Blob capacity"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity Timeline",
+                    "label": "Blob capacity Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity",
+                    "label": "File capacity"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity Timeline",
+                    "label": "File capacity Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity",
+                    "label": "Queue capacity"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity Timeline",
+                    "label": "Queue capacity Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity",
+                    "label": "Table capacity"
+                  },
+                  {
+                    "columnId": "microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity Timeline",
+                    "label": "Table capacity Timeline"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_heatmap_microsoft.storage/storageaccounts-Capacity-UsedCapacity$|microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity$|microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity$|microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity$|microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity$_3",
+                  "sortOrder": 2
+                }
+              ],
+              "showExportToExcel": true
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "Capacity"
+            },
+            "showPin": true,
+            "name": "storage account capacity metrics",
+            "styleSettings": {
+              "margin": "0 10px 0 10px"
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "Subscription",
+        "comparison": "isNotEqualTo",
+        "value": ""
+      },
+      "name": "Storage accounts"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "workbookPin": "storage account metrics",
+  "styleSettings": {
+    "paddingStyle": "narrow"
+  },
+  "fromTemplateId": "community-Workbooks/Storage/Overview",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
