@@ -266,21 +266,21 @@
               "version": "MetricsItem/2.0",
               "size": 2,
               "chartType": 0,
-              "resourceType": "microsoft.storage/storageaccounts",
-              "metricScope": 0,
-              "resourceParameter": "Resources",
               "resourceIds": [
                 "{Resources}"
               ],
-              "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
+              "timeContextFromParameter": "TimeRange",
+              "resourceType": "microsoft.storage/storageaccounts",
+              "resourceParameter": "Resources",
               "metrics": [
                 {
                   "namespace": "microsoft.storage/storageaccounts",
                   "metric": "microsoft.storage/storageaccounts-Transaction-Transactions",
-                  "aggregation": 1
+                  "aggregation": 1,
+                  "splitBy": null
                 },
                 {
                   "namespace": "microsoft.storage/storageaccounts",
@@ -412,7 +412,7 @@
                     }
                   },
                   {
-                    "columnMatch": ".*\\/Errors",
+                    "columnMatch": ".*\/Errors",
                     "formatter": 8,
                     "formatOptions": {
                       "min": 0,
@@ -465,6 +465,10 @@
                   }
                 ],
                 "labelSettings": [
+                  {
+                    "columnId": "Subscription",
+                    "label": "Subscription"
+                  },
                   {
                     "columnId": "Name",
                     "label": ""
@@ -536,41 +540,45 @@
               "version": "MetricsItem/2.0",
               "size": 3,
               "chartType": 0,
-              "resourceType": "microsoft.storage/storageaccounts",
-              "metricScope": 0,
-              "resourceParameter": "Resources",
               "resourceIds": [
                 "{Resources}"
               ],
-              "timeContextFromParameter": "TimeRange",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 0
               },
+              "timeContextFromParameter": "TimeRange",
+              "resourceType": "microsoft.storage/storageaccounts",
+              "resourceParameter": "Resources",
               "metrics": [
                 {
                   "namespace": "microsoft.storage/storageaccounts",
                   "metric": "microsoft.storage/storageaccounts-Capacity-UsedCapacity",
-                  "aggregation": 4
+                  "aggregation": 4,
+                  "splitBy": null
                 },
                 {
                   "namespace": "microsoft.storage/storageaccounts/blobservices",
                   "metric": "microsoft.storage/storageaccounts/blobservices-Capacity-BlobCapacity",
-                  "aggregation": 4
+                  "aggregation": 4,
+                  "splitBy": null
                 },
                 {
                   "namespace": "microsoft.storage/storageaccounts/fileservices",
                   "metric": "microsoft.storage/storageaccounts/fileservices-Capacity-FileCapacity",
-                  "aggregation": 4
+                  "aggregation": 4,
+                  "splitBy": null
                 },
                 {
                   "namespace": "microsoft.storage/storageaccounts/queueservices",
                   "metric": "microsoft.storage/storageaccounts/queueservices-Capacity-QueueCapacity",
-                  "aggregation": 4
+                  "aggregation": 4,
+                  "splitBy": null
                 },
                 {
                   "namespace": "microsoft.storage/storageaccounts/tableservices",
                   "metric": "microsoft.storage/storageaccounts/tableservices-Capacity-TableCapacity",
-                  "aggregation": 4
+                  "aggregation": 4,
+                  "splitBy": null
                 }
               ],
               "gridSettings": {
@@ -683,6 +691,10 @@
                 ],
                 "labelSettings": [
                   {
+                    "columnId": "Subscription",
+                    "label": "Subscription"
+                  },
+                  {
                     "columnId": "Name"
                   },
                   {
@@ -756,13 +768,9 @@
       "name": "Storage accounts"
     }
   ],
-  "fallbackResourceIds": [
-    "Azure Monitor"
-  ],
   "workbookPin": "storage account metrics",
   "styleSettings": {
     "paddingStyle": "narrow"
   },
-  "fromTemplateId": "community-Workbooks/Storage/Overview",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
