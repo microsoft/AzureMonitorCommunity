@@ -4,7 +4,7 @@
 // Categories: monitor
 // Resource types: Azure Monitor
 // Solutions: LogManagement
-// Topic: Ingestion
+// Topic: Usage
 
 let StartTime = ago(24h);
 let EndTime = now();

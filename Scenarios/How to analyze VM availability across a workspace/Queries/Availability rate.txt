@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Availability rate
+// Description: Calculate the availability rate of each connected computer.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Availability
+
+Heartbeat
+// bin_at is used to set the time grain to 1 hour, starting exactly 24 hours ago
+| summarize heartbeatPerHour = count() by bin_at(TimeGenerated, 1h, ago(24h)), Computer
+| extend availablePerHour = iff(heartbeatPerHour > 0, true, false)
+| summarize totalAvailableHours = countif(availablePerHour == true) by Computer
+| extend availabilityRate = totalAvailableHours*100.0/24

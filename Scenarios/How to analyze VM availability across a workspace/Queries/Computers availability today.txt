@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Computers availability today
+// Description: Chart the number of computers sending logs, each hour.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Availability
+
+Heartbeat
+| summarize dcount(ComputerIP) by bin(TimeGenerated, 1h)
+| render timechart

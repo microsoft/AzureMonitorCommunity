@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Unavailable computers
+// Description: List all known computers that didn't send a heartbeat in the last 5 hours.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Availability
+
+Heartbeat
+| summarize LastHeartbeat=max(TimeGenerated) by Computer
+| where LastHeartbeat < ago(5h)

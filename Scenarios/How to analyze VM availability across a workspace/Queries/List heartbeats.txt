@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: List heartbeats
+// Description: List all computer heartbeats from the last hour.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Availability
+
+Heartbeat
+| where TimeGenerated > ago(1h)
