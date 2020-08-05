@@ -1,9 +1,0 @@
-// Author: Microsoft Azure
-// Display name: Processes that initiated or received network traffic
-// Description: Processes that initiated or received network traffic.
-// Categories: virtualmachines
-// Solutions: WireData2
-// Topic: Diagnostics
-
-WireData
-| distinct ProcessName
