@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Failed tasks per job
 // Description: Lists failed tasks by parent job.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Batch accounts
 // Topic: Tasks
 

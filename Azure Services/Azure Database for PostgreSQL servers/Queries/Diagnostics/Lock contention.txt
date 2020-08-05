@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Lock contention
 // Description: Search for lock contention. It requires log_lock_waits=ON and depends on deadlock_timeout setting.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: List all the pods count with phase
 // Description: View pod phase counts based on all phases: Failed, Pending, Unknown, Running, or Succeeded.
-// Categories: container
+// Categories: Containers
 // Resource types: Kubernetes services
 // Solutions: ContainerInsights
 // Topic: Availability

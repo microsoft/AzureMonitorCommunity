@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show the error and exception number of each application
 // Description: Show a pie chart of the number of the logs containing the "error" or "exception" terms in the last 24 hours, per application.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Azure Spring Cloud
 // Topic: App Logs
 

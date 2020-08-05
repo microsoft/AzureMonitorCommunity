@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: All Failed Jobs
 // Description: View all failed jobs in the selected time range.
-// Categories: audit
+// Categories: Audit
 // Resource types: Recovery Services vaults
 // Topic: Jobs
 

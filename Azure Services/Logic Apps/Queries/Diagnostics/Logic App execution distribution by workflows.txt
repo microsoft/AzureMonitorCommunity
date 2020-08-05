@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Logic App execution distribution by workflows
 // Description: Hourly timechart for Logic App execution, distribution by workflows.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Logic Apps
 // Topic: Diagnostics
 

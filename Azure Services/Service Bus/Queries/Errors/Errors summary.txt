@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Errors summary
 // Description: Summarizes all the errors seen in the last 7 days.
-// Categories: monitor
+// Categories: Azure Monitor
 // Resource types: Service Bus
 // Topic: Errors
 

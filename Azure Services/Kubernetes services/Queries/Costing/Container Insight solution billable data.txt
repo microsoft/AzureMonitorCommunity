@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Container Insight solution billable data
 // Description: See total billable data from Container Insights solution.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Costing
 

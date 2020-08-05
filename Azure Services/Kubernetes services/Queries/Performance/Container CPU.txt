@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Container CPU
 // Description: View all the container CPU usage averaged over 30mins.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Performance
 

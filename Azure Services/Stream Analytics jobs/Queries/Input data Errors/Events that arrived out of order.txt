@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Events that arrived out of order
 // Description: Shows errors due to events that arrive out of order according to the out-of-order policy.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Input data Errors
 

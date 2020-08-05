@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Backup Items with Protection Status modified
 // Description: Find out if the protection status for any Backup Item has been modified in the selected time range.
-// Categories: management,security
+// Categories: IT & Management Tools,Security
 // Resource types: Recovery Services vaults
 // Topic: Backup Settings Changes
 

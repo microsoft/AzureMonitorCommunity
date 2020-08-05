@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Recently connected devices
 // Description: List of devices that IoT Hub saw connect in the specified time period.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: IoT Hub
 // Topic: Usage
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show the trend of a selected event
 // Description: Chart how many times an event was reported along the last day.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Diagnostics
 

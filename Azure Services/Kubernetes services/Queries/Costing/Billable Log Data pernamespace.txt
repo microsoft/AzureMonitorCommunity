@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Billable Log Data per-namespace
 // Description: See container logs billable data for the last 7d, segregated by namespace.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Costing
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Signatures out of date
 // Description: Devices with Signatures out of date.
-// Categories: security
+// Categories: Security
 // Resource types: Virtual machines
 // Solutions: AntiMalware
 // Topic: Diagnostics

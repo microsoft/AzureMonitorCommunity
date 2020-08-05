@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Logical disk space % below threshold:
 // Description: Show avg % of free Logical disk space over 10 minutes.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Performance
 

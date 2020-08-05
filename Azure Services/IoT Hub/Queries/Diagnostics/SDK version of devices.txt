@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: SDK version of devices
 // Description: List of devices and their SDK versions.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: IoT Hub
 // Topic: Diagnostics
 

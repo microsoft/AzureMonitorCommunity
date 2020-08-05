@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Pie chart of HTTP response codes
 // Description: Breakdown of response codes for each metric, over the last 12 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: App Services
 // Topic: Azure Metrics
 

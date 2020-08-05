@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Policies with retention duration modified
 // Description: Find out if the retention duration of any policy has been modified in the selected time range.
-// Categories: management,security
+// Categories: IT & Management Tools,Security
 // Resource types: Recovery Services vaults
 // Topic: Backup Settings Changes
 

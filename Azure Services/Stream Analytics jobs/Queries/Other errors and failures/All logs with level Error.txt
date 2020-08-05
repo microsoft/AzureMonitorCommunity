@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: All logs with level "Error"
 // Description: Shows all logs that are likely to have negatively impacted your job.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Other errors and failures
 

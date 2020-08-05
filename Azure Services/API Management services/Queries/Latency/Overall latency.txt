@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Overall latency
 // Description: Statistics of overall latency (in miliseconds) between the time API Mangement starts receiving a request and the time API Management finishes sending the response back to the client.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Latency
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: ExpressRoute Circuit BGP availability
 // Description: Traffic graph for BgpAvailability (5 minutes).
-// Categories: monitor,network
+// Categories: Azure Monitor,Network
 // Resource types: ExpressRoute circuits
 // Topic: Diagnostics
 

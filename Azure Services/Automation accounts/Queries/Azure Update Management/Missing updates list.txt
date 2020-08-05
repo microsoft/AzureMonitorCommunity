@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Missing updates list
 // Description: Get a list of all updates that are missing.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Automation accounts
 // Topic: Azure Update Management
 

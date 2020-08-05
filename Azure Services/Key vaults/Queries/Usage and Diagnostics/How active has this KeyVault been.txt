@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: How active has this KeyVault been?
 // Description: Line chart showing trend of KeyVault requests volume, per operation over time.
-// Categories: security
+// Categories: Security
 // Resource types: Key vaults
 // Topic: Usage and Diagnostics
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Access to keyvault - key not found
 // Description: Summarizes the access to keyvault when key is not found.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Hubs
 // Topic: Errors
 

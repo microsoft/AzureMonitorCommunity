@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Error reasons breakdown
 // Description: Breakdown of all error reasons in the last 24 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Errors
 

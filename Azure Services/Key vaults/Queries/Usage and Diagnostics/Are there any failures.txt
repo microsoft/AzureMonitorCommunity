@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Are there any failures?
 // Description: Count of failed KeyVault requests by status code.
-// Categories: security
+// Categories: Security
 // Resource types: Key vaults
 // Topic: Usage and Diagnostics
 

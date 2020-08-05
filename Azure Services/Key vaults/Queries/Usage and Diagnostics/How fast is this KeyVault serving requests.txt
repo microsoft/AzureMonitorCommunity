@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: How fast is this KeyVault serving requests?
 // Description: Line chart showing trend of request duration over time using different aggregations.
-// Categories: security
+// Categories: Security
 // Resource types: Key vaults
 // Topic: Usage and Diagnostics
 

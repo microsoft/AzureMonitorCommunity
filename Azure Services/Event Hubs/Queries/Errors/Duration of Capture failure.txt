@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Duration of Capture failure
 // Description: Summarizes the duaration of failure on Capture.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Hubs
 // Topic: Errors
 

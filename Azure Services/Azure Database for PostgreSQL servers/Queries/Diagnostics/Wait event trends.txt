@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Wait event trends
 // Description: Display wait event trends over time.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
 

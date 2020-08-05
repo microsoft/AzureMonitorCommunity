@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Dead endpoints
 // Description: Identify dead or unhealthy endpoints byt the number times the issue was reported, as well as the reason why.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: IoT Hub
 // Topic: Availability
 

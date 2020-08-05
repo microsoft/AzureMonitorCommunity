@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: List all RequiredColumnMissing errors
 // Description: Shows all errors where the output record produced by your job has a missing column.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Output data errors
 

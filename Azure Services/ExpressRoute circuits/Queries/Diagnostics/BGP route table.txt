@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: BGP route table
 // Description: BPG route table learned over last 12 hours.
-// Categories: network
+// Categories: Network
 // Resource types: ExpressRoute circuits
 // Topic: Diagnostics
 

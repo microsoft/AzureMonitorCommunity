@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Error event on computer missing security co critical update
 // Description: Error events for machines that are missing critical or security required updates.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Virtual machines
 // Solutions: Updates
 // Topic: Errors

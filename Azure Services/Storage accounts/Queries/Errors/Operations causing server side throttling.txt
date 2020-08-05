@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Operations causing server side throttling
 // Description: List all operations causing server side throttling errors over the last 3 days.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Storage accounts
 // Topic: Errors
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Devices with most throttling errors
 // Description: Identify devices that made the most requests resulting in throttling errors.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: IoT Hub
 // Topic: Errors
 

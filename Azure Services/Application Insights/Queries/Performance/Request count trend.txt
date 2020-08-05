@@ -1,10 +1,10 @@
 // Author: Microsoft Azure
 // Display name: Request count trend
 // Description: Chart Request count over the last day.
-// Categories: applications
+// Categories: Applications
 // Resource types: Application Insights
 // Topic: Performance
 
-requests
-| summarize totalCount=sum(itemCount) by bin(timestamp, 30m)
+AppRequests
+| summarize totalCount=sum(ItemCount) by bin(TimeGenerated, 30m)
 | render timechart

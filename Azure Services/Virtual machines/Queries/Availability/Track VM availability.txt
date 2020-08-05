@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Track VM availability
 // Description: Display the VM's reported availability during the last day.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Availability
 

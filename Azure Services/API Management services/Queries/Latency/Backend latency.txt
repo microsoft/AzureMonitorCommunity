@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Backend latency
 // Description: Statistics of time (in miliseconds) spent in backend IO.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Latency
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Application rule log data
 // Description: Parses the application rule log data.
-// Categories: network,security
+// Categories: Network,Security
 // Resource types: Firewalls
 // Topic: Firewall Logs
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Summary of all data errors in the last 7 days
 // Description: Summary of all data errors in the last 7 days.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Other errors and failures
 

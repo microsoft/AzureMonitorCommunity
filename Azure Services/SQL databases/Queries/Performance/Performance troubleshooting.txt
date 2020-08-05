@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Performance troubleshooting
 // Description: Potentially query or deadlock on the system that could lead to poor performance.
-// Categories: databases
+// Categories: Databases
 // Resource types: SQL databases
 // Topic: Performance
 

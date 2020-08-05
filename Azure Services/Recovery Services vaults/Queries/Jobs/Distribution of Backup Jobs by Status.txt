@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Distribution of Backup Jobs by Status
 // Description: View the number of completed and failed Backup Jobs in the selected time range.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Recovery Services vaults
 // Topic: Jobs
 

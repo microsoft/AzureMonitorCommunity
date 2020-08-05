@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Trend of total Cloud Storage consumed
 // Description: View the daily trend of total (cumulative) Cloud Storage consumed.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Recovery Services vaults
 // Topic: Usage
 

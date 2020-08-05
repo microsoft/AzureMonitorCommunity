@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: App logs for each App Service
 // Description: Breakdown of log levels for each App Service.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: App Services
 // Topic: App Logs
 

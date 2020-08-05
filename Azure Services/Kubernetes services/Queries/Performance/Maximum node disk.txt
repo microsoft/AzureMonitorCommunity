@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Maximum node disk
 // Description: Max node disk usage averaged over 30 mins intervals.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Performance
 

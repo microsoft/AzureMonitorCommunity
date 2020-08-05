@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Client latency
 // Description: Statistics of time (in miliseconds) spent in client IO.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Latency
 

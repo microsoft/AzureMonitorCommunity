@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Deadlocks
 // Description: Search for deadlock events.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
 

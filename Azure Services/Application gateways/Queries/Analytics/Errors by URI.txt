@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Errors by URI
 // Description: Number of errors by URI.
-// Categories: network
+// Categories: Network
 // Resource types: Application gateways
 // Topic: Analytics
 

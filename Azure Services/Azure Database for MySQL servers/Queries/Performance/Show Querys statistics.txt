@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show Query's statistics
 // Description: Construct a summary statistics table by query.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for MySQL servers
 // Topic: Performance
 

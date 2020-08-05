@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Pool resize failures
 // Description: List pool resize failures by error code and time.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Batch accounts
 // Topic: Pools
 

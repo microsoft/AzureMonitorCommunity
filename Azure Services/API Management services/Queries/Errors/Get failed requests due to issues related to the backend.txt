@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Get failed requests due to issues related to the backend
 // Description: Get the logs of failed requests due to backend issues.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Errors
 

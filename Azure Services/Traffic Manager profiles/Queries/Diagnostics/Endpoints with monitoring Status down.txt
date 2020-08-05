@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Endpoints with monitoring Status down
 // Description: Find the reason why the monitoring status of Azure Traffic Manager endpoints is down.
-// Categories: network
+// Categories: Network
 // Resource types: Traffic Manager profiles
 // Topic: Diagnostics
 

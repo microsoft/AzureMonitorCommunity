@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Count failed sent snapshots
 // Description: Total count of failed snapshots over the last 7 days.
-// Categories: audit
+// Categories: Audit
 // Resource types: Data Shares
 // Topic: Errors
 

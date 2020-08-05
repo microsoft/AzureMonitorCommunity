@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Task durations
 // Description: Gives the elapsed time of tasks in seconds, from task start to task complete.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Batch accounts
 // Topic: Tasks
 

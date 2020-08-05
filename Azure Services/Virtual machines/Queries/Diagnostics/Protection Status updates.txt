@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Protection Status updates
 // Description: Protection Status updates per day.
-// Categories: security
+// Categories: Security
 // Resource types: Virtual machines
 // Solutions: AntiMalware
 // Topic: Diagnostics

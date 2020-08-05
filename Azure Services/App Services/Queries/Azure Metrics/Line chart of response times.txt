@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Line chart of response times
 // Description: Time series of mean response time (over 5 minute intervals).
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: App Services
 // Topic: Azure Metrics
 

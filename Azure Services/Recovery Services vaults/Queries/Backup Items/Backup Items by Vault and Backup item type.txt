@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Backup Items by Vault and Backup item type
 // Description: View the different types of items being backed up.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Recovery Services vaults
 // Topic: Backup Items
 

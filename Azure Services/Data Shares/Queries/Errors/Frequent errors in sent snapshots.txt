@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Frequent errors in sent snapshots
 // Description: List top 10 errors over the last 7 days.
-// Categories: audit
+// Categories: Audit
 // Resource types: Data Shares
 // Topic: Errors
 
