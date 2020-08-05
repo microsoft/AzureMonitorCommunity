@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Traffic by URL
+// Description: Show egress from CDN edge by URL.
+// Categories: Network
+// Resource types: CDN profiles
+// Topic: Usage
+
+// Change bins resolution from 1hr to 5m to get real time results)
+// CDN edge response traffic by URL
+AzureDiagnostics
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write" and Category == "AzureCdnAccessLog" 
+| where isReceivedFromClient_b == true
+| summarize ResponseBytes = sum(toint(responseBytes_s)) by requestUri_s

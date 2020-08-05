@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Virtual Machine free disk space
+// Description: Show the latest report of free disk space, per instance.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Performance
+
+InsightsMetrics
+| where TimeGenerated > ago(1h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "LogicalDisk"
+| where Name == "FreeSpaceMB"
+| extend t=parse_json(Tags)
+| summarize arg_max(TimeGenerated, *) by tostring(t["vm.azm.ms/mountId"]), Computer // arg_max over TimeGenerated returns the latest record
+| project Computer, TimeGenerated, t["vm.azm.ms/mountId"], Val

@@ -1,0 +1,16 @@
+// Author: Microsoft Azure
+// Display name: Logical disk space % below threshold
+// Description: Logical disk space % below threshold.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Performance
+
+let _minValue = 10; // Set the minValue according to your needs
+InsightsMetrics
+| where TimeGenerated >= ago(1h) // choose time to observe 
+| where Origin == "vm.azm.ms"
+| where Namespace == "LogicalDisk" and Name == "FreeSpacePercentage"
+| where Val <= _minValue
+| extend t=parse_json(Tags)
+| summarize avg(Val) by bin(TimeGenerated, 10m), Computer, tostring(t["vm.azm.ms/mountId"])
+| sort by avg_Val asc

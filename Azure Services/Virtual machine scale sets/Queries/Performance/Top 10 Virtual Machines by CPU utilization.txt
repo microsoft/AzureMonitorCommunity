@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Top 10 Virtual Machines by CPU utilization
+// Description: Top 10 Virtual Machines by CPU utilization.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Performance
+
+InsightsMetrics
+| where TimeGenerated > ago(1h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "Processor" and Name == "UtilizationPercentage"
+| summarize P90 = percentile(Val, 90) by Computer
+| top 10 by P90

@@ -1,0 +1,16 @@
+// Author: Microsoft Azure
+// Display name: Top 10 client Ips and http versions
+// Description: Show top 10 client IPs and http versions.
+// Categories: Network
+// Resource types: CDN profiles
+// Topic: Usage
+
+// Top 10 client IPs and http versions 
+// Show top 10 client IPs and http versions. 
+// Summarize top 10 client ips and http versions
+AzureDiagnostics
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write" and Category == "AzureCdnAccessLog"
+| where isReceivedFromClient_b == true
+| summarize RequestCount = count() by ClientIP = clientIp_s, HttpVersion = httpVersion_s, Resource
+| top 10 by RequestCount 
+| order by RequestCount desc
