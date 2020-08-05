@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All Outbound communications by Remote IP Address
+// Description: All Outbound communications by Remote IP Address.
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| where  Direction == "Outbound"
+| summarize count() by RemoteIP

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Usage by data types
+// Description: Chart the amount of logs reported for each data type, today.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Usage
+
+Usage
+| summarize count_per_type=count() by DataType
+| sort by count_per_type desc
+| render piechart

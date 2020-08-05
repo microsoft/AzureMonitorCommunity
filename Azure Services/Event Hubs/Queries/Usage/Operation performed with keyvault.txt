@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Operation performed with keyvault
 // Description: Summarizes the operation performed with keyvault to disable or restore the key.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Hubs
 // Topic: Usage
 

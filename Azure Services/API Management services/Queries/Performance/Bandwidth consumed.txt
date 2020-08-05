@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Bandwidth consumed
 // Description: Total bandwidth consumed in the last 24 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Performance
 

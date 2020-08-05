@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Cache hit ratio
 // Description: Statistics of Cache hit/miss ratio.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Diagnostics
 

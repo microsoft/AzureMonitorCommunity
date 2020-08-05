@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Chart of daily sent snapshots
 // Description: A time chart of recent snapshots count, succeeded VS failed.
-// Categories: audit
+// Categories: Audit
 // Resource types: Data Shares
 // Topic: Audit
 

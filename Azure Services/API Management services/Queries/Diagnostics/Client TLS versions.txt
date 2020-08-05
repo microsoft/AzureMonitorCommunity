@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Client TLS versions
 // Description: Breakdown of client TLS versions in the last 24 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Diagnostics
 

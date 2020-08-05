@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Devices With Security Log Cleared
+// Description: Devices with securtiy log cleared.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 1102
+| summarize LogClearedCount = count() by Computer

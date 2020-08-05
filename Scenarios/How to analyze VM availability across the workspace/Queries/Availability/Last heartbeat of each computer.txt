@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Last heartbeat of each computer
+// Description: Show the last heartbeat sent by each computer.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Availability
+
+Heartbeat
+| summarize arg_max(TimeGenerated, *) by Computer

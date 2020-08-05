@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Missing security or critical updates
 // Description: Count how many security or other critical updates are missing.
-// Categories: virtualmachines,security
+// Categories: Virtual Machines,Security
 // Resource types: Virtual machines
 // Topic: Security
 

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Servers with internal server error
+// Description: Show servers throwing internal server error.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Errors
+
+W3CIISLog
+| where scStatus == "500"  
+| summarize count() by sComputerName

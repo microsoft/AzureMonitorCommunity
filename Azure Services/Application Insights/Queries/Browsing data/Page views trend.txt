@@ -1,11 +1,11 @@
 // Author: Microsoft Azure
 // Display name: Page views trend
 // Description: Chart the page views count, during the last day.
-// Categories: applications
+// Categories: Applications
 // Resource types: Application Insights
 // Topic: Browsing data
 
-pageViews
-| where client_Type == 'Browser'
-| summarize count_sum = sum(itemCount) by bin(timestamp,30m)
+AppPageViews
+| where ClientType == 'Browser'
+| summarize count_sum = sum(ItemCount) by bin(TimeGenerated,30m)
 | render timechart

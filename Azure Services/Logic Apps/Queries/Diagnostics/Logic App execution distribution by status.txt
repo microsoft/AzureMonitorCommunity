@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Logic App execution distribution by status
 // Description: Completed executions by workflow,status and error.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Logic Apps
 // Topic: Diagnostics
 

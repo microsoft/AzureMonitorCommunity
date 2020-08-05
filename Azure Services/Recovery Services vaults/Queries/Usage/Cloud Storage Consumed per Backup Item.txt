@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Cloud Storage Consumed per Backup Item
 // Description: View the total Cloud Storage consumed by each Backup Item.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Recovery Services vaults
 // Topic: Usage
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Container Lifecycle Information
 // Description: List all of a container's lifecycle information.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Audit
 

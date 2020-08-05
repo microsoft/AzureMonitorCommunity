@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Request errors by host and path
 // Description: Count number of requests with error responses by host and path.
-// Categories: network
+// Categories: Network
 // Resource types: Front Doors
 // Topic: Errors
 

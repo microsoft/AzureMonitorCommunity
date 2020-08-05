@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Avg node CPU usage percentage per minute
 // Description: For your cluster view avg node CPU usage percentage per minute over the last hour.
-// Categories: container
+// Categories: Containers
 // Resource types: Kubernetes services
 // Solutions: ContainerInsights
 // Topic: Performance

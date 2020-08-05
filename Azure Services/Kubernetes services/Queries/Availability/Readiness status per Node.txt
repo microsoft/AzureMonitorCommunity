@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Readiness status per Node
 // Description: For all your cluster view count of all the nodes by readiness.
-// Categories: container
+// Categories: Containers
 // Resource types: Kubernetes services
 // Solutions: ContainerInsights
 // Topic: Availability

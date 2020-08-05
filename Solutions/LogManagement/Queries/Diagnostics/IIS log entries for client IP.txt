@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: IIS log entries for client IP
+// Description: IIS log entries for a client IP.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog 
+| where cIP == "192.168.0.1" // Enter Client IP here
+| project csUriStem, scBytes, csBytes, TimeTaken, scStatus, TimeGenerated
+| top 100 by TimeGenerated desc

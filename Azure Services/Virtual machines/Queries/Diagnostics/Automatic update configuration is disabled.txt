@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Automatic update configuration is disabled
 // Description: Computers with automatic update disabled.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Virtual machines
 // Solutions: Updates
 // Topic: Diagnostics

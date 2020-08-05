@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Errors in the last 7 days
 // Description: This lists all the errors for the last 7 days.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Hubs
 // Topic: Errors
 

@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Display breakdown respond codes
+// Description: Display breakdown respond codes.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog 
+| summarize count() by scStatus

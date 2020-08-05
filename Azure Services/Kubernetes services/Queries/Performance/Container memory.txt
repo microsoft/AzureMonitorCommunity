@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Container memory
 // Description: View container CPU averaged over 30 mins intervals.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Performance
 

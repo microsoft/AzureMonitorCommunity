@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Kubernetes events
 // Description: Lists all the Kubernetes events.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Solutions: Containers
 // Topic: Diagnostics

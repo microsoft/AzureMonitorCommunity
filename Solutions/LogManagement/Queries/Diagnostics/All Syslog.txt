@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: All Syslog
+// Description: Last 100 Syslog.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Syslog 
+| top 100 by TimeGenerated desc

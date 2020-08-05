@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: File Audit Logs relating to a "Delete" operation
 // Description: List File Audit Logs that has a "Delete" operation.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: App Services
 // Topic: Audit Logs
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Bottom 10 Free disk space %
 // Description: Bottom 10 Free disk space % by computer, for the last 7 days.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Performance
 

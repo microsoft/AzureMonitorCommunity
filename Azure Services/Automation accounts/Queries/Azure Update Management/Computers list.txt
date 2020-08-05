@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Computers list
 // Description: List of computers with Azure Update Management deployed.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Automation accounts
 // Topic: Azure Update Management
 

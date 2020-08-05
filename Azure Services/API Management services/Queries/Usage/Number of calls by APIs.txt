@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Number of calls by APIs
 // Description: View the number of calls per API in the last 24 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Usage
 

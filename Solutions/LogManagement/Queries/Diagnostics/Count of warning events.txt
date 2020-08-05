@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Count of warning events
+// Description: Count of warning events by event ID.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event 
+| where EventLevelName == "warning" 
+| summarize count() by EventID

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Output Throttling logs (Cosmos DB, Power BI, Event Hubs)
 // Description: Shows all instances where writing to one of your outputs was throttled by the destination service.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Other errors and failures
 

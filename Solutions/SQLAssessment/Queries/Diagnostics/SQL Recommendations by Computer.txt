@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: SQL Recommendations by Computer
+// Description: Count SQL recommendations with failed result by computer.
+// Categories: workloads
+// Solutions: SQLAssessment
+// Topic: Diagnostics
+
+SQLAssessmentRecommendation
+| where RecommendationResult == "Failed"
+| summarize AggregatedValue = count() by Computer

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: View data ingested by completed jobs
 // Description: View data ingested size by jobs that are completed.
-// Categories: container,workloads,resources
+// Categories: Containers,Workloads,Azure Resources
 // Resource types: Kubernetes services
 // Solutions: ContainerInsights
 // Topic: Costing

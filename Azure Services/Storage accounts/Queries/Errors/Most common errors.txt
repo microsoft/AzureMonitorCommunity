@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Most common errors
 // Description: List 10 most common errors over the last 3 days.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Storage accounts
 // Topic: Errors
 

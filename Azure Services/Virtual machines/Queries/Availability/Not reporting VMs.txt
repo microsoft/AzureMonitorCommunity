@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Not reporting VMs
 // Description: VMs that have not reported a heartbeat in the last 5 minutes.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Availability
 

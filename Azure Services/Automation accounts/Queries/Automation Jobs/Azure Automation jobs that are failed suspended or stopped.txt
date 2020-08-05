@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Azure Automation jobs that are failed, suspended, or stopped
 // Description: List all the automation jobs that failed , suspended or stopped.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Automation accounts
 // Topic: Automation Jobs
 

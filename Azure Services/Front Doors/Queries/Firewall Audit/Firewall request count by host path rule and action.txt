@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Firewall request count by host, path, rule, and action
 // Description: Count firewall processed requests by host, path, rule, and action taken.
-// Categories: network,security
+// Categories: Network,Security
 // Resource types: Front Doors
 // Topic: Firewall Audit
 

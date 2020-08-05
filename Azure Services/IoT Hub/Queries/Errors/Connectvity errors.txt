@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Connectvity errors
 // Description: Identify device connection errors.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: IoT Hub
 // Topic: Errors
 

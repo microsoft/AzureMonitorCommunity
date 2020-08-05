@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Instances Avg CPU usage growth from last week
 // Description: Show Avg CPU growth by instance in the last week by descending order.
-// Categories: container,resources
+// Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Topic: Diagnostics
 

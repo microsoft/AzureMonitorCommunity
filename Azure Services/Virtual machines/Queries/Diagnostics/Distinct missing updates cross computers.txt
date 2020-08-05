@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Distinct missing updates cross computers
 // Description: Distinct missing updates across all computers.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Virtual machines
 // Solutions: Updates
 // Topic: Diagnostics

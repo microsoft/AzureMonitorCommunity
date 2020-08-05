@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: AutoDeleted entities
 // Description: Summary of all the entities that have been auto-deleted.
-// Categories: audit
+// Categories: Audit
 // Resource types: Service Bus
 // Topic: Usage
 

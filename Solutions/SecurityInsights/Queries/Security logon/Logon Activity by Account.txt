@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Logon Activity by Account
+// Description: Logon activity by account.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+SecurityEvent
+| where EventID == 4624
+| summarize LogonCount = count() by Account

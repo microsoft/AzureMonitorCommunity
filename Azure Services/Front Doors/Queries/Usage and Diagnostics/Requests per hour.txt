@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Requests per hour
 // Description: Render line chart showing total requests per hour for each FrontDoor resource.
-// Categories: network
+// Categories: Network
 // Resource types: Front Doors
 // Topic: Usage and Diagnostics
 

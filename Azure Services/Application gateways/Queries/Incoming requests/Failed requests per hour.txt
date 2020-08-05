@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Failed requests per hour
 // Description: Count of requests to which Application Gateway responded with an error.
-// Categories: network
+// Categories: Network
 // Resource types: Application gateways
 // Topic: Incoming requests
 

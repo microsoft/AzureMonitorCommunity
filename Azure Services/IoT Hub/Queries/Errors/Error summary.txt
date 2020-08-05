@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Error summary
 // Description: Count of errors across all operations by type.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: IoT Hub
 // Topic: Errors
 

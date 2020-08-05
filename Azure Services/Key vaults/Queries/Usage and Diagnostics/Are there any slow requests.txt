@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Are there any slow requests?
 // Description: List of KeyVault requests that took longer than 1sec.
-// Categories: security
+// Categories: Security
 // Resource types: Key vaults
 // Topic: Usage and Diagnostics
 

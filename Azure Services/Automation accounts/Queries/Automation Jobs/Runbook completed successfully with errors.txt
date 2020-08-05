@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Runbook completed successfully with errors
 // Description: List all jobs that completed with errors.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Automation accounts
 // Topic: Automation Jobs
 

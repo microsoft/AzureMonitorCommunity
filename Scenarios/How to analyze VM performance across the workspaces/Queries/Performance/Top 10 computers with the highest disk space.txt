@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Top 10 computers with the highest disk space
+// Description: Show the top 10 computers with the highest available disk space.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Performance
+
+Perf
+| where CounterName == "Free Megabytes" and InstanceName == "_Total"
+| summarize arg_max(TimeGenerated, *) by Computer
+| top 10 by CounterValue

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Members added to security groups
 // Description: Who was added to security-enabled group over the last day?
-// Categories: virtualmachines,security
+// Categories: Virtual Machines,Security
 // Resource types: Virtual machines
 // Topic: Security
 

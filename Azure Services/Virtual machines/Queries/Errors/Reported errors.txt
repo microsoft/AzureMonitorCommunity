@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Reported errors
 // Description: Show error events from the last hour.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Errors
 

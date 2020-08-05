@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Transient input and output errors
 // Description: Shows all errors related to input and output that are intermittent in nature.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Other errors and failures
 

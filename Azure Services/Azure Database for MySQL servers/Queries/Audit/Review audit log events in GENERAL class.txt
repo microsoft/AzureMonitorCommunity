@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Review audit log events in GENERAL class
 // Description: Identify general class events for your server.
-// Categories: workloads,audit
+// Categories: Workloads,Audit
 // Resource types: Azure Database for MySQL servers
 // Topic: Audit
 

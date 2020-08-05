@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Search in multiple tables
 // Description: Search both Syslog and Event tables for the term "login".
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Diagnostics
 

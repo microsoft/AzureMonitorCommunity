@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show the config server logs
 // Description: Filter the config server logs with the log level.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Azure Spring Cloud
 // Topic: System Logs
 

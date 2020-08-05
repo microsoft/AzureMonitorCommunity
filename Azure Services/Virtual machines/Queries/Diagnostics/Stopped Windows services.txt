@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Stopped Windows services
 // Description: Find all windows services that stopped in the last 30 minutes.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Diagnostics
 

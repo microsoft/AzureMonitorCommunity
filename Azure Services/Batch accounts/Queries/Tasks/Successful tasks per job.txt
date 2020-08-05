@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Successful tasks per job
 // Description: Provides the number of successful tasks per job.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Batch accounts
 // Topic: Tasks
 

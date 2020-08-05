@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Find Errors
 // Description: Search for errors in the last 6 hours.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Errors
 

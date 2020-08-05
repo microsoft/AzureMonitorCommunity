@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Firewall blocked request count per hour
 // Description: Count number of firewall blocked requests per hour.
-// Categories: network,security
+// Categories: Network,Security
 // Resource types: Front Doors
 // Topic: Firewall Audit
 

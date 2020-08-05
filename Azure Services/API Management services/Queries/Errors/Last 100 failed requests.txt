@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Last 100 failed requests
 // Description: Get the logs of the last 100 failed requests.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Errors
 

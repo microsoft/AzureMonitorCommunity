@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Windows failed logins
 // Description: Find reports of Windows accounts that failed to login.
-// Categories: virtualmachines,security
+// Categories: Virtual Machines,Security
 // Resource types: Virtual machines
 // Topic: Security
 

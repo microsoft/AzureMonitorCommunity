@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Missing update rollups
 // Description: All computers with missing update rollups.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Virtual machines
 // Solutions: Updates
 // Topic: Diagnostics

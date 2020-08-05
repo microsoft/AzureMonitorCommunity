@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: List container logs per namespace
 // Description: View container logs from all the namespaces in the cluster.
-// Categories: container
+// Categories: Containers
 // Resource types: Kubernetes services
 // Topic: Container Logs
 

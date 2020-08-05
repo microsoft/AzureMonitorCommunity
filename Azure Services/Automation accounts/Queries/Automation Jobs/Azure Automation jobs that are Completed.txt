@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Azure Automation jobs that are Completed
 // Description: List all automation jobs that got completed.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Automation accounts
 // Topic: Automation Jobs
 

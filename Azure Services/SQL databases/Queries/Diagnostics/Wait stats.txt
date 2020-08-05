@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Wait stats
 // Description: Wait stats over the last hour, by Logical Server and Database.
-// Categories: databases
+// Categories: Databases
 // Resource types: SQL databases
 // Topic: Diagnostics
 

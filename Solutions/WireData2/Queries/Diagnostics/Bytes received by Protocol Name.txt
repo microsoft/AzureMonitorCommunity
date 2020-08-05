@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Bytes received by Protocol Name
+// Description: Bytes received by Protocol Name (transport-level protocol, only some are recognized).
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| where Direction == "Inbound"
+| summarize sum(ReceivedBytes) by ProtocolName

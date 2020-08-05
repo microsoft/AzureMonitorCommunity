@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: List all DuplicateKey errors
 // Description: Shows errors where the output record produced by job contains a column with the same name as a System column.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Output data errors
 

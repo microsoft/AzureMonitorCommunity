@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Frequent operations chart
 // Description: A pie chart of operations used over the last 3 days.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Storage accounts
 // Topic: Audit
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Execution count trends
 // Description: Execution trend by query aggregated by 15 minute-intervals.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Diagnostics
 

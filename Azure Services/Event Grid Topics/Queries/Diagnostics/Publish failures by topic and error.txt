@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Publish failures by topic and error
 // Description: Publish failures logs by topic name and error message.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Grid Topics
 // Topic: Diagnostics
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Management operations in the last 7 days
 // Description: This lists all the management calls for the last 7 days.
-// Categories: monitor
+// Categories: Azure Monitor
 // Resource types: Service Bus
 // Topic: Diagnostics
 

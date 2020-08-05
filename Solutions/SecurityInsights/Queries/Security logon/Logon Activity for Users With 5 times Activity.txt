@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Logon Activity for Users With 5 times Activity
+// Description: Logon activity for accounts with less than 5 logons.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+SecurityEvent
+| where EventID == 4624
+| summarize LogonCount = count() by Account
+| where LogonCount < 5

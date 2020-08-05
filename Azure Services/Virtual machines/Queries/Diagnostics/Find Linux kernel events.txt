@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Find Linux kernel events
 // Description: Find events reported by Linux kernel process, regarding killed processes.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Diagnostics
 

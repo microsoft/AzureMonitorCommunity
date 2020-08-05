@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Remote IP addresses that have communicated with agents on the subnet '10.0.0.0/8' (any direction)
+// Description: Remote IP addresses that have communicated with agents on the subnet '10.0.0.0/8' (any direction).
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData  
+| where LocalSubnet == "10.0.0.0/8" 
+| summarize count() by RemoteIP

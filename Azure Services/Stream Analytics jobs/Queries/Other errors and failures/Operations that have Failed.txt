@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Operations that have "Failed"
 // Description: Shows all operations on your job that have resulted in a failure.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Other errors and failures
 

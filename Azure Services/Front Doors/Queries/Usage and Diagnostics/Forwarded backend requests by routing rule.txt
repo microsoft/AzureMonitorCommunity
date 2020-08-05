@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Forwarded backend requests by routing rule
 // Description: Count number of requests for each routing rule and backend host per minute.
-// Categories: network
+// Categories: Network
 // Resource types: Front Doors
 // Topic: Usage and Diagnostics
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Virtual Machine available memory
 // Description: Chart the VM's available memory over the last hour.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Performance
 

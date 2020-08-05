@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Ingestion latency (end-to-end) timechart - Event table
+// Description: Chart the latency of ingestion to the Event table in the last 1 day.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Health
+
+Event
+| where TimeGenerated > ago(1d)
+| project TimeGenerated, IngestionDurationSeconds = (ingestion_time()-TimeGenerated)/1s
+| render timechart title = "Ingestion latency: Event table" 

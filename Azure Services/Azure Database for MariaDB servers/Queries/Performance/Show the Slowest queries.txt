@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show the Slowest queries
 // Description: Identify top 5 slowest queries.
-// Categories: workloads
+// Categories: Workloads
 // Resource types: Azure Database for MariaDB servers
 // Topic: Performance
 

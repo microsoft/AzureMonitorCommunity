@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Memory and CPU usage
+// Description: Chart all computers' used memory and CPU, over the last hour.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Performance
+
+Perf
+| where TimeGenerated > ago(1h)
+| where (CounterName == "% Processor Time" and InstanceName == "_Total") or CounterName == "% Used Memory"
+| project TimeGenerated, CounterName, CounterValue
+| summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m)
+| render timechart

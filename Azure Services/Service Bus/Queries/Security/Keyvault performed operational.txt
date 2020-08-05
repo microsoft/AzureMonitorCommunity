@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Keyvault performed operational
 // Description: Summarizes the operation performed with keyvault to disable or restore the key.
-// Categories: security
+// Categories: Security
 // Resource types: Service Bus
 // Topic: Security
 

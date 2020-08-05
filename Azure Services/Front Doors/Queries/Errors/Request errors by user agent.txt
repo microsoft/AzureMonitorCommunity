@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Request errors by user agent
 // Description: Count number of requests with error responses by user agent.
-// Categories: network
+// Categories: Network
 // Resource types: Front Doors
 // Topic: Errors
 

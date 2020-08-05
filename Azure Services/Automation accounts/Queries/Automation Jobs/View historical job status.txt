@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: View historical job status
 // Description: List all automation jobs.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Automation accounts
 // Topic: Automation Jobs
 

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Devices Where Hash Was Executed
+// Description: Devices where hash.exe was executed more than 5 times.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 4688
+| where Process has "hash.exe" or ParentProcessName has "hash.exe"
+| summarize ExecutionCount = count() by Computer
+| where ExecutionCount > 5

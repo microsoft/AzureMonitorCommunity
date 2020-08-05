@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Audit logs for table(s) and event type(s)
 // Description: Search for audit logs for a specific table and event type DDL. Other event types are READ, WRITE, FUNCTION, MISC. It requires audit logs enabled. [https://docs.microsoft.com/azure/postgresql/concepts-audit].
-// Categories: workloads,audit
+// Categories: Workloads,Audit
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Audit Logs
 

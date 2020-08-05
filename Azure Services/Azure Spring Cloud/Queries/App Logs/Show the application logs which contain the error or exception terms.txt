@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show the application logs which contain the "error" or "exception" terms
 // Description: Show the application logs which contain the "error" or "exception" terms in the last hour.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Azure Spring Cloud
 // Topic: App Logs
 

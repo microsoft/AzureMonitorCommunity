@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Shut down Virtual Machines
 // Description: Virtual Machines successfully shut down in the last 10 minutes.
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Availability
 

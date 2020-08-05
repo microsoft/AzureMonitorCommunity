@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Non-SSL requests per hour
 // Description: Count of the Non-SSL requests on the Application Gateway.
-// Categories: network
+// Categories: Network
 // Resource types: Application gateways
 // Topic: Incoming requests
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Using wild-cards
 // Description: Search for terms that follow the pattern "corp*.com".
-// Categories: virtualmachines
+// Categories: Virtual Machines
 // Resource types: Virtual machines
 // Topic: Diagnostics
 

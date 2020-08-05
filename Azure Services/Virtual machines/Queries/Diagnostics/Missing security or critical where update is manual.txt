@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Missing security or critical where update is manual
 // Description: Critical or security updates needed by machines where updates are manually applied.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Virtual machines
 // Solutions: Updates
 // Topic: Diagnostics

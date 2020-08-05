@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: CPU utilization treshold above 95% on managed instances
 // Description: Display all managed instances with CPU treshold being over 95% of treshold.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: SQL managed instances
 // Topic: Utilization
 

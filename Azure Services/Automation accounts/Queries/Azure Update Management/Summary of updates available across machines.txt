@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Summary of updates available across machines
 // Description: Count of updates available under various categories for each machine.
-// Categories: virtualmachines,security
+// Categories: Virtual Machines,Security
 // Resource types: Automation accounts
 // Topic: Azure Update Management
 

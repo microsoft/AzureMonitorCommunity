@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Who is calling this KeyVault?
 // Description: List of callers identified by their IP address with their request count.
-// Categories: security
+// Categories: Security
 // Resource types: Key vaults
 // Topic: Usage and Diagnostics
 

@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Missing required updates for server
 // Description: Missing updates for a specific computer "ComputerName" (replace with your own computer name).
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Virtual machines
 // Solutions: Updates
 // Topic: Diagnostics

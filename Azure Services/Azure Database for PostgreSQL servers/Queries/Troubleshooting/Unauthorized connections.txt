@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Unauthorized connections
 // Description: Search for unauthorized (rejected) connection attempts.
-// Categories: workloads,security
+// Categories: Workloads,Security
 // Resource types: Azure Database for PostgreSQL servers
 // Topic: Troubleshooting
 

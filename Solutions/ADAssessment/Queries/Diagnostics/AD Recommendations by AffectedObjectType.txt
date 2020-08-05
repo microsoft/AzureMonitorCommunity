@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: AD Recommendations by AffectedObjectType
+// Description: Count AD recommendations with failed result by affected object type.
+// Categories: workloads
+// Solutions: ADAssessment
+// Topic: Diagnostics
+
+ADAssessmentRecommendation 
+| where RecommendationResult == "Failed" 
+| summarize AggregatedValue = count() by AffectedObjectType

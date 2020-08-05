@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Errors by user agent
 // Description: Number of errors by user agent.
-// Categories: network
+// Categories: Network
 // Resource types: Application gateways
 // Topic: Analytics
 

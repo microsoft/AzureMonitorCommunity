@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Show anonymous requests
 // Description: List all requests with anonymous access over the last 3 days.
-// Categories: management
+// Categories: IT & Management Tools
 // Resource types: Storage accounts
 // Topic: Audit
 

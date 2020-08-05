@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Number of requests
 // Description: Count the total number of calls across all APIs in the last 24 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Usage
 

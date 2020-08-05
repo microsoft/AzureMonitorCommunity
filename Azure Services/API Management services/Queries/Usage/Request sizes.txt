@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Request sizes
 // Description: Statistics of request sizes in the last 24 hours.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: API Management services
 // Topic: Usage
 

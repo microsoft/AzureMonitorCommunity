@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Publish failures by domain and error
 // Description: Publish failures logs by domain name and error message.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Grid Domains
 // Topic: Diagnostics
 

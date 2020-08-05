@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Loading Data
 // Description: Monitor data loading in the last hour.
-// Categories: databases
+// Categories: Databases
 // Resource types: SQL databases
 // Topic: Diagnostics
 

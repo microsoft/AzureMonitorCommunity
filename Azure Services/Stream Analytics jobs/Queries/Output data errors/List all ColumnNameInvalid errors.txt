@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: List all ColumnNameInvalid errors
 // Description: Shows errors where the output record produced by your job has a column name that doesn't map to a column in your output.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Stream Analytics jobs
 // Topic: Output data errors
 

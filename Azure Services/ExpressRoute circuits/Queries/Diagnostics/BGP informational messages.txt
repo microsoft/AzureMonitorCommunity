@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: BGP informational messages
 // Description: BGP informational messages by level, resource type and network.
-// Categories: network
+// Categories: Network
 // Resource types: ExpressRoute circuits
 // Topic: Diagnostics
 

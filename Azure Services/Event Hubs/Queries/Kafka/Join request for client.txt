@@ -1,7 +1,7 @@
 // Author: Microsoft Azure
 // Display name: Join request for client
 // Description: Summarized the status of join request for client.
-// Categories: resources
+// Categories: Azure Resources
 // Resource types: Event Hubs
 // Topic: Kafka
 
