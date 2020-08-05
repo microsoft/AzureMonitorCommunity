@@ -1,0 +1,21 @@
+// Author: Microsoft Azure
+// Display name: Top 10 most active users
+// Description: Lists top 10 users by session duration in the past 24 hours.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Host pools
+// Topic: Usage
+
+// Query the most active users by total session duration. 
+// The session duration is the delta between "Connected" and "Completed" state.
+WVDConnections 
+| where TimeGenerated > ago(24h)
+| where State == "Connected" 
+| project CorrelationId , UserName, ConnectionType , StartTime=TimeGenerated 
+| join (WVDConnections 
+    | where State == "Completed" 
+    | project EndTime=TimeGenerated, CorrelationId) 
+    on CorrelationId 
+| extend SessionDuration = EndTime - StartTime
+| summarize Duration = sum(SessionDuration) by UserName, ConnectionType
+| sort by Duration desc
+| limit 10

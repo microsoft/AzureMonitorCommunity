@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: What data is being collected?
+// Description: List the collected performance counters and object types.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Performance
+
+InsightsMetrics
+| where Origin == "vm.azm.ms"
+| summarize by Namespace, Name

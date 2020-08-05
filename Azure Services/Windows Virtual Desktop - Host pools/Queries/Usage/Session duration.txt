@@ -1,0 +1,19 @@
+// Author: Microsoft Azure
+// Display name: Session duration
+// Description: Lists users by session duration in the last 24 hours.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Host pools
+// Topic: Usage
+
+// The "State" provides information on the connection stage of an actitivity.
+// The delta between "Connected" and "Completed" provides the connection time for a specific connection.
+WVDConnections 
+| where TimeGenerated > ago(24h) 
+| where State == "Connected"  
+| project CorrelationId , UserName, ConnectionType , StartTime=TimeGenerated  
+| join (WVDConnections  
+    | where State == "Completed"  
+    | project EndTime=TimeGenerated, CorrelationId)  
+    on CorrelationId  
+| project Duration = EndTime - StartTime, ConnectionType, UserName  
+| sort by Duration desc
