@@ -1,8 +1,0 @@
-// Author: Microsoft Azure
-// Display name: Search a table for a specific term
-// Description: Search AzureMetrics table for the term "CPU".
-// Categories: resources
-// Resource types: Azure Monitor
-// Topic: Search through the logs
-
-search in (AzureMetrics) "CPU"// search is case-insensitive
