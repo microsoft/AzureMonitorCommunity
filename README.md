@@ -1,7 +1,7 @@
 # Azure Monitor Community
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-This public repo serves the Azure Monitor community. It contains log queries, workbooks and alerts, shared to help Azure Monitor users make the most of it.
+This public repo serves the Azure Monitor community. It contains log queries, workbooks, and alerts, shared to help Azure Monitor users make the most of it.
 
 ## Contents
 
