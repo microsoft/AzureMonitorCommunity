@@ -1,0 +1,512 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "",
+          "size": 0,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces"
+        },
+        "name": "query - 0"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "value::all"
+          ],
+          "parameters": [
+            {
+              "id": "a98e0968-2dc4-438d-b6d9-d15ff84fae9f",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeRange",
+              "type": 4,
+              "isRequired": true,
+              "value": {
+                "durationMs": 2592000000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ]
+              }
+            },
+            {
+              "id": "60bd30a5-b2dd-4db8-a8cb-95cf3a0d164e",
+              "version": "KqlParameterItem/1.0",
+              "name": "Workspace",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ \"microsoft.operationalinsights/workspaces\"\r\n| project id",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "84aa30e1-bfbc-42a7-a58f-05997aa2631b",
+              "version": "KqlParameterItem/1.0",
+              "name": "StorageSync",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.storagesync/storagesyncservices'",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            }
+          ],
+          "style": "pills",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "name": "parameters - 1"
+      },
+      {
+        "type": 10,
+        "content": {
+          "chartId": "workbooke08d9f4c-45e7-4710-9cf8-2df7874b9d5e",
+          "version": "MetricsItem/2.0",
+          "size": 4,
+          "chartType": 0,
+          "resourceIds": [
+            "{StorageSync}"
+          ],
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "resourceType": "microsoft.storagesync/storagesyncservices",
+          "resourceParameter": "StorageSync",
+          "metrics": [
+            {
+              "namespace": "microsoft.storagesync/storagesyncservices",
+              "metric": "microsoft.storagesync/storagesyncservices--StorageSyncBatchTransferredFileBytes",
+              "aggregation": 1,
+              "splitBy": null
+            },
+            {
+              "namespace": "microsoft.storagesync/storagesyncservices",
+              "metric": "microsoft.storagesync/storagesyncservices--StorageSyncRecallIOTotalSizeBytes",
+              "aggregation": 1,
+              "splitBy": null
+            },
+            {
+              "namespace": "microsoft.storagesync/storagesyncservices",
+              "metric": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionPerItemErrorsCount",
+              "aggregation": 1,
+              "splitBy": null
+            },
+            {
+              "namespace": "microsoft.storagesync/storagesyncservices",
+              "metric": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionAppliedFilesCount",
+              "aggregation": 1,
+              "splitBy": null
+            },
+            {
+              "namespace": "microsoft.storagesync/storagesyncservices",
+              "metric": "microsoft.storagesync/storagesyncservices--StorageSyncServerHeartbeat",
+              "aggregation": 3,
+              "splitBy": null
+            },
+            {
+              "namespace": "microsoft.storagesync/storagesyncservices",
+              "metric": "microsoft.storagesync/storagesyncservices--ServerSyncSessionResult",
+              "aggregation": 4,
+              "splitBy": null
+            }
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Subscription",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Name",
+                "formatter": 0,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncBatchTransferredFileBytes",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 2,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncBatchTransferredFileBytes Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncRecallIOTotalSizeBytes",
+                "formatter": 0,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 2,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncRecallIOTotalSizeBytes Timeline",
+                "formatter": 21,
+                "formatOptions": {
+                  "palette": "blue",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionPerItemErrorsCount",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 1,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionPerItemErrorsCount Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionAppliedFilesCount",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": null
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionAppliedFilesCount Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncServerHeartbeat",
+                "formatter": 18,
+                "formatOptions": {
+                  "showIcon": true,
+                  "thresholdsOptions": "icons",
+                  "thresholdsGrid": [
+                    {
+                      "operator": "!=",
+                      "thresholdValue": "1",
+                      "representation": "3",
+                      "text": "{0}{1}"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "success",
+                      "text": "{0}{1}"
+                    }
+                  ]
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--StorageSyncServerHeartbeat Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--ServerSyncSessionResult",
+                "formatter": 18,
+                "formatOptions": {
+                  "showIcon": true,
+                  "thresholdsOptions": "icons",
+                  "thresholdsGrid": [
+                    {
+                      "operator": "!=",
+                      "thresholdValue": "1",
+                      "representation": "3",
+                      "text": "{0}{1}"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "success",
+                      "text": "{0}{1}"
+                    }
+                  ]
+                }
+              },
+              {
+                "columnMatch": "microsoft.storagesync/storagesyncservices--ServerSyncSessionResult Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 10000,
+            "labelSettings": [
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncBatchTransferredFileBytes",
+                "label": "Bytes synced (Sum)"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncBatchTransferredFileBytes Timeline",
+                "label": "Bytes synced Timeline"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncRecallIOTotalSizeBytes",
+                "label": "Cloud tiering recall (Sum)"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncRecallIOTotalSizeBytes Timeline",
+                "label": "Cloud tiering recall Timeline"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionPerItemErrorsCount",
+                "label": "Files not syncing (Sum)"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionPerItemErrorsCount Timeline",
+                "label": "Files not syncing Timeline"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionAppliedFilesCount",
+                "label": "Files Synced (Sum)"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncSyncSessionAppliedFilesCount Timeline",
+                "label": "Files Synced Timeline"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncServerHeartbeat",
+                "label": "Server Online Status (Max)"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--StorageSyncServerHeartbeat Timeline",
+                "label": "Server Online Status Timeline"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--ServerSyncSessionResult",
+                "label": "Sync Session Result (Average)"
+              },
+              {
+                "columnId": "microsoft.storagesync/storagesyncservices--ServerSyncSessionResult Timeline",
+                "label": "Sync Session Result Timeline"
+              }
+            ]
+          }
+        },
+        "name": "metric - 4"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "# Azure File Sync - Event Logs\r\n\r\nEvent logs from the local Agent running Azure File Sync\r\n\r\nSelect count to see logs below."
+        },
+        "name": "text - 3"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "Event\r\n| where (Source == \"Microsoft-FileSync-Agent\")\r\n    or (Source == \"Microsoft-FileSync-Management\")\r\n| summarize count(EventLevel) by EventLevelName \r\n| extend jkey = 1\r\n| join (Event \r\n      | where (Source == \"Microsoft-FileSync-Agent\")\r\n         or (Source == \"Microsoft-FileSync-Management\")\r\n  | make-series Trend = count(EventLevel) default = 0 on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by EventLevelName) on EventLevelName",
+          "size": 4,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "EventLevelName",
+          "exportParameterName": "Level",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "{Workspace}"
+          ],
+          "visualization": "tiles",
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "EventLevelName",
+              "formatter": 18,
+              "formatOptions": {
+                "showIcon": true,
+                "thresholdsOptions": "colors",
+                "thresholdsGrid": [
+                  {
+                    "operator": "==",
+                    "thresholdValue": "Information",
+                    "representation": "blue",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "regex",
+                    "thresholdValue": "Error",
+                    "representation": "redBright",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "regex",
+                    "thresholdValue": "Warning",
+                    "representation": "yellow",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "Default",
+                    "thresholdValue": null,
+                    "representation": null,
+                    "text": "{0}{1}"
+                  }
+                ]
+              }
+            },
+            "leftContent": {
+              "columnMatch": "count_EventLevel",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 9,
+              "formatOptions": {
+                "palette": "redGreen",
+                "showIcon": true
+              }
+            },
+            "showBorder": false
+          }
+        },
+        "name": "query - 2 - Copy"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "# Showing EventLevel Logs for {Level}"
+        },
+        "name": "text - 6"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "Event\r\n| where (Source == \"Microsoft-FileSync-Agent\")\r\n    or (Source == \"Microsoft-FileSync-Management\")\r\n| where EventLevelName == '{Level}'\r\n| project TimeGenerated, EventLog, Computer, RenderedDescription, Message",
+          "size": 0,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "{Workspace}"
+          ]
+        },
+        "name": "query - 5"
+      }
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }

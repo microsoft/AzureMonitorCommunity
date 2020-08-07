@@ -1,0 +1,4974 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Subscriptions}"
+          ],
+          "parameters": [
+            {
+              "id": "15a2c4b1-1223-428f-80a0-53ec8e8e86a5",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeRange",
+              "type": 4,
+              "isRequired": true,
+              "value": {
+                "durationMs": 43200000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ],
+                "allowCustom": true
+              },
+              "resourceType": "microsoft.insights/components"
+            },
+            {
+              "id": "bc3b3200-d39a-4d72-adc3-8473457d9b30",
+              "version": "KqlParameterItem/1.0",
+              "name": "Subscriptions",
+              "type": 6,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ],
+                "includeAll": false
+              },
+              "resourceType": "microsoft.insights/components"
+            },
+            {
+              "id": "f5f206ec-2b82-4165-9f12-a59e1ac0c1f4",
+              "version": "KqlParameterItem/1.0",
+              "name": "Workspace",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.operationalinsights/workspaces'",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            }
+          ],
+          "style": "pills",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "name": "parameters - 1"
+      },
+      {
+        "type": 11,
+        "content": {
+          "version": "LinkItem/1.0",
+          "style": "tabs",
+          "links": [
+            {
+              "cellValue": "sqlType",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL: Servers",
+              "subTarget": "sqlserver",
+              "style": "link"
+            },
+            {
+              "cellValue": "sqlType",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL: DW",
+              "subTarget": "sqldw",
+              "style": "link"
+            },
+            {
+              "cellValue": "sqlType",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL: DB",
+              "subTarget": "sqldb",
+              "style": "link"
+            }
+          ]
+        },
+        "name": "links - 6"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "💡 *Select SQL Resources for Metrics and Logs*"
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Text - SQL DW Count of Logs - Copy"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Subscriptions}"
+          ],
+          "parameters": [
+            {
+              "id": "8998a008-ea1b-4f4b-bcc2-44e15deba715",
+              "version": "KqlParameterItem/1.0",
+              "name": "SQLDBs",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.sql/servers/databases'\r\n| where sku !has \"DataWarehouse\"\r\n| project id",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            }
+          ],
+          "style": "pills",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldb"
+        },
+        "name": "Parameters - SQL DB"
+      },
+      {
+        "type": 11,
+        "content": {
+          "version": "LinkItem/1.0",
+          "style": "tabs",
+          "links": [
+            {
+              "cellValue": "sqldb",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL DB DTU/CPU",
+              "subTarget": "cpu",
+              "preText": "selec",
+              "style": "link"
+            },
+            {
+              "cellValue": "sqldb",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL DB Query Metrics",
+              "subTarget": "query",
+              "style": "link"
+            },
+            {
+              "cellValue": "sqldb",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL DB Logs",
+              "subTarget": "logs",
+              "style": "link"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldb"
+        },
+        "name": "links - 3 - Copy"
+      },
+      {
+        "type": 10,
+        "content": {
+          "chartId": "workbook73480a60-98bd-416f-a772-29ed3fd9f6e3",
+          "version": "MetricsItem/2.0",
+          "size": 2,
+          "chartType": 0,
+          "metricScope": 0,
+          "resourceIds": [
+            "{SQLDBs}"
+          ],
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "resourceType": "microsoft.sql/servers/databases",
+          "resourceParameter": "SQLDBs",
+          "metrics": [
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-cpu_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-log_write_percent",
+              "aggregation": 4
+            }
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Subscription",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Name",
+                "formatter": 5,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                "formatter": 21,
+                "formatOptions": {
+                  "palette": "green",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-log_write_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-log_write_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_consumption_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_consumption_percent",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": null
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_used Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_used",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": null
+                }
+              }
+            ],
+            "rowLimit": 10000,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "Subscription"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Name"
+            },
+            "labelSettings": [
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                "label": "CPU percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                "label": "CPU percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "label": "Data IO percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "label": "Data IO percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "label": "Data IO percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "label": "Data IO percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-log_write_percent",
+                "label": "Log IO percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-log_write_percent Timeline",
+                "label": "Log IO percentage Timeline"
+              }
+            ]
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "sqldb",
+            "comparison": "isEqualTo",
+            "value": "cpu"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldb"
+        },
+        "name": "Metrics - SQL DB"
+      },
+      {
+        "type": 10,
+        "content": {
+          "chartId": "workbook73480a60-98bd-416f-a772-29ed3fd9f6e3",
+          "version": "MetricsItem/2.0",
+          "size": 2,
+          "chartType": 0,
+          "metricScope": 0,
+          "resourceIds": [
+            "{SQLDBs}"
+          ],
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "resourceType": "microsoft.sql/servers/databases",
+          "resourceParameter": "SQLDBs",
+          "metrics": [
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-workers_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-sessions_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-deadlock",
+              "aggregation": 1
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-connection_failed",
+              "aggregation": 1
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-connection_successful",
+              "aggregation": 1
+            }
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Subscription",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Name",
+                "formatter": 5,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-workers_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-workers_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-sessions_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-sessions_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-deadlock",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-deadlock Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-connection_failed",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-connection_failed Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-connection_successful",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-connection_successful Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                "formatter": 21,
+                "formatOptions": {
+                  "palette": "green",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-log_write_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-log_write_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_consumption_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_consumption_percent",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": null
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_used Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dtu_used",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": null
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-blocked_by_firewall Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-blocked_by_firewall",
+                "formatter": 1,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": null
+                }
+              }
+            ],
+            "rowLimit": 10000,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "Subscription"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Name"
+            },
+            "labelSettings": [
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-workers_percent",
+                "label": "Workers percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-workers_percent Timeline",
+                "label": "Workers percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-sessions_percent",
+                "label": "Sessions percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-sessions_percent Timeline",
+                "label": "Sessions percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-deadlock",
+                "label": "Deadlocks (Sum)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-deadlock Timeline",
+                "label": "Deadlocks Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-connection_failed",
+                "label": "Failed Connections (Sum)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-connection_failed Timeline",
+                "label": "Failed Connections Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-connection_successful",
+                "label": "Successful Connections (Sum)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-connection_successful Timeline",
+                "label": "Successful Connections Timeline"
+              }
+            ]
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "sqldb",
+            "comparison": "isEqualTo",
+            "value": "query"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldb"
+        },
+        "name": "Metrics - SQL DB Query"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Subscriptions}"
+          ],
+          "parameters": [
+            {
+              "id": "568c8201-9b89-4a6c-91d4-808382eee0e1",
+              "version": "KqlParameterItem/1.0",
+              "name": "PoolServers",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.sql/servers/elasticpools'\r\n| project id",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            }
+          ],
+          "style": "pills",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqlserver"
+        },
+        "name": "Parameter - SQL Elastic Pool"
+      },
+      {
+        "type": 10,
+        "content": {
+          "chartId": "workbooka374b115-8a9b-4b33-b0ee-284bfc356963",
+          "version": "MetricsItem/2.0",
+          "size": 0,
+          "chartType": 0,
+          "metricScope": 0,
+          "resourceIds": [
+            "{PoolServers}"
+          ],
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "resourceType": "microsoft.sql/servers/elasticpools",
+          "resourceParameter": "PoolServers",
+          "metrics": [
+            {
+              "namespace": "microsoft.sql/servers/elasticpools",
+              "metric": "microsoft.sql/servers/elasticpools-Basic-cpu_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/elasticpools",
+              "metric": "microsoft.sql/servers/elasticpools-Basic-physical_data_read_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/elasticpools",
+              "metric": "microsoft.sql/servers/elasticpools-Basic-log_write_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/elasticpools",
+              "metric": "microsoft.sql/servers/elasticpools-Basic-sessions_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/elasticpools",
+              "metric": "microsoft.sql/servers/elasticpools-Basic-workers_percent",
+              "aggregation": 4
+            }
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Subscription",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Name",
+                "formatter": 5,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-cpu_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-cpu_percent Timeline",
+                "formatter": 21,
+                "formatOptions": {
+                  "palette": "green",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-physical_data_read_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-physical_data_read_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-log_write_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-log_write_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-sessions_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-sessions_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-workers_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/elasticpools-Basic-workers_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 10000,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "Subscription"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Name"
+            },
+            "labelSettings": [
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-cpu_percent",
+                "label": "CPU percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-cpu_percent Timeline",
+                "label": "CPU percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-physical_data_read_percent",
+                "label": "Data IO percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-physical_data_read_percent Timeline",
+                "label": "Data IO percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-log_write_percent",
+                "label": "Log IO percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-log_write_percent Timeline",
+                "label": "Log IO percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-sessions_percent",
+                "label": "Sessions percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-sessions_percent Timeline",
+                "label": "Sessions percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-workers_percent",
+                "label": "Workers percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/elasticpools-Basic-workers_percent Timeline",
+                "label": "Workers percentage Timeline"
+              }
+            ]
+          }
+        },
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqlserver"
+        },
+        "name": "Metrics - SQL Elastic Pool"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Subscriptions}"
+          ],
+          "parameters": [
+            {
+              "id": "8998a008-ea1b-4f4b-bcc2-44e15deba715",
+              "version": "KqlParameterItem/1.0",
+              "name": "SQLDWDBs",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.sql/servers/databases'\r\n| where sku has \"DataWarehouse\"\r\n| project id",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            }
+          ],
+          "style": "pills",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldw"
+        },
+        "name": "Parameters - SQL DW"
+      },
+      {
+        "type": 11,
+        "content": {
+          "version": "LinkItem/1.0",
+          "style": "tabs",
+          "links": [
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL DW DTU/CPU",
+              "subTarget": "dtu",
+              "preText": "selec",
+              "style": "link"
+            },
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL DW Query Metrics",
+              "subTarget": "query",
+              "style": "link"
+            },
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "SQL DW Logs",
+              "subTarget": "logs",
+              "style": "link"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldw"
+        },
+        "name": "links - 3"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## Count of Logs by Category\r\n\r\n💡 *Select the type of SQL Logs to see logs*"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldw"
+        },
+        "name": "Text - SQL DW Count of Logs"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## Count of Logs by Category\r\n\r\n💡 *Select the type of SQL Logs to see logs*"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "logs",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "sqlType",
+          "comparison": "isEqualTo",
+          "value": "sqldb"
+        },
+        "name": "Text - SQL DB Count of Logs "
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| make-series Trend = count(Category) default = 0 on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by Category\r\n| extend jkey = 1\r\n| join (\r\nAzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| summarize Logs=count(Category) by Category\r\n| extend jkey = 1\r\n) on jkey\r\n| project Category=Category1, Logs, Trend",
+          "size": 1,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "Category",
+          "exportParameterName": "Category",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "visualization": "tiles",
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ]
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Workspace}"
+          ],
+          "parameters": [
+            {
+              "id": "b632540c-4d14-4714-844b-58a79bf95957",
+              "version": "KqlParameterItem/1.0",
+              "name": "Status",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n//| where Category in~ ({Category}) or '*' in~ ({Category})\r\n| distinct Status_s\r\n| where Status_s != ''",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "value": [
+                "Cancelled",
+                "Failed",
+                "Pending"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            }
+          ],
+          "style": "pills",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "ExecRequests"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "parameters - ExecRequests"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| make-series Trend = count(Category) default = 0 on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by Category\r\n| extend jkey = 1\r\n| join (\r\nAzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| summarize Logs=count(Category) by Category\r\n| extend jkey = 1\r\n) on jkey\r\n| project Category=Category1, Logs, Trend",
+          "size": 0,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "Category",
+          "exportParameterName": "Category",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "visualization": "tiles",
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ]
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "sqldb",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "sqldb",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## Showing Logs for {Category}"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "sqldb",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "sqldb",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "text - SQL DB"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| project Database=_ResourceId, TimeGenerated, ClusterName_s, NodeName_s, MachineName_s, AppName_s, AppTypeName_s, Level, intervalStartTime_t, intervalEndTme_t, databaseName_s, issueId_d, status_s, metric_s, value_d, impact_s, detections_s, rootCauseAnalysis_s, LogicalServerName_s, ElasticPoolName_s\r\n| extend Details= pack_all()\r\n| project Database, TimeGenerated, Details, status_s, metric_s, databaseName_s, rootCauseAnalysis_s, intervalStartTime_t, intervalEndTme_t",
+          "size": 0,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "status_s",
+              "parameterName": "Status"
+            },
+            {
+              "fieldName": "databaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "rootCauseAnalysis_s",
+              "parameterName": "RCA",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "metric_s",
+              "parameterName": "Metric",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalStartTime_t",
+              "parameterName": "StartTime",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalEndTme_t",
+              "parameterName": "EndTime",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "sortBy": [
+              {
+                "itemKey": "rootCauseAnalysis_s",
+                "sortOrder": 1
+              }
+            ]
+          },
+          "sortBy": [
+            {
+              "itemKey": "rootCauseAnalysis_s",
+              "sortOrder": 1
+            }
+          ],
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "SQLInsights"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - SQLInsights"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| extend Deadlock = parse_xml(deadlock_xml_s)\r\n| extend process = Deadlock.deadlock.[\"process-list\"]\r\n| extend resource = Deadlock.deadlock.[\"resource-list\"]\r\n| extend victim = Deadlock.deadlock.[\"victim-list\"]\r\n| project-away deadlock_xml_s, Deadlock \r\n| extend victim = victim.victimProcess.[\"@id\"]\r\n| extend transaction0 = process.process.[0].[\"@transactionname\"]\r\n| extend transaction1 = process.process.[1].[\"@transactionname\"]\r\n| extend transaction2 = process.process.[2].[\"@transactionname\"]\r\n| extend transaction3 = process.process.[3].[\"@transactionname\"]\r\n| project Database=_ResourceId, TimeGenerated, victim, transaction0, transaction1, transaction2, transaction3, ElasticPoolName_s, DatabaseName_s, SubscriptionId",
+          "size": 2,
+          "showAnalytics": true,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "status_s",
+              "parameterName": "Status"
+            },
+            {
+              "fieldName": "databaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "rootCauseAnalysis_s",
+              "parameterName": "RCA",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "metric_s",
+              "parameterName": "Metric",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalStartTime_t",
+              "parameterName": "StartTime",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalEndTme_t",
+              "parameterName": "EndTime",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Database",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "filter": true,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "SubscriptionId"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Database"
+            }
+          },
+          "sortBy": [],
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "Deadlocks"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - Deadlocks"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| summarize WaitTime=avg(total_query_wait_time_ms_d), ExecCount=sum(count_executions_d) by Database=_ResourceId, WaitType=wait_category_s, SubscriptionId\r\n| top 20 by WaitTime desc ",
+          "size": 2,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "status_s",
+              "parameterName": "Status"
+            },
+            {
+              "fieldName": "databaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "rootCauseAnalysis_s",
+              "parameterName": "RCA",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "metric_s",
+              "parameterName": "Metric",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalStartTime_t",
+              "parameterName": "StartTime",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalEndTme_t",
+              "parameterName": "EndTime",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Database",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "SubscriptionId",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "WaitTime",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "ExecCount",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "SubscriptionId"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Database"
+            }
+          },
+          "sortBy": [],
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "QueryStoreWaitStatistics"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - QueryStoreWaitStatistics"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| summarize DeltaWait=avg(delta_wait_time_ms_d), DeltaWaitCount=count(delta_waiting_tasks_count_d), DeltaSignalWait=avg(delta_signal_wait_time_ms_d) by Database=_ResourceId, WaitType=wait_type_s, SubscriptionId\r\n| top 20 by DeltaWait desc ",
+          "size": 2,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "status_s",
+              "parameterName": "Status"
+            },
+            {
+              "fieldName": "databaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "rootCauseAnalysis_s",
+              "parameterName": "RCA",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "metric_s",
+              "parameterName": "Metric",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalStartTime_t",
+              "parameterName": "StartTime",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalEndTme_t",
+              "parameterName": "EndTime",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Database",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "SubscriptionId",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DeltaWait",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DeltaWaitCount",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DeltaSignalWait",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "WaitTime",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "ExecCount",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "SubscriptionId"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Database"
+            }
+          },
+          "sortBy": [],
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "DatabaseWaitStatistics"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - DatabaseWaitStatistics"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| summarize Duration = sum(duration_d)/sum(count_executions_d)/100000,CPU = sum(cpu_time_d)/sum(count_executions_d)/100000 by Database=_ResourceId, SubscriptionId",
+          "size": 2,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "status_s",
+              "parameterName": "Status"
+            },
+            {
+              "fieldName": "databaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "rootCauseAnalysis_s",
+              "parameterName": "RCA",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "metric_s",
+              "parameterName": "Metric",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalStartTime_t",
+              "parameterName": "StartTime",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalEndTme_t",
+              "parameterName": "EndTime",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Database",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "SubscriptionId",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DeltaWait",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DeltaWaitCount",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DeltaSignalWait",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "WaitTime",
+                "formatter": 8,
+                "formatOptions": {
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "ExecCount",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "SubscriptionId"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Database"
+            }
+          },
+          "sortBy": [],
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "QueryStoreRuntimeStatistics"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - QueryStoreRuntimeStatistics"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| project Database=_ResourceId, TimeGenerated, error_state_d, query_hash_s, query_plan_hash_s, LogicalServerName_s, ElasticPoolName_s",
+          "size": 1,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "status_s",
+              "parameterName": "Status"
+            },
+            {
+              "fieldName": "databaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "rootCauseAnalysis_s",
+              "parameterName": "RCA",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "metric_s",
+              "parameterName": "Metric",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalStartTime_t",
+              "parameterName": "StartTime",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "intervalEndTme_t",
+              "parameterName": "EndTime",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "Timeouts"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - Timeouts"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| project Database = _ResourceId, TimeGenerated, Message, error_number_d, Severity, user_defined_b, state_d, query_hash_s, query_plan_hash_s, LogicalServerName_s, ElasticPoolName_s, DatabaseName_s",
+          "size": 1,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "error_number_d",
+              "parameterName": "Error",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "Message",
+              "parameterName": "Message",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "Severity",
+              "parameterName": "Severity",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "TimeGenerated",
+              "parameterName": "Time",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "DatabaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "query_hash_s",
+              "parameterName": "Hash",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "Errors"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - Errors"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDBs}) or '*' in~ ({SQLDBs})\r\n| where Category == '{Category}'\r\n| project Database=_ResourceId, TimeGenerated, OptionName_s, OptionDesiredState_s, OptionActualState_s, OptionDisableReason_s, IsDisabledBySystem_d, DatabaseDesiredMode_s, DatabaseActualMode_s, LogicalServerName_s, DatabaseName_s, OperationName",
+          "size": 1,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportedParameters": [
+            {
+              "fieldName": "Message",
+              "parameterName": "Message",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "Severity",
+              "parameterName": "Severity",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "TimeGenerated",
+              "parameterName": "Time",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "DatabaseName_s",
+              "parameterName": "DB",
+              "parameterType": 1
+            },
+            {
+              "fieldName": "query_hash_s",
+              "parameterName": "Hash",
+              "parameterType": 1
+            }
+          ],
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "AutomaticTuning"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DB - AutomaticTuning"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## SQL Errors\r\n\r\n**Time Generated:**  {Time}  \r\n\r\n**Error:** {Error}\r\n\r\n**Severity:** {Severity}\r\n\r\n**Message:** {Message}\r\n\r\n**Database:** {DB}\r\n\r\n**Query Hash:** {Hash}"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "Errors"
+          },
+          {
+            "parameterName": "Error",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "text - Errors"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## SQL Insights\r\n\r\n**Start Time:**  {StartTime}  \r\n**End Time:**  {EndTime}\r\n\r\n**Status:** {Status}\r\n\r\n**Database:** {DB}\r\n\r\n**Metric:** {Metric}\r\n\r\n**Root Cause Analysis:** {RCA}"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldb"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "SQLInsights"
+          },
+          {
+            "parameterName": "RCA",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "text - SQLInsights"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category == '{Category}'\r\n| project Database=_ResourceId, TimeGenerated, State_s, Priority_d, RequestId_s, SessionId_s, LogicalServerName_s, Category, OperationName, ResourceGroup",
+          "size": 0,
+          "showAnalytics": true,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "RequestId_s",
+          "exportParameterName": "RID",
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 500,
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "Waits"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW - Waits"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category == '{Category}'\r\n| where Status_s in~ ({Status}) or '*' in~ ({Status})\r\n| project _ResourceId, TimeGenerated, RequestId_s, Status_s, StartTime_t, EndTime_t, Command_s, SessionId_s, SubmitTime_t, EndCompileTime_t, Label_s, DatabaseId_d, ResourceClass_s, StatementType_s, ScopeDepth_d, RootQueryId_s, ExplainOutput_s, LogicalServerName_s\r\n| extend Details= pack_all()\r\n| project Database=_ResourceId, TimeGenerated, RequestId_s, Status_s, StatementType_s, Command_s, Details",
+          "size": 0,
+          "showAnalytics": true,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "RequestId_s",
+          "exportParameterName": "RID",
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 500,
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "ExecRequests"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW - ExecRequests"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category == '{Category}'\r\n| project _ResourceId, ErrorId_g, RequestId_s, StepIndex_d, OperationType_s, DistributionType_s, LocationType_s, Status_s, StartTime_t, EndTime_t, RowCount_d, Command_s, LogicalServerName_s, TimeGenerated\r\n| extend Details = pack_all()\r\n| project Database=_ResourceId, RequestId_s, Status_s, Command_s, OperationType_s, TimeGenerated, Details",
+          "size": 0,
+          "showAnalytics": true,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "RequestId_s",
+          "exportParameterName": "RID",
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 500,
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "RequestSteps"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW - RequestsSteps"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## Showing ExecRequests for '{SID}'"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "SID",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "text - execrequests for selected SessionID"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category == '{Category}'\r\n| project RequestId_s, StepIndex_d, Status_s, StartTime_t, EndTime_t, RowCount_d, Command_s, PdwNodeId_d, DistributionId_d, Spid_d, LogicalServerName_s, _ResourceId\r\n| extend Details = pack_all()\r\n| project Database=_ResourceId, Status_s, RequestId_s, StartTime_t, EndTime_t, Command_s, Details",
+          "size": 0,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "RequestId_s",
+          "exportParameterName": "RID",
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 500,
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "SqlRequests"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW - SqlRequests"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category == '{Category}'\r\n| project _ResourceId, DmsStepIndex_d, Type_s, BytesProcessed_d, RowsProcessed_d, CpuTime_d, SqlSpid_d, DmsCpid_d, SourceInfo_s, DestinationInfo_s, RequestId_s, StepIndex_d, State_s, StartTime_t, EndTime_t, PdwNodeId_d, DistributionId_d, LogicalServerName_s, TimeGenerated\r\n| extend Details = pack_all()\r\n| project Database=_ResourceId, DmsStepIndex_d, Type_s, DmsCpid_d, SourceInfo_s, RequestId_s, TimeGenerated, Details\r\n",
+          "size": 0,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "SourceInfo_s",
+          "exportParameterName": "SQL",
+          "showExportToExcel": true,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 500,
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "Category",
+            "comparison": "isEqualTo",
+            "value": "DmsWorkers"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW - DmsWorkers"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Workspace}"
+          ],
+          "parameters": [
+            {
+              "id": "e789b146-41d1-4240-9cc0-c9f77292636c",
+              "version": "KqlParameterItem/1.0",
+              "name": "Category",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category != 'DmsWorkers'\r\n| distinct Category",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            {
+              "id": "b632540c-4d14-4714-844b-58a79bf95957",
+              "version": "KqlParameterItem/1.0",
+              "name": "Status",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category in ({Category}) or '*' in ({Category})\r\n| distinct Status_s\r\n| where Status_s != ''",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "value": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::1",
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            }
+          ],
+          "style": "pills",
+          "queryType": 0,
+          "resourceType": "microsoft.insights/components"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "RID",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "parameters - RequestId Logs"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where ResourceType == \"SERVERS/DATABASES\"\r\n| where _ResourceId in~ ({SQLDWDBs}) or '*' in~ ({SQLDWDBs})\r\n| where Category in ({Category}) or '*' in ({Category})\r\n| where Status_s in ({Status}) or '*' in ({Status})\r\n| where RequestId_s == '{RID}'\r\n| project TimeGenerated, _ResourceId, RequestId_s, StepIndex_d, OperationType_s, DistributionType_s, LocationType_s, Status_s, StartTime_t, EndTime_t, RowCount_d, Command_s, SessionId_s, SubmitTime_t, EndCompileTime_t, DatabaseId_d, StatementType_s, RootQueryId_s, ExplainOutput_s, PdwNodeId_d, DistributionId_d\r\n| extend Details=pack_all()\r\n| project Database=_ResourceId, Details, RequestId_s, Status_s, TimeGenerated, Command_s\r\n",
+          "size": 0,
+          "showAnalytics": true,
+          "title": "ExecRequests",
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "exportFieldName": "Command_s",
+          "exportParameterName": "SQL",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "/subscriptions/4e0b7664-4eff-41c2-aec0-72aa72f346db/resourceGroups/prduse2omsrg/providers/Microsoft.OperationalInsights/workspaces/prduse2omsws4e0b76644e"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Details",
+                "formatter": 7,
+                "formatOptions": {
+                  "linkTarget": "CellDetails",
+                  "linkLabel": "🔍 View Details",
+                  "linkIsContextBlade": true,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "DurationAvg",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "DurationMax",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "Executions",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Deadlocks",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                }
+              }
+            ],
+            "filter": true
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "Category",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "subtitleContent": {
+              "columnMatch": "action_name_s",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "Logs",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto",
+                "showIcon": true
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2,
+                  "maximumSignificantDigits": 3
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "DurationMax",
+              "formatter": 12,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "Trend",
+              "formatter": 21,
+              "formatOptions": {
+                "palette": "green",
+                "showIcon": true
+              }
+            },
+            "showBorder": true,
+            "sortCriteriaField": "database_name_s",
+            "sortOrderField": 2
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "RID",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "Logs - SQL DW "
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## Showing TSQL Command"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "SQL",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "text - execrequests for selected SessionID - Copy"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "~~~~mysql\r\n{SQL}\r\n~~~~"
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "logs"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          },
+          {
+            "parameterName": "SQL",
+            "comparison": "isNotEqualTo"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "logs"
+        },
+        "name": "SQL Query - Command"
+      },
+      {
+        "type": 10,
+        "content": {
+          "chartId": "workbookf1358ff0-0e10-4ac2-ab2d-2fdfdb74dc2f",
+          "version": "MetricsItem/2.0",
+          "size": 2,
+          "chartType": 0,
+          "metricScope": 0,
+          "resourceIds": [
+            "{SQLDWDBs}"
+          ],
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "resourceType": "microsoft.sql/servers/databases",
+          "resourceParameter": "SQLDWDBs",
+          "metrics": [
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-cpu_percent",
+              "aggregation": 4
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+              "aggregation": 4
+            }
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Subscription",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Name",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent Timeline",
+                "formatter": 21,
+                "formatOptions": {
+                  "palette": "blue",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "palette": "blue",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 10000,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "Subscription"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Name"
+            },
+            "labelSettings": [
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                "label": "DWU percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent Timeline",
+                "label": "DWU percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                "label": "CPU percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                "label": "CPU percentage Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "label": "Data IO percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "label": "Data IO percentage Timeline"
+              }
+            ]
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "dtu"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "dtu"
+        },
+        "name": "Metrics - SQL DW DTU/CPU"
+      },
+      {
+        "type": 10,
+        "content": {
+          "chartId": "workbookf1358ff0-0e10-4ac2-ab2d-2fdfdb74dc2f",
+          "version": "MetricsItem/2.0",
+          "size": 2,
+          "chartType": 0,
+          "metricScope": 0,
+          "resourceIds": [
+            "{SQLDWDBs}"
+          ],
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "TimeRange",
+          "resourceType": "microsoft.sql/servers/databases",
+          "resourceParameter": "SQLDWDBs",
+          "metrics": [
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-active_queries",
+              "aggregation": 1
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-connection_failed",
+              "aggregation": 1
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-queued_queries",
+              "aggregation": 1
+            },
+            {
+              "namespace": "microsoft.sql/servers/databases",
+              "metric": "microsoft.sql/servers/databases-Basic-memory_usage_percent",
+              "aggregation": 4
+            }
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "$gen_group",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": "Resource",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Subscription",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "Name",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-active_queries",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-active_queries Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-connection_failed",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-connection_failed Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-queued_queries",
+                "formatter": 8,
+                "formatOptions": {
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 0,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-queued_queries Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-memory_usage_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-memory_usage_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": false
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-dwu_consumption_percent Timeline",
+                "formatter": 21,
+                "formatOptions": {
+                  "palette": "blue",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-cpu_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "palette": "blue",
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent",
+                "formatter": 8,
+                "formatOptions": {
+                  "min": 0,
+                  "max": 100,
+                  "palette": "greenRed",
+                  "showIcon": true
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              },
+              {
+                "columnMatch": "microsoft.sql/servers/databases-Basic-physical_data_read_percent Timeline",
+                "formatter": 5,
+                "formatOptions": {
+                  "showIcon": true
+                }
+              }
+            ],
+            "rowLimit": 10000,
+            "hierarchySettings": {
+              "treeType": 1,
+              "groupBy": [
+                "Subscription"
+              ],
+              "expandTopLevel": true,
+              "finalBy": "Name"
+            },
+            "labelSettings": [
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-active_queries",
+                "label": "Active queries (Sum)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-active_queries Timeline",
+                "label": "Active queries Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-connection_failed",
+                "label": "Failed Connections (Sum)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-connection_failed Timeline",
+                "label": "Failed Connections Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-queued_queries",
+                "label": "Queued queries (Sum)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-queued_queries Timeline",
+                "label": "Queued queries Timeline"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-memory_usage_percent",
+                "label": "Memory percentage (Average)"
+              },
+              {
+                "columnId": "microsoft.sql/servers/databases-Basic-memory_usage_percent Timeline",
+                "label": "Memory percentage Timeline"
+              }
+            ]
+          }
+        },
+        "conditionalVisibilities": [
+          {
+            "parameterName": "selectedTab",
+            "comparison": "isEqualTo",
+            "value": "query"
+          },
+          {
+            "parameterName": "sqlType",
+            "comparison": "isEqualTo",
+            "value": "sqldw"
+          }
+        ],
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "query"
+        },
+        "name": "Metrics - SQL Query Metrics"
+      }
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
