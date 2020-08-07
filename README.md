@@ -5,12 +5,13 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 
 ## Contents
 
-| File/folder       | Description                                		|
-|-------------------|---------------------------------------------------|
-| `Azure service`   | Queries, workbooks and alerts by Azure service	|
-| `Solutions`	    | Queries, workbooks and alerts by solution			|
-| `README.md`       | This README file  		                        |
-| `LICENSE`         | The license for this repo 		                |
+| File/folder       | Description                                		            |
+|-------------------|-----------------------------------------------------------|
+| `Azure services`  | Queries, workbooks and alerts for specific Azure services	|
+| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's  |
+| `Solutions`	      | Queries, workbooks and alerts organized by solutions	    |
+| `README.md`       | This README file  		                                    |
+| `LICENSE`         | The license for this repo 		                            |
 
 ## Prerequisites
 
