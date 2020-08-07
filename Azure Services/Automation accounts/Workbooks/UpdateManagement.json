@@ -1,0 +1,550 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 1,
+        "content": {
+          "json": "# Update Management"
+        },
+        "name": "Heading"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Subscription}"
+          ],
+          "parameters": [
+            {
+              "id": "b859a03f-2283-43dd-8536-42714bbfced6",
+              "version": "KqlParameterItem/1.0",
+              "name": "Subscription",
+              "type": 6,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "summarize by subscriptionId\r\n| project value = strcat('/subscriptions/', subscriptionId), label = subscriptionId",
+              "crossComponentResources": [
+                "value::selected"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ]
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "value": []
+            },
+            {
+              "id": "8df9c309-e7d1-43ad-b2ad-2d190c0c4e60",
+              "version": "KqlParameterItem/1.0",
+              "name": "Workspace",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ]
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "value": []
+            },
+            {
+              "id": "04a8ead2-1fb2-4666-a7b0-6d92e3c29b46",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeRange",
+              "type": 4,
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ],
+                "allowCustom": true
+              },
+              "value": {
+                "durationMs": 604800000
+              }
+            }
+          ],
+          "style": "pills",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces"
+        },
+        "name": "Parameters"
+      },
+      {
+        "type": 11,
+        "content": {
+          "version": "LinkItem/1.0",
+          "style": "tabs",
+          "links": [
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Windows Computers",
+              "subTarget": "Windows",
+              "preText": "Windows Computers",
+              "style": "link"
+            },
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Linux Computers",
+              "subTarget": "Linux",
+              "preText": "Linux Computers",
+              "style": "link"
+            }
+          ]
+        },
+        "name": "links - 10"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Update \r\n| where OSType!=\"Linux\" and Optional==false \r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by Computer,SourceComputerId,UpdateID\r\n| where UpdateState=~\"Needed\" and Approved!=false and (Classification == \"Security Updates\" or Classification == \"Critical Updates\" or Classification == \"Definition Updates\")\r\n| summarize Updates_Count=dcount(Computer) by Classification",
+                "size": 1,
+                "title": "Computers missing updates",
+                "noDataMessage": "No missing updates detected in the specified time range",
+                "timeContext": {
+                  "durationMs": 2592000000
+                },
+                "timeContextFromParameter": "TimeRange",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "piechart"
+              },
+              "customWidth": "50",
+              "showPin": true,
+              "name": "um-windcompupdatesmissinggr",
+              "styleSettings": {
+                "margin": "1px",
+                "padding": "1px"
+              }
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Update \r\n| where UpdateState == \"Needed\" and OSType!=\"Linux\"\r\n| summarize  arg_max(TimeGenerated, *) by Title//, Product, Classification, MSRCSeverity, OSType\r\n| where (Classification == \"Security Updates\" or Classification == \"Critical Updates\" or Classification == \"Definition Updates\" or Classification == \"Others\")\r\n| extend OperatingSystem = case(OSType == \"Linux\", \"Linux\", \r\n                       \"Windows\")\r\n| summarize MissingUpdates = count() by Classification, OperatingSystem\r\n| order by MissingUpdates desc",
+                "size": 1,
+                "title": "Required Updates",
+                "timeContext": {
+                  "durationMs": 2592000000
+                },
+                "timeContextFromParameter": "TimeRange",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "piechart",
+                "tileSettings": {
+                  "titleContent": {
+                    "columnMatch": "Classification",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  "subtitleContent": {
+                    "columnMatch": "OperatingSystem",
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  "leftContent": {
+                    "columnMatch": "MissingUpdates",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "coldHot",
+                      "showIcon": true
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 2,
+                        "maximumSignificantDigits": 3
+                      }
+                    }
+                  },
+                  "showBorder": false
+                }
+              },
+              "customWidth": "50",
+              "showPin": true,
+              "name": "um-summary1",
+              "styleSettings": {
+                "margin": "1px",
+                "padding": "1px"
+              }
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Update\r\n| where OSType!=\"Linux\" and Optional==false\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by Computer,SourceComputerId,UpdateID\r\n| where UpdateState=~\"Needed\" and Approved!=false\r\n| join (UpdateSummary \r\n| summarize arg_max(TimeGenerated, *) by Computer, OsVersion, RestartPending\r\n| project Computer, OsVersion, RestartPending\r\n)\r\non Computer\r\n| join ( Heartbeat\r\n| summarize LastHeartBeat = arg_max(TimeGenerated, *) by Computer\r\n| project LastHeartBeat, Computer\r\n) on Computer\r\n| summarize arg_max(TimeGenerated, *), SecurityUpdates = countif(Classification == \"Security Updates\"), CriticalUpdates = countif(Classification == \"Critical Updates\"), DefinitionUpdates = countif(Classification == \"Definition Updates\"), ServicePacks = countif(Classification == \"Service Packs\"), Others = countif(Classification != \"Security Updates\" and Classification != \"Critical Updates\" and Classification != \"Definition Updates\" and Classification != \"Service Packs\") by Computer, OsVersion, RestartPending, ResourceId, LastHeartBeat\r\n| project Computer, ResourceId, OsVersion, RestartPending, LastHeartBeat, SecurityUpdates, CriticalUpdates, DefinitionUpdates, ServicePacks, Others",
+                "size": 0,
+                "title": "Windows Computers: Missing Updates",
+                "noDataMessage": "No data collected for the selected time range",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "exportFieldName": "Computer",
+                "exportParameterName": "Computer",
+                "showExportToExcel": true,
+                "exportToExcelOptions": "all",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "Computer",
+                      "formatter": 13,
+                      "formatOptions": {
+                        "linkColumn": "ResourceId",
+                        "linkTarget": "Resource",
+                        "showIcon": true
+                      }
+                    },
+                    {
+                      "columnMatch": "ResourceId",
+                      "formatter": 5,
+                      "formatOptions": {}
+                    },
+                    {
+                      "columnMatch": "RestartPending",
+                      "formatter": 18,
+                      "formatOptions": {
+                        "thresholdsOptions": "icons",
+                        "thresholdsGrid": [
+                          {
+                            "operator": "==",
+                            "thresholdValue": "true",
+                            "representation": "pending",
+                            "text": "Restart Pending"
+                          },
+                          {
+                            "operator": "==",
+                            "thresholdValue": "false",
+                            "representation": "info",
+                            "text": "No restart pending"
+                          },
+                          {
+                            "operator": "Default",
+                            "thresholdValue": null,
+                            "representation": "success",
+                            "text": "{0}{}"
+                          }
+                        ]
+                      },
+                      "numberFormat": {
+                        "unit": 0,
+                        "options": {
+                          "style": "decimal"
+                        }
+                      }
+                    }
+                  ],
+                  "sortBy": [
+                    {
+                      "itemKey": "$gen_link_Computer_0",
+                      "sortOrder": 1
+                    }
+                  ]
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_link_Computer_0",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "customWidth": "100",
+              "name": "um-missingupdatesbycomputer",
+              "styleSettings": {
+                "margin": "1px",
+                "padding": "1px"
+              }
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "Select a computer name in the list above to filter the list of missing updates below"
+              },
+              "name": "text - 4"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let ComputerName = '{Computer}';\r\nUpdate \r\n| extend ComputerName = iif(ComputerName == \"\", \".\", ComputerName)\r\n| where UpdateState == \"Needed\" and OSType!=\"Linux\" and Computer contains ComputerName\r\n| summarize arg_max(TimeGenerated, *) by Title\r\n| where (Classification == \"Security Updates\" or Classification == \"Critical Updates\" or Classification == \"Definition Updates\" or Classification == \"Others\")\r\n| extend InformationUrl = iff(isnotempty(KBID), strcat(\"https://support.microsoft.com/kb/\", KBID), \"\")\r\n| summarize MissingCount = count(Computer) by Title, Product, MSRCSeverity, InformationUrl, Classification\r\n| project Classification, Title, Product, MSRCSeverity, InformationUrl, MissingCount\r\n| order by MissingCount desc, Classification desc, Title asc",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Missing Updates on Windows Servers - {Computer}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "showExportToExcel": true,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "InformationUrl",
+                      "formatter": 7,
+                      "formatOptions": {
+                        "linkTarget": "Url",
+                        "showIcon": true
+                      }
+                    }
+                  ],
+                  "filter": true,
+                  "labelSettings": [
+                    {
+                      "columnId": "Classification"
+                    },
+                    {
+                      "columnId": "Title"
+                    },
+                    {
+                      "columnId": "Product"
+                    },
+                    {
+                      "columnId": "MSRCSeverity"
+                    },
+                    {
+                      "columnId": "InformationUrl",
+                      "label": "KB URL"
+                    },
+                    {
+                      "columnId": "MissingCount",
+                      "label": "Computer count"
+                    }
+                  ]
+                }
+              },
+              "conditionalVisibility": {
+                "parameterName": "Computer",
+                "comparison": "isEqualTo"
+              },
+              "name": "um-missingupdates"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "Windows"
+        },
+        "name": "windowscomputers-group"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Update \r\n| where OSType==\"Linux\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, SourceComputerId, Product, ProductArch\r\n| where UpdateState=~\"Needed\" and (Classification == \"Security Updates\" or Classification == \"Critical Updates\" or Classification == \"Others\")\r\n| summarize Updates_Count=dcount(Computer) by Classification",
+                "size": 0,
+                "title": "Linux Computers",
+                "noDataMessage": "No missing updates detected in the specified time range",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "piechart"
+              },
+              "showPin": true,
+              "name": "um-windcompupdatesmissinggr - Copy"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Update\r\n| where OSType==\"Linux\"\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by Computer,SourceComputerId,UpdateID\r\n| where UpdateState=~\"Needed\"\r\n| join ( Heartbeat\r\n| summarize LastHeartBeat = arg_max(TimeGenerated, *) by Computer\r\n| project LastHeartBeat, Computer, OSType, OSName, OSMajorVersion, OSMinorVersion\r\n) on Computer\r\n| summarize arg_max(TimeGenerated, *), SecurityUpdates = countif(Classification == \"Security Updates\"), CriticalUpdates = countif(Classification == \"Critical Updates\"), Others = countif(Classification == \"Others\") by Computer, OSType, OSName, OSMajorVersion, OSMinorVersion, ResourceId, LastHeartBeat\r\n| extend OSVersionFull = strcat(OSMajorVersion, \".\", OSMinorVersion)\r\n| project Computer, ResourceId, OSType, OSName, OSVersionFull, LastHeartBeat, SecurityUpdates, CriticalUpdates, Others",
+                "size": 0,
+                "title": "Linux Computers: Missing Updates",
+                "noDataMessage": "No data collected for the selected time range",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "exportFieldName": "Computer",
+                "exportParameterName": "Computer",
+                "showExportToExcel": true,
+                "exportToExcelOptions": "all",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "Computer",
+                      "formatter": 5
+                    },
+                    {
+                      "columnMatch": "ResourceId",
+                      "formatter": 13,
+                      "formatOptions": {
+                        "linkTarget": null,
+                        "showIcon": true
+                      }
+                    },
+                    {
+                      "columnMatch": "OSType",
+                      "formatter": 5
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Computer"
+                    },
+                    {
+                      "columnId": "ResourceId",
+                      "label": "Computer"
+                    },
+                    {
+                      "columnId": "OSType"
+                    },
+                    {
+                      "columnId": "OSName",
+                      "label": "Operating System"
+                    },
+                    {
+                      "columnId": "OSVersionFull",
+                      "label": "OS Version"
+                    },
+                    {
+                      "columnId": "LastHeartBeat"
+                    },
+                    {
+                      "columnId": "SecurityUpdates"
+                    },
+                    {
+                      "columnId": "CriticalUpdates"
+                    },
+                    {
+                      "columnId": "Others"
+                    }
+                  ]
+                }
+              },
+              "name": "um-missingupdatesbycomputer - Copy"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let ComputerName = '{Computer}';\r\nUpdate \r\n| extend ComputerName = iif(ComputerName == \"\", \".\", ComputerName)\r\n| where UpdateState == \"Needed\" and OSType==\"Linux\" and Computer contains ComputerName\r\n| summarize arg_max(TimeGenerated, *) by Product, ProductArch\r\n| where (Classification == \"Security Updates\" or Classification == \"Critical Updates\" or Classification == \"Definition Updates\" or Classification == \"Others\")\r\n| summarize MissingCount = count(Computer) by Product, ProductArch, Classification, ProductVersion, PackageRepository\r\n| project Classification, Product, ProductArch, ProductVersion, PackageRepository, MissingCount\r\n| order by MissingCount desc, Classification desc, Product asc",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Missing Updates on {Computer}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "showExportToExcel": true,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "MissingCount",
+                      "formatter": 5
+                    }
+                  ]
+                }
+              },
+              "conditionalVisibility": {
+                "parameterName": "Computer",
+                "comparison": "isEqualTo"
+              },
+              "name": "um-missingupdates-linux"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "Linux"
+        },
+        "name": "linuxcomputers-group"
+      }
+    ],
+    "fallbackResourceIds": [
+      "Azure Monitor"
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
