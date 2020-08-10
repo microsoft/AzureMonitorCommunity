@@ -23,11 +23,11 @@ You can run any query from this repo on the [Log Analytics Demo Environment](htt
 ## Contributing
 Anyone can contribute to the repo, you don't need to be a pro. 
 We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models)
-1. [Fork this repo](https://help.github.com/articles/fork-a-repo/)
-<img width="1079" alt="fork" src="https://user-images.githubusercontent.com/1745412/89768632-853de680-db04-11ea-9d8f-8ece17d0b5da.png">
-2. Update your fork - add examples, edit existing content
-<img width="340" alt="forked" src="https://user-images.githubusercontent.com/1745412/89768747-b0c0d100-db04-11ea-9c5e-38a8caef1588.png">
-3. [Submit a pull request](https://help.github.com/articles/about-pull-requests/)
+1. [Fork this repo](https://help.github.com/articles/fork-a-repo/) - just click the Fork button on the top right corner of this page
+
+2. Update your forked repo - add examples, edit existing content
+
+3. [Submit a pull request](https://help.github.com/articles/about-pull-requests/) from your repo
 <img width="800" alt="PR" src="https://user-images.githubusercontent.com/1745412/89768775-be765680-db04-11ea-8742-8ff0c9554491.png">
 
 ### Contributor License Agreement CLA 
@@ -49,7 +49,7 @@ Any source code in this repository is licensed under the MIT license as found [h
 The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
 
 ### Need help writing queries?
-This repo has many examples that you'll likely want to edit to fit your exact scenario. If you're not sure how to do that - post your question on our [community forum](https://techcommunity.microsoft.com/t5/azure-monitor/bd-p/AzureMonitor).
+This repo has many examples that you may want to edit to fit your exact scenario. If you're not sure how to do that - post your question on our [community forum](https://techcommunity.microsoft.com/t5/azure-monitor/bd-p/AzureMonitor).
 
 ## Have a wish or a question?
 Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call us out on missing content or something else we should improve
