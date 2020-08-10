@@ -6,9 +6,9 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 ## Contents
 
 | File/folder       | Description                                		            |
-|-------------------|-----------------------------------------------------------|
-| `Azure services`  | Queries, workbooks and alerts for specific Azure services	|
-| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's  |
+|-------------------|---------------------------------------------------------------|
+| `Azure services`  | Queries, workbooks and alerts for specific Azure services		|
+| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's  	|
 | `Solutions`	      | Queries, workbooks and alerts organized by solutions	    |
 | `README.md`       | This README file  		                                    |
 | `LICENSE`         | The license for this repo 		                            |
@@ -21,12 +21,14 @@ You can run any query from this repo on the [Log Analytics Demo Environment](htt
 - Alerts - the alerts in this repo are log-based, meaning they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alerts on your own environment
 
 ## Contributing
-
 Anyone can contribute to the repo, you don't need to be a pro. 
 We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models)
 1. [Fork this repo](https://help.github.com/articles/fork-a-repo/)
+<img width="1079" alt="fork" src="https://user-images.githubusercontent.com/1745412/89768632-853de680-db04-11ea-9d8f-8ece17d0b5da.png">
 2. Update your fork - add examples, edit existing content
+<img width="340" alt="forked" src="https://user-images.githubusercontent.com/1745412/89768747-b0c0d100-db04-11ea-9c5e-38a8caef1588.png">
 3. [Submit a pull request](https://help.github.com/articles/about-pull-requests/)
+<img width="800" alt="PR" src="https://user-images.githubusercontent.com/1745412/89768775-be765680-db04-11ea-8742-8ff0c9554491.png">
 
 ### Contributor License Agreement CLA 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
