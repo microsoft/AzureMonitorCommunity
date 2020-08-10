@@ -20,14 +20,13 @@ You can run any query from this repo on the [Log Analytics Demo Environment](htt
 - Workbooks - the workbooks in this repo can be deployed as ARM templates to your Azure Monitor environment
 - Alerts - the alerts in this repo are log-based, meaning they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alerts on your own environment
 
-## Key concepts
-
-The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
-
 ## Contributing
 
-We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models).
-To contribute your own examples, first [fork this repo](https://help.github.com/articles/fork-a-repo/), submit any changes or additions to your forked repo, and then [submit a pull request](https://help.github.com/articles/about-pull-requests/).
+Anyone can contribute to the repo, you don't need to be a pro. 
+We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models)
+1. [Fork this repo](https://help.github.com/articles/fork-a-repo/)
+2. Update your fork - add examples, edit existing content
+3. [Submit a pull request](https://help.github.com/articles/about-pull-requests/)
 
 ### Contributor License Agreement CLA 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
@@ -44,6 +43,14 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 Any source code in this repository is licensed under the MIT license as found [here](LICENSE).
 
-## Redistribution
+## We use KQL
+The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
 
+### Need help writing queries?
+This repo has many examples that you'll likely want to edit to fit your exact scenario. If you're not sure how to do that - post your question on our [community forum](https://techcommunity.microsoft.com/t5/azure-monitor/bd-p/AzureMonitor).
+
+## Have a wish or a question?
+Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call us out on missing content or something else we should improve
+
+## Redistribution
 Upon redistribution of this repo, please be respectful of the readers and authors of this documentation, and include a link to the [original repo master branch](https://github.com/microsoft/AzureMonitorCommunity).

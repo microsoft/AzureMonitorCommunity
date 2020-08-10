@@ -1,0 +1,969 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 1,
+        "content": {
+          "json": "# Azure Monitor Data Ingestion Workbook"
+        },
+        "name": "Title"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "parameters": [
+            {
+              "id": "e832e0b7-649f-40d7-a8b2-2c228bc2eec2",
+              "version": "KqlParameterItem/1.0",
+              "name": "Subscription",
+              "type": 6,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "summarize by subscriptionId\r\n| project value = strcat('/subscriptions/', subscriptionId), label = subscriptionId",
+              "crossComponentResources": [
+                "value::selected"
+              ],
+              "value": [
+                ""
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ]
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "aaf60011-b4d9-4785-803f-b0ae68b41877",
+              "version": "KqlParameterItem/1.0",
+              "name": "Workspace",
+              "label": "Log Analytics Workspace",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "value": [
+                ""
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": []
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "ce5084e0-aa46-46af-81d5-102b5ca9b953",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeRange",
+              "label": "Time range",
+              "type": 4,
+              "value": {
+                "durationMs": 1209600000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ]
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            },
+            {
+              "id": "b318bfa8-1bbf-4ab3-bf00-87bdfffb8006",
+              "version": "KqlParameterItem/1.0",
+              "name": "Price",
+              "label": "Price per gigabyte (GB)",
+              "type": 1,
+              "value": "2.522",
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            }
+          ],
+          "style": "pills",
+          "queryType": 0,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "name": "Parameters"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "This workbook use standard pay-as-you-go pricing to estimate the cost - you can update the price per GB setting to match your estimated rate. The workbook looks at the Data Ingestion cost, not the Data Retention cost.\r\n\r\nThis workbook does not replace official billing from Microsoft, and should only be used to identify areas for optimisation of data ingestion.",
+          "style": "info"
+        },
+        "conditionalVisibility": {
+          "parameterName": "Subscription",
+          "comparison": "isEqualTo"
+        },
+        "name": "Disclaimer"
+      },
+      {
+        "type": 11,
+        "content": {
+          "version": "LinkItem/1.0",
+          "style": "tabs",
+          "links": [
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "By Computer",
+              "subTarget": "CostbyComputer",
+              "preText": "C",
+              "style": "link"
+            },
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "By Data Type",
+              "subTarget": "CostbyDataType",
+              "style": "link"
+            },
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Azure Diagnostics",
+              "subTarget": "AzureDiagnostics",
+              "style": "link"
+            },
+            {
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Trends",
+              "subTarget": "Trends",
+              "style": "link"
+            }
+          ]
+        },
+        "name": "Tabs"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 1,
+              "content": {
+                "json": "# Data Ingestion by computers, for {TimeRange}\r\n Select the computer in the list below the graph to view the data types ingested and estimated cost based on the price per GB you have entered ({Price})"
+              },
+              "name": "CostByComputer-Heading"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "union * \r\n| extend ComputerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where ComputerName != \"\" and ComputerName !contains \"deprecated\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ComputerName\r\n| order by TotalIngestBytes desc\r\n| take 5",
+                "size": 1,
+                "title": "Top 5 Computers ingesting data - {TimeRange}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "barchart",
+                "chartSettings": {
+                  "yAxis": [
+                    "TotalIngestBytes"
+                  ],
+                  "ySettings": {
+                    "numberFormatSettings": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 0,
+                        "maximumFractionDigits": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "name": "top5-computers-ingestion"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let pricebytes = {Price:value} / 104857600;\r\nunion * \r\n| extend ComputerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where ComputerName != \"\" and ComputerName !contains \"deprecated\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ComputerName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Cost Per Computer",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "exportedParameters": [
+                  {
+                    "parameterType": 1
+                  },
+                  {
+                    "fieldName": "ComputerName",
+                    "parameterName": "ComputerName",
+                    "parameterType": 1
+                  }
+                ],
+                "showExportToExcel": true,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "table",
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "TotalIngestBytes",
+                      "formatter": 4,
+                      "formatOptions": {
+                        "palette": "blue"
+                      },
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "maximumFractionDigits": 1
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "Cost",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 0,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    }
+                  ],
+                  "filter": true,
+                  "sortBy": [
+                    {
+                      "itemKey": "$gen_number_Cost_2",
+                      "sortOrder": 2
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "ComputerName"
+                    },
+                    {
+                      "columnId": "TotalIngestBytes",
+                      "label": "Total Amount Data Ingested"
+                    },
+                    {
+                      "columnId": "Cost",
+                      "label": "Estimated Cost"
+                    }
+                  ]
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_number_Cost_2",
+                    "sortOrder": 2
+                  }
+                ],
+                "tileSettings": {
+                  "showBorder": false,
+                  "titleContent": {
+                    "columnMatch": "computerName",
+                    "formatter": 1
+                  },
+                  "leftContent": {
+                    "columnMatch": "TotalIngestBytes",
+                    "formatter": 12,
+                    "formatOptions": {
+                      "palette": "auto"
+                    },
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "maximumSignificantDigits": 3,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  }
+                },
+                "graphSettings": {
+                  "type": 0,
+                  "topContent": {
+                    "columnMatch": "computerName",
+                    "formatter": 1
+                  },
+                  "centerContent": {
+                    "columnMatch": "TotalIngestBytes",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "maximumSignificantDigits": 3,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  "nodeIdField": "computerName",
+                  "sourceIdField": "TotalIngestBytes",
+                  "targetIdField": "TotalIngestBytes",
+                  "nodeSize": null,
+                  "staticNodeSize": 100,
+                  "colorSettings": null,
+                  "hivesMargin": 5
+                }
+              },
+              "name": "costpercomputer"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let pricebytes = {Price:value} / 104857600;\r\nunion * \r\n| extend computerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where computerName == \"{ComputerName:value}\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Datatypes for {ComputerName:value}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "showExportToExcel": true,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "TotalIngestBytes",
+                      "formatter": 4,
+                      "formatOptions": {
+                        "palette": "greenBlue"
+                      },
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "Cost",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 0,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    }
+                  ],
+                  "filter": true,
+                  "sortBy": [
+                    {
+                      "itemKey": "$gen_number_Cost_2",
+                      "sortOrder": 2
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Type"
+                    },
+                    {
+                      "columnId": "TotalIngestBytes",
+                      "label": "Total Amount Data Ingested"
+                    },
+                    {
+                      "columnId": "Cost",
+                      "label": "Estimated Cost"
+                    }
+                  ]
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_number_Cost_2",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "conditionalVisibility": {
+                "parameterName": "ComputerName",
+                "comparison": "isNotEqualTo"
+              },
+              "name": "datatypebycomputer"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "CostbyComputer"
+        },
+        "name": "CostByComputer-Group"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 1,
+              "content": {
+                "json": "# Data Ingestion by Data type, for {TimeRange}\r\n Select the data type in the list below the graph to view the computers ingesting data and estimated cost based on the price per GB you have entered ({Price})"
+              },
+              "name": "CostbyDataType-Heading"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "union * \r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| order by TotalIngestBytes desc\r\n| take 5",
+                "size": 1,
+                "title": "Top 5 Datatypes Ingested - {TimeRange}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "barchart",
+                "chartSettings": {
+                  "ySettings": {
+                    "numberFormatSettings": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 0,
+                        "maximumFractionDigits": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "name": "top5dataingested"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let pricebytes = {Price:value} / 104857600;\r\nunion * \r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by TotalIngestBytes",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Ingestion by Data Type - {TimeRange}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "exportFieldName": "Type",
+                "exportParameterName": "Type",
+                "showExportToExcel": true,
+                "exportToExcelOptions": "all",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "TotalIngestBytes",
+                      "formatter": 4,
+                      "formatOptions": {
+                        "palette": "greenBlue"
+                      },
+                      "numberFormat": {
+                        "unit": 36,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "Cost",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 0,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    }
+                  ],
+                  "filter": true,
+                  "sortBy": [
+                    {
+                      "itemKey": "$gen_number_Cost_2",
+                      "sortOrder": 2
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Type",
+                      "label": ""
+                    },
+                    {
+                      "columnId": "TotalIngestBytes",
+                      "label": "Total Amount Data Ingested"
+                    },
+                    {
+                      "columnId": "Cost"
+                    }
+                  ]
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_number_Cost_2",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "name": "costbydatatype"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let pricebytes = {Price:value} / 104857600;\r\nunion *\r\n| where Type == \"{Type:value}\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Computer, SourceSystem\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by TotalIngestBytes\r\n",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Ingested data for {Type:value} - {TimeRange}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "showExportToExcel": true,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "TotalIngestBytes",
+                      "formatter": 4,
+                      "formatOptions": {
+                        "palette": "greenBlue"
+                      },
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "Cost",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 0,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Computer"
+                    },
+                    {
+                      "columnId": "SourceSystem"
+                    },
+                    {
+                      "columnId": "TotalIngestBytes",
+                      "label": "Total Amount Data Ingested"
+                    },
+                    {
+                      "columnId": "Cost"
+                    }
+                  ]
+                }
+              },
+              "conditionalVisibility": {
+                "parameterName": "Type",
+                "comparison": "isNotEqualTo"
+              },
+              "name": "dataingestion"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "CostbyDataType"
+        },
+        "name": "CostbyDataType-Group"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 1,
+              "content": {
+                "json": "# Azure Diagnostics data ingestion for {TimeRange}"
+              },
+              "name": "text - 0"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AzureDiagnostics\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Resource\r\n| order by TotalIngestBytes desc\r\n| take 5",
+                "size": 1,
+                "title": "Top 5 Resources ingesting data - {TimeRange}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "visualization": "barchart",
+                "chartSettings": {
+                  "ySettings": {
+                    "numberFormatSettings": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  }
+                }
+              },
+              "showPin": false,
+              "name": "top5-azurediagnostics"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let pricebytes = {Price}/104857600;\r\nAzureDiagnostics\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Resource, Category, OperationName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Azure Diagnostics - {TimeRange}",
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "TimeRange",
+                "showExportToExcel": true,
+                "exportToExcelOptions": "all",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "TotalIngestBytes",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "Cost",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 0,
+                        "options": {
+                          "style": "decimal",
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Resource"
+                    },
+                    {
+                      "columnId": "Category"
+                    },
+                    {
+                      "columnId": "OperationName"
+                    },
+                    {
+                      "columnId": "TotalIngestBytes"
+                    },
+                    {
+                      "columnId": "Cost",
+                      "label": "Estimated cost"
+                    }
+                  ]
+                }
+              },
+              "name": "azurediagnostics-all"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "AzureDiagnostics"
+        },
+        "name": "AzureDiagnosticsgroup"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 1,
+              "content": {
+                "json": "# Ingestion Trends"
+              },
+              "name": "trends-header"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "The table below will compare the ingestion rates for two time period:\r\n* First column: 14 days ago to 7 days ago\r\n* Second column: 7 days ago to today"
+              },
+              "name": "trends-explanation"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "let StartDate1 = ago(14d);\r\nlet EndDate1 = ago(7d);\r\nlet StartDate2 = ago(7d);\r\nlet EndDate2 = ago(1h);\r\nunion * \r\n| where TimeGenerated between(StartDate1 .. EndDate1)\r\n| summarize TotalIngestBytes = sum(_BilledSize) by Type\r\n| join (\r\nunion * \r\n| where TimeGenerated between(StartDate2 .. EndDate2)\r\n| summarize TotalIngestBytes2 = sum(_BilledSize) by Type\r\n) on Type\r\n| extend IngestionDifference = TotalIngestBytes - TotalIngestBytes2\r\n| extend IngestionTrend = case(IngestionDifference > 0, \"Ingestion Decreased\",\r\n    IngestionDifference < 0, \"Ingestion Increased\", \"No Difference\")\r\n| project Type, TotalIngestBytes, TotalIngestBytes2, IngestionDifference, IngestionTrend\r\n| order by Type",
+                "size": 0,
+                "showAnalytics": true,
+                "title": "Ingestion Trend",
+                "timeContext": {
+                  "durationMs": 2592000000
+                },
+                "showExportToExcel": true,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{Workspace}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "TotalIngestBytes",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "TotalIngestBytes2",
+                      "formatter": 0,
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "IngestionDifference",
+                      "formatter": 18,
+                      "formatOptions": {
+                        "thresholdsOptions": "colors",
+                        "thresholdsGrid": [
+                          {
+                            "operator": "<",
+                            "thresholdValue": "0",
+                            "representation": "yellow",
+                            "text": "{0}{1}"
+                          },
+                          {
+                            "operator": ">",
+                            "text": "{0}{1}"
+                          },
+                          {
+                            "operator": "Default",
+                            "thresholdValue": null,
+                            "representation": "green",
+                            "text": "{0}{1}"
+                          }
+                        ]
+                      },
+                      "numberFormat": {
+                        "unit": 2,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": false,
+                          "minimumFractionDigits": 2,
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    },
+                    {
+                      "columnMatch": "IngestionTrend",
+                      "formatter": 18,
+                      "formatOptions": {
+                        "thresholdsOptions": "icons",
+                        "thresholdsGrid": [
+                          {
+                            "operator": "==",
+                            "thresholdValue": "Ingestion Decreased",
+                            "representation": "trenddown",
+                            "text": "{0}{1}"
+                          },
+                          {
+                            "operator": "==",
+                            "thresholdValue": "Ingestion Increased",
+                            "representation": "trendup",
+                            "text": "{0}{1}"
+                          },
+                          {
+                            "operator": "Default",
+                            "thresholdValue": null,
+                            "representation": "success",
+                            "text": "{0}{1}"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "sortBy": [
+                    {
+                      "itemKey": "Type",
+                      "sortOrder": 1
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Type"
+                    },
+                    {
+                      "columnId": "TotalIngestBytes",
+                      "label": "Ingestion (14d-7d ago)"
+                    },
+                    {
+                      "columnId": "TotalIngestBytes2",
+                      "label": "Ingestion (7d ago-today)"
+                    },
+                    {
+                      "columnId": "IngestionDifference"
+                    },
+                    {
+                      "columnId": "IngestionTrend"
+                    }
+                  ]
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "Type",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "name": "Trends-details"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "Trends"
+        },
+        "name": "trendsgroup"
+      }
+    ],
+    "fallbackResourceIds": [
+      "Azure Monitor"
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
