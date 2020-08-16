@@ -34,7 +34,7 @@ We follow the [GitHub fork and pull model](https://help.github.com/articles/abou
 3. [Submit a pull request](https://help.github.com/articles/about-pull-requests/) from your repo
 <img width="800" alt="PR" src="https://user-images.githubusercontent.com/1745412/89768775-be765680-db04-11ea-8742-8ff0c9554491.png">
 
-### Contributor License Agreement CLA 
+##### Contributor License Agreement CLA 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
@@ -56,7 +56,7 @@ The content in this repo uses KQL (Kusto Query Language). To get started with qu
 This repo has many examples that you may want to edit to fit your exact scenario. If you're not sure how to do that - post your question on our [community forum](https://techcommunity.microsoft.com/t5/azure-monitor/bd-p/AzureMonitor).
 
 ## Have a wish or a question?
-Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call us out on missing content or something else we should improve on, and check out the [FAQ] page (https://github.com/microsoft/AzureMonitorCommunity/wiki/FAQ) for common questions & answers.
+Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call us out on missing content or something else we should improve on, and check out the [FAQ page](https://github.com/microsoft/AzureMonitorCommunity/wiki/FAQ) for common questions & answers.
 
 ## Redistribution
 Upon redistribution of this repo, please be respectful of the readers and authors of this documentation, and include a link to the [original repo master branch](https://github.com/microsoft/AzureMonitorCommunity).
