@@ -21,7 +21,11 @@ You can run any query from this repo on the [Log Analytics Demo Environment](htt
 - Alerts - the alerts in this repo are log-based, meaning they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alerts on your own environment
 
 ## Contributing
-Anyone can contribute to the repo, you don't need to be a pro. 
+Anyone can contribute to the repo, you don't need to be a pro.
+#### What
+Any query or workbook you find useful can benefit other users as well.
+We also keep a list of the [top asks](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks), you may find it inspiring :)
+#### How
 We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models)
 1. [Fork this repo](https://help.github.com/articles/fork-a-repo/) - just click the Fork button on the top right corner of this page
 
@@ -48,7 +52,7 @@ Any source code in this repository is licensed under the MIT license as found [h
 ## We use KQL
 The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
 
-### Need help writing queries?
+#### Need help writing queries?
 This repo has many examples that you may want to edit to fit your exact scenario. If you're not sure how to do that - post your question on our [community forum](https://techcommunity.microsoft.com/t5/azure-monitor/bd-p/AzureMonitor).
 
 ## Have a wish or a question?
