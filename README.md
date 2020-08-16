@@ -56,7 +56,7 @@ The content in this repo uses KQL (Kusto Query Language). To get started with qu
 This repo has many examples that you may want to edit to fit your exact scenario. If you're not sure how to do that - post your question on our [community forum](https://techcommunity.microsoft.com/t5/azure-monitor/bd-p/AzureMonitor).
 
 ## Have a wish or a question?
-Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call us out on missing content or something else we should improve
+Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call us out on missing content or something else we should improve on, and check out the [FAQ] page (https://github.com/microsoft/AzureMonitorCommunity/wiki/FAQ) for common questions & answers.
 
 ## Redistribution
 Upon redistribution of this repo, please be respectful of the readers and authors of this documentation, and include a link to the [original repo master branch](https://github.com/microsoft/AzureMonitorCommunity).
