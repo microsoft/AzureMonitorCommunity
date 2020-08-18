@@ -11,13 +11,14 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 **Alerts** - the alerts in this repo are log-based, meaning they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alerts on your own environment
 
 ## Structure
-| File/folder       | Description                                		            |
+| File/folder       | Description                                		                |
 |-------------------|---------------------------------------------------------------|
-| `Azure services`  | Queries, workbooks and alerts for specific Azure services		|
-| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's  	|
-| `Solutions`	      | Queries, workbooks and alerts organized by solutions	    |
-| `README.md`       | This README file  		                                    |
-| `LICENSE`         | The license for this repo 		                            |
+| `Azure services`  | Queries, workbooks and alerts for specific Azure services		  |
+| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's    	|
+| `Solutions`	      | Queries, workbooks and alerts organized by solutions	        |
+| `CONTRIBUTING.md` | On how to contribute to this repo                             |
+| `LICENSE`         | The license for this repo 		                                |
+| `README.md`       | This README file  		                                        |
 
 ## Contributing
 Anyone can contribute to the repo, you don't need to be a pro. Have an interesting query or workbook? fork this repo, add your content to your fork and submit a pull request.
