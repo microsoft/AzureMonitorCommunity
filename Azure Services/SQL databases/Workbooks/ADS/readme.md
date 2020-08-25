@@ -1,6 +1,6 @@
 # Azure SQL ADS workbook
 
-![Workbook](ads.png)
+![Workbook](ADS.PNG)
 
 This workbook displays all queries which contain columns which are classified using [Data Discovery & Classification feature](https://docs.microsoft.com/en-us/azure/azure-sql/database/data-discovery-and-classification-overview)
 
