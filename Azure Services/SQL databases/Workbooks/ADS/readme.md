@@ -1,5 +1,7 @@
 # Azure SQL ADS workbook
 
+![Workbook](./ads.png)
+
 This workbook displays all queries which contain columns which are classified using [Data Discovery & Classification feature](https://docs.microsoft.com/en-us/azure/azure-sql/database/data-discovery-and-classification-overview)
 
 Prerequisites are:
@@ -12,5 +14,7 @@ Prerequisites are:
 
 ## Installation 
 
-Deploy the joson file by following these [instructions](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/workbooks-automate)
+Deploy the json file by following these [instructions](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/workbooks-automate)
+
+
 
