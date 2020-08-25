@@ -1,0 +1,221 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "parameters": [
+            {
+              "id": "7efa10fc-0a37-4713-bd28-9e0981ad22b3",
+              "version": "KqlParameterItem/1.0",
+              "name": "SubParam",
+              "label": "Subscription",
+              "type": 6,
+              "isRequired": true,
+              "query": "summarize by subscriptionId\n| project subscriptionId=strcat(\"/subscriptions/\", subscriptionId)",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "value": "/subscriptions/2ebf50fd-5caa-4232-8ad1-22c12e672cc8",
+              "typeSettings": {
+                "additionalResourceOptions": []
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "e2e82df5-220f-4b83-a0b8-d385de881354",
+              "version": "KqlParameterItem/1.0",
+              "name": "LawParam",
+              "label": "Log Analytics Workspace",
+              "type": 5,
+              "isRequired": true,
+              "query": "where type == \"microsoft.operationalinsights/workspaces\"",
+              "crossComponentResources": [
+                "{SubParam}"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": []
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "6df474e9-e1fe-481b-b8f4-5549f0cf6f3e",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeRange",
+              "label": "Time Range",
+              "type": 4,
+              "isRequired": true,
+              "value": {
+                "durationMs": 86400000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ],
+                "allowCustom": true
+              }
+            }
+          ],
+          "style": "pills",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces"
+        },
+        "name": "parameters - 4"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents'\r\n| where data_sensitivity_information_s != \"\"\r\n| extend parsed=parse_xml(data_sensitivity_information_s).sensitivity_attributes.sensitivity_attribute\r\n| extend label = parsed[\"@label\"]\r\n| where application_name_s <> \"Microsoft Azure SQL Database data sync - control\"\r\n| where event_time_t {TimeRange}\r\n| project event_time_t, statement_s, label, succeeded_s, affected_rows_d, server_principal_name_s, database_principal_name_s, database_name_s, client_ip_s, application_name_s\r\n| summarize count() by tostring(label)\r\n",
+          "size": 0,
+          "title": "SQL Classified Data queries per label",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "{LawParam}"
+          ],
+          "visualization": "piechart"
+        },
+        "customWidth": "30",
+        "name": "SQL Classified Data Auditing"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents'\r\n| where data_sensitivity_information_s != \"\"\r\n| extend parsed=parse_xml(data_sensitivity_information_s).sensitivity_attributes.sensitivity_attribute\r\n| extend label = parsed[\"@label\"]\r\n| where application_name_s <> \"Microsoft Azure SQL Database data sync - control\"\r\n| where event_time_t {TimeRange}\r\n| summarize Queries=count() by bin(TimeGenerated,30m), tostring(label)",
+          "size": 0,
+          "title": "SQL Classified Data queries",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "exportFieldName": "label",
+          "exportParameterName": "classificationlabels",
+          "exportDefaultValue": "n/a",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "{LawParam}"
+          ],
+          "visualization": "categoricalbar"
+        },
+        "customWidth": "50",
+        "name": "query - 1"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let alertsoverviewlink = \"https://ms.portal.azure.com/#blade/Microsoft_Azure_Monitoring/AzureMonitoringBrowseBlade/alertsV2\";\r\nAlert\r\n| where AlertName==\"SQLSensitivity\"\r\n| where TimeGenerated {TimeRange}\r\n| summarize Fired=count() by AlertName, alertsoverviewlink\r\n",
+          "size": 0,
+          "title": "SQL Classified data Alerts fired",
+          "noDataMessageStyle": 5,
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "{LawParam}"
+          ],
+          "visualization": "tiles",
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "AlertName",
+              "formatter": 1
+            },
+            "leftContent": {
+              "columnMatch": "Fired",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "redGreen",
+                "linkColumn": "Column1",
+                "linkTarget": "Url",
+                "bladeOpenContext": {
+                  "bladeParameters": []
+                }
+              }
+            },
+            "showBorder": false
+          }
+        },
+        "customWidth": "20",
+        "name": "query - 3"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "AzureDiagnostics\r\n| where Category == 'SQLSecurityAuditEvents'\r\n| where data_sensitivity_information_s != \"\"\r\n| extend parsed=parse_xml(data_sensitivity_information_s).sensitivity_attributes.sensitivity_attribute\r\n| extend label = parsed[\"@label\"]\r\n| where application_name_s <> \"Microsoft Azure SQL Database data sync - control\"\r\n| project event_time_t, statement_s, label, succeeded_s, affected_rows_d, server_principal_name_s, database_principal_name_s, database_name_s, client_ip_s, application_name_s\r\n| where label == '{classificationlabels}'\r\n| where event_time_t {TimeRange}\r\n| order by event_time_t desc",
+          "size": 0,
+          "showAnalytics": true,
+          "title": "Logs per selected label",
+          "timeContext": {
+            "durationMs": 86400000
+          },
+          "exportToExcelOptions": "all",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "{LawParam}"
+          ],
+          "gridSettings": {
+            "filter": true
+          }
+        },
+        "customWidth": "80",
+        "name": "query - 2"
+      }
+    ],
+    "fallbackResourceIds": [
+      "Azure Monitor"
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
