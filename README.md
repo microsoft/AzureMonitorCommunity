@@ -21,8 +21,16 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 | `README.md`       | This README file  		                                        |
 
 ## Contributing
+
 Anyone can contribute to the repo, you don't need to be a pro. Have an interesting query or workbook? fork this repo, add your content to your fork and submit a pull request.
 See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/master/CONTRIBUTING.md) for more details.
+
+### Top Contributor
+The August top contributor is [Billy York (scautomation)](https://github.com/scautomation)
+<br/>
+<a itemprop="image" href="https://github.com/scautomation"><img style="height:auto;" alt="Avatar" width="260" height="260" class="avatar avatar-user width-full border bg-white" src="https://avatars1.githubusercontent.com/u/35973682?s=460&amp;u=6e9d8b67106220a43d94470268948934cb615e1c&amp;v=4" /></a>
+<br/>
+Billy has contributed dozens of workbooks and provided huge value to the community.
 
 ## We use KQL
 The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
