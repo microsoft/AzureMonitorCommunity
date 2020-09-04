@@ -1,6 +1,6 @@
 // Author: Martin Ehrnst
 // Display name: Resource write operations
-// Description: List all resource changes at subscription level. Useful to track resource drift.
+// Description: List all resource changes in your subscription. Can be used to track resource drift, etc. Policy definition writes are excluded
 // Categories: audit
 // Resource types: Azure Activity logs
 // Topic: Activity logs
