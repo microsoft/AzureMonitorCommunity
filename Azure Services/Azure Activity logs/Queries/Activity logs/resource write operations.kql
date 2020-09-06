@@ -1,0 +1,15 @@
+// Author: Martin Ehrnst
+// Display name: Resource write operations
+// Description: List all resource changes in your subscription. Can be used to track resource drift, etc. Policy definition writes are excluded
+// Categories: audit
+// Resource types: Azure Activity logs
+// Topic: Activity logs
+
+AzureActivity
+| where Authorization_d.action has "write"
+| where CategoryValue == "Administrative"
+| where ActivityStatusValue == "Success"
+| where OperationNameValue !in (
+"MICROSOFT.AUTHORIZATION/POLICYDEFINITIONS/WRITE",
+"MICROSOFT.AUTHORIZATION/POLICYSETDEFINITIONS/WRITE",
+"MICROSOFT.AUTHORIZATION/POLICYASSIGNMENTS/WRITE")
