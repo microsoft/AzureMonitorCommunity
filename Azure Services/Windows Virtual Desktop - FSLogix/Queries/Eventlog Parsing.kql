@@ -3,7 +3,7 @@
 // Description: parsing the FSLogix Event Log
 // Categories: Windows Virtual Desktop
 // Resource types: Windows Virtual Desktop - FSLogix
-// Topic: Performance
+// Topic: Event Log
 Event
 | where Source == 'FSLogix-Apps'
 | where EventID == 25
