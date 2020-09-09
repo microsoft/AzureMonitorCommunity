@@ -1,0 +1,4 @@
+Event
+| where Source == 'FSLogix-Apps'
+| where EventID == 25
+| parse RenderedDescription with * "Username: " UserName:string " "*
