@@ -1,3 +1,9 @@
+// Author: Billy York www.cloudsma.com
+// Display name: Min, Max, Average WVD Profile Load time
+// Description: Average profile load time by session host.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - FSLogix
+// Topic: Performance
 SecurityEvent
 | where EventID == 4624
 | where AccountType == "User"

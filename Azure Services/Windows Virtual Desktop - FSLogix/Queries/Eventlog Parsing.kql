@@ -1,3 +1,9 @@
+// Author: Billy York www.cloudsma.com
+// Display name: FSLogix Profile Event Log
+// Description: parsing the FSLogix Event Log
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - FSLogix
+// Topic: Performance
 Event
 | where Source == 'FSLogix-Apps'
 | where EventID == 25
