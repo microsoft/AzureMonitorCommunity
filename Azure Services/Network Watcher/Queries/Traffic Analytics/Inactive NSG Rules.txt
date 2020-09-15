@@ -1,0 +1,41 @@
+let RuleExistenceThreshold = 6d;
+let RuleInactiveThreshold = 5d;
+
+let FlowEnabledNSGs = AzureNetworkAnalytics_CL
+| where SubType_s == "Topology" and ResourceType == 'NetworkSecurityGroup' and IsFlowEnabled_b == 'true' and TimeGenerated > ago(1d)
+| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', Name_s))
+| distinct NSGId;
+
+let NSGRules = AzureNetworkAnalytics_CL
+| where SubType_s == "Topology" and ResourceType == 'NetworkSecurityGroupRule' and TimeGenerated > ago(30d)
+| extend RuleName = tostring(split(Name_s, "/")[2]) 
+| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', split(Name_s, "/")[0], '/', split(Name_s, "/")[1]))
+| summarize ExistsSince = min(TimeGenerated), LastSeen = max(TimeGenerated) by RuleName, NSGId;
+
+let NSGsWithFlowLogs = FlowEnabledNSGs 
+| join kind=inner (
+    AzureNetworkAnalytics_CL
+    | where SubType_s == "FlowLog" and TimeGenerated > ago(RuleInactiveThreshold)
+    | extend NSGId = tolower(NSGList_s)
+    | summarize NSGFlowCount = sum(FlowCount_d) by NSGId
+    | where NSGFlowCount > 0
+) on NSGId
+| project-away NSGId1;
+
+let FlowLogsByRule = AzureNetworkAnalytics_CL
+| where SubType_s == "FlowLog" and TimeGenerated > ago(RuleInactiveThreshold)
+| extend NSGId = tolower(NSGList_s)
+| extend RuleName = NSGRule_s
+| project NSGId, RuleName, FlowCount_d;
+
+NSGRules
+| where ExistsSince < ago(RuleExistenceThreshold) and LastSeen > ago(1d)
+| join kind=inner ( NSGsWithFlowLogs ) on NSGId
+| project-away NSGId1
+| join kind=leftouter ( FlowLogsByRule) on NSGId, RuleName
+| project-away NSGId1, RuleName1
+| summarize RuleFlowCount = sum(FlowCount_d) by NSGId, RuleName
+| where RuleFlowCount == 0
+| distinct NSGId, RuleName
+| project NSGId = strcat('/subscriptions/', split(NSGId, "/")[0], '/resourceGroups/', split(NSGId, "/")[1], '/providers/Microsoft.Network/networkSecurityGroups/', split(NSGId, "/")[2]), RuleName
+| order by NSGId asc, RuleName asc

@@ -11,42 +11,26 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 **Alerts** - the alerts in this repo are log-based, meaning they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alerts on your own environment
 
 ## Structure
-| File/folder       | Description                                		            |
+| File/folder       | Description                                		                |
 |-------------------|---------------------------------------------------------------|
-| `Azure services`  | Queries, workbooks and alerts for specific Azure services		|
-| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's  	|
-| `Solutions`	      | Queries, workbooks and alerts organized by solutions	    |
-| `README.md`       | This README file  		                                    |
-| `LICENSE`         | The license for this repo 		                            |
+| `Azure services`  | Queries, workbooks and alerts for specific Azure services		  |
+| `Scenarios`       | Queries, workbooks and alerts to handle common "How to's    	|
+| `Solutions`	      | Queries, workbooks and alerts organized by solutions	        |
+| `CONTRIBUTING.md` | On how to contribute to this repo                             |
+| `LICENSE`         | The license for this repo 		                                |
+| `README.md`       | This README file  		                                        |
 
 ## Contributing
-Anyone can contribute to the repo, you don't need to be a pro.
-#### What
-Any query or workbook you find useful can benefit other users as well.
-We also keep a list of the [top asks](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks), you may find it inspiring :)
-#### How
-We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models)
-1. [Fork this repo](https://help.github.com/articles/fork-a-repo/) - just click the Fork button on the top right corner of this page
 
-2. Update your forked repo - add examples, edit existing content
+Anyone can contribute to the repo, you don't need to be a pro. Have an interesting query or workbook? fork this repo, add your content to your fork and submit a pull request.
+See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/master/CONTRIBUTING.md) for more details.
 
-3. [Submit a pull request](https://help.github.com/articles/about-pull-requests/) from your repo
-<img width="800" alt="PR" src="https://user-images.githubusercontent.com/1745412/89768775-be765680-db04-11ea-8742-8ff0c9554491.png">
-
-##### Contributor License Agreement CLA 
-This project welcomes contributions and suggestions. Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-Any source code in this repository is licensed under the MIT license as found [here](LICENSE).
+### Top Contributor
+The August top contributor is [Billy York (scautomation)](https://github.com/scautomation)
+<br/>
+<a itemprop="image" href="https://github.com/scautomation"><img style="height:auto;" alt="Avatar" width="260" height="260" class="avatar avatar-user width-full border bg-white" src="https://avatars1.githubusercontent.com/u/35973682?s=460&amp;u=6e9d8b67106220a43d94470268948934cb615e1c&amp;v=4" /></a>
+<br/>
+Billy has contributed dozens of workbooks and provided huge value to the community.
 
 ## We use KQL
 The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
