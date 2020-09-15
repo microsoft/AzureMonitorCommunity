@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Autoscale failed operations
+// Description: List all reports of failed operations, over the last day.
+// Categories: Azure Monitor,Audit
+// Resource types: Azure Monitor autoscale settings
+// Topic: Autoscale
+
+AutoscaleScaleActionsLog 
+| where TimeGenerated > ago(24h)  
+| where ResultType == "Failed"

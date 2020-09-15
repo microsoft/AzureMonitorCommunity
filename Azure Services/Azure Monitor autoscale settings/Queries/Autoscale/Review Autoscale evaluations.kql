@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Review Autoscale evaluations
+// Description: Counts Autoscale evaluations in the last hour.
+// Categories: Azure Monitor
+// Resource types: Azure Monitor autoscale settings
+// Topic: Autoscale
+
+AutoscaleEvaluationsLog
+| where TimeGenerated > ago(1h)
+| summarize count() by ResourceId, Profile, OperationName, EvaluationResult
