@@ -1,6 +1,6 @@
 Anyone can contribute to the repo, you don't need to be a pro.
 #### What
-Any query or workbook you find useful can benefit other users as well.
+Any query or workbook you find useful can benefit other users as well.<\br>
 We also keep a list of the [top asks](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks), you may find it inspiring :)
 #### How
 We follow the [GitHub fork and pull model](https://help.github.com/articles/about-collaborative-development-models)
