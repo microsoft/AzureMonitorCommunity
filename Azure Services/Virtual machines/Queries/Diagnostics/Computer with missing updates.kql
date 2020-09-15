@@ -8,5 +8,5 @@
 
 Update
 |where OSType != "Linux" and UpdateState == "Needed" and Optional == "false" 
-| project Computer, Title, KBID, Classification, UpdateSeverity, PublishedDate 
+| project TimeGenerated, Computer, Title, KBID, Classification, MSRCSeverity, PublishedDate, _ResourceId
 | sort by TimeGenerated desc

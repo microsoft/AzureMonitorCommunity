@@ -7,5 +7,5 @@
 
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.EVENTHUB"
-| where Category == "info" and Operation == "disable" or Operation == "restore"
-| project message
+| where Category == "info" and OperationName == "disable" or OperationName == "restore"
+| project Message

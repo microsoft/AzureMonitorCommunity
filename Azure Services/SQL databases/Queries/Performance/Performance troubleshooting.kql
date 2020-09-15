@@ -2,7 +2,7 @@
 // Display name: Performance troubleshooting
 // Description: Potentially query or deadlock on the system that could lead to poor performance.
 // Categories: Databases
-// Resource types: SQL databases
+// Resource types: SQL databases.SQL Servers
 // Topic: Performance
 
 //potentially a query or deadlock on the system that could lead to poor performance

@@ -6,6 +6,7 @@
 // Topic: Diagnostics
 
 AzureDiagnostics
+| where TimeGenerated > ago(7d)
 | where ResourceProvider =="MICROSOFT.SERVICEBUS"
 | where Category == "OperationalLogs"
-| summarize count() by EventName_s, Resource
+| summarize count() by EventName_s, _ResourceId

@@ -2,7 +2,7 @@
 // Display name: Avg CPU usage
 // Description: Avg CPU usage in the last hour by resource name.
 // Categories: Databases
-// Resource types: SQL databases
+// Resource types: SQL databases.SQL Servers
 // Topic: Performance
 
 //consistently high averages could indicate a customer needs to move to a larger SKU

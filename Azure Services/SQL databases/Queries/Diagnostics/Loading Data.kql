@@ -2,7 +2,7 @@
 // Display name: Loading Data
 // Description: Monitor data loading in the last hour.
 // Categories: Databases
-// Resource types: SQL databases
+// Resource types: SQL databases.SQL Servers
 // Topic: Diagnostics
 
 AzureMetrics

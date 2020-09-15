@@ -8,5 +8,5 @@
 AegDeliveryFailureLogs 
 | parse Message with * ", httpStatusCode=" HttpStatusCode "," * "., errorMessage=" ErrorMessage "," *
 | parse _ResourceId with * "/domains/" DomainName 
-| project TimeGenerated, _ResourceId, DomainName, TenantId, EventSubscriptionName, OperationName, HttpStatusCode, ErrorMessage
+| project TimeGenerated, _ResourceId, DomainName, TenantId, EventSubscriptionName, SubResourceName, OperationName, HttpStatusCode, ErrorMessage
 | summarize by _ResourceId, DomainName, SubResourceName, EventSubscriptionName, ErrorMessage

@@ -2,7 +2,7 @@
 // Display name: Wait stats
 // Description: Wait stats over the last hour, by Logical Server and Database.
 // Categories: Databases
-// Resource types: SQL databases
+// Resource types: SQL databases.SQL Servers
 // Topic: Diagnostics
 
 AzureDiagnostics
