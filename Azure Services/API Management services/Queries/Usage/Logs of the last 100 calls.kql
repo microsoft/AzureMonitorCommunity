@@ -6,4 +6,4 @@
 // Topic: Usage
 
 ApiManagementGatewayLogs
-| top 100 by TimeGenerated desc 
+| top 100 by TimeGenerated desc

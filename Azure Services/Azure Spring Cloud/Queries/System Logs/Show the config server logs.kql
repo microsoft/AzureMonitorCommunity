@@ -8,4 +8,4 @@
 AppPlatformSystemLogs 
 | where TimeGenerated > ago(1h)
 | where LogType == "ConfigServer" and Level in ("WARN", "ERROR")
-| project TimeGenerated , Level , ServiceName , Thread , Stack , Log , _ResourceId 
+| project TimeGenerated , Level , ServiceName , Thread , Stack , Log , _ResourceId

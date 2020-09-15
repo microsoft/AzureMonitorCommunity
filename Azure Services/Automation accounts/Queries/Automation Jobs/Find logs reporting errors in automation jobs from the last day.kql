@@ -8,4 +8,4 @@
 AzureDiagnostics 
 | where ResourceProvider == "MICROSOFT.AUTOMATION" 
 | where StreamType_s == "Error" 
-| project TimeGenerated, Category, JobId_g, OperationName, RunbookName_s, ResultDescription, _ResourceId 
+| project TimeGenerated, Category, JobId_g, OperationName, RunbookName_s, ResultDescription, _ResourceId

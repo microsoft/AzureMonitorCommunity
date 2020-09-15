@@ -23,4 +23,4 @@ Perf
 | extend PrevWeekAvgCPU = round(iff(isempty(PrevWeekAvgCPU),0.0,PrevWeekAvgCPU),0) //When doing join with kind=leftouter, missing matches has empty value. To calculate growth, it should be converted to zero. In this case, empty value means that instance did not exist in the previous week
 | extend AvgCPUGrowth = round(ThisWeekAvgCPU - PrevWeekAvgCPU , 0) //Calculate growth
 | project-away InstanceName1,InstanceNameParts //Remove redundant fields
-| order by AvgCPUGrowth desc 
+| order by AvgCPUGrowth desc

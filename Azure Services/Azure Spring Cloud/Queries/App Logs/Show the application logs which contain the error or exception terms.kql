@@ -8,4 +8,4 @@
 AppPlatformLogsforSpring
 | where TimeGenerated > ago(1h)
 | where Log contains "error" or Log contains "exception"
-| project TimeGenerated , ServiceName , AppName , InstanceName , Log , _ResourceId 
+| project TimeGenerated , ServiceName , AppName , InstanceName , Log , _ResourceId

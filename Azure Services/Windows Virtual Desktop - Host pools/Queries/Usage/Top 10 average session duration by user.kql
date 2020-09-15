@@ -18,4 +18,4 @@ WVDConnections
 | project Duration =EndTime - StartTime, ConnectionType, UserName  
 | summarize AVGDuration=avg(Duration) by UserName 
 | sort by AVGDuration desc 
-| limit 10 
+| limit 10

@@ -9,7 +9,7 @@
 WVDConnections  
 | where TimeGenerated > ago(7d) 
 | where State == "Connected"
- project ResourceAlias, CorrelationId, StartTime=TimeGenerated, _ResourceId
+| project ResourceAlias, CorrelationId, StartTime=TimeGenerated, _ResourceId
 | join kind = leftouter (WVDConnections  
     | where State == "Completed"  
     | project EndTime=TimeGenerated, CorrelationId)  
@@ -18,4 +18,4 @@ WVDConnections
 | summarize AvgDuration=avg(Duration) by _ResourceId
 | sort by AvgDuration asc
 | extend Multi=split(_ResourceId, "/")
-| project AvgDuration, ResourceGroup=Multi[4], HostPool=Multi[8]  
+| project AvgDuration, ResourceGroup=Multi[4], HostPool=Multi[8]

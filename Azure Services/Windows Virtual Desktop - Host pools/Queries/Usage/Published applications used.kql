@@ -13,4 +13,4 @@ WVDCheckpoints
 | extend App = parse_json(Parameters).filename 
 | summarize Usage = count(UserName) by tostring(App) 
 | sort by Usage desc 
-| render barchart 
+| render barchart

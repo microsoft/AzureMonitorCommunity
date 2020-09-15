@@ -7,4 +7,4 @@
 
 AzureDiagnostics 
 | where ResourceProvider == "MICROSOFT.AUTOMATION" and Category == "JobLogs" and ResultType == "Completed" 
-| project TimeGenerated , RunbookName_s , ResultType , _ResourceId , JobId_g 
+| project TimeGenerated , RunbookName_s , ResultType , _ResourceId , JobId_g

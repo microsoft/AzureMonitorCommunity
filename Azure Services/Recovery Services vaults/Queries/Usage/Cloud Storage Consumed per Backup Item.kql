@@ -16,4 +16,4 @@ CoreAzureBackup
 | summarize arg_max(TimeGenerated, *) by BackupItemUniqueId 
 | project BackupItemUniqueId , StorageConsumedInMBs) on BackupItemUniqueId
 | project BackupItemUniqueId , BackupItemFriendlyName , StorageConsumedInMBs 
-| sort by StorageConsumedInMBs desc 
+| sort by StorageConsumedInMBs desc

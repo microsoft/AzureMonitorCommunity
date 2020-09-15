@@ -8,4 +8,4 @@
 AzureDiagnostics
 | where TimeGenerated > ago(6h)
 | where Category == "PostgreSQLLogs"
-| where  errorLevel_s contains "error" 
+| where  errorLevel_s contains "error"

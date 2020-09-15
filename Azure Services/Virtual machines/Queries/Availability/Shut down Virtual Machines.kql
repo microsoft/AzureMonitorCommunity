@@ -7,4 +7,4 @@
 
 AzureActivity
 | where TimeGenerated > ago(10m)
-| where OperationName == "Deallocate Virtual Machine" and ActivityStatus == "Succeeded" 
+| where OperationName == "Deallocate Virtual Machine" and ActivityStatus == "Succeeded"

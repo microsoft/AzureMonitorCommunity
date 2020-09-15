@@ -10,4 +10,4 @@ AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.LOGIC"
 | where OperationName has "workflowRunCompleted"
 | summarize dcount(resource_runId_s) by resource_workflowName_s, status_s, error_code_s
-| project LogicAppName = resource_workflowName_s , NumberOfExecutions = dcount_resource_runId_s , RunStatus = status_s , Error = error_code_s 
+| project LogicAppName = resource_workflowName_s , NumberOfExecutions = dcount_resource_runId_s , RunStatus = status_s , Error = error_code_s

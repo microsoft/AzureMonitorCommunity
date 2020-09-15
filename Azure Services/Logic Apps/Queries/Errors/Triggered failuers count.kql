@@ -14,4 +14,4 @@ AzureDiagnostics
 | extend ResourceName = coalesce(resource_actionName_s, resource_triggerName_s) 
 | extend ResourceCategory = substring(OperationName, 34, strlen(OperationName) - 43) | summarize dcount(resource_runId_s) by code_s, ResourceName, resource_workflowName_s, ResourceCategory
 | project ResourceCategory, ResourceName , FailureCount = dcount_resource_runId_s , ErrorCode = code_s, LogicAppName = resource_workflowName_s 
-| order by FailureCount desc 
+| order by FailureCount desc

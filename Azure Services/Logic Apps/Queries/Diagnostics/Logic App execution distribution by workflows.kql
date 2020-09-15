@@ -11,4 +11,4 @@ AzureDiagnostics
 | where Category == "WorkflowRuntime"
 | where OperationName has "workflowRunStarted"
 | summarize dcount(resource_runId_s) by bin(TimeGenerated, 1h), resource_workflowName_s
-| render timechart 
+| render timechart

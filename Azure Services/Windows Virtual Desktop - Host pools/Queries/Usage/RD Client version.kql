@@ -10,4 +10,4 @@
 WVDConnections  
 | where TimeGenerated > ago(24h) 
 | summarize UserCount=dcount(UserName) by ClientType, ClientVersion 
-| sort by ClientVersion, ClientType, UserCount desc 
+| sort by ClientVersion, ClientType, UserCount desc

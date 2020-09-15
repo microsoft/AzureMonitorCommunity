@@ -9,4 +9,4 @@ ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
 | extend bandwidth = RequestSize + ResponseSize 
 | summarize sum(bandwidth) by bin(TimeGenerated, 1m), _ResourceId 
-| render timechart 
+| render timechart

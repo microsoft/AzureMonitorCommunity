@@ -10,4 +10,4 @@ ApiManagementGatewayLogs
 | summarize Cache_Miss=countif(Cache  == "miss"), Cache_Hit=countif(Cache == "hit") by bin(TimeGenerated, 15m)
 | extend Ratio=Cache_Hit / (Cache_Hit + Cache_Miss)
 | project-away Cache_Hit , Cache_Miss 
-| render timechart 
+| render timechart

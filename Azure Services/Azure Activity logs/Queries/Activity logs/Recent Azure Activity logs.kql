@@ -7,4 +7,4 @@
 
 AzureActivity 
 | where Level == "Error" or Level == "Warning"
-| project TimeGenerated, Level, ResourceProvider, ActivityStatus, Caller, Category, Properties, CorrelationId 
+| project TimeGenerated, Level, ResourceProvider, ActivityStatus, Caller, Category, Properties, CorrelationId
