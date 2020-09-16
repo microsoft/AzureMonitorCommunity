@@ -11,4 +11,4 @@ WVDConnections
 | where TimeGenerated > ago(24h) 
 | summarize UserCount=dcount(UserName) by ClientOS 
 | sort by UserCount desc 
-| render barchart 
+| render barchart

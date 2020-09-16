@@ -6,4 +6,4 @@
 // Topic: Activity logs
 
 AzureActivity 
-| top 50 by TimeGenerated desc 
+| top 50 by TimeGenerated desc

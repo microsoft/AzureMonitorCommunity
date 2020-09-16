@@ -8,5 +8,6 @@
 // Summarize number of requests per hour for each FrontDoor resource
 AzureDiagnostics 
 | where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorAccessLog"
+| where isReceivedFromClient_b == true
 | summarize RequestCount = count() by bin(TimeGenerated, 1h), Resource
-| render timechart 
+| render timechart

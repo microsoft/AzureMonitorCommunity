@@ -9,5 +9,5 @@
 let ComputerName = "Enter your computer name here";
 Update
 |where OSType != "Linux" and UpdateState == "Needed" and Optional == "false" and Computer == ComputerName
-| project Computer, Title, KBID, Product, UpdateSeverity, PublishedDate 
+| project TimeGenerated, Computer, Title, KBID, Product, MSRCSeverity, PublishedDate, _ResourceId
 | sort by TimeGenerated desc

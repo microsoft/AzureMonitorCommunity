@@ -7,4 +7,4 @@
 
 ContainerInventory
 | project Computer, Name, Image, ImageTag, ContainerState, CreatedTime, StartedTime, FinishedTime
-| top 200 by FinishedTime desc 
+| top 200 by FinishedTime desc

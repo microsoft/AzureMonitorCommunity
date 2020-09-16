@@ -9,4 +9,4 @@ AzureDiagnostics
 | where TimeGenerated > ago(7d)
 | where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 
 | where Category == "PostgreSQLLogs"
-| where Message contains "database system was shut down at" or Message contains "database system is ready to accept" 
+| where Message contains "database system was shut down at" or Message contains "database system is ready to accept"

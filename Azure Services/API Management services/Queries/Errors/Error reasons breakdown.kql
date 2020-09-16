@@ -8,4 +8,4 @@
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
 | where IsRequestSuccess == false
-| summarize count(CorrelationId) by LastErrorReason, _ResourceId  
+| summarize count(CorrelationId) by LastErrorReason, _ResourceId

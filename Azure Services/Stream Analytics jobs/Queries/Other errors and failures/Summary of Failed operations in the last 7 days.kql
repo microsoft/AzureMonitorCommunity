@@ -8,4 +8,4 @@
 AzureDiagnostics
 | where TimeGenerated > ago(7d) //last 7 days
 | where ResourceProvider == "MICROSOFT.STREAMANALYTICS" and status_s == "Failed" 
-| summarize Count=count(), sampleEvent=any(properties_s) by JobName=Resource  
+| summarize Count=count(), sampleEvent=any(properties_s) by JobName=Resource

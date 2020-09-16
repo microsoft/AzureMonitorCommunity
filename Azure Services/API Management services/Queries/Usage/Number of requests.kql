@@ -8,4 +8,4 @@
 //Total number of call per resource
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
-| summarize count(CorrelationId) by _ResourceId 
+| summarize count(CorrelationId) by _ResourceId

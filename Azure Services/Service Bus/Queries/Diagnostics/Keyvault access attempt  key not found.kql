@@ -7,5 +7,5 @@
 
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.SERVICEBUS" 
-| where Category == "Error" and Operation == "wrapkey"
-| project message
+| where Category == "Error" and OperationName == "wrapkey"
+| project Message, _ResourceId

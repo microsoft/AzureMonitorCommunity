@@ -8,4 +8,4 @@
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
 | summarize Average=avg(ClientTime), Median=percentile(ClientTime, 50), 90th_Percentile=percentile(ClientTime, 90) by bin(TimeGenerated, 15m) 
-| render timechart 
+| render timechart

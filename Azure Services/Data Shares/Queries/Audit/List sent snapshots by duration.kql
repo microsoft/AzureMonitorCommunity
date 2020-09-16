@@ -9,4 +9,4 @@ MicrosoftDataShareSentSnapshotLog
 | where TimeGenerated > ago(7d) 
 | where StartTime != "" and EndTime  != "" 
 | project StartTime , EndTime , DurationSeconds =(todatetime(EndTime)-todatetime(StartTime))/1s , ResourceName = split(_ResourceId,"/accounts/",1) 
-| sort by DurationSeconds desc nulls last 
+| sort by DurationSeconds desc nulls last

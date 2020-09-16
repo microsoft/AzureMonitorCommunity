@@ -10,4 +10,4 @@ AzureDiagnostics
 | where Category == "QueryStoreRuntimeStatistics"
 | where user_id_s != "10" //exclude azure system user
 | summarize sum(toint(calls_s)) by  tostring(query_id_d), bin(TimeGenerated, 15m)
-| render timechart 
+| render timechart

@@ -9,4 +9,4 @@ AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.SERVICEBUS"
 | where Category == "OperationalLogs"
 | where EventName_s startswith "AutoDelete"
-| summarize count() by EventName_s
+| summarize count() by EventName_s, _ResourceId

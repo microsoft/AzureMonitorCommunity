@@ -8,5 +8,5 @@
 
 Update
 | where OSType != "Linux" and Optional == "false" and Classification == "Update Rollups" and UpdateState == "Needed" 
-| project Computer, Title, KBID, Classification, UpdateSeverity, PublishedDate 
+| project TimeGenerated, Computer, Title, KBID, Classification, MSRCSeverity, PublishedDate, _ResourceId
 | sort by TimeGenerated desc

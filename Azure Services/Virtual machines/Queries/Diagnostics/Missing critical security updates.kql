@@ -8,4 +8,4 @@
 
 Update
 |where  OSType != "Linux" and UpdateState == "Needed" and Optional == "false" and (Classification == "Security Updates" or Classification == "Critical Updates") 
-| sort by TimeGenerated desc 
+| sort by TimeGenerated desc

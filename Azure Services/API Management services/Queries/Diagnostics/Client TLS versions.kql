@@ -7,4 +7,4 @@
 
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
-| summarize count(CorrelationId) by ClientTlsVersion, _ResourceId 
+| summarize count(CorrelationId) by ClientTlsVersion, _ResourceId

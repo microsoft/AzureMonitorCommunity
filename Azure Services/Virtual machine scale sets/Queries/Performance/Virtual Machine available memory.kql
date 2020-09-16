@@ -11,4 +11,4 @@ InsightsMetrics
 | where Namespace == "Memory"
 | where Name == "AvailableMB"
 | summarize avg(Val) by bin(TimeGenerated, 5m), Computer
-| render timechart 
+| render timechart

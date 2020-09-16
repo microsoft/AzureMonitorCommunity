@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Autoscale operation status
+// Description: Lists latest Autoscale operations, scale direction, instance count and it's status.
+// Categories: Azure Monitor
+// Resource types: Azure Monitor autoscale settings
+// Topic: Autoscale
+
+AutoscaleScaleActionsLog
+| project TimeGenerated, ResourceId, CurrentInstanceCount, NewInstanceCount, ScaleDirection, ResultType
+| sort by TimeGenerated desc

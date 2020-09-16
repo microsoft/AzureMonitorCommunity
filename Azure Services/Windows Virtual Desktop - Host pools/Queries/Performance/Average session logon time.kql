@@ -18,4 +18,4 @@ WVDConnections
 | summarize AvgDuration=avg(Duration) by _ResourceId
 | extend Multi=split(_ResourceId, "/")  
 | project AvgDuration, ResourceGroup=Multi[4], HostPool=Multi[8]  
-| sort by AvgDuration desc 
+| sort by AvgDuration desc

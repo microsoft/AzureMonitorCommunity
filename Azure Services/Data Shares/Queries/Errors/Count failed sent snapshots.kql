@@ -8,4 +8,4 @@
 MicrosoftDataShareSentSnapshotLog
 | where TimeGenerated > ago(7d)  
 | where Status == "Failed" 
-| summarize count() by _ResourceId 
+| summarize count() by _ResourceId

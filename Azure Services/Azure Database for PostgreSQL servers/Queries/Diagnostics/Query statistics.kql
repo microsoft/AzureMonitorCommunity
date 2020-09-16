@@ -10,4 +10,4 @@ AzureDiagnostics
 | where Category == "QueryStoreRuntimeStatistics"
 | where user_id_s != "10" //exclude azure system user
 | summarize sum(toint(calls_s)), min(todouble(min_time_s)),max(todouble(max_time_s)),avg(todouble(mean_time_s)),percentile(todouble(mean_time_s),95) by  db_id_s ,query_id_d
-| order by percentile_mean_time_s_95 desc nulls last 
+| order by percentile_mean_time_s_95 desc nulls last

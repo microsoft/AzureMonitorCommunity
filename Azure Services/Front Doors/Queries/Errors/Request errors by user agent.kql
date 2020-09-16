@@ -8,6 +8,7 @@
 // Summarize number of requests per user agent and status codes >= 400
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorAccessLog"
+| where isReceivedFromClient_b == true
 | where toint(httpStatusCode_s) >= 400
 | summarize RequestCount = count() by UserAgent = userAgent_s, StatusCode = httpStatusCode_s , Resource
-| order by RequestCount desc 
+| order by RequestCount desc
