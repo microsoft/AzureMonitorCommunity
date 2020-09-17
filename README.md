@@ -25,6 +25,9 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 Anyone can contribute to the repo, you don't need to be a pro. Have an interesting query or workbook? fork this repo, add your content to your fork and submit a pull request.
 See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/master/CONTRIBUTING.md) for more details.
 
+### Top asks
+[Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what users are looking for.
+
 ### Top Contributor
 The August top contributor is [Billy York (scautomation)](https://github.com/scautomation)
 <br/>
