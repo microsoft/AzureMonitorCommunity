@@ -1,9 +1,8 @@
-// Author: Microsoft 
+// Author: CliveW-MSFT 
 // Display name: How to extract Subscription or ResourceGroup from _ResourceID
-// Description: Demo on methods to extract data using KQL.  AzureActivity data used as an example.  There methids are shownm to extract the same data.  Key words: Split, Extract and Parse
-// Categories: monitor
+// Description: Demo on methods to extract data using KQL.  AzureActivity data used as an example.  Three methods are shown to extract the same data.  Key words: Split, Extract and Parse
+// Categories: Azure Monitor
 // Resource types: Azure Monitor
-// Solutions: LogManagement
 // Topic: Extract
 
 AzureActivity
