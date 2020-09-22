@@ -1,0 +1,11 @@
+// Author: hjgraca
+// Display name: Kube-audit diagnostics logs
+// Description: Kubernetes auditing provides a security-relevant chronological set of records documenting the sequence of activities that have affected system by individual users, administrators or other components of the system
+// Categories: Containers,Azure Resources
+// Resource types: Kubernetes services
+// Topic: Audit
+
+AzureDiagnostics
+| where Category == 'kube-audit' and parse_json(log_s).level == "RequestResponse"
+| order by TimeGenerated desc 
+| project log_s, parse_json(log_s).stageTimestamp, parse_json(log_s).user, parse_json(log_s).verb
