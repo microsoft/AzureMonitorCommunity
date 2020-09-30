@@ -1,0 +1,26 @@
+// Author: CliveW-MSFT 
+// Display name: How to extract Subscription or ResourceGroup from _ResourceID
+// Description: Demo on methods to extract data using KQL.  AzureActivity data used as an example.  Three methods are shown to extract the same data.  Key words: Split, Extract and Parse
+// Categories: Azure Monitor
+// Resource types: Azure Monitor
+// Topic: Extract
+
+AzureActivity
+| extend subId =  split(_ResourceId,"/").[2]
+| extend resGr =  split(_ResourceId,"/").[4]
+| project _ResourceId, subId, resGr
+
+AzureActivity
+| parse _ResourceId with * '/subscriptions/' subId '/' *
+| parse _ResourceId with * '/resourcegroups/' resGr '/' *
+| distinct  subId, resGr
+
+AzureActivity
+| extend subId = extract(@"/subscriptions/(.*?)/", 1,_ResourceId)
+| extend resGr = extract(@"/resourcegroups/(.*?)/", 1,_ResourceId)
+| project subId, resGr
+
+
+// Just do a regex lookup  
+AzureActivity
+| where _ResourceId matches regex @"/subscriptions/(.*?)/"
