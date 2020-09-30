@@ -1,0 +1,12 @@
+
+// Author: Microsoft Azure
+// Display name: Gateway throughput 
+// Description: Aggregate gateway throughput in Bytes/sec. 
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Performance
+AzureMetrics 
+| where TimeGenerated > ago(24h)
+| where MetricName == "AverageBandwidth"
+| summarize by Average, bin(TimeGenerated, 1h), Resource
+| render timechart

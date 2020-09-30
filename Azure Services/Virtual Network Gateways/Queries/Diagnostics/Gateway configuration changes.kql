@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Gateway configuration changes 
+// Description: Successful gateway configuration changes made by administrator during the last 24 hours. 
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where TimeGenerated > ago(24h)
+| where Category == "GatewayDiagnosticLog" and operationStatus_s == "Success" and configuration_ConnectionTrafficType_s == "Internet"
+| project TimeGenerated, Resource, OperationName, Message, operationStatus_s

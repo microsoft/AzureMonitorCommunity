@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: P2S connection count 
+// Description: Active P2S connection count for the last 30 days.
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Performance
+
+AzureMetrics 
+| where TimeGenerated > ago(30d)
+| where MetricName == "P2SConnectionCount"
+| summarize by Maximum, bin(TimeGenerated,1h), Resource
+| render timechart
