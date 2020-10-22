@@ -1,0 +1,1227 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "1ca69445-60fc-4806-b43d-ac7e6aad630a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/ce9a1c6e-db6c-4f74-af3e-4afdcb270a4b",
+              "/subscriptions/8c2c7b23-848d-40fe-b817-690d79ad9dfd"
+            ]
+          },
+          {
+            "id": "e1bb9afa-d200-4e29-8107-7201de1c7849",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceGroups",
+            "label": "Resource groups",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| summarize Count = count() by subscriptionId, resourceGroup\r\n| order by Count desc\r\n| extend Rank = row_number()\r\n| project value = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup), label = resourceGroup, selected = false",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*"
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "e94aafa3-c5d9-4523-89f0-4e87aa754511",
+            "version": "KqlParameterItem/1.0",
+            "name": "VirtualMachines",
+            "label": "Virtual Machines",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\n| extend resourceGroupId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup)\n| where resourceGroupId in~({ResourceGroups}) or '*' in~({ResourceGroups})\n\t| order by name asc\n\t| extend Rank = row_number()\n\t| project value = id, label = id, selected = Rank <= 25, group = resourceGroup, size = properties.hardwareProfile.vmSize",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.compute/virtualmachines": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "c4b69c01-2263-4ada-8d9c-43433b739ff3",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000,
+                  "createdTime": "2018-08-06T23:52:38.870Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 900000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 1800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 3600000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 14400000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 43200000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 86400000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 172800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 259200000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 604800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                }
+              ],
+              "allowCustom": null
+            },
+            "value": {
+              "durationMs": 604800000
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "83eda9a9-8850-4fce-ad6b-aeb230f6471c",
+            "version": "KqlParameterItem/1.0",
+            "name": "Message",
+            "type": 1,
+            "query": "where type == 'microsoft.compute/virtualmachines' \r\n| summarize Selected = countif(id in ({VirtualMachines:value})), Total = count()\r\n| extend Selected = iff(Selected > 200, 200, Selected)\r\n| project Message = strcat('# ', Selected, ' / ', Total)",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameter block"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "{Message}\r\n_Virtual machines_"
+      },
+      "name": "Resource count",
+      "styleSettings": {
+        "margin": "20px 0 20px 0"
+      }
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Overview",
+            "subTarget": "Overview",
+            "style": "link"
+          },
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Key metrics",
+            "subTarget": "Details",
+            "style": "link"
+          },
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Regions",
+            "subTarget": "Regions",
+            "style": "link"
+          },
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Resource health",
+            "subTarget": "Health",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "Tabs"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": -3,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "metricScope": 0,
+              "resourceParameter": "VirtualMachines",
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                }
+              ],
+              "title": "CPU utilization of virtual machines",
+              "mapSettings": {
+                "locInfo": "AzureResource",
+                "locInfoColumn": "Name",
+                "sizeSettings": "Name",
+                "sizeAggregation": "Count",
+                "legendMetric": "microsoft.compute/virtualmachines--Percentage CPU",
+                "legendAggregation": "Max",
+                "itemColorSettings": {
+                  "nodeColorField": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "colorAggregation": "Max",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed",
+                  "heatmapMin": 30,
+                  "heatmapMax": 80
+                },
+                "numberFormatSettings": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "maximumFractionDigits": 1
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 2,
+                "topContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": "Resource",
+                    "linkIsContextBlade": false,
+                    "showIcon": false
+                  }
+                },
+                "centerContent": {
+                  "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "blue",
+                    "workbookContext": {
+                      "componentIdSource": "column",
+                      "componentId": "Name",
+                      "resourceIdsSource": "column",
+                      "resourceIds": "Name",
+                      "templateIdSource": "static",
+                      "templateId": "Community-Workbooks/Virtual Machines/Virtual machine details",
+                      "typeSource": "static",
+                      "type": "workbook",
+                      "gallerySource": "static",
+                      "gallery": "microsoft.compute/virtualmachines",
+                      "locationSource": "default"
+                    }
+                  },
+                  "numberFormat": {
+                    "unit": 1,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false,
+                      "maximumFractionDigits": 1
+                    },
+                    "emptyValCustomText": "-"
+                  }
+                },
+                "hivesContent": {
+                  "columnMatch": "Subscription",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": "Resource",
+                    "showIcon": true
+                  }
+                },
+                "nodeIdField": "Name",
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": {
+                  "nodeColorField": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "type": 3,
+                  "thresholdsGrid": [
+                    {
+                      "operator": "<",
+                      "thresholdValue": "5",
+                      "representation": "redBright"
+                    },
+                    {
+                      "operator": "<",
+                      "thresholdValue": "10",
+                      "representation": "orange"
+                    },
+                    {
+                      "operator": "is Empty",
+                      "representation": "gray"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "green"
+                    }
+                  ]
+                },
+                "groupByField": "Subscription",
+                "hivesMargin": 5
+              },
+              "resourceLimit": 200,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  }
+                ]
+              },
+              "sortBy": [],
+              "showExportToExcel": true
+            },
+            "showPin": true,
+            "name": "CPU data"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Click on the CPU usage metric in a cell to see more details about the virtual machine_\r\n<br />"
+            },
+            "name": "Overview tip"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Highest CPU utilization by region",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": -2,
+              "metricScope": 0,
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "resourceType": "microsoft.compute/virtualmachines",
+              "resourceParameter": "VirtualMachines",
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                }
+              ],
+              "mapSettings": {
+                "locInfo": "AzureResource",
+                "locInfoColumn": "Name",
+                "sizeSettings": "Name",
+                "sizeAggregation": "Count",
+                "legendMetric": "microsoft.compute/virtualmachines--Percentage CPU",
+                "legendAggregation": "Max",
+                "itemColorSettings": {
+                  "nodeColorField": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "colorAggregation": "Max",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed",
+                  "heatmapMin": 30,
+                  "heatmapMax": 80
+                },
+                "numberFormatSettings": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "maximumFractionDigits": 1
+                  }
+                }
+              },
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  }
+                ]
+              },
+              "sortBy": [],
+              "exportMultipleValues": true,
+              "exportAggregateParts": true,
+              "exportedParameters": [
+                {
+                  "fieldName": "Name",
+                  "parameterName": "ResourcesInSelectedRegion",
+                  "parameterType": 1
+                }
+              ]
+            },
+            "showPin": true,
+            "name": "CPU data"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Select a region to see details of the virtual machines in it_\r\n<br />"
+            },
+            "conditionalVisibility": {
+              "parameterName": "ResourcesInSelectedRegion",
+              "comparison": "isEqualTo"
+            },
+            "name": "Region tip"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook0b213afb-2aee-4fe6-9df0-96d2b608cd42",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 0,
+              "metricScope": 0,
+              "resourceIds": [
+                "{ResourcesInSelectedRegion}"
+              ],
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "resourceType": "microsoft.compute/virtualmachines",
+              "resourceParameter": "ResourcesInSelectedRegion",
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                }
+              ],
+              "title": "Virtual machines in selected region",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 30,
+                      "max": 80,
+                      "palette": "greenRed",
+                      "showIcon": true
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": false,
+                        "maximumFractionDigits": 1
+                      },
+                      "emptyValCustomText": "-"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "formatter": 9,
+                    "formatOptions": {
+                      "min": 30,
+                      "max": 80,
+                      "palette": "greenRed",
+                      "showIcon": true
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "Subscription"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "Name"
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_heatmap_microsoft.compute/virtualmachines--Percentage CPU_3",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_heatmap_microsoft.compute/virtualmachines--Percentage CPU_3",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "ResourcesInSelectedRegion",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "Region VM details"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Regions"
+      },
+      "name": "Regions"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "loadType": "always",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": 0,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "metricScope": 0,
+              "resourceParameter": "VirtualMachines",
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Disk Read Bytes",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Disk Write Bytes",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Network In Total",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Network Out Total",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 3,
+                  "columnName": "CPU Max"
+                }
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "linkTarget": "WorkbookTemplate",
+                      "linkIsContextBlade": true,
+                      "workbookContext": {
+                        "componentIdSource": "column",
+                        "componentId": "Name",
+                        "resourceIdsSource": "column",
+                        "resourceIds": "Name",
+                        "templateIdSource": "static",
+                        "templateId": "Community-Workbooks/Virtual Machines/Virtual machine details",
+                        "typeSource": "static",
+                        "type": "workbook",
+                        "gallerySource": "static",
+                        "gallery": "microsoft.compute/virtualmachines",
+                        "locationSource": "default"
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Disk Read Bytes|microsoft.compute/virtualmachines--Disk Write Bytes",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "yellow"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Disk Read Bytes Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Disk Write Bytes Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Network In Total|microsoft.compute/virtualmachines--Network Out Total",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Network In Total Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Network Out Total Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "CPU Max Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "{VirtualMachines:resourcegroup}",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Read Bytes",
+                    "label": "Disk Read Bytes (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Read Bytes Timeline",
+                    "label": "Disk Read Bytes Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Write Bytes",
+                    "label": "Disk Write Bytes (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Write Bytes Timeline",
+                    "label": "Disk Write Bytes Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network In Total",
+                    "label": "Network In Total (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network In Total Timeline",
+                    "label": "Network In Total Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network Out Total",
+                    "label": "Network Out Total (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network Out Total Timeline",
+                    "label": "Network Out Total Timeline"
+                  }
+                ]
+              },
+              "sortBy": [],
+              "showExportToExcel": true
+            },
+            "conditionalVisibility": {
+              "parameterName": "test",
+              "comparison": "isEqualTo",
+              "value": "false"
+            },
+            "showPin": true,
+            "name": "Azure Monitor VM Key Metrics"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "advisorresources\r\n| where type == 'microsoft.advisor/recommendations'\r\n| where properties.category == 'Cost'\r\n| extend\r\n    resourceid = tolower(tostring(properties.resourceMetadata.resourceId)),\r\n    savings = todouble(properties.extendedProperties.savingsAmount),\r\n    solution = tostring(properties.shortDescription.solution),\r\n    currency = tostring(properties.extendedProperties.savingsCurrency)\r\n| where resourceid in~ ({VirtualMachines})\r\n| extend action = strcat(\"Resize \", properties.extendedProperties.currentSku, \" to \", properties.extendedProperties.targetSku)\r\n| project resourceid, action",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "test",
+              "comparison": "isEqualTo",
+              "value": "false"
+            },
+            "name": "Azure Advisor"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where id in~ ({VirtualMachines})\r\n| extend resourceid = tolower(id)\r\n| project Resource = id, Subscription = subscriptionId, ['Resource group'] = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup), Location = location, Size = properties.hardwareProfile.vmSize",
+              "size": 0,
+              "exportToExcelOptions": "all",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Resource",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Resource group",
+                    "formatter": 5
+                  }
+                ]
+              },
+              "sortBy": []
+            },
+            "conditionalVisibility": {
+              "parameterName": "test",
+              "comparison": "isEqualTo",
+              "value": "false"
+            },
+            "name": "Resource graph query"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\",\"mergeType\":\"leftouter\",\"leftTable\":\"Resource graph query\",\"rightTable\":\"Azure Advisor\",\"leftColumn\":\"Resource\",\"rightColumn\":\"resourceid\"},{\"id\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\",\"mergeType\":\"leftouter\",\"leftTable\":\"Resource graph query\",\"rightTable\":\"Azure Monitor VM Key Metrics\",\"leftColumn\":\"Resource\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[Resource graph query].Resource\",\"mergedName\":\"Resource\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Resource graph query].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Resource graph query].Resource group\",\"mergedName\":\"Resource group\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Resource graph query].Location\",\"mergedName\":\"Location\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Resource graph query].Size\",\"mergedName\":\"Size\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Azure Advisor].resourceid\",\"mergedName\":\"resourceid\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Azure Advisor].currency\",\"mergedName\":\"currency\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].Subscription\",\"mergedName\":\"Subscription1\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].Name\",\"mergedName\":\"Name\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Percentage CPU\",\"mergedName\":\"Percentage CPU (Average)\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Percentage CPU Timeline\",\"mergedName\":\"Percentage CPU (Average) Timeline\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].CPU Max\",\"mergedName\":\"Percentage CPU (Max)\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].CPU Max Timeline\",\"mergedName\":\"Percentage CPU (Max) Timeline\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Disk Read Bytes\",\"mergedName\":\"Disk Read Bytes (Sum)\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Disk Read Bytes Timeline\",\"mergedName\":\"Disk Read Bytes Timeline\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Disk Write Bytes\",\"mergedName\":\"Disk Write Bytes (Sum)\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Disk Write Bytes Timeline\",\"mergedName\":\"Disk Write Bytes Timeline\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Network In Total\",\"mergedName\":\"Network In Total (Sum)\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Network In Total Timeline\",\"mergedName\":\"Network In Total Timeline\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Network Out Total\",\"mergedName\":\"Network Out Total (Sum)\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Monitor VM Key Metrics].microsoft.compute/virtualmachines--Network Out Total Timeline\",\"mergedName\":\"Network Out Total Timeline\",\"fromId\":\"594addb0-aa79-49ad-8a5b-99025e63f0d2\"},{\"originalName\":\"[Azure Advisor].solution\",\"mergedName\":\"Azure Advisor Solution\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Azure Advisor].savings\",\"mergedName\":\"Azure Advisor Saving\",\"fromId\":\"2a962bc4-6379-4ff9-a467-0f4745ef7354\"},{\"originalName\":\"[Azure Advisor].action\",\"mergedName\":\"Azure Advisor recommended action\",\"fromId\":\"unknown\"},{\"originalName\":\"[query - 3].resourceid\"},{\"originalName\":\"[query - 3].currency\"}]}",
+              "size": 0,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Resource",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Resource group",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "resourceid",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "currency",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Subscription1",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Percentage CPU (Average)",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": false,
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Percentage CPU (Average) Timeline",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "Percentage CPU (Max)",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Percentage CPU (Max) Timeline",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "Disk Read Bytes (Sum)",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "yellow"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumSignificantDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Disk Read Bytes Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Disk Write Bytes (Sum)",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "yellow"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Disk Write Bytes Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Network In Total (Sum)",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumSignificantDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Network In Total Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Network Out Total (Sum)",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Network Out Total Timeline",
+                    "formatter": 5
+                  }
+                ],
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "Subscription",
+                    "Resource group"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "Name"
+                }
+              }
+            },
+            "showPin": false,
+            "name": "Merge ARG and Advisor"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Details"
+      },
+      "name": "Details"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"AzureHealthQuery/1.0\",\"queryType\":\"Detailed\"}",
+              "size": 2,
+              "showExportToExcel": true,
+              "queryType": 4,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "crossComponentResources": [
+                "{VirtualMachines}"
+              ],
+              "visualization": "graph",
+              "graphSettings": {
+                "type": 2,
+                "topContent": {
+                  "columnMatch": "Availability state",
+                  "formatter": 1,
+                  "formatOptions": {
+                    "showIcon": false
+                  }
+                },
+                "centerContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": "Resource",
+                    "subTarget": "resourcehealth",
+                    "showIcon": false
+                  }
+                },
+                "bottomContent": {
+                  "columnMatch": "Reason type",
+                  "formatter": 1,
+                  "formatOptions": {
+                    "showIcon": true
+                  },
+                  "tooltipFormat": {}
+                },
+                "nodeIdField": "Name",
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": {
+                  "nodeColorField": "Availability state",
+                  "type": 3,
+                  "thresholdsGrid": [
+                    {
+                      "operator": "==",
+                      "thresholdValue": "Available",
+                      "representation": "green"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "orange"
+                    }
+                  ]
+                },
+                "hivesMargin": 5
+              }
+            },
+            "showPin": true,
+            "name": "Resource health"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Click on the virtual machine name to see more details about the resource health_\r\n<br />\r\n<br />\r\nLearn about [Azure resource health](https://docs.microsoft.com/en-us/azure/service-health/resource-health-overview)"
+            },
+            "name": "Resource health tip"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Health"
+      },
+      "name": "Resource health group"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "fromTemplateId": "community-Workbooks/Virtual Machines/At-scale Metrics",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
