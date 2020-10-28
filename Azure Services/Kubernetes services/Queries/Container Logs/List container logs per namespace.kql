@@ -5,8 +5,16 @@
 // Resource types: Kubernetes services
 // Topic: Container Logs
 
+
+let notBefore=ago(1h);
 ContainerLog
-|join(KubePodInventory| where TimeGenerated > startofday(ago(1h)))//KubePodInventory Contains namespace information
+| where TimeGenerated > notBefore
+|join kind=leftouter (
+KubePodInventory
+| distinct Computer, ClusterId, ServiceName, ControllerName, ContainerID, ContainerName, Name, Namespace, ClusterName
+| project-rename PodName=Name
+)//KubePodInventory Contains pod metadata
 on ContainerID
-|where TimeGenerated > startofday(ago(1h))
-| project TimeGenerated ,Namespace , LogEntrySource , LogEntry
+| extend ContainerName = split(ContainerName, "/")[1] // KubePodInventory stores ContainerName in format PodUI/container name, hence we split
+| sort by TimeGenerated
+| project TimeGenerated, Namespace, PodName, ContainerName, LogEntry, LogEntrySource
