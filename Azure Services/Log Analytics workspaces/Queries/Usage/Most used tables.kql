@@ -1,0 +1,24 @@
+// Author: Evgeny Ternovsky, Rafi Rabo
+// Display name: Most used tables
+// Description: Counts and lists the tables that were used.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Usage
+
+let timerange = 7d; // Replace with time period over which to look
+// List of tables that were used
+let validTables=(
+    Usage // Consider changing to workspace("MyLogAnalyticsWS").Usage , replace with the name of the workspace for which the metric is to be evaluated
+    | where TimeGenerated > ago(timerange)
+    | distinct DataType
+);
+LAQueryLogs
+| where TimeGenerated > ago(timerange)
+| where QueryText has_any (validTables)
+| extend queryLine = split(QueryText, "\n")
+| mv-expand queryLine
+| extend dummy=1
+| join kind=inner (validTables | extend dummy=1) on dummy
+| extend isTableUsed=iff(queryLine has DataType, 1, 0)
+| summarize sum(isTableUsed) by DataType
+| order by sum_isTableUsed desc
