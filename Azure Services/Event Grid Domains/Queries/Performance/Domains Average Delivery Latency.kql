@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Domains Average Delivery Latency
+// Description: Average Delivery Latency summarized by Domains, Event Subscriptions and SubResourceName.
+// Categories: Azure Resources
+// Resource types: Event Grid Domains
+// Topic: Performance
+
+AegDeliveryFailureLogs
+| parse _ResourceId with * "/domains/" DomainName
+| where DomainName != "" // and DomainName == "YOUR_DOMAIN_NAME"
+| parse Message with * ", latencyInMs=" LatencyInMilliSecond "," *
+| summarize AverageDeliveryLatencyInMs = avg(todouble(LatencyInMilliSecond)) by DomainName, EventSubscriptionName, SubResourceName
+// Uncomment to filter by a specific Domain Name

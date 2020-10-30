@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Request Count by ResponseCode
+// Description: Request count by response code within 1 min buckets in last 1 hour.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Audit
+
+LAQueryLogs
+| where TimeGenerated > ago(1h)
+| summarize count() by tostring(ResponseCode), bin(TimeGenerated, 1m)
+| render columnchart with (kind=stacked)

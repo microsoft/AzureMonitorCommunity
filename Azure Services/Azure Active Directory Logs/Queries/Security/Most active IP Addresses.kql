@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Most active IP Addresses
+// Description: Get list of top 100 most active IP addresses for the last day.
+// Categories: Security
+// Resource types: Azure Active Directory Logs
+// Topic: Security
+
+AADNonInteractiveUserSignInLogs
+| where TimeGenerated > ago(1d)
+| summarize CountPerIPAddress = count() by IPAddress
+| order by CountPerIPAddress desc
+| take 100

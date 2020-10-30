@@ -3,6 +3,7 @@
 // Description: See container logs billable data for the last 7d ,segregated by log-type.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Costing
 
 // Set the requested time, anytime greater than 15d can take longer

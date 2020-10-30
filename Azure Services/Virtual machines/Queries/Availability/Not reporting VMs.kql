@@ -6,5 +6,6 @@
 // Topic: Availability
 
 Heartbeat 
-| summarize LastCall = max(TimeGenerated) by Computer 
+| where TimeGenerated > ago(24h)
+| summarize LastCall = max(TimeGenerated) by Computer, _ResourceId
 | where LastCall < ago(5m)

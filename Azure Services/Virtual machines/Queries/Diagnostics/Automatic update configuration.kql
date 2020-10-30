@@ -7,4 +7,4 @@
 // Topic: Diagnostics
 
 UpdateSummary
-| summarize AggregatedValue = count() by WindowsUpdateSetting
+| summarize AggregatedValue = count() by WindowsUpdateSetting, Computer, _ResourceId

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Most active Service Principals
+// Description: Gets list of top 100 most active service principals for the last day.
+// Categories: Security
+// Resource types: Azure Active Directory Logs
+// Topic: Security
+
+AADServicePrincipalSignInLogs
+| where TimeGenerated > ago(1d)
+| summarize CountPerServicePrincipal = count() by ServicePrincipalId
+| order by CountPerServicePrincipal desc
+| take 100

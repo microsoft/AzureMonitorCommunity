@@ -6,5 +6,5 @@
 // Topic: Performance
 
 AppRequests
-| summarize totalCount=sum(ItemCount) by bin(TimeGenerated, 30m)
+| summarize totalCount=sum(ItemCount) by bin(TimeGenerated, 30m), _ResourceId
 | render timechart

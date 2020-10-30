@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Hadoop and Yarn Log Types List
+// Description: Returns Hadoop and Yarn related Log types.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHadoopAndYarnLogs
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| summarize any(*) by LogType //displays each type of log that has entered workspace in specified timeframe
+| project LogType, any_LogLevel, any_Message

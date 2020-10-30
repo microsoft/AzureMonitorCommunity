@@ -3,6 +3,7 @@
 // Description: See container logs billable data for the last 7d, segregated by namespace.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Costing
 
 let billableTimeView = 7d; // Set the requested time - 30d can take some time. 

@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: List Distinct SMS Operations
+// Description: Returns all distinct combinations of SMS operation / version pairs.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Audit
+
+ACSSMSIncomingOperations
+| distinct OperationName, OperationVersion

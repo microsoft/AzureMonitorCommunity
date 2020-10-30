@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Kafka Server Error Logs
+// Description: All Kafka Server logs of trace level Error within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightKafkaLogs 
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| where LogType == 'KafkaServerLog' //can set which type of logs you want to see (ex: KafkaServerLog, KafkaControllerLog)
+| where LogLevel == 'ERROR' //set which LogLevels you want to see
+| take 1000

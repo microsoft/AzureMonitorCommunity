@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: DigitalTwin Error Summary
+// Description: List of all DigitalTwin call errors.
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Errors
+
+ADTDigitalTwinsOperation
+| where ResultType != 'Success'

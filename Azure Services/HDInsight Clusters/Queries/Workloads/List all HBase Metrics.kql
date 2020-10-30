@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: List all HBase Metrics
+// Description: Returns the names of all metrics that have been collected in the HDInsightHBaseMetrics table for the last 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHBaseMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| distinct MetricName

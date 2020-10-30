@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Kafka Messages In Per Second
+// Description: Returns the Messages In Per Sec metric values for each broker within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightKafkaMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h) //if you want to query farther back in time you can increase this value.
+| where MetricName == "MessagesInPerSec"
+| summarize avg(MetricValue) by  HostName, bin(TimeGenerated, 5m)//you can select different values for the time bucket to gain insights over different time periods, if you query over a larger timeframe, you may want to increase the bucket size

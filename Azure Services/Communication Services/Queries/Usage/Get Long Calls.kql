@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Get Long Calls
+// Description: Retrive all the calls that lasted longer than an hours.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Usage
+
+ACSBillingUsage
+| tolower(UsageType) == "audio" // only look at records that are calls
+| extend Length = EndTime - StartTime
+| where Length > 1h // return if the call is greater than an hour

@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Number of dead region servers
+// Description: Returns the current number of dead region servers for your cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHBaseMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(30m)
+| where MetricNamespace == "Hadoop:service=HBase,name=Master,sub=Server" //specifies namespace of metric
+| where MetricName == "numDeadRegionServers"   
+| extend TagsJson = parse_json(Tags) //parsing the Tags to find the Active HMaster
+| where TagsJson["tag.isActiveMaster"] == true
+| summarize arg_max(TimeGenerated, *)

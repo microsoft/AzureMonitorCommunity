@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: App Service Health
+// Description: Time series of App Service Health (over 5 minute intervals).
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: Incoming requests
+
+AppServiceHTTPLogs 
+| summarize (count() - countif(ScStatus >= 500)) * 100.0 / count() by bin(TimeGenerated, 5m), _ResourceId
+| render timechart

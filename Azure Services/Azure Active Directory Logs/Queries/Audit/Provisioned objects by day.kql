@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Provisioned objects by day
+// Description: Summarizes for each day the number of created objects per day.
+// Categories: Audit
+// Resource types: Azure Active Directory Logs
+// Topic: Audit
+
+AADProvisioningLogs
+| where TimeGenerated > ago(7d)
+| where ResultType == "Success"
+| where Action == "Create"
+| parse SourceIdentity with * "\"identityType\":\"" Type "\"" *
+| extend Type = tolower(Type)
+| summarize count() by Type, bin(TimeGenerated, 1d)
+| render columnchart

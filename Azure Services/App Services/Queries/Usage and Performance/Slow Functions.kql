@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Slow Functions
+// Description: List of Function invocations that took longer than threshold.
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: Usage and Performance
+
+let threshold=1000; // let operator defines a constant that can be further used in the query
+FunctionAppLogs
+| where Category startswith "Function." and Message startswith "Executed "
+| parse Message with "Executed '" Name "' ("  Result ", Id=" Id ", Duration=" Duration:long "ms)"
+| project TimeGenerated, FunctionName, Result, FunctionInvocationId, Duration, _ResourceId
+| where Duration > threshold // Duration is recorded in milliseconds
+| sort by TimeGenerated desc

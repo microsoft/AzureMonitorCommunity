@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Provisioning errors
+// Description: Shows the count per error code and when were they last seen.
+// Categories: Audit
+// Resource types: Azure Active Directory Logs
+// Topic: Audit
+
+AADProvisioningLogs
+| where ResultType == "Failure"
+| summarize Occurrences=count(), LastSeen=max(TimeGenerated) by ResultSignature
+| order by LastSeen

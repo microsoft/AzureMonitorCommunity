@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: P2S bandwidth utilization
+// Description: Average P2S bandwidth utilization during the last 12 hours in bits/second.
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: VPN Gateway
+
+AzureMetrics
+| where TimeGenerated > ago(24h)
+| where MetricName == "P2SBandwidth" 
+| summarize by Average, bin(TimeGenerated, 1h), Resource
+| render timechart

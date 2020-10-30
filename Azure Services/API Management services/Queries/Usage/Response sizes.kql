@@ -7,5 +7,5 @@
 
 ApiManagementGatewayLogs
 | where TimeGenerated > ago(1d)
-| summarize Average=avg(ResponseSize), Median=percentile(ResponseSize, 50), 90th_Percentile=percentile(ResponseSize, 90) by bin(TimeGenerated, 1m) 
+| summarize Average=avg(ResponseSize), Median=percentile(ResponseSize, 50), 90th_Percentile=percentile(ResponseSize, 90) by bin(TimeGenerated, 5m) 
 | render timechart

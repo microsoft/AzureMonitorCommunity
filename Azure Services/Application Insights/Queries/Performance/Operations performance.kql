@@ -6,5 +6,5 @@
 // Topic: Performance
 
 AppRequests
-| summarize RequestsCount=sum(ItemCount), AverageDuration=avg(DurationMs), percentiles(DurationMs, 50, 95, 99) by OperationName // you can replace 'operation_Name' with another value to segment by a different property
+| summarize RequestsCount=sum(ItemCount), AverageDuration=avg(DurationMs), percentiles(DurationMs, 50, 95, 99) by OperationName, _ResourceId // you can replace 'OperationName' with another value to segment by a different property
 | order by RequestsCount desc // order from highest to lower (descending)

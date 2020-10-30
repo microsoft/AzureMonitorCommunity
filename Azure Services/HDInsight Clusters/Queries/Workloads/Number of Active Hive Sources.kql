@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Number of Active Hive Sources
+// Description: Returns the current number of active Hive sources for your cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHiveAndLLAPMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where MetricName == "NumActiveSources"
+| summarize arg_max(TimeGenerated, *)

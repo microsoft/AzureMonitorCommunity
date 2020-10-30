@@ -7,5 +7,5 @@
 // Topic: Diagnostics
 
 ProtectionStatus
-| summarize Rank = max(ProtectionStatusRank) by Computer 
+| summarize Rank = max(ProtectionStatusRank) by Computer, _ResourceId
 | where Rank == "250"

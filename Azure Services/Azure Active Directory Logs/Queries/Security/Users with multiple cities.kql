@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Users with multiple cities
+// Description: Get list of users that signed in from multiple cities for the last day.
+// Categories: Security
+// Resource types: Azure Active Directory Logs
+// Topic: Security
+
+AADNonInteractiveUserSignInLogs
+| where TimeGenerated > ago(1d)
+| extend City = parse_json(LocationDetails).city
+| summarize CountPerCity = dcount(tostring(City)) by UserId
+| where CountPerCity > 1
+| order by CountPerCity desc

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Spark Application Deploy Mode And Master Summary
+// Description: Renders a column chart that shows the number of Spark applications for each deploy mode and master combination.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkEnvironmentEvents
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| summarize count() by strcat(SparkDeployMode, "/", SparkMaster)
+| render columnchart

@@ -9,6 +9,6 @@
 let threshold = 75000000; // choose a threshold 
 Perf
 | where ObjectName == "K8SContainer" and CounterName == "memoryRssBytes"
-| summarize AvgUsedRssMemoryBytes = avg(CounterValue) by bin(TimeGenerated, 30m), InstanceName
+| summarize AvgUsedRssMemoryBytes = avg(CounterValue) by bin(TimeGenerated, 30m), InstanceName, _ResourceId
 | where AvgUsedRssMemoryBytes > threshold 
 | render timechart

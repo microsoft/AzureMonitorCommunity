@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Show logs from AADDomainServicesDirectoryServiceAccess table
+// Description: Lists the latest logs in AADDomainServicesDirectoryServiceAccess table, sorted by time (latest first).
+// Categories: Azure Resources
+// Resource types: Azure AD Domain Services
+// Topic: Preview Data
+
+AADDomainServicesDirectoryServiceAccess
+| top 10 by TimeGenerated
