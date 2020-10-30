@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Which tables have logs?
+// Description: Lists all tables that contain logs.
+// Categories: Azure Resources
+// Resource types: Container registries
+// Topic: Preview Data
+
+// If no results were found, try selecting another time range using the Time Picker in the top bar
+union withsource = Tables *
+| where TimeGenerated > ago(24h)
+| distinct Tables

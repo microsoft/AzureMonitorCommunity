@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Resource Manager Log Level Count List
+// Description: Renders a timechart to show the amount of records for each log level in the Resource Manager logs within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHadoopAndYarnLogs
+| where TimeGenerated > ago(24h)
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where LogType == "ResourceManager" //can set which type of logs you want to see (ex: ResourceManager, NodeManager, TimelineServer, etc.)
+| summarize count() by LogLevel, bin(TimeGenerated, 30m)//set the time bucket for the counts
+| render timechart

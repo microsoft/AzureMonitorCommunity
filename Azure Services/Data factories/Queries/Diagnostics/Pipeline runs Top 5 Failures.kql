@@ -1,0 +1,22 @@
+// Author: Microsoft Azure
+// Display name: Pipeline runs Top 5 Failures
+// Description: Returns Top 5 pipelines failing with systemErrors.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Diagnostics
+
+let name = ADFPipelineRun
+| where Status != 'InProgress' and Status != 'Queued'
+| where FailureType != 'UserError'
+| summarize failureCount = countif(Status != 'Succeeded') by PipelineName
+| top 5 by failureCount desc nulls last
+| where failureCount != 0
+| project PipelineName;
+ADFPipelineRun 
+| where TimeGenerated >= ago(24h)
+| where Status != 'InProgress' and Status != 'Queued'
+| where FailureType != 'UserError'
+| where PipelineName  in (name)
+| summarize failureCount = countif(Status != 'Succeeded') by bin(TimeGenerated, 1h), PipelineName
+| order by TimeGenerated asc
+| render timechart

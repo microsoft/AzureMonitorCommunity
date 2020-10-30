@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: EventRoutes API Usage
+// Description: Count of EventRoute APIs by type (read, write and delete).
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Usage
+
+ADTEventRoutesOperation
+| summarize count() by OperationName
+| render piechart

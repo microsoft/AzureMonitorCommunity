@@ -9,4 +9,4 @@ let threshold=1000; // let operator defines a constant that can be further used 
 AzureDiagnostics
 | where ResourceProvider =="MICROSOFT.KEYVAULT" 
 | where DurationMs > threshold
-| summarize count() by OperationName
+| summarize count() by OperationName, _ResourceId

@@ -7,5 +7,5 @@
 
 SecurityEvent
 | where EventID in (4728, 4732, 4756) // these event IDs indicate a member was added to a security-enabled group
-| summarize count() by SubjectAccount
+| summarize count() by SubjectAccount, Computer, _ResourceId
 // This query requires the Security solution

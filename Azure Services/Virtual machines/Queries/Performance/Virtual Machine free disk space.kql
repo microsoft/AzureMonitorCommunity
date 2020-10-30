@@ -10,4 +10,4 @@ Perf
 ObjectName == "Logical Disk" // the object name used in Linux records
 | where CounterName == "Free Megabytes"
 | summarize arg_max(TimeGenerated, *) by InstanceName // arg_max over TimeGenerated returns the latest record
-| project TimeGenerated, InstanceName, CounterValue
+| project TimeGenerated, InstanceName, CounterValue, Computer, _ResourceId

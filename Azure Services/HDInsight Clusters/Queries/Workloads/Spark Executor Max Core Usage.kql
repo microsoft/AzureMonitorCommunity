@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Spark Executor Max Core Usage
+// Description: Returns the max cores used by each Executor.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkExecutorEvents
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| summarize max(ExecutorCores) by ClusterDnsName, ExecutorId

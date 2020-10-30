@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: HMaster Error Logs
+// Description: All HMasterogs of trace level Error within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHBaseLogs 
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| where LogType == 'HBaseMasterLog' //can set which type of logs you want to see (ex: HBaseMasterLog, HBaseRegionServerLog, etc.)
+| where LogLevel == 'ERROR' //set which LogLevels you want to see (ex: "ERROR","WARN","INFO)
+| take 10

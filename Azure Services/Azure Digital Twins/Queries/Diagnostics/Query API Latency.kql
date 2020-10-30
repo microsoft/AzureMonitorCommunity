@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Query API Latency
+// Description: Time to complete Query operations by type over time.
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Diagnostics
+
+let grain = 5m;
+ADTQueryOperation
+| summarize avg(toint(DurationMs)) by OperationName, bin(TimeGenerated, grain)
+| render timechart

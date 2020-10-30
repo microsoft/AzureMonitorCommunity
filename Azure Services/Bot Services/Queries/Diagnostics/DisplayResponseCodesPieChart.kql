@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: DisplayResponseCodesPieChart
+// Description: Display a Pie Chart showing requests response status codes.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+ABSBotRequests
+| where TimeGenerated > ago(12h)  
+| summarize count() by resultCode      
+| render piechart

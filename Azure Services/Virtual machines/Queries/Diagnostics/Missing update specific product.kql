@@ -7,4 +7,4 @@
 // Topic: Diagnostics
 
 UpdateSummary
-| summarize AggregatedValue = count() by WSUSServer
+| summarize AggregatedValue = count() by WSUSServer, Computer, _ResourceId

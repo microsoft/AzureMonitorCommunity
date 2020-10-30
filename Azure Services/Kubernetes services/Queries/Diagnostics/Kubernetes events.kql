@@ -3,7 +3,7 @@
 // Description: Lists all the Kubernetes events.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
-// Solutions: Containers
+// Solutions: ContainerInsights
 // Topic: Diagnostics
 
 KubeEvents

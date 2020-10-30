@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Resource Manager Metrics View
+// Description: Projects all Resource Manager metrics to their own column to make queries easier.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHadoopAndYarnMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where MetricNamespace contains 'Hadoop:service=ResourceManager' //switch MetricNamespace value to switch to a different MetricNamespace view
+| evaluate pivot(MetricName, avg(MetricValue), TimeGenerated)

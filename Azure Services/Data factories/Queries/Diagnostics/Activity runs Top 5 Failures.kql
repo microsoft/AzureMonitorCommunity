@@ -1,0 +1,22 @@
+// Author: Microsoft Azure
+// Display name: Activity runs Top 5 Failures
+// Description: Returns Top 5 Activitys failing with systemErrors.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Diagnostics
+
+let name = ADFActivityRun
+| where Status != 'InProgress' and Status != 'Queued'
+| where FailureType != 'UserError'
+| summarize failureCount = countif(Status != 'Succeeded') by ActivityName
+| top 5 by failureCount desc nulls last
+| where failureCount != 0
+| project ActivityName;
+ADFActivityRun 
+| where TimeGenerated >= ago(24h)
+| where Status != 'InProgress' and Status != 'Queued'
+| where FailureType != 'UserError'
+| where ActivityName  in (name)
+| summarize failureCount = countif(Status != 'Succeeded') by bin(TimeGenerated, 1h), ActivityName
+| order by TimeGenerated asc
+| render timechart

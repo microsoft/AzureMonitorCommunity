@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Model Error Summary
+// Description: List of all Model call errors.
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Errors
+
+ADTModelsOperation
+| where ResultType != 'Success'

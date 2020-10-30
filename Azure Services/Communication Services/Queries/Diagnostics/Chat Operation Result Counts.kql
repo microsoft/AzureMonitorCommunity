@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Chat Operation Result Counts
+// Description: For every Chat operation, count the types of returned results.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Diagnostics
+
+ACSChatIncomingOperations
+| summarize Count = count() by OperationName, ResultType //, ResultSignature // This can also be uncommented to determine the count of each ResultSignature for each ResultType 
+| order by OperationName asc, Count desc

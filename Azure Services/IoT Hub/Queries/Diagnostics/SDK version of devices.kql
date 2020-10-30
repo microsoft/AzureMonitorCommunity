@@ -5,10 +5,10 @@
 // Resource types: IoT Hub
 // Topic: Diagnostics
 
-// this query only works if your device uses device to cloud twin operations
+// this query works on device connection or when your device uses device to cloud twin operations
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DEVICES" and ResourceType == "IOTHUBS"
-| where Category == "D2CTwinOperations"
+| where Category == "Connections" or  Category == "D2CTwinOperations"
 | extend parsed_json = parse_json(properties_s) 
 | extend SDKVersion = tostring(parsed_json.sdkVersion) , DeviceId = tostring(parsed_json.deviceId)
 | distinct DeviceId, SDKVersion, TimeGenerated, _ResourceId

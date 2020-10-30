@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Show application logs from Function Apps
+// Description: A list of application logs, sorted by time (latest logs shown first).
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: App Logs
+
+FunctionAppLogs 
+| project TimeGenerated, HostInstanceId, Message, _ResourceId
+| sort by TimeGenerated desc

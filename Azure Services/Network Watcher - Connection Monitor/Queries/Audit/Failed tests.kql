@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Failed tests
+// Description: Gets failed distinct source, destination, test group and test configuration for each resource.
+// Categories: Network
+// Resource types: Network Watcher - Connection Monitor
+// Topic: Audit
+
+NWConnectionMonitorTestResult 
+| where TimeGenerated > ago(24h) 
+| where TestResult == "Fail"
+| distinct _ResourceId, SourceName, DestinationName, TestGroupName, TestConfigurationName

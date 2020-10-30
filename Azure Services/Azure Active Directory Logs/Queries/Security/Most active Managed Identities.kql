@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Most active Managed Identities
+// Description: Gets list of top 100 most active managed identities for the last day.
+// Categories: Security
+// Resource types: Azure Active Directory Logs
+// Topic: Security
+
+AADManagedIdentitySignInLogs
+| where TimeGenerated > ago(1d)
+| summarize CountPerManagedIdentity = count() by ServicePrincipalId
+| order by CountPerManagedIdentity desc
+| take 100

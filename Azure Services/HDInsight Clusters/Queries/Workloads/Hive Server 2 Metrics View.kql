@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Hive Server 2 Metrics View
+// Description: Projects all Hive Server 2 metrics to their own column to make queries easier.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHiveAndLLAP
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where MetricNamespace == '	Hadoop:service=hiveserver2,name=hiveserver2' //switch MetricNamespace value to switch to a different MetricNamespace view
+| evaluate pivot(MetricName, avg(MetricValue), TimeGenerated)

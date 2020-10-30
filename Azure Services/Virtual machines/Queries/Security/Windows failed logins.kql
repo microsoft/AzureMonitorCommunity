@@ -7,5 +7,5 @@
 
 SecurityEvent
 | where EventID == 4625
-| summarize count() by TargetAccount // count the reported security events for each account
+| summarize count() by TargetAccount, Computer, _ResourceId // count the reported security events for each account
 // This query requires the Security solution

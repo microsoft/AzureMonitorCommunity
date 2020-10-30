@@ -13,22 +13,22 @@
     KubePodInventory
     | where TimeGenerated < endDateTime
     | where TimeGenerated >= startDateTime
-    | distinct ClusterName, TimeGenerated
-    | summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName
+    | distinct ClusterName, TimeGenerated, _ResourceId
+    | summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName, _ResourceId
     | join hint.strategy=broadcast (
         KubePodInventory
         | where TimeGenerated < endDateTime
         | where TimeGenerated >= startDateTime
-        | distinct ClusterName, Computer, PodUid, TimeGenerated, PodStatus
+        | distinct ClusterName, Computer, PodUid, TimeGenerated, PodStatus, _ResourceId
         | summarize TotalCount = count(), //Calculating count for per pod status
                     PendingCount = sumif(1, PodStatus =~ 'Pending'),
                     RunningCount = sumif(1, PodStatus =~ 'Running'),
                     SucceededCount = sumif(1, PodStatus =~ 'Succeeded'),
                     FailedCount = sumif(1, PodStatus =~ 'Failed')
-                 by ClusterName, bin(TimeGenerated, trendBinSize)
-    ) on ClusterName, TimeGenerated
+                 by ClusterName, bin(TimeGenerated, trendBinSize), _ResourceId
+    ) on ClusterName, TimeGenerated, _ResourceId
     | extend UnknownCount = TotalCount - PendingCount - RunningCount - SucceededCount - FailedCount
-    | project TimeGenerated,
+    | project TimeGenerated, _ResourceId,
     TotalCount = todouble(TotalCount) / ClusterSnapshotCount,
               PendingCount = todouble(PendingCount) / ClusterSnapshotCount,
               RunningCount = todouble(RunningCount) / ClusterSnapshotCount,

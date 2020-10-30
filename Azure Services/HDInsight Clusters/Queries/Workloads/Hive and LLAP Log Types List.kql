@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Hive and LLAP Log Types List
+// Description: Returns Hive and LLAP related Log types.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHiveAndLLAPLogs
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| summarize any(*) by LogType //displays each type of log that has entered workspace in specified timeframe
+| project LogType, any_LogLevel, any_Message

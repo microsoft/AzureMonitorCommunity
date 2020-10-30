@@ -16,7 +16,7 @@ KubeNodeInventory
 | where TimeGenerated < endDateTime
 | where TimeGenerated >= startDateTime
 // cluster filter would go here if multiple clusters are reporting to the same Log Analytics workspace
-| distinct ClusterName, Computer
+| distinct ClusterName, Computer, _ResourceId
 | join hint.strategy=shuffle (
   Perf
   | where TimeGenerated < endDateTime
@@ -35,5 +35,5 @@ KubeNodeInventory
   | project Computer, UsageValue = CounterValue, TimeGenerated
 ) on Computer
 | where TimeGenerated >= CapacityStartTime and TimeGenerated < CapacityEndTime
-| project ClusterName, Computer, TimeGenerated, UsagePercent = UsageValue * 100.0 / LimitValue
-| summarize AggregatedValue = avg(UsagePercent) by bin(TimeGenerated, trendBinSize), ClusterName
+| project ClusterName, Computer, TimeGenerated, UsagePercent = UsageValue * 100.0 / LimitValue, _ResourceId
+| summarize AggregatedValue = avg(UsagePercent) by bin(TimeGenerated, trendBinSize), ClusterName, _ResourceId

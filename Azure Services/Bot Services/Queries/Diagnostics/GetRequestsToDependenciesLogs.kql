@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: GetRequestsToDependenciesLogs
+// Description: Gets a distinct list of all the requests to dependencies.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+ABSBotRequests
+| where TimeGenerated > ago(6h)
+| where Category == 'ABSDependenciesRequests'
+| sort by TimeGenerated desc

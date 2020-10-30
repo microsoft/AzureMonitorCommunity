@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Model API Usage
+// Description: Count of Model APIs by type (read, write and delete).
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Usage
+
+ADTModelsOperation
+| summarize count() by OperationName
+| render piechart

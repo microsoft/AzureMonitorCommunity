@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Topics Average Delivery Latency
+// Description: Average Delivery Latency summarized by Topics, Event Subscriptions.
+// Categories: Azure Resources
+// Resource types: Event Grid Topics
+// Topic: Performance
+
+AegDeliveryFailureLogs
+| parse _ResourceId with * "/topics/" TopicName
+| where TopicName!= "" // and TopicName == "YOUR_TOPIC_NAME"
+| parse Message with * ", latencyInMs=" LatencyInMilliSecond "," *
+| summarize AverageDeliveryLatencyInMs = avg(todouble(LatencyInMilliSecond)) by TopicName, EventSubscriptionName
+// Uncomment to filter for a specific Topic Name

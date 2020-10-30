@@ -7,5 +7,5 @@
 
 AzureDiagnostics
 | where ResourceType == "APPLICATIONGATEWAYS" and OperationName == "ApplicationGatewayAccess" and sslEnabled_s == "off"
-| summarize AggregatedValue = count() by bin(TimeGenerated, 1h)
+| summarize AggregatedValue = count() by bin(TimeGenerated, 1h), _ResourceId
 | render timechart

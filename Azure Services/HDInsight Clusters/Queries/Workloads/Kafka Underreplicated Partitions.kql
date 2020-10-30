@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Kafka Underreplicated Partitions
+// Description: Renders a timechart to display the amount of Underreplicated Partitions in the cluster within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightKafkaMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| where MetricName == "UnderReplicatedPartitions"
+| summarize MaxValue = max(MetricValue) by HostName, bin(TimeGenerated, 5m) //gets the max amount of URPs in the selected time interval for each host
+| summarize UnderReplicatedPartitions=sum(MaxValue) by bin(TimeGenerated, 5m) //sums the value for each host to get overall number of URPs
+| render timechart //shows URP value over time

@@ -3,6 +3,7 @@
 // Description: List all of a container's lifecycle information.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Audit
 
 ContainerInventory

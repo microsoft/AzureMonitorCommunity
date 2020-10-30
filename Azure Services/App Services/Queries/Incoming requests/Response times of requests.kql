@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Response times of requests
+// Description: Avg & 90, 95 and 99 percentile response times (in milliseconds) per App Service.
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: Incoming requests
+
+AppServiceHTTPLogs 
+| summarize avg(TimeTaken), percentiles(TimeTaken, 90, 95, 99) by _ResourceId
