@@ -12,7 +12,7 @@ let MinRSquare = 0.8; // Tune the sensitivity of the detection sensor
 union withsource=source_table *
 | where TimeGenerated between (StartTime .. EndTime)
 // calculate ingestion duration in seconds
-| extend AgentLatencySeconds = (_TimeReceived()-TimeGenerated)/1s
+| extend AgentLatencySeconds = (_TimeReceived-TimeGenerated)/1s
 // Create a time series for each source table
 | make-series RatioSeries=avg(AgentLatencySeconds) default=0 on TimeGenerated in range(StartTime, EndTime,10m) by source_table
 // Apply a 2-line regression to the time series
