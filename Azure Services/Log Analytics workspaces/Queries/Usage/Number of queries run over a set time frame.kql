@@ -1,0 +1,12 @@
+// Author: Evgeny Ternovsky, Rafi Rabo
+// Display name: Number of queries run over a set time frame
+// Description: Counts the number of queries that ran over a set time frame.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Usage
+
+let startDate = todatetime('2020-10-01T01:00:00.000Z');
+let endDate   = todatetime('2020-10-02T23:59:59.999Z');
+LAQueryLogs
+| where TimeGenerated between (startDate .. endDate)
+| count
