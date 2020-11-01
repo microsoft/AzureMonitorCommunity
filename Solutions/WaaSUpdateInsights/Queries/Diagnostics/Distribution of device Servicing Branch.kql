@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Distribution of device Servicing Branch
+// Description: Pie chart of devices distribution by servicing branch.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Diagnostics
+
+WaaSUpdateStatus
+| summarize arg_max(TimeGenerated, *) by ComputerID
+| project ComputerID, OSServicingBranch
+| summarize dcount(ComputerID) by OSServicingBranch
+| render piechart

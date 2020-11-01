@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: All Syslog by process name
+// Description: All Syslog by process name.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Syslog 
+| summarize count() by ProcessName

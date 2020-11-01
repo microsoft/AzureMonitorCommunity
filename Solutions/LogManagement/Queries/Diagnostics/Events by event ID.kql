@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Events by event ID
+// Description: Top 10 events by event ID.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event 
+| summarize count() by EventID
+| top 10 by count_

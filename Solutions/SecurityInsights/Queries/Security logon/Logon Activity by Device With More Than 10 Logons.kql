@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Logon Activity by Device With More Than 10 Logons
+// Description: Counts logon activities per devices with more than 10 logons.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+SecurityEvent
+| where EventID == 4624
+| summarize LogonCount = count() by Computer
+| where LogonCount > 10

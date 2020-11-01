@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: How many times did each unique AD Recommendation trigger?
+// Description: Count AD recommendations with failed result by recommendation.
+// Categories: workloads
+// Solutions: ADAssessment
+// Topic: Diagnostics
+
+ADAssessmentRecommendation 
+| where RecommendationResult == "Failed" 
+| summarize AggregatedValue = count() by Recommendation

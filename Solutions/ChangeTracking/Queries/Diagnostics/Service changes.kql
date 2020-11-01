@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Service changes
+// Description: Lists service changes sorted by time (newest first).
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange
+| where ConfigChangeType == "Services"
+| sort by TimeGenerated desc

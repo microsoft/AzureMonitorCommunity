@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Security Activities on the Device
+// Description: Security activities on a specific device sorted by time (newest first).
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent 
+//| where Computer == "COMPUTER01.contoso.com" // Replace with a specific computer name
+| project TimeGenerated, Account, Activity, Computer
+| sort by TimeGenerated desc

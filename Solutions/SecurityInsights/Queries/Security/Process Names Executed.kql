@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Process Names Executed
+// Description: Lists number of executions per process.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 4688
+| summarize ExecutionCount = count() by NewProcessName

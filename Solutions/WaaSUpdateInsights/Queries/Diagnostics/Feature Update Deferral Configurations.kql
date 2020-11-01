@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Feature Update Deferral Configurations
+// Description: Chart of device count by feature update deferral configurations.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Diagnostics
+
+WaaSUpdateStatus
+| summarize arg_max(TimeGenerated, *) by ComputerID
+| project TimeGenerated, ComputerID, FeatureDeferralDays
+| summarize dcount(ComputerID) by FeatureDeferralDays
+| sort by FeatureDeferralDays asc
+| render columnchart

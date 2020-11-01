@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Events started
+// Description: Events started by event ID.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event
+| where RenderedDescription contains "started" 
+| summarize count() by EventID

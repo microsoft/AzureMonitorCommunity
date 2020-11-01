@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Remoted Logged Accounts on Devices
+// Description: Remoted logged accounts on a specific device.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+SecurityEvent
+| where EventID == 4624 and (LogonTypeName == "3 - Network" or LogonTypeName == "10 - RemoteInteractive")
+//| where Computer == "Computer01.contoso.com" // Replace with a specific computer name
+| summarize RemoteLogonCount = count() by Account

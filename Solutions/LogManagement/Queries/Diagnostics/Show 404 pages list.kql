@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Show 404 pages list
+// Description: Show 404 pages list.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog 
+| where scStatus == 404
+| summarize count() by csUriStem
+| sort by count_ desc

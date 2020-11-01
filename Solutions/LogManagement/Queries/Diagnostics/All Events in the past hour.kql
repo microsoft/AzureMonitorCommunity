@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All Events in the past hour
+// Description: All Events in the past hour.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event
+| where TimeGenerated > ago(1h)
+| sort by TimeGenerated desc

@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Devices pending reboot to complete update
+// Description: Devices with pending reboot to complete update.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Diagnostics
+
+WaaSDeploymentStatus
+| where DetailedStatus == "Reboot pending"
+| summarize arg_max(TimeGenerated, *) by ComputerID, UpdateClassification
+| project Computer, ComputerID, DetailedStatus, ReleaseName, UpdateCategory, UpdateClassification, LastScan

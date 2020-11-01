@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Members Added to Security Enabled Groups
+// Description: Members added to the security enabled groups.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID in (4728, 4732, 4756)
+| summarize count() by SubjectAccount

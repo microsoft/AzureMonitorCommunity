@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: AD Recommendations by Focus Area
+// Description: Count all AD reccomendations by focus area.
+// Categories: workloads
+// Solutions: ADAssessment
+// Topic: Diagnostics
+
+ADAssessmentRecommendation 
+| summarize AggregatedValue = count() by FocusArea
