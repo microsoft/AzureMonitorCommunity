@@ -1,0 +1,947 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "** Author **\r\n[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n\r\n** Version 1.2 **\r\n2020-09-15\r\n- Added Event Level filter\r\n- Added the new parameters to queries\r\n- Added \"Count of all events by Event Level\" pie chart\r\n\r\n** Version 1.1 **\r\n2020-09-15\r\n - Added Tabs to better organize tiles\r\n - Added specific Connection and Trust tiles\r\n - Added references to CVE-2020-1472 articles\r\n\r\n** Version 1.0 **\r\n2020-09-07\r\n - Initial version"
+      },
+      "conditionalVisibility": {
+        "parameterName": "_",
+        "comparison": "isEqualTo",
+        "value": "_"
+      },
+      "name": "text - 20"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Windows Event log Search Engine #"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "1e2b3246-fe4e-4d39-b265-7a42a4ae46c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "DefaultSubscription_Internal",
+            "type": 1,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ '{DefaultSubscription_Internal}', true, false)",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, selected = iff(id =~ todynamic('{DefaultSubscription_Internal}').ws, true, false), custId= properties.customerId",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 14400000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContextFromParameter": "TimeRange"
+          },
+          {
+            "id": "01b782de-6cb7-4c31-b6ad-0a502c604fbe",
+            "version": "KqlParameterItem/1.0",
+            "name": "Servers",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Event\r\n| distinct Computer\r\n| order by Computer desc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 14400000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "b672f960-bf26-4368-b002-e1e6e9a8990d",
+            "version": "KqlParameterItem/1.0",
+            "name": "IsEventCollectionConfigured",
+            "type": 2,
+            "isRequired": true,
+            "query": "Event\r\n| take 1\r\n| summarize count()",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "value": null,
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "df6e1d4b-0c40-47ea-92b3-84662d09decb",
+            "version": "KqlParameterItem/1.0",
+            "name": "EventLogName",
+            "label": " Event Log Name",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Event\r\n| distinct EventLog",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "28d90e3d-03af-4905-8be4-450d2cbe5d74",
+            "version": "KqlParameterItem/1.0",
+            "name": "EventLogLevel",
+            "label": "Event Log Level",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Event\r\n| distinct EventLevelName",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 14400000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "<br>\r\n### ⚠️ Event Log data source is not enabled on the selected workspace.\r\n---\r\n\r\nWindows event log data source, which is necessary for this workbook to work correctly, seems to be not configures in the selected workspace(s).\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the [Windows event log data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events)."
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsEventCollectionConfigured",
+        "comparison": "isEqualTo",
+        "value": "0"
+      },
+      "name": "EventCollectionNotConfigured"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog in ({EventLogName})\r\n| where EventLevelName in ({EventLogLevel})\r\n| summarize numEvents = count() by EventLog",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "Count of all events by Event Log",
+        "timeContext": {
+          "durationMs": 14400000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "tiles",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "EventLog",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "numEvents",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsEventCollectionConfigured",
+        "comparison": "isNotEqualTo",
+        "value": "0"
+      },
+      "customWidth": "33",
+      "showPin": true,
+      "name": "AllEventsByEventLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog in ({EventLogName})\r\n| where EventLevelName in ({EventLogLevel})\r\n| summarize numEvents = count() by EventLevelName",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "Count of all events by Event Level",
+        "timeContext": {
+          "durationMs": 14400000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "piechart"
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsEventCollectionConfigured",
+        "comparison": "isNotEqualTo",
+        "value": "0"
+      },
+      "customWidth": "33",
+      "showPin": true,
+      "name": "AllEventsByLevel",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog in ({EventLogName})\r\n| where EventLevelName in ({EventLogLevel})\r\n| summarize numEvents = count() by EventID, EventLog\r\n| sort by numEvents desc\r\n| project EventLog, EventID, numEvents",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "Count of all events by Event Id",
+        "timeContext": {
+          "durationMs": 14400000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "gridSettings": {
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "EventLog",
+              "label": "Event Log name"
+            },
+            {
+              "columnId": "EventID",
+              "label": "Event Id"
+            },
+            {
+              "columnId": "numEvents",
+              "label": "# of events"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsEventCollectionConfigured",
+        "comparison": "isNotEqualTo",
+        "value": "0"
+      },
+      "customWidth": "33",
+      "name": "AllEventsByEventId",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog in ({EventLogName})\r\n| where EventLevelName in ({EventLogLevel})\r\n| summarize numEvents = count() by EventLog, bin(TimeGenerated, 1h)",
+        "size": 0,
+        "aggregation": 5,
+        "showAnalytics": true,
+        "title": "Event Trend",
+        "timeContext": {
+          "durationMs": 14400000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "timechart"
+      },
+      "showPin": true,
+      "name": "eventTrend",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "CVE-2020-1472 Specific",
+            "subTarget": "CVE-2020-1472",
+            "style": "link"
+          },
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "All Events",
+            "subTarget": "AllEvents",
+            "preText": "All Events",
+            "style": "link"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsEventCollectionConfigured",
+        "comparison": "isNotEqualTo",
+        "value": "0"
+      },
+      "name": "EventSectionTabs"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "loadType": "always",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where id in~ ({Workspaces})\r\n| project id, name, properties.customerId",
+              "size": 0,
+              "title": "workspace_lookup_hidden",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "workspace_lookup_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog in ({EventLogName})\r\n| where EventLevelName in ({EventLogLevel})\r\n| summarize lastEvent = arg_max(TimeGenerated, *) by Computer, TenantId\r\n//| project lastEvent, TenantId, Computer, EventLog, EventID, EventLevelName, RenderedDescription",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "lastEventByMachine_hidden",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "EventLevelName",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "EventLevelName",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "lastEventByMachine_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog in ({EventLogName})\r\n| where EventLevelName in ({EventLogLevel})",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "EventSearchBox_hidden",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "EventSearchBox_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspace_lookup_hidden\",\"rightTable\":\"EventSearchBox_hidden\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[EventSearchBox_hidden].TimeGenerated\",\"mergedName\":\"TimeGenerated\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\"},{\"originalName\":\"[EventSearchBox_hidden].Computer\",\"mergedName\":\"Computer\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\"},{\"originalName\":\"[EventSearchBox_hidden].RenderedDescription\",\"mergedName\":\"Event Description\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\"},{\"originalName\":\"[workspace_lookup_hidden].id\",\"mergedName\":\"Workspace\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\"},{\"originalName\":\"[EventSearchBox_hidden].EventLog\",\"mergedName\":\"EventLog\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\"},{\"originalName\":\"[EventSearchBox_hidden].EventID\",\"mergedName\":\"EventID\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d51bc\"},{\"originalName\":\"[EventSearchBox_hidden].EventLevel\",\"mergedName\":\"Event Level\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].EventLevelName\",\"mergedName\":\"Event Level Description\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].ParameterXml\",\"mergedName\":\"ParameterXml\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].UserName\",\"mergedName\":\"Event User Name\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].EventData\",\"mergedName\":\"EventData\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].Role\",\"mergedName\":\"Role\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].EventCategory\",\"mergedName\":\"Event Category\",\"fromId\":\"unknown\"},{\"originalName\":\"[EventSearchBox_hidden].Message\",\"mergedName\":\"Message\",\"fromId\":\"unknown\"},{\"originalName\":\"[workspace_lookup_hidden].name\"},{\"originalName\":\"[workspace_lookup_hidden].properties_customerId\"},{\"originalName\":\"[EventSearchBox_hidden].TenantId\"},{\"originalName\":\"[EventSearchBox_hidden].SourceSystem\"},{\"originalName\":\"[EventSearchBox_hidden].Source\"},{\"originalName\":\"[EventSearchBox_hidden].MG\"},{\"originalName\":\"[EventSearchBox_hidden].ManagementGroupName\"},{\"originalName\":\"[EventSearchBox_hidden]._ResourceId\"},{\"originalName\":\"[EventSearchBox_hidden].AzureDeploymentID\"},{\"originalName\":\"[EventSearchBox_hidden].Type\"}]}",
+              "size": 0,
+              "title": "Event Search Box",
+              "showExportToExcel": true,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "EventID",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Event Level",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ParameterXml",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Event User Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "EventData",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Role",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Event Category",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Message",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "UserName",
+                    "formatter": 5
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "name": "EventSearchBox",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspace_lookup_hidden\",\"rightTable\":\"lastEventByMachine_hidden\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[lastEventByMachine_hidden].lastEvent\",\"mergedName\":\"TimeGenerated\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[lastEventByMachine_hidden].Computer\",\"mergedName\":\"Computer\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[workspace_lookup_hidden].id\",\"mergedName\":\"Workspace\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[lastEventByMachine_hidden].EventLog\",\"mergedName\":\"Event Log\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[lastEventByMachine_hidden].EventID\",\"mergedName\":\"Event ID\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[lastEventByMachine_hidden].RenderedDescription\",\"mergedName\":\"Rendered Description\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[lastEventByMachine_hidden].EventLevelName\",\"mergedName\":\"Event Level Name\",\"fromId\":\"unknown\"},{\"originalName\":\"[lastEventByMachine_hidden].ParameterXml\",\"mergedName\":\"ParameterXml\",\"fromId\":\"unknown\"},{\"originalName\":\"[lastEventByMachine_hidden].EventData\",\"mergedName\":\"EventData\",\"fromId\":\"unknown\"},{\"originalName\":\"[lastEventByMachine_hidden].EventCategory\",\"mergedName\":\"EventCategory\",\"fromId\":\"unknown\"},{\"originalName\":\"[lastEventByMachine_hidden].UserName\",\"mergedName\":\"UserName\",\"fromId\":\"unknown\"},{\"originalName\":\"[lastEventByMachine_hidden].Message\",\"mergedName\":\"Message\",\"fromId\":\"unknown\"},{\"originalName\":\"[lastEventByMachine_hidden].Role\",\"mergedName\":\"Role\",\"fromId\":\"d87286a9-476e-4eec-8df0-c33c2f3d50bf\"},{\"originalName\":\"[workspace_lookup_hidden].name\"},{\"originalName\":\"[workspace_lookup_hidden].properties_customerId\"},{\"originalName\":\"[lastEventByMachine_hidden].TenantId\"},{\"originalName\":\"[lastEventByMachine_hidden].SourceSystem\"},{\"originalName\":\"[lastEventByMachine_hidden].Source\"},{\"originalName\":\"[lastEventByMachine_hidden].EventLevel\"},{\"originalName\":\"[lastEventByMachine_hidden].AzureDeploymentID\"},{\"originalName\":\"[lastEventByMachine_hidden].MG\"},{\"originalName\":\"[lastEventByMachine_hidden].ManagementGroupName\"},{\"originalName\":\"[lastEventByMachine_hidden].Type\"},{\"originalName\":\"[lastEventByMachine_hidden]._ResourceId\"}]}",
+              "size": 0,
+              "title": "Last Event By Machine",
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Event ID",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Rendered Description",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Event Level Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ParameterXml",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "EventData",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "EventCategory",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "UserName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Message",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Role",
+                    "formatter": 5
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "name": "lastEventByMachine",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "AllEvents"
+      },
+      "name": "grp_AllEvents",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where id in~ ({Workspaces})\r\n| project id, name, properties.customerId",
+              "size": 0,
+              "title": "workspace_lookup_hidden",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "workspace_lookup_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog =~ \"System\" and Source =~ \"NETLOGON\"\r\n| where EventID in (5827, 5828, 5829, 5830, 5831)\r\n| extend Status = case(EventID == 5827 or EventID == 5828, \"Connection Denied\", EventID == 5829, \"Connection Allowed - Enforcement Mode Off\", EventID == 5830 or EventID == 5831, \"Connection Allowed - Policy\", \"Unknown\")",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "CVE-2020-1472_hidden",
+              "noDataMessage": "No machine accounts using vulnerable Netlogon secure channel connections were detected with the current selection.",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "CVE-2020-1472_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog =~ \"System\" and Source =~ \"NETLOGON\"\r\n| where EventID in (5827, 5829, 5830)\r\n| parse ParameterXml with \"<Param>\" Machine \"</P\" * \"<Param>\" Domain \"</P\" * \"<Param>\" AccountType \"</P\" * \"<Param>\" OperatingSystem \"</P\" *\r\n| extend Status = case(EventID == 5827 or EventID == 5828, \"Connection Denied\", EventID == 5829, \"Connection Allowed - Enforcement Mode Off\", EventID == 5830 or EventID == 5831, \"Connection Allowed - Policy\", \"Unknown\")\r\n| summarize FirstOccurance=min(TimeGenerated), LastOccurance=max(TimeGenerated), Count=count() by Computer, Machine, Domain, AccountType, OperatingSystem, EventID, Status, TenantId\r\n",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "ConnectionInfo_hidden",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "ConnectionInfo_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog =~ \"System\" and Source =~ \"NETLOGON\"\r\n| where EventID in (5828, 5831)\r\n| parse ParameterXml with \"<Param>\" AccountType \"</P\" * \"<Param>\" TrustName \"</P\" * \"<Param>\" TrustTarget \"</P\" * \"<Param>\" ClientIP \"</P\" *\r\n| extend Status = case(EventID == 5827 or EventID == 5828, \"Connection Denied\", EventID == 5829, \"Connection Allowed - Enforcement Mode Off\", EventID == 5830 or EventID == 5831, \"Connection Allowed - Policy\", \"Unknown\")\r\n| summarize Count=count() by ClientIP, Status, TenantId\r\n",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "trustInfo_hidden",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ]
+            },
+            "customWidth": "33",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "trustInfo_hidden",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## Read more about this vulnerability at the following links:\r\n\r\n### - [CVE-2020-1472 | Netlogon Elevation of Privilege Vulnerability](https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2020-1472)\r\n\r\n### - [How to manage the changes in Netlogon secure channel connections associated with CVE-2020-1472](https://support.microsoft.com/en-us/help/4557222/how-to-manage-the-changes-in-netlogon-secure-channel-connections-assoc)\r\n\r\n### - [Remediate Vulnerable Secure Channel Connections with the Insecure Protocols Workbook](https://techcommunity.microsoft.com/t5/azure-sentinel/remediate-vulnerable-secure-channel-connections-with-the/ba-p/1611871)",
+              "style": "info"
+            },
+            "name": "CVE-Info",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"9cc8da40-0663-4376-9a0a-7240151d80a0\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspace_lookup_hidden\",\"rightTable\":\"CVE-2020-1472_hidden\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[CVE-2020-1472_hidden].TimeGenerated\",\"mergedName\":\"TimeGenerated\",\"fromId\":\"9cc8da40-0663-4376-9a0a-7240151d80a0\"},{\"originalName\":\"[CVE-2020-1472_hidden].Computer\",\"mergedName\":\"Computer\",\"fromId\":\"9cc8da40-0663-4376-9a0a-7240151d80a0\"},{\"originalName\":\"[workspace_lookup_hidden].id\",\"mergedName\":\"Workspace\",\"fromId\":\"9cc8da40-0663-4376-9a0a-7240151d80a0\"},{\"originalName\":\"[CVE-2020-1472_hidden].EventID\",\"mergedName\":\"Event ID\",\"fromId\":\"9cc8da40-0663-4376-9a0a-7240151d80a0\"},{\"originalName\":\"[CVE-2020-1472_hidden].RenderedDescription\",\"mergedName\":\"Event Description\",\"fromId\":\"9cc8da40-0663-4376-9a0a-7240151d80a0\"},{\"originalName\":\"[CVE-2020-1472_hidden].Source\",\"mergedName\":\"Source\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].EventLevel\",\"mergedName\":\"Event Level\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].EventLevelName\",\"mergedName\":\"Event Level Name\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].ParameterXml\",\"mergedName\":\"ParameterXml\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].EventData\",\"mergedName\":\"EventData\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].Role\",\"mergedName\":\"Role\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].EventCategory\",\"mergedName\":\"Event Category\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].UserName\",\"mergedName\":\"User Name\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].Message\",\"mergedName\":\"Message\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].Type\",\"mergedName\":\"Type\",\"fromId\":\"unknown\"},{\"originalName\":\"[CVE-2020-1472_hidden].Status\",\"mergedName\":\"Status\",\"fromId\":\"unknown\"},{\"originalName\":\"[workspace_lookup_hidden].name\"},{\"originalName\":\"[workspace_lookup_hidden].properties_customerId\"},{\"originalName\":\"[CVE-2020-1472_hidden].TenantId\"},{\"originalName\":\"[CVE-2020-1472_hidden].EventLog\"},{\"originalName\":\"[CVE-2020-1472_hidden].SourceSystem\"},{\"originalName\":\"[CVE-2020-1472_hidden].AzureDeploymentID\"},{\"originalName\":\"[CVE-2020-1472_hidden].MG\"},{\"originalName\":\"[CVE-2020-1472_hidden].ManagementGroupName\"},{\"originalName\":\"[CVE-2020-1472_hidden]._ResourceId\"}]}",
+              "size": 0,
+              "title": "CVE-2020-1472: All Events (IDs: 5827, 5828, 5829, 5830, 5831)",
+              "noDataMessage": "No machine accounts using vulnerable Netlogon secure channel connections were detected with the current selection.",
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Event ID",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Source",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Event Level",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Event Level Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ParameterXml",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "EventData",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Role",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Event Category",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "User Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Message",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Type",
+                    "formatter": 5
+                  }
+                ]
+              }
+            },
+            "name": "CVE-2020-1472",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspace_lookup_hidden\",\"rightTable\":\"ConnectionInfo_hidden\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[ConnectionInfo_hidden].Computer\",\"mergedName\":\"Computer\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[workspace_lookup_hidden].id\",\"mergedName\":\"Workspace Name\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].FirstOccurance\",\"mergedName\":\"First Occurence\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].LastOccurance\",\"mergedName\":\"Last Occurence\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].Machine\",\"mergedName\":\"Machine\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].Domain\",\"mergedName\":\"Domain\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].AccountType\",\"mergedName\":\"Account Type\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].EventID\",\"mergedName\":\"Event ID\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].Status\",\"mergedName\":\"Status\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].OperatingSystem\",\"mergedName\":\"Operating System\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[ConnectionInfo_hidden].Count\",\"mergedName\":\"Count\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d7149\"},{\"originalName\":\"[workspace_lookup_hidden].name\"},{\"originalName\":\"[workspace_lookup_hidden].properties_customerId\"},{\"originalName\":\"[ConnectionInfo_hidden].TenantId\"}]}",
+              "size": 0,
+              "title": "CVE-2020-1472: Connection Info (IDs: 5827, 5829, 5830)",
+              "queryType": 7,
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "Account Type",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "Account Type",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "showPin": false,
+            "name": "connectionInfo",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d716d\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspace_lookup_hidden\",\"rightTable\":\"trustInfo_hidden\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[workspace_lookup_hidden].id\",\"mergedName\":\"Workspace Name\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d716d\"},{\"originalName\":\"[trustInfo_hidden].ClientIP\",\"mergedName\":\"ClientIP\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d716d\"},{\"originalName\":\"[trustInfo_hidden].Status\",\"mergedName\":\"Status\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d716d\"},{\"originalName\":\"[trustInfo_hidden].Count\",\"mergedName\":\"Connection Count\",\"fromId\":\"867cee19-f8d8-4ec4-8afd-8e23dc7d716d\"},{\"originalName\":\"[workspace_lookup_hidden].name\"},{\"originalName\":\"[workspace_lookup_hidden].properties_customerId\"},{\"originalName\":\"[trustInfo_hidden].TenantId\"}]}",
+              "size": 0,
+              "title": "CVE-2020-1472: Connection Trust Info (IDs: 5828, 5831)",
+              "queryType": 7
+            },
+            "showPin": false,
+            "name": "ConnectionTrustInfo",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "CVE-2020-1472"
+      },
+      "name": "grp_CVE-2020-1472",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

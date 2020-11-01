@@ -29,11 +29,10 @@ See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/maste
 [Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what users are looking for.
 
 ### Top Contributor
-The August top contributor is [Billy York (scautomation)](https://github.com/scautomation)
+The September top contributor is <a itemprop="image" href="https://github.com/dmauser"><img style="height:auto;" alt="Avatar" width="16" height="16" class="avatar avatar-user width-full border bg-white" src="https://user-images.githubusercontent.com/1745412/94791037-c903ec80-03df-11eb-8d39-29e78b0ac470.png" /></a> [Daniel Mauser (dmauser)](https://github.com/dmauser). Thanks Daniel!
 <br/>
-<a itemprop="image" href="https://github.com/scautomation"><img style="height:auto;" alt="Avatar" width="260" height="260" class="avatar avatar-user width-full border bg-white" src="https://avatars1.githubusercontent.com/u/35973682?s=460&amp;u=6e9d8b67106220a43d94470268948934cb615e1c&amp;v=4" /></a>
+
 <br/>
-Billy has contributed dozens of workbooks and provided huge value to the community.
 
 ## We use KQL
 The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).

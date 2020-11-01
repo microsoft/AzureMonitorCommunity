@@ -1,0 +1,1073 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "** Author **\r\n[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n\r\n** Version 1.5 **\r\n2020-09-24\r\n- Added detail pane view for forbidden hosts, certificates and proxy URLs to make easier the copy/paste when adding them as allowed.\r\n\r\n** Version 1.4 **\r\n2020-06-17\r\n- Added more available options in the TimeRange parameter.\r\n\r\n** Version 1.3 **\r\n2020-04-06\r\n- Added checks to hide event log and perf counter groups if no data is available. In place of them, a text which reminds to check for the correct onboarding is shown.\r\n\r\n**Version 1.2**\r\n2020-04-02\r\n- Added the rejection perf counter chart\r\n\r\n** Version 1.1 **\r\n2020-04-01\r\n- Added the *Gateway Servers* parameter to allow selection\r\n- Added dedicated *Gateway communication* group containing pie-chart and list of gateway servers communication status\r\n- Added the *Computer* field in some of the list based tiles to allow server recognition for generated events\r\n\r\n** Version 1.0 **\r\n2019-11-14\r\n - Initial version"
+      },
+      "conditionalVisibility": {
+        "parameterName": "_",
+        "comparison": "isEqualTo",
+        "value": "_"
+      },
+      "name": "text - 20"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "94a8cf12-f38e-46d5-a9d3-47c1beea2da2",
+            "version": "KqlParameterItem/1.0",
+            "name": "DefaultWorkspace",
+            "type": 5,
+            "isRequired": true,
+            "value": "value::1",
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.operationalinsights/workspaces": true
+              },
+              "additionalResourceOptions": [
+                "value::1"
+              ]
+            }
+          },
+          {
+            "id": "cb5a0cae-20ca-4fe3-af79-fadcdecf867a",
+            "version": "KqlParameterItem/1.0",
+            "name": "ContextFree",
+            "type": 1,
+            "query": "{\"version\":\"1.0.0\",\"content\":\"\\\"{DefaultWorkspace}\\\"\"}",
+            "isHiddenWhenLocked": true,
+            "queryType": 8
+          },
+          {
+            "id": "11381c16-bc2e-4fb0-883b-92958356e363",
+            "version": "KqlParameterItem/1.0",
+            "name": "Selection",
+            "type": 1,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| extend match = strcat(\"'\", id, \"'\") =~ \"{DefaultWorkspace:value}\"\r\n| order by match desc, name asc\r\n| take 1\r\n| project value = tostring(pack('sub', subscriptionId, 'rg', resourceGroup, 'ws', id))",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": "{\"sub\":\"719a8358-6808-4e23-91aa-f5131e52c6cd\",\"rg\":\"defaultresourcegroup-weu\",\"ws\":\"/subscriptions/719a8358-6808-4e23-91aa-f5131e52c6cd/resourceGroups/DefaultResourceGroup-WEU/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-719a8358-6808-4e23-91aa-f5131e52c6cd-WEU\"}"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "_",
+        "comparison": "isEqualTo",
+        "value": "_"
+      },
+      "name": "parameters - 0"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "<span style=\"font-family:Papyrus; font-size:4em; font-style:bold;\">Log Analytics Gateway</span>"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ContextFree",
+        "comparison": "isEqualTo",
+        "value": "value::1"
+      },
+      "name": "text - 14"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "b458b572-f4bb-4db8-a71c-c8e1e494747a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat('/subscriptions/', subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ todynamic('{Selection}').sub, true, false)",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+            ]
+          },
+          {
+            "id": "743c129b-0ea4-49d3-b815-ecaba2a210ef",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id, selected = iff(id =~ todynamic('{Selection}').ws, true, false)",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.operationalinsights/workspaces": true
+              },
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+            ]
+          },
+          {
+            "id": "c171fcc2-ef30-4c0d-ad8e-cc2c25cb2aec",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 5184000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "cdb57f0e-5d5d-49a8-8afc-d6dac6c30c6a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Servers",
+            "label": "Gateway Servers",
+            "type": 2,
+            "description": "This param is used to group only servers which are used as OMS Gateway and allow for specific server selection",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Heartbeat\r\n| where IsGatewayInstalled == 'true' \r\n| distinct Computer\r\n| order by Computer asc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "cf34e6d9-94b9-4d96-8b14-59477ee7c29d",
+            "version": "KqlParameterItem/1.0",
+            "name": "PerfTest",
+            "type": 1,
+            "description": "This param is used to check if at one OMS Gateway perf counter has been collected over the time range for the selected server(s). No result could lead to a wrong or none perf counter collection configuration.",
+            "query": "Perf\r\n| where Computer in ({Servers})\r\n| where CounterPath contains \"OMS Gateway\"\r\n| top 1 by TimeGenerated desc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "4ed74b15-8d88-4204-a32a-805c477d3d9a",
+            "version": "KqlParameterItem/1.0",
+            "name": "EventTest",
+            "type": 1,
+            "description": "This param is used to check if at one OMS Gateway event has been collected over the time range for the selected server(s). No result could lead to a wrong or none event collection configuration.",
+            "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| top 1 by TimeGenerated desc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 13"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "⚠ A subscription has not yet been selected. Select a subscription under the `Subscriptions` dropdown or refresh the workbook."
+      },
+      "conditionalVisibility": {
+        "parameterName": "Subscriptions",
+        "comparison": "isEqualTo"
+      },
+      "name": "Subscription selection check"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "⚠ A workspace has not yet been selected. Select a workspace under the `Workspaces` dropdown or refresh the workbook."
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "Workspaces",
+          "comparison": "isEqualTo"
+        },
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "Workspace selection check"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "⚠ No OMS Gateway related performance counters were detected in the selected workspace for the specified time period (`{TimeRange:label}`). Either try a broader time range, select a different workspace, or onboard virtual machines to the selected workspace `{Workspaces:label}`.\r\n\r\nIf you choose to onboard virtual machines to workspace `{Workspaces:label}`, follow the instruction in the following link: [Azure Monitor for VMs (preview)](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview).\r\n\r\nCheck also if the correct Event Log collection configuration was performed, following the instruction at [Windows and Linux performance data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-performance-counters)."
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "PerfTest",
+          "comparison": "isEqualTo"
+        },
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Workspaces",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "Performance counter collection check"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "⚠ No OMS Gateway related events were detected in the selected workspace for the specified time period (`{TimeRange:label}`). Either try a broader time range, select a different workspace, or onboard virtual machines to the selected workspace `{Workspaces:label}`.\r\n\r\nIf you choose to onboard virtual machines to workspace `{Workspaces:label}`, follow the instruction in the following link: [Azure Monitor for VMs](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview).\r\n\r\nCheck also if the correct Event Log collection configuration was performed, following the instruction at [Windows event log data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events)."
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "EventTest",
+          "comparison": "isEqualTo"
+        },
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Workspaces",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "Event collection check"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "GATEWAY COMMUNICATION",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "**Gateway server(s) communication over the last 1 hour.**"
+            },
+            "name": "text - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat \r\n| where Computer in ({Servers})\r\n| summarize lastCall = max(TimeGenerated) by Computer \r\n| extend commState=iif(lastCall > ago(1h), \"GATEWAY(S) COMMUNICATING\",\"GATEWAY(S) NOT COMMUNICATING\") \r\n| summarize computers=count(Computer) by commState",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "piechart"
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 11"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat\r\n| where Computer in ({Servers})\r\n| summarize lastCommunication = max(TimeGenerated) by Computer \r\n| extend State = iff(lastCommunication < ago(1h), 'NOT COMMUNICATING', 'COMMUNICATING')\r\n| extend TimeFromNow = now() - lastCommunication\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project Computer, [\"Last Communication on\"]=strcat('🕒 ', TimeAgo), State\r\n| sort by State desc nulls first",
+              "size": 0,
+              "showAnalytics": true,
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "State",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "NOT COMMUNICATING",
+                          "representation": "4",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "Computer",
+                    "label": "Gateway server"
+                  },
+                  {
+                    "columnId": "Last Communication on"
+                  },
+                  {
+                    "columnId": "State"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 12",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Workspaces",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "GATEWAY COMMUNICATION",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "AGENT COMMUNICATION STATUS",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "**Agent(s) communication over the last 1 hour.**"
+            },
+            "name": "text - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat \r\n| where Computer !in ({Servers})\r\n| where ComputerIP in (OMSGW_IP) \r\n| summarize lastCall = max(TimeGenerated) by Computer \r\n| extend commState=iif(lastCall > ago(1h), \"AGENTS COMMUNICATING\",\"AGENTS NOT COMMUNICATING\") \r\n| summarize computers=count(Computer) by commState",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "AGENTS COMMUNICATING",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "AGENTS NOT COMMUNICATING",
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat\r\n| where Computer !in ({Servers})\r\n| where ComputerIP in (OMSGW_IP) \r\n| summarize lastCommunication = max(TimeGenerated) by Computer \r\n| extend State = iff(lastCommunication < ago(1h), 'NOT COMMUNICATING', 'COMMUNICATING')\r\n| extend TimeFromNow = now() - lastCommunication\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project Computer, [\"Last Communication on\"]=strcat('🕒 ', TimeAgo), State\r\n| sort by State desc nulls first",
+              "size": 0,
+              "showAnalytics": true,
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "State",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "showIcon": true,
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "NOT COMMUNICATING",
+                          "representation": "4",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 3",
+            "styleSettings": {
+              "margin": "0",
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Workspaces",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "AGENT COMMUNICATION STATUS",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "FORBIDDEN HOSTS (EVENTID 105) && FORBIDDEN CERTIFICATES (EVENTID 106)",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 105\r\n| project RenderedDescription\r\n| parse kind=regex RenderedDescription with * \"\\\\(\" targetHost \"\\\\)\"\r\n| summarize forbiddenHostNumber=dcount(targetHost)\r\n| project forbiddenHostNumber",
+              "size": 1,
+              "showAnalytics": true,
+              "title": "Forbidden Hosts (EventID 105)",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "forbiddenHostNumber",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "forbiddenHostNumber",
+                    "label": "Number of forbidden hosts"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 5",
+            "styleSettings": {
+              "margin": "30px",
+              "padding": "30px",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID==105\r\n| project RenderedDescription, Computer\r\n| parse kind=regex RenderedDescription with * \"\\\\(\" targetHost \"\\\\)\"\r\n| distinct targetHost, Computer",
+              "size": 1,
+              "showAnalytics": true,
+              "title": "List of forbidden hosts",
+              "noDataMessage": "No events with ID 105, indicating forbidden hosts, were found.",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "targetHost",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "targetHost",
+                    "label": "Forbidden Host"
+                  },
+                  {
+                    "columnId": "Computer",
+                    "label": "On gateway"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 7",
+            "styleSettings": {
+              "margin": "30",
+              "padding": "30",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let certs = Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 106\r\n//| where RenderedDescription contains \"O=Microsoft, OU=Microsoft Monitoring Agent, CN\" \r\n| project RenderedDescription, Computer\r\n| parse kind=regex RenderedDescription with * \"\\\\(\" targetCert \"\\\\)\"\r\n| where targetCert != \"\";\r\nlet certs2 = Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 106\r\n| where RenderedDescription contains \"O=Microsoft, OU=Microsoft Monitoring Agent, CN\" \r\n| project RenderedDescription, Computer\r\n| parse kind=regex RenderedDescription with * \"CN=\" targetCert \", DC\"\r\n| where targetCert != \"\";\r\nlet certs3 = Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 106\r\n| where RenderedDescription contains \"Server certificate subject is not in allowed list\" \r\n| project EventData, Computer\r\n| parse EventData with * 'CN=' targetCert '</Data>' *\r\n| where targetCert != \"\"\r\n| extend annotation = \"Should be added as host\"\r\n| project targetCert, Computer, annotation;\r\nunion withsource=SourceTable certs, certs2, certs3\r\n|summarize forbiddenCertsNumber=dcount(targetCert)\r\n| project forbiddenCertsNumber",
+              "size": 1,
+              "showAnalytics": true,
+              "title": "Forbidden Certificates (EventID 106)",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "forbiddenCertsNumber",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "forbiddenCertsNumber",
+                    "label": "Number of forbidden certificates"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 6",
+            "styleSettings": {
+              "margin": "30px",
+              "padding": "30px",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let certs = Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 106\r\n//| where RenderedDescription contains \"O=Microsoft, OU=Microsoft Monitoring Agent, CN\" \r\n| project RenderedDescription, Computer\r\n| parse kind=regex RenderedDescription with * \"\\\\(\" targetCert \"\\\\)\"\r\n| where targetCert != \"\"\r\n| distinct Computer, targetCert;\r\nlet certs2 = Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 106\r\n| where RenderedDescription contains \"O=Microsoft, OU=Microsoft Monitoring Agent, CN\" \r\n| project RenderedDescription, Computer\r\n| parse kind=regex RenderedDescription with * \"CN=\" targetCert \", DC\"\r\n| where targetCert != \"\"\r\n| distinct Computer, targetCert;\r\nlet certs3 = Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| where EventID == 106\r\n| where RenderedDescription contains \"Server certificate subject is not in allowed list\" \r\n| project EventData, Computer\r\n| parse EventData with * 'CN=' targetCert '</Data>' *\r\n| where targetCert != \"\"\r\n| extend annotation = \"Should be added using the Add-OMSGatewayAllowedHost command.\"\r\n| project targetCert, Computer, annotation\r\n| distinct targetCert, Computer, annotation;\r\nunion withsource=SourceTable certs, certs2, certs3\r\n| project targetCert, Computer, annotation",
+              "size": 1,
+              "showAnalytics": true,
+              "title": "List of forbidden certificates",
+              "noDataMessage": "No events with ID 106, indicating forbidden certificates, were found.",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "targetCert",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ],
+                "filter": true,
+                "sortBy": [
+                  {
+                    "itemKey": "Computer",
+                    "sortOrder": 1
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "targetCert",
+                    "label": "Forbidden certificate"
+                  },
+                  {
+                    "columnId": "Computer",
+                    "label": "On gateway",
+                    "comment": "dsfadfsaf"
+                  },
+                  {
+                    "columnId": "annotation",
+                    "label": "Annotation"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "Computer",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 8",
+            "styleSettings": {
+              "margin": "30",
+              "padding": "30",
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "EventTest",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "FORBIDDEN HOSTS",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "GATEWAY CONNECTION ISSUES (EVENT ID 406)",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog =~ \"OMS Gateway Log\"\r\n| where EventID == 406\r\n| project RenderedDescription\r\n| parse kind=regex RenderedDescription with * \"http\\\\:\\\\/\\\\/\" proxyUrl \"\\\\/\"\r\n| summarize numOfProxyUrl = dcount(proxyUrl)\r\n//| project numOfProxyUrl",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Proxy URL with connection Issues (EventID 406)",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "titleContent": {
+                  "formatOptions": {
+                    "showIcon": true
+                  }
+                },
+                "leftContent": {
+                  "columnMatch": "numOfProxyUrl",
+                  "formatOptions": {
+                    "showIcon": true
+                  },
+                  "numberFormat": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                "showBorder": false
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 18",
+            "styleSettings": {
+              "progressStyle": "loader",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog =~ \"OMS Gateway Log\"\r\n| where EventID == 406\r\n| project RenderedDescription, Computer\r\n| parse kind=regex RenderedDescription with * \"http\\\\:\\\\/\\\\/\" proxyUrl \"\\\\/\"\r\n| distinct proxyUrl, Computer",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "List of Proxy URL with connection Issues (EventID 406)",
+              "noDataMessage": "No events with ID 406, indicating connection issues, were found.",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "proxyUrl",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 19",
+            "styleSettings": {
+              "progressStyle": "loader",
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "EventTest",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "GATEWAY CONNECTION ISSUES",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "GATEWAY PERFORMANCE",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Perf\r\n| where Computer in ({Servers})\r\n| where CounterName==\"Connected Client - Realtime\"\r\n| summarize Value=avg(CounterValue) by Computer, bin(TimeGenerated, 5min)\r\n",
+              "size": 0,
+              "aggregation": 5,
+              "showAnalytics": true,
+              "title": "OMS Gateway\\Connected Client - Realtime",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "timechart",
+              "chartSettings": {
+                "yAxis": [
+                  "Value"
+                ],
+                "ySettings": {
+                  "unit": 17,
+                  "min": null,
+                  "max": null
+                }
+              }
+            },
+            "showPin": true,
+            "name": "query - 10",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Perf\r\n| where Computer in ({Servers})\r\n| where CounterName==\"Rejection Count\"\r\n| summarize Value=avg(CounterValue) by Computer, bin(TimeGenerated, 5min)\r\n",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "OMS Gateway\\Rejection Count ",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "timechart"
+            },
+            "showPin": true,
+            "name": "query - 3"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Perf\r\n| where Computer in ({Servers})\r\n| where CounterName==\"% Processor Time\"\r\n| summarize Value=avg(CounterValue) by Computer, bin(TimeGenerated, 5min)",
+              "size": 0,
+              "aggregation": 5,
+              "showAnalytics": true,
+              "title": "Processor\\% Processor Time",
+              "color": "green",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "timechart",
+              "chartSettings": {
+                "ySettings": {
+                  "unit": 1,
+                  "min": null,
+                  "max": null
+                }
+              }
+            },
+            "showPin": true,
+            "name": "query - 11",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Perf\r\n| where Computer in ({Servers})\r\n| where CounterName==\"Available MBytes\"\r\n| summarize Value=avg(CounterValue) by Computer, bin(TimeGenerated, 5min)",
+              "size": 0,
+              "aggregation": 5,
+              "showAnalytics": true,
+              "title": "Memory\\Available MBytes",
+              "color": "redBright",
+              "timeContext": {
+                "durationMs": 5184000000
+              },
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "timechart"
+            },
+            "showPin": true,
+            "name": "query - 12",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "PerfTest",
+          "comparison": "isNotEqualTo"
+        },
+        {
+          "parameterName": "Subscriptions",
+          "comparison": "isNotEqualTo"
+        }
+      ],
+      "name": "GATEWAY PERFORMANCE",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
