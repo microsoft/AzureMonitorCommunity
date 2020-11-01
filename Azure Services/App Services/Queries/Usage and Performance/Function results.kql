@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Function results
+// Description: Individual Function invocation results in the last hour (latest logs shown first).
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: Usage and Performance
+
+FunctionAppLogs
+| where TimeGenerated > ago(1h)
+| where Category startswith "Function." and Message startswith "Executed "
+| parse Message with "Executed '" Name "' ("  Result ", Id=" Id ", Duration=" Duration:long "ms)"
+| project TimeGenerated, FunctionName, Result, FunctionInvocationId, Duration, _ResourceId
+| sort by TimeGenerated desc

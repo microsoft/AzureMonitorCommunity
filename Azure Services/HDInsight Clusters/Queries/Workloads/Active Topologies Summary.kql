@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Active Topologies Summary
+// Description: Returns the current number of Storm Supervisors for your cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightStormTopologyMetrics
+/| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where Status == "ACTIVE"
+| summarize arg_max(TimeGenerated, *) by TopologyId
+| sort by TimeGenerated desc
+| project TopologyId, Uptime, WorkersTotal, ExecutorsTotal, TasksTotal, ReplicationCount, AssignedTotalMemMB

@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Maximum time taken for each page
+// Description: Find maximum time taken for each page.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Performance
+
+W3CIISLog 
+| summarize max(TimeTaken) by csUriStem

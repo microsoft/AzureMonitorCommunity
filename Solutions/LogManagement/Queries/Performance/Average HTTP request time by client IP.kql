@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Average HTTP request time by client IP
+// Description: Average HTTP request time by client IP address.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Performance
+
+W3CIISLog 
+| summarize avg(TimeTaken) by cIP

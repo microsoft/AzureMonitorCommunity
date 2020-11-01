@@ -8,6 +8,6 @@
 
 union *
 | where TimeGenerated > ago(1d)
-| extend AgentLatencySeconds = (_TimeReceived()-TimeGenerated)/1s
+| extend AgentLatencySeconds = (_TimeReceived-TimeGenerated)/1s
 | summarize percentile(AgentLatencySeconds, 50) by bin(TimeGenerated,1h)
 | render timechart 

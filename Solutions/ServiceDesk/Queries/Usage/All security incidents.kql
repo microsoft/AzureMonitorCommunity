@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: All security incidents
+// Description: Retrieves all Security Incident work items generated in this solution.
+// Categories: management
+// Solutions: ServiceDesk
+// Topic: Usage
+
+ServiceDesk_CL
+| where  ServiceDeskWorkItemType_s == "SecurityIncident" 
+| summarize arg_max(TimeGenerated, *) by ServiceDeskId_s 
+| sort by TimeGenerated desc

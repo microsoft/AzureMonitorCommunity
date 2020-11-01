@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Security Activities on the Device for Admin
+// Description: Security activities on a specific device for administrator sorted by time (newest first).
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent 
+//| where Computer == "COMPUTER01.contoso.com"  // Replace with a specific computer name
+| where TargetUserName == "Administrator"
+| project TimeGenerated, Account, Activity, Computer
+| sort by TimeGenerated desc

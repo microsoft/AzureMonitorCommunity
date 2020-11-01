@@ -7,5 +7,5 @@
 
 AppPageViews
 | where ClientType == 'Browser'
-| summarize count_sum = sum(ItemCount) by bin(TimeGenerated,30m)
+| summarize count_sum = sum(ItemCount) by bin(TimeGenerated,30m), _ResourceId
 | render timechart

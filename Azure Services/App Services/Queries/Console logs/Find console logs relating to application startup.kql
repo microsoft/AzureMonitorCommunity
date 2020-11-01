@@ -3,7 +3,7 @@
 // Description: List console logs that contain the term "starting".
 // Categories: Azure Resources
 // Resource types: App Services
-// Topic: Console logs
+// Topic: Console Logs
 
 AppServiceConsoleLogs 
 | where tolower(ResultDescription) contains "starting"

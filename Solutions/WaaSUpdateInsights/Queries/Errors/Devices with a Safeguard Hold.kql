@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Devices with a Safeguard Hold
+// Description: This query shows the device data for all devices that are impacted by safeguard holds.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Errors
+
+WaaSDeploymentStatus
+| where DetailedStatus == "Safeguard Hold"
+| summarize arg_max(TimeGenerated, *) by ComputerID, UpdateClassification
+| project TimeGenerated, DetailedStatus, ComputerID, ReleaseName, UpdateCategory, UpdateClassification

@@ -6,5 +6,5 @@
 // Topic: App Logs
 
 AppServiceAppLogs 
-| summarize count()  by CustomLevel, bin(TimeGenerated, 1h) 
+| summarize count()  by CustomLevel, bin(TimeGenerated, 1h), _ResourceId
 | render barchart

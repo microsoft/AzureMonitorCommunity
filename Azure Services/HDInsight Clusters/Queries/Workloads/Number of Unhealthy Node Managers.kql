@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Number of Unhealthy Node Managers
+// Description: Returns the current number of unhealthy node managers for your cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightHadoopAndYarnMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where MetricName == "NumUnhealthyNMs"
+| summarize arg_max(TimeGenerated, *)

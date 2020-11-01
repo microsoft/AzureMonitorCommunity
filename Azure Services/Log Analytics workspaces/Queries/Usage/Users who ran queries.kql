@@ -1,0 +1,10 @@
+// Author: Evgeny Ternovsky, Rafi Rabo
+// Display name: Users who ran queries
+// Description: Lists all users who ran any number of queries in the last 24 hours.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Usage
+
+LAQueryLogs
+| where TimeGenerated > ago(24h)
+| distinct AADEmail

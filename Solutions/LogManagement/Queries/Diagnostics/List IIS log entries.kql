@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: List IIS log entries
+// Description: Last 50 IIS log entries.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog
+| top 50 by TimeGenerated desc

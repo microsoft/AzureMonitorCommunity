@@ -9,14 +9,14 @@
 Perf
 | where TimeGenerated > ago(7d) //This week Average CPU Usage Nano Cores
 | where ObjectName == "K8SContainer" and CounterName == "cpuUsageNanoCores"
-| summarize ThisWeekAvgCPU = avg(CounterValue) by InstanceName
+| summarize ThisWeekAvgCPU = avg(CounterValue) by InstanceName, _ResourceId
 | join kind= leftouter (
     //Previous week Average CPU Usage Nano Cores
     Perf
     | where TimeGenerated > ago(14d) and TimeGenerated <= ago(7d)
     | where ObjectName == "K8SContainer" and CounterName == "cpuUsageNanoCores"
-    | summarize PrevWeekAvgCPU = avg(CounterValue) by InstanceName
-) on InstanceName
+    | summarize PrevWeekAvgCPU = avg(CounterValue) by InstanceName, _ResourceId
+) on InstanceName, _ResourceId
 | extend InstanceNameParts = split(InstanceName, "/")  //array of the parts of the instance name
 | extend ShortInstanceName = InstanceNameParts[(array_length(InstanceNameParts)-1)] //extract the last part of the instance name
 | extend ThisWeekAvgCPU = round(ThisWeekAvgCPU,0) 

@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Weekly Record Count Breakdown
+// Description: Over the past week, get the unique number of usage records for each mode each day.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Usage
+
+ACSBillingUsage
+| where TimeGenerated > startofday(ago(7d)) and TimeGenerated < startofday(now()) // look at the usage for the past 7 full days
+| summarize Occurences=dcount(RecordId) by UsageType, bin(TimeGenerated, 1d) // count the number of unique records for each type of usage
+| render columnchart

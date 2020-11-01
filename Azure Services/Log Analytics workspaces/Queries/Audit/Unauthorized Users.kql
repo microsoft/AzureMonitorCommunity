@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Unauthorized Users
+// Description: Get a list of unauthorized users with their request count in last 24 hours.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Audit
+
+LAQueryLogs
+| where ResponseCode == "403"
+| summarize reqCount = count() by AADObjectId
+| order by reqCount desc

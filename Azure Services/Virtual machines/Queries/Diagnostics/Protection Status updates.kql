@@ -7,5 +7,5 @@
 // Topic: Diagnostics
 
 ProtectionStatus
-| summarize AggregatedValue = count(ScanDate) by bin(TimeGenerated, 1d) 
+| summarize AggregatedValue = count(ScanDate) by bin(TimeGenerated, 1d), Computer, _ResourceId
 | sort by TimeGenerated desc

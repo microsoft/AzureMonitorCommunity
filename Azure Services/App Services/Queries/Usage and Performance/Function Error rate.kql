@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Function Error rate
+// Description: Summarizing functions success and errors per hour.
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: Usage and Performance
+
+FunctionAppLogs
+| where Category startswith "Function." and Message startswith "Executed "
+| parse Message with "Executed '" Name "' ("  Result ", Id=" Id ", Duration=" Duration:long "ms)"
+// | where Name == "MyFunction" // Use this to restrict to a specific function
+| summarize count() by bin(TimeGenerated, 1h), Name, Result, _ResourceId
+| order by TimeGenerated desc

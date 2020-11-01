@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Target build distribution of devices with a safeguard hold
+// Description: Pie chart of target build distribution of devices impacted by safeguards.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Errors
+
+WaaSDeploymentStatus
+| where DetailedStatus == "Safeguard Hold"
+| summarize count(ComputerID) by TargetBuild
+| render piechart

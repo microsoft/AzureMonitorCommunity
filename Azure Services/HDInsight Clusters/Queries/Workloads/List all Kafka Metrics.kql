@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: List all Kafka Metrics
+// Description: Returns the names of all metrics that have been collected in the HDInsightKafkaMetrics table for the last 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightKafkaMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| summarize any(*) by MetricName //displays each possible metric name and a value
+| project MetricName, any_MetricValue

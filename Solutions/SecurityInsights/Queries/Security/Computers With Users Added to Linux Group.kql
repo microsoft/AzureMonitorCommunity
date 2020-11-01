@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With Users Added to Linux Group
+// Description: Lists computers with users added to Linux group.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+Syslog
+| where Facility == 'authpriv' and SyslogMessage has 'to group' and (SyslogMessage has 'add' or SyslogMessage has 'added')
+| summarize by Computer

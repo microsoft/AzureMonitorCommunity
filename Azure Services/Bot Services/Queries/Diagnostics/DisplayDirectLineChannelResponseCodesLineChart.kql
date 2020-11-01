@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: DisplayDirectLineChannelResponseCodesLineChart
+// Description: Display a Line Chart showing Direct Line channel requests response codes over a period of time.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+ABSBotRequests
+| where TimeGenerated > ago(12h)
+| where Channel == "directline"
+| summarize count() by ResultCode, bin(TimeGenerated, 10m)
+| render timechart

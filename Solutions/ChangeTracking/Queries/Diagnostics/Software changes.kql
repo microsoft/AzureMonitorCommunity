@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Software changes
+// Description: Lists software changes sorted by time (newest first).
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange
+| where ConfigChangeType == "Software"
+| sort by TimeGenerated desc

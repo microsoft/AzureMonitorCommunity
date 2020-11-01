@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Quality Update Deferral Configurations
+// Description: Chart of device count by quality update deferral configurations.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Diagnostics
+
+WaaSUpdateStatus
+| summarize arg_max(TimeGenerated, *) by ComputerID
+| project TimeGenerated, ComputerID, QualityDeferralDays
+| summarize dcount(ComputerID) by QualityDeferralDays
+| sort by QualityDeferralDays asc
+| render columnchart

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With Failed Ssh Logons
+// Description: Lists computers with failed ssh logons.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+Syslog
+| where (Facility == 'authpriv' and SyslogMessage has 'sshd:auth' and SyslogMessage has 'authentication failure') or (Facility == 'auth' and ((SyslogMessage has 'Failed' and SyslogMessage has 'invalid user' and SyslogMessage has 'ssh2') or SyslogMessage has 'error: PAM: Authentication failure'))
+| summarize count() by Computer

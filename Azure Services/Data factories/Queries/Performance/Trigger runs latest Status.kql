@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Trigger runs latest Status
+// Description: Returns latest Status of Trigger runs.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Performance
+
+ADFTriggerRun
+| summarize argmax(TimeGenerated, * ) by TriggerId, Status, _ResourceId

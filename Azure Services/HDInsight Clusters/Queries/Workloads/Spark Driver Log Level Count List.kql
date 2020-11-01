@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Spark Driver Log Level Count List
+// Description: Renders a timechart to show the amount of records for each log level in the Driver logs within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkLogs
+| where TimeGenerated > ago(24h)
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where LogType == "SparkDriverLog" //can set which type of logs you want to see (ex: SparkDriverLog, SparkExecutorLog, SparkThriftDriverLog, JupyterLog)
+| summarize count() by LogLevel, bin(TimeGenerated, 30m)//set the time bucket for the counts
+| render timechart

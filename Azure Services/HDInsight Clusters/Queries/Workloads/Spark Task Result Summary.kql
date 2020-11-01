@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Spark Task Result Summary
+// Description: Returns a summary of the task results by result type
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkTaskEvents
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+//| where ApplicationId == '<your application id>' and ParentId == '<stage id>'
+| summarize count() by EndReason

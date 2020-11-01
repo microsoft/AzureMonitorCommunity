@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: GetChannelToBotRequestsLogs
+// Description: Gets a distinct list of all the requests from Direct Line channels to the bot.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+ABSBotRequests
+| where TimeGenerated > ago(6h)
+| where Category == 'ABSChannelToBotRequests'
+| sort by TimeGenerated desc

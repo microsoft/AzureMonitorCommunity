@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Current number of Storm Supervisors
+// Description: Returns the current number of Storm Supervisors for your cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightStormMetrics
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where MetricName == "nimbus-num-supervisors-Value"
+| summarize arg_max(TimeGenerated, *)

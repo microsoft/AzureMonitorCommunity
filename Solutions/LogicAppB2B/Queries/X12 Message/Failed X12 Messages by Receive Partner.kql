@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Failed X12 Messages by Receive Partner
+// Description: Counts X12 failed messages by receive partner.
+// Categories: resources
+// Solutions: LogicAppB2B
+// Topic: X12 Message
+
+search OperationName == "Microsoft.Logic/integrationAccounts/trackingEvents" and event_recordType_s == "X12TransactionSet" and event_record_messageProperties_messageType_s != "997" and event_record_messageProperties_messageType_s != "999" and event_record_messageProperties_correlationMessageId_s in ((union *
+| where (OperationName == "Microsoft.Logic/integrationAccounts/trackingEvents" and event_recordType_s == "X12TransactionSetAcknowledgment" and event_record_messageProperties_statusCode_s != "Accepted" and event_record_messageProperties_direction_s == "Receive") or (OperationName == "Microsoft.Logic/integrationAccounts/trackingEvents" and event_recordType_s == "X12TransactionSet" and event_record_messageProperties_messageType_s != "997" and event_record_messageProperties_messageType_s != "999" and event_record_messageProperties_direction_s == "Receive" and iff(isnotnull(toint(event_record_messageProperties_isFunctionalAcknowledgmentExpected_b)), event_record_messageProperties_isFunctionalAcknowledgmentExpected_b == true, event_record_messageProperties_isFunctionalAcknowledgmentExpected_b == "true") == true and iff(isnotnull(toint(event_record_messageProperties_isMessageFailed_b)), event_record_messageProperties_isMessageFailed_b == true, event_record_messageProperties_isMessageFailed_b == "true") == true)
+| summarize AggregatedValue = count() by event_record_messageProperties_correlationMessageId_s))
+| summarize AggregatedValue = count() by event_record_agreementProperties_receiverPartnerName_s

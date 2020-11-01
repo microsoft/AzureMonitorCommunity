@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Count IIS log entries by client IP address
+// Description: Count IIS log entries by client IP address.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog 
+| summarize count() by cIP

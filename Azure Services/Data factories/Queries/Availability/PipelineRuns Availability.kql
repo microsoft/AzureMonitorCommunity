@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: PipelineRuns Availability
+// Description: Gives the availability of the Pipeline Runs.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Availability
+
+ADFPipelineRun    
+| where Status != 'InProgress' and Status != 'Queued'
+| where FailureType != 'UserError'
+| summarize availability = 100.00 - (100.00*countif(Status != 'Succeeded') / count())  by bin(TimeGenerated, 1h)), _ResourceId
+| order by TimeGenerated asc
+| render timechart

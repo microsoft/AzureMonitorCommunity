@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Top 5 Machines
+// Description: Top 5 machines which are generating traffic.
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: Incoming requests
+
+AppServiceHTTPLogs
+| top-nested of _ResourceId by dummy=max(0), // Display results for each resource (App)
+  top-nested 5 of CIp by count()
+| project-away dummy // Remove dummy line from the result set

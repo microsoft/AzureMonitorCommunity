@@ -1,0 +1,22 @@
+// Author: Microsoft Azure
+// Display name: Trigger runs Top 5 Failures
+// Description: Returns Top 5 Triggers failing with systemErrors.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Diagnostics
+
+let name = ADFTriggerRun
+| where Status != 'Running' and Status != 'Waiting' and Status != 'WaitingOnDependency'
+| where TriggerFailureType != 'UserError'
+| summarize failureCount = countif(Status != 'Succeeded') by TriggerName
+| top 5 by failureCount desc nulls last
+| where failureCount != 0
+| project TriggerName;
+ADFTriggerRun 
+| where TimeGenerated >= ago(24h)
+| where Status != 'Running' and Status != 'Waiting' and Status != 'WaitingOnDependency'
+| where TriggerFailureType != 'UserError'
+| where TriggerName  in (name)
+| summarize failureCount = countif(Status != 'Succeeded') by bin(TimeGenerated, 1h), TriggerName
+| order by TimeGenerated asc
+| render timechart

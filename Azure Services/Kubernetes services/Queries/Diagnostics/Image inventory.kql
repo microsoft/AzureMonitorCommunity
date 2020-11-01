@@ -3,6 +3,7 @@
 // Description: Lists all the container image with their status.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
+// Solutions: ContainerInsights
 // Topic: Diagnostics
 
 ContainerImageInventory

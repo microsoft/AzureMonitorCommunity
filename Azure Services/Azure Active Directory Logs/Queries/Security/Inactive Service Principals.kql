@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Inactive Service Principals
+// Description: Service principals that had no sign-ins for the last 30d.
+// Categories: Security
+// Resource types: Azure Active Directory Logs
+// Topic: Security
+
+AADServicePrincipalSignInLogs
+| where TimeGenerated > ago(90d)
+| where ResultType == 0
+| summarize LastSignIn = max(TimeGenerated) by ServicePrincipalId
+| where LastSignIn < ago(30d)

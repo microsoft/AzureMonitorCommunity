@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Stopped services
+// Description: Lists stopped service changes sorted by time.
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange 
+| where ConfigChangeType == "WindowsServices" and SvcState == "Stopped" 
+| sort by TimeGenerated desc

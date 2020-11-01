@@ -11,4 +11,4 @@ AppRequests
 AppExceptions
 | where TimeGenerated > ago(1h)
 ) on OperationId
-| project exceptionType = Type, failedMethod = Method, requestName = Name, requestDuration = DurationMs
+| project exceptionType = Type, failedMethod = Method, requestName = Name, requestDuration = DurationMs, _ResourceId

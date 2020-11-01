@@ -1,0 +1,21 @@
+// Author: Microsoft Azure
+// Display name: Spark SQL Query Status Summary
+// Description: Returns a summary of the Spark SQL queries running for your application.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkSQLExecutionEvents 
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+//| where ApplicationId == '<your application id>'
+| where isnotnull(StartTime)
+| join kind=fullouter (
+    HDInsightSparkSQLExecutionEvents
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+//| where ApplicationId == '<your application id>'
+    | where isnotnull(EndTime) 
+) on ClusterDnsName, ApplicationId, ExecutionId
+|order by ApplicationId, ExecutionId asc 
+| extend EndTime = EndTime1
+| extend Duration = iff(isempty(EndTime), "In Progress", tostring(datetime_diff("Millisecond",EndTime, StartTime)))
+| project TimeGenerated, ApplicationId, ExecutionId, Duration, PhysicalPlanDescription, SparkPlanInfo

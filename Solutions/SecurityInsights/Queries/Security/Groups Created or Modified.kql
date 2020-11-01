@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Groups Created or Modified
+// Description: Groups created or modified per target account.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID in (4727, 4731, 4735, 4737, 4754, 4755)
+| summarize count() by TargetAccount

@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Provisioning actions for the last week
+// Description: Shows the number of users and groups created, updated, disabled, and deleted in the past 7 days.
+// Categories: Audit
+// Resource types: Azure Active Directory Logs
+// Topic: Audit
+
+AADProvisioningLogs
+| where TimeGenerated > ago(7d)
+| where ResultType == "Success"
+| parse SourceIdentity with * "\"identityType\":\"" Type "\"" *
+| extend Type = tolower(Type)
+| summarize count() by Type, Action
+| order by Type, Action

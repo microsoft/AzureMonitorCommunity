@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Total bytes by IP version
+// Description: Total bytes by IP version (IPv4 or IPv6).
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| summarize sum(TotalBytes) by IPVersion

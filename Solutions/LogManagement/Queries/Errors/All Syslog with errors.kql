@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All Syslog with errors
+// Description: Last 100 Syslog with erros.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Errors
+
+Syslog 
+| where SeverityLevel == "err" or  SeverityLevel == "error"
+| top 100 by TimeGenerated desc

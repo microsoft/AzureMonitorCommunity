@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Count of denied access from IP Security Audit Logs by resource in the last 7 days
+// Description: Gets count for logs with denied access result from IP Security Audit Logs in the last 7 days by Resource, CsHost, CIp, and Details.
+// Categories: Security,Audit,Azure Resources
+// Resource types: App Services
+// Topic: Security
+
+AppServiceIPSecAuditLogs
+| where TimeGenerated > ago(7d)
+| where Result == "Denied"
+| summarize count() by  _ResourceId, CsHost, CIp, Details

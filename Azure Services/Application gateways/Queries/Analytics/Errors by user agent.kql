@@ -7,5 +7,5 @@
 
 AzureDiagnostics
 | where ResourceType == "APPLICATIONGATEWAYS" and OperationName == "ApplicationGatewayAccess" and httpStatus_d > 399
-| summarize AggregatedValue = count() by userAgent_s
+| summarize AggregatedValue = count() by userAgent_s, _ResourceId
 | sort by AggregatedValue desc

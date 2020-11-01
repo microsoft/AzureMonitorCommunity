@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: How many times did each unique SQL Recommendation trigger?
+// Description: Count SQL recommendations with failed result by recommendation.
+// Categories: workloads
+// Solutions: SQLAssessment
+// Topic: Diagnostics
+
+SQLAssessmentRecommendation
+| where RecommendationResult == "Failed"
+| summarize AggregatedValue = count() by Recommendation

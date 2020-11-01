@@ -8,4 +8,4 @@
 
 Update
 | where OSType != "Linux" and UpdateState == "Needed" and Optional == "false" 
-| distinct Title
+| distinct Title, Computer, _ResourceId
