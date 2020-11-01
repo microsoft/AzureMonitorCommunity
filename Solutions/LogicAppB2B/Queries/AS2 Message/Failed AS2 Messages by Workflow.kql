@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Failed AS2 Messages by Workflow
+// Description: Counts AS2 failed messages by workflow.
+// Categories: resources
+// Solutions: LogicAppB2B
+// Topic: AS2 Message
+
+search OperationName == "Microsoft.Logic/integrationAccounts/trackingEvents" and event_recordType_s == "AS2Message" and event_record_messageProperties_messageId_s in ((union *
+| where OperationName == "Microsoft.Logic/integrationAccounts/trackingEvents" and iff(isnotnull(toint(event_record_messageProperties_isMessageFailed_b)), event_record_messageProperties_isMessageFailed_b == true, event_record_messageProperties_isMessageFailed_b == "true") == true or (event_recordType_s == "AS2MDN" and (iff(isnotnull(toint(event_record_messageProperties_isMessageFailed_b)), event_record_messageProperties_isMessageFailed_b == true, event_record_messageProperties_isMessageFailed_b == "true") == true or event_record_messageProperties_statusCode_s == "Rejected"))
+| summarize AggregatedValue = count() by event_record_messageProperties_correlationMessageId_s))
+| summarize AggregatedValue = count() by source_workflow_name_s

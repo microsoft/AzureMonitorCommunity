@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Warning events
+// Description: Warning events sortd by time.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event 
+| where EventLevelName == "warning" 
+| sort by TimeGenerated desc

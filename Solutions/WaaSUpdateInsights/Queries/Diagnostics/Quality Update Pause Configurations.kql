@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Quality Update Pause Configurations
+// Description: Count devices by quality update pause configurations.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Diagnostics
+
+WaaSUpdateStatus
+| summarize arg_max(TimeGenerated, *) by ComputerID
+| project TimeGenerated, ComputerID, QualityPauseState
+| summarize dcount(ComputerID) by QualityPauseState

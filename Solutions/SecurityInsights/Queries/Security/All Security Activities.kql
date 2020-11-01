@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All Security Activities
+// Description: Security activities sorted by time (newest first).
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| project TimeGenerated, Account, Activity, Computer
+| sort by TimeGenerated desc

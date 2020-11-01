@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With Failed Sudo Logons
+// Description: Lists computers with failed sudo logons.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+Syslog
+| where (Facility == 'authpriv' and SyslogMessage has 'sudo:auth' and (SyslogMessage has 'authentication failure' or SyslogMessage has 'conversation failed')) or ((Facility == 'auth' or Facility == 'authpriv') and SyslogMessage has 'user NOT in sudoers')
+| summarize count() by Computer

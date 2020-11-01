@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: User Accounts Changed
+// Description: Counts user account changes per target account.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID in (4720, 4722)
+| summarize by TargetAccount

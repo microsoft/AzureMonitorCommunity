@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Suspicious Executables
+// Description: Lists suspicious executables.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 8002 and Fqbn == '-'
+| summarize ExecutionCountHash=count() by FileHash
+| where ExecutionCountHash <= 5

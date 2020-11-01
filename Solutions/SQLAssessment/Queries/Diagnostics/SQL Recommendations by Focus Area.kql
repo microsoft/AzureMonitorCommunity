@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: SQL Recommendations by Focus Area
+// Description: Count all SQL reccomendations by focus area.
+// Categories: workloads
+// Solutions: SQLAssessment
+// Topic: Diagnostics
+
+SQLAssessmentRecommendation
+| summarize AggregatedValue = count() by FocusArea

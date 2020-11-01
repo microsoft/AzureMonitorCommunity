@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Count IIS log entries by HTTP request method
+// Description: Count IIS log entries by HTTP request method.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog 
+| summarize count() by csMethod

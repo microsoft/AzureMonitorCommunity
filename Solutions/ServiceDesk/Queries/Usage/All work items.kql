@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All work items
+// Description: Retrieves all work items generated in this solution.
+// Categories: management
+// Solutions: ServiceDesk
+// Topic: Usage
+
+ServiceDesk_CL
+| summarize arg_max(TimeGenerated, *) by ServiceDeskId_s 
+| sort by TimeGenerated desc

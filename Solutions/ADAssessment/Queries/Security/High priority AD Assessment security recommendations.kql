@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: High priority AD Assessment security recommendations
+// Description: Latest high priority security recommendation with result failed by recommendation Id.
+// Categories: security
+// Solutions: ADAssessment
+// Topic: Security
+
+ADAssessmentRecommendation
+| where FocusArea == 'Security and Compliance' and RecommendationResult == 'Failed' and RecommendationScore>=35
+| summarize arg_max(TimeGenerated, *) by RecommendationId

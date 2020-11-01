@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With System Audit Policy Changes
+// Description: System audit policy changed events by computer.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 4719
+| summarize count() by Computer

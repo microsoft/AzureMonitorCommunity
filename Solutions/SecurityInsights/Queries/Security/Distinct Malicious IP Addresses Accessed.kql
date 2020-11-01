@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Distinct Malicious IP Addresses Accessed
+// Description: Distinct malicious IP addresses accessed.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+union isfuzzy=true (WireData
+| where Direction == 'Outbound'), (WindowsFirewall
+| where CommunicationDirection == 'SEND'), (CommonSecurityLog
+| where CommunicationDirection == 'Outbound')
+| where isnotempty(MaliciousIP)
+| summarize by MaliciousIP

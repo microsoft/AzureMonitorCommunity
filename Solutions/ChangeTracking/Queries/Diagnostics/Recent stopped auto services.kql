@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Recent stopped auto services
+// Description: Shows most recent services that were set to Auto but reported as being stopped.
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationData
+| where ConfigDataType == "WindowsServices" and SvcStartupType == "Auto"
+| where SvcState == "Stopped"
+| summarize arg_max(TimeGenerated, *) by SoftwareName, Computer

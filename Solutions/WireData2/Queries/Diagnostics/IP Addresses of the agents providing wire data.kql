@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: IP Addresses of the agents providing wire data
+// Description: IP Addresses of the agents providing wire data.
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| summarize count() by LocalIP

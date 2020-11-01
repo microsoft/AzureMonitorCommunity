@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Events by event source
+// Description: Events by event source.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event
+| summarize count() by Source

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Software change count per category
+// Description: Count software changes by change category.
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange
+| where ConfigChangeType == "Software"
+| summarize AggregatedValue = count() by ChangeCategory

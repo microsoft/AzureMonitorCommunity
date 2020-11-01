@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Total bytes traffic by client IP
+// Description: Total bytes sent and received by client IP address.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Usage
+
+W3CIISLog 
+| summarize BytesSent = sum(csBytes), BytesReceived = sum(scBytes) by cIP

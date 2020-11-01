@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: All configuration changes
+// Description: Lists all configuration changes sorted by time (newest first).
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange
+| sort by TimeGenerated desc

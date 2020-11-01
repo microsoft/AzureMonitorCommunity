@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Count of IIS log entries by host
+// Description: Count of IIS log entries by host requested by client.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+W3CIISLog 
+| summarize count() by csHost

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Locked Accounts
+// Description: Counts locked acounts by target account.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 4740
+| summarize count() by TargetAccount
