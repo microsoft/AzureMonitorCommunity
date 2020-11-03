@@ -10,6 +10,18 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 
 **Alerts** - the alerts in this repo are log-based, meaning they are in fact log queries. You can run them on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo) or use them to create and test alerts on your own environment
 
+## Contributing
+
+Anyone can contribute to the repo, you don't need to be a pro. Have an interesting query or workbook? fork this repo, add your content to your fork and submit a pull request.
+See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/master/CONTRIBUTING.md) for more details.
+
+### Top Contributor
+The October top contributor is <a itemprop="image" href="https://github.com/dmauser"><img style="height:auto;" alt="Avatar" width="16" height="16" class="avatar avatar-user width-full border bg-white" src="https://user-images.githubusercontent.com/1745412/97993135-50cc8480-1dec-11eb-8812-e3f941b4b9bc.png" /></a> [Bruno Gabrielli (Brunoga-MS)](https://github.com/Brunoga-MS). Thanks Bruno!
+<br/>
+
+### Top asks
+[Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what users are looking for.
+
 ## Structure
 | File/folder       | Description                                		                |
 |-------------------|---------------------------------------------------------------|
@@ -19,20 +31,6 @@ This public repo serves the Azure Monitor community. It contains log queries, wo
 | `CONTRIBUTING.md` | On how to contribute to this repo                             |
 | `LICENSE`         | The license for this repo 		                                |
 | `README.md`       | This README file  		                                        |
-
-## Contributing
-
-Anyone can contribute to the repo, you don't need to be a pro. Have an interesting query or workbook? fork this repo, add your content to your fork and submit a pull request.
-See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/master/CONTRIBUTING.md) for more details.
-
-### Top asks
-[Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what users are looking for.
-
-### Top Contributor
-The September top contributor is <a itemprop="image" href="https://github.com/dmauser"><img style="height:auto;" alt="Avatar" width="16" height="16" class="avatar avatar-user width-full border bg-white" src="https://user-images.githubusercontent.com/1745412/94791037-c903ec80-03df-11eb-8d39-29e78b0ac470.png" /></a> [Daniel Mauser (dmauser)](https://github.com/dmauser). Thanks Daniel!
-<br/>
-
-<br/>
 
 ## We use KQL
 The content in this repo uses KQL (Kusto Query Language). To get started with queries see [this article](https://docs.microsoft.com/azure/azure-monitor/log-query/get-started-queries).
