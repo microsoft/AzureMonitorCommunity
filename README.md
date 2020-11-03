@@ -16,7 +16,7 @@ Anyone can contribute to the repo, you don't need to be a pro. Have an interesti
 See [Contributing](https://github.com/microsoft/AzureMonitorCommunity/blob/master/CONTRIBUTING.md) for more details.
 
 ### Top Contributor
-The October top contributor is <a itemprop="image" href="https://github.com/dmauser"><img style="height:auto;" alt="Avatar" width="16" height="16" class="avatar avatar-user width-full border bg-white" src="https://user-images.githubusercontent.com/1745412/97993135-50cc8480-1dec-11eb-8812-e3f941b4b9bc.png" /></a> [Bruno Gabrielli (Brunoga-MS)](https://github.com/Brunoga-MS). Thanks Bruno!
+The October top contributor is <a itemprop="image" href="https://github.com/dmauser"><img style="height:auto;" alt="Avatar" width="25" height="25" class="avatar avatar-user width-full border bg-white" src="https://user-images.githubusercontent.com/1745412/97993135-50cc8480-1dec-11eb-8812-e3f941b4b9bc.png" /></a> [Bruno Gabrielli (Brunoga-MS)](https://github.com/Brunoga-MS). Thanks Bruno!
 <br/>
 
 ### Top asks
