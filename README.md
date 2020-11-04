@@ -19,7 +19,7 @@ The October top contributor is <a itemprop="image" href="https://github.com/dmau
 <br/>
 
 ### What's new this month?
-Great workbooks were added, such as AntiMalware Assessment and Azure Inventory (based on Azure Resource Graph), as well as a lot of new queries for many Azure services. For more details see [our Wiki](https://github.com/microsoft/AzureMonitorCommunity/wiki).
+Great workbooks were added, such as [AntiMalware Assessment](https://github.com/microsoft/AzureMonitorCommunity/blob/17fff190f3ed350c25682c5d626a68cfb958f436/Azure%20Services/Azure%20Monitor/Workbooks/Antimalware%20Assessment.json) and [Azure Inventory](https://github.com/microsoft/AzureMonitorCommunity/tree/master/Azure%20Services/Azure%20Resource%20Graph/Workbooks) (based on Azure Resource Graph), as well as a lot of new queries for many Azure services. For more details see [our Wiki](https://github.com/microsoft/AzureMonitorCommunity/wiki).
 
 ### Top asks
 [Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what users are looking for.
