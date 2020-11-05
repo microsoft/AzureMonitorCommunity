@@ -21,8 +21,20 @@ The October top contributor is <a itemprop="image" href="https://github.com/dmau
 ### What's new this month?
 Great workbooks were added, such as [AntiMalware Assessment](https://github.com/microsoft/AzureMonitorCommunity/blob/17fff190f3ed350c25682c5d626a68cfb958f436/Azure%20Services/Azure%20Monitor/Workbooks/Antimalware%20Assessment.json) and [Azure Inventory](https://github.com/microsoft/AzureMonitorCommunity/tree/master/Azure%20Services/Azure%20Resource%20Graph/Workbooks) (based on Azure Resource Graph), as well as a lot of new queries for many Azure services. For more details see [our Wiki](https://github.com/microsoft/AzureMonitorCommunity/wiki).
 
+Check out the [Azure Inventory workbook](https://github.com/microsoft/AzureMonitorCommunity/tree/master/Azure%20Services/Azure%20Resource%20Graph/Workbooks) (based on Azure Resource Graph)
+</br>
+
+![Azure Inventory with Azure Resource Graph](https://user-images.githubusercontent.com/1745412/98221176-fc461800-1f57-11eb-9c28-58948d5acf9e.gif)
+
+</br>
+
+and the [AntiMalware Assessment workbook](https://github.com/microsoft/AzureMonitorCommunity/blob/17fff190f3ed350c25682c5d626a68cfb958f436/Azure%20Services/Azure%20Monitor/Workbooks/Antimalware%20Assessment.json)
+</br>
+
+![Malware Assessment](https://user-images.githubusercontent.com/1745412/98221692-9e660000-1f58-11eb-9aae-d1a43088d409.gif)
+
 ### Top asks
-[Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what users are looking for.
+[Here](https://github.com/microsoft/AzureMonitorCommunity/wiki/Top-asks) are some ideas on what other users are looking for.
 
 ## Structure
 | File/folder       | Description                                		                |
