@@ -1,0 +1,13 @@
+union withsource = tt *
+| where IsBillable = true
+| extend computerName = tolower(tostring(split(Computer,'.')[0]))
+| where computerName == "db102-0029"
+| summarize BillableDataBytes = sum(_BilledSize) by computerName, Type | sort by BillableDataBytes nulls last
+
+//Top 4 Datatypes consumed by BillableDataBytes
+
+union withsource = tt *
+| where IsBillable = true
+| extend computerName = tolower(tostring(split(Computer,'.')[0]))
+| where computerName == "db102-0029"
+| summarize BillableDataBytes = sum(_BilledSize) by computerName, Type | sort by BillableDataBytes nulls last | top 4 by BillableDataBytes
