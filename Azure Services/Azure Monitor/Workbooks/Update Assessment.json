@@ -4,18 +4,6 @@
     {
       "type": 1,
       "content": {
-        "json": "** Author **\r\n[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n\r\n** Version 1.5 **\r\n2020-09-24\r\n- Added default selected value to Subscription, Workspace and Server parameters.\r\n\r\n** Version 1.4 **\r\n2020-05-21\r\n- Revisited parameter section to avoid null selection and error messages.\r\n- Added guidance to configure the UpdateManagement if missing\r\n\r\n** Version 1.3 **\r\n2020-04-06\r\n- Fixed a bug that was preventing a text from being displayed correctly.\r\n\r\n** Version 1.2 **\r\n2020-03-24\r\n- Changed some of the distinct and summarize instructions to use SourceComputerId in order to include Computer names which are the same across different workspaces (duplicate computer names are allowed inside different workspaces).\r\n- Added workspace lookup query to allow duplicate computer name to be recognized based on the WS they are reporting to.\r\n- Moved update details queries inside the group.\r\n- Named the group *Missing Update Details*\r\n\r\n** Version 1.1 **\r\n2020-03-11\r\n- Grouped together the *Total missing updates by computer* tile and the related *List of all updates by selected computer* tile\r\n\r\n** Version 1.0 **\r\n2020-02-27\r\n - Initial version"
-      },
-      "conditionalVisibility": {
-        "parameterName": "_",
-        "comparison": "isEqualTo",
-        "value": "_"
-      },
-      "name": "GeneralInfo"
-    },
-    {
-      "type": 1,
-      "content": {
         "json": "# Update Assessment #"
       },
       "name": "WorkbookName"
@@ -25,7 +13,7 @@
       "content": {
         "version": "KqlParameterItem/1.0",
         "crossComponentResources": [
-          "value::selected"
+          "{Subscriptions}"
         ],
         "parameters": [
           {
@@ -55,15 +43,12 @@
             "crossComponentResources": [
               "value::selected"
             ],
-            "value": [
-            ],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
               ],
               "showDefault": false
             },
-            "timeContextFromParameter": "TimeRange",
             "defaultValue": "value::all",
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources"
@@ -81,13 +66,15 @@
             "crossComponentResources": [
               "{Subscriptions}"
             ],
+            "value": [
+              "/subscriptions/05a1b94d-16d2-461a-8e0d-af047c697628/resourceGroups/mms-weu/providers/Microsoft.OperationalInsights/workspaces/OMS-BR1"
+            ],
             "typeSettings": {
               "additionalResourceOptions": [
-                "value::all"
+                "value::1"
               ],
               "showDefault": false
             },
-            "defaultValue": "value::all",
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources"
           },
@@ -163,17 +150,18 @@
             "crossComponentResources": [
               "{Workspaces}"
             ],
+            "value": [
+              "value::all"
+            ],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
-              ],
-              "showDefault": false
+              ]
             },
             "timeContext": {
               "durationMs": 0
             },
             "timeContextFromParameter": "TimeRange",
-            "defaultValue": "value::all",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
@@ -187,7 +175,7 @@
             "crossComponentResources": [
               "{Workspaces}"
             ],
-            "value": null,
+            "value": "value::1",
             "isHiddenWhenLocked": true,
             "typeSettings": {
               "additionalResourceOptions": [
@@ -214,7 +202,7 @@
             "crossComponentResources": [
               "{Workspaces}"
             ],
-            "value": null,
+            "value": [],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
@@ -240,7 +228,7 @@
             "crossComponentResources": [
               "{Workspaces}"
             ],
-            "value": null,
+            "value": [],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
@@ -277,7 +265,19 @@
             "timeContextFromParameter": "TimeRange",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces",
-            "value": null
+            "value": []
+          },
+          {
+            "id": "05905f19-229e-454a-ab71-c3b682bfca5c",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]"
           }
         ],
         "style": "pills",
@@ -285,6 +285,34 @@
         "resourceType": "microsoft.resourcegraph/resources"
       },
       "name": "ParameterSection-1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.4 **\r\n>2020-12-10\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>** Version 1.4 **\r\n>2020-05-21\r\n>- Revisited parameter section to avoid null selection and error messages.\r\n>- Added guidance to configure the UpdateManagement if missing\r\n>\r\n>** Version 1.3 **\r\n>2020-04-06\r\n>- Fixed a bug that was preventing a text from being displayed correctly.\r\n>\r\n>** Version 1.2 **\r\n>2020-03-24\r\n>- Changed some of the distinct and summarize instructions to use SourceComputerId in order to include Computer names which are the same across different workspaces (duplicate computer names are allowed inside different workspaces).\r\n>- Added workspace lookup query to allow duplicate computer name to be recognized based on the WS they are reporting to.\r\n>- Moved update details queries inside the group.\r\n>- Named the group *Missing Update Details*\r\n>\r\n>** Version 1.1 **\r\n>2020-03-11\r\n>- Grouped together the *Total missing updates by computer* tile and the related *List of all updates by selected computer* tile\r\n>\r\n>** Version 1.0 **\r\n>2020-02-27\r\n> - Initial version"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "66",
+      "name": "GeneralInfo",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\nWelcome to the Update Management workbook. This workbook is designed to to ease the reporting for virtual machine patching status in the given time frame. It gives the flexibility of excluding patches by: month of publishing, KBID, Classification. You can select single or multiple virtual machine, subscriptions and workspaces to report on. You can also select a time range with the most common patterns or custom interval.\r\n\r\n## Requirements ##\r\n\r\n* A [Log Analytics workspace.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n\r\n* [Update Management](https://docs.microsoft.com/en-us/azure/automation/update-management/overview) enabled.\r\n"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
     },
     {
       "type": 1,

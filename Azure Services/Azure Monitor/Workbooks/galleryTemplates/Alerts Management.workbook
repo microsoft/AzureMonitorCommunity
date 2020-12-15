@@ -1,0 +1,922 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Alert Management #"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "1e2b3246-fe4e-4d39-b265-7a42a4ae46c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "DefaultSubscription_Internal",
+            "type": 1,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ '{DefaultSubscription_Internal}', true, false)",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/05a1b94d-16d2-461a-8e0d-af047c697628"
+            ]
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "60ec20c5-d827-417f-9144-cc2b60a1c760",
+            "version": "KqlParameterItem/1.0",
+            "name": "Aggregation",
+            "type": 2,
+            "isRequired": true,
+            "value": "2h",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    { \"value\":\"1h\", \"label\":\"1 hour\", \"selected\":false },\r\n    { \"value\":\"2h\", \"label\":\"2 hours\", \"selected\":false },\r\n    { \"value\":\"6h\", \"label\":\"6 hours\", \"selected\":true },\r\n    { \"value\":\"12h\", \"label\":\"12 hours\", \"selected\":false },\r\n    { \"value\":\"24h\", \"label\":\"24 hours\", \"selected\":false }\r\n]"
+          },
+          {
+            "id": "e3edd042-100d-4ba8-9d3f-2016f2f822a3",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n    { \"value\": \"Yes\", \"label\": \"Yes\" },\r\n    { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n    { \"value\": \"ChangeLog\", \"label\": \"Change Log\" }\r\n]"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "># Change Log#\r\n>\r\n>** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.1 **\r\n>2020-12-04\r\n>* Added the 'Show Help' parameters which allows you to see the 'Get Started' page or this 'Change Log'.\r\n>* Fixed Affected Object for some Azure Service Health Alerts\r\n>\r\n>** Version 1.0 **\r\n>2020-12-02\r\n>* Initial version"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "70",
+      "name": "changeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\nWelcome to the Alert Management workbook. This workbook is designed to provide you with an understanding of how your alert management process (aka Alert Lifecycle) for is doing.\r\n\r\nFor additional information about the Azure Monitor alerts, see [Overview of alerts in Microsoft Azure](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-overview)\r\n\r\n## Prerequistes ##\r\n\r\nThis workbook has no prerequisites since alerts are managed via Azure Resource Graph. If you are unfamiliar with how Azur Resource Graph, see [What is Azure Resource Graph?](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview).\r\n"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "customWidth": "70",
+      "name": "getStarted",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| summarize count() by tostring(properties.essentials.monitorService)",
+        "size": 3,
+        "title": "Triggered Alerts by type.",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "visualization": "piechart"
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "triggeredAlertsByType",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| summarize count() by tostring(properties.essentials.alertState)",
+        "size": 3,
+        "title": "Triggered Alerts by state.",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "visualization": "piechart"
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "triggeredAlertsByState",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"New\"\r\n| where properties.essentials.monitorCondition == \"Fired\"\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend AffectedObjects = case (\r\n                        monitorService == \"Log Analytics\", tostring(properties.context.AffectedConfigurationItems),\r\n                        monitorService == \"VM Insights\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"ServiceHealth\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"Platform\", tostring(properties.context.AffectedConfigurationItems),\r\n                        \"Unmapped\"\r\n                        )\r\n| summarize Count = count() by AffectedObjects\r\n| top 5 by Count",
+        "size": 0,
+        "title": "Top 5 alerts by noisiest objects.",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "visualization": "barchart"
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "top5NoisyObjects",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"New\"\r\n| extend TimeGenerated = todatetime(properties.essentials.startDateTime)\r\n| summarize [\"Alert Count\"] = count() by bin(TimeGenerated, ({Aggregation}))\r\n| sort by TimeGenerated asc",
+        "size": 0,
+        "title": "New Alerts Trend aggregated by '{Aggregation:label}'.",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "visualization": "barchart",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "TimeGenerated",
+              "formatter": 6
+            }
+          ]
+        },
+        "sortBy": [],
+        "chartSettings": {
+          "group": null,
+          "createOtherGroup": 0
+        },
+        "mapSettings": {
+          "locInfo": "LatLong",
+          "sizeSettings": "count_",
+          "sizeAggregation": "Sum",
+          "legendMetric": "count_",
+          "legendAggregation": "Sum",
+          "itemColorSettings": {
+            "type": "heatmap",
+            "colorAggregation": "Sum",
+            "nodeColorField": "count_",
+            "heatmapPalette": "greenRed"
+          }
+        }
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "newAlertsTrend",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| summarize \r\n            totalAlerts = count(),\r\n            newAlerts = countif(alertState == \"New\"),\r\n            ackAlerts = countif(alertState == \"Acknowledged\"),\r\n            closedAlerts = countif(alertState == \"Closed\")\r\n            by Severity\r\n| sort by Severity asc",
+        "size": 0,
+        "title": "Alerts Summary By Severity",
+        "exportedParameters": [
+          {
+            "fieldName": "Severity",
+            "parameterName": "alertSeverity",
+            "parameterType": 1
+          },
+          {
+            "fieldName": "alertState",
+            "parameterName": "alertState",
+            "parameterType": 1
+          }
+        ],
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "Severity"
+            },
+            {
+              "columnId": "totalAlerts",
+              "label": "Total alerts"
+            },
+            {
+              "columnId": "newAlerts",
+              "label": "New"
+            },
+            {
+              "columnId": "ackAlerts",
+              "label": "Acknowledged"
+            },
+            {
+              "columnId": "closedAlerts",
+              "label": "Closed"
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "summaryBySeverity",
+      "styleSettings": {
+        "margin": "500",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Active alets filtered by severity.",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| summarize count() by Severity",
+              "size": 3,
+              "exportFieldName": "Severity",
+              "exportParameterName": "alertSeverity",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Severity",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "count_",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true
+              }
+            },
+            "showPin": true,
+            "name": "activeAlertsBySeverity",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Click on each severity tile to get a filtered result table with alert details.",
+              "style": "info"
+            },
+            "name": "text - 16",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ],
+        "exportParameters": true
+      },
+      "customWidth": "50",
+      "name": "grp_FilteredBySev",
+      "styleSettings": {
+        "padding": "10px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"New\"\r\n| where properties.essentials.monitorCondition == \"Fired\"\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| where Severity == ('{alertSeverity}')\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend monitorCondition = tostring(properties.essentials.monitorCondition)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend AffectedObjects = case (\r\n                        monitorService == \"Log Analytics\", tostring(properties.context.AffectedConfigurationItems),\r\n                        monitorService == \"VM Insights\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"ServiceHealth\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"Platform\", tostring(properties.context.AffectedConfigurationItems),\r\n                        \"Unmapped\"\r\n                        )\r\n| project createdOn, name, Severity, lastModified, AffectedObjects, Details = \"Click for more details\", Description, alertState, monitorService, monitorCondition, properties\r\n| sort by createdOn desc\r\n",
+        "size": 0,
+        "title": "Open alerts filtered by severity == '{alertSeverity}'",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "createdOn",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            },
+            {
+              "columnMatch": "lastModified",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "Description",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "alertState",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "monitorCondition",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "properties",
+              "formatter": 5
+            }
+          ],
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "createdOn",
+              "label": "Created On"
+            },
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "Severity"
+            },
+            {
+              "columnId": "lastModified",
+              "label": "Last modified"
+            },
+            {
+              "columnId": "AffectedObjects",
+              "label": "Affected object(s)"
+            },
+            {
+              "columnId": "Details"
+            },
+            {
+              "columnId": "Description"
+            },
+            {
+              "columnId": "alertState",
+              "label": "State"
+            },
+            {
+              "columnId": "monitorService",
+              "label": "Monitor service"
+            },
+            {
+              "columnId": "monitorCondition",
+              "label": "Monitor condition"
+            },
+            {
+              "columnId": "properties"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "alertSeverity",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "triggeredAlertsDetailsFilteredBySeverity",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"New\"\r\n| where properties.essentials.monitorCondition == \"Fired\"\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend AffectedObjects = case (\r\n                        monitorService == \"Log Analytics\", tostring(properties.context.AffectedConfigurationItems),\r\n                        monitorService == \"VM Insights\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"ServiceHealth\", tostring(properties.context.context.activityLog.properties.service),\r\n                        monitorService == \"Platform\", tostring(properties.context.AffectedConfigurationItems),\r\n                        \"Unmapped\"\r\n                        )\r\n| project createdOn, name, Severity, lastModified, AffectedObjects, Details = \"Click for more details\", Description, alertState, monitorService, properties\r\n| sort by createdOn desc",
+        "size": 0,
+        "title": "Active (New) Alerts",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "createdOn",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            },
+            {
+              "columnMatch": "lastModified",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "AffectedObjects",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "alertState",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "monitorService",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "properties",
+              "formatter": 5
+            }
+          ],
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "createdOn",
+              "label": "Created On"
+            },
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "lastModified",
+              "label": "Last modified"
+            },
+            {
+              "columnId": "AffectedObjects",
+              "label": "Affected Object(s)"
+            },
+            {
+              "columnId": "Details"
+            },
+            {
+              "columnId": "alertState",
+              "label": "Alert state"
+            },
+            {
+              "columnId": "monitorService",
+              "label": "Monitor service"
+            },
+            {
+              "columnId": "properties",
+              "label": "Properties"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "showPin": true,
+      "name": "openAlerts",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"Closed\"\r\n//| where properties.essentials.monitorCondition == \"Fired\"\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend AffectedObjects = case (\r\n                        monitorService == \"Log Analytics\", tostring(properties.context.AffectedConfigurationItems),\r\n                        monitorService == \"VM Insights\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"ServiceHealth\", tostring(properties.context.context.activityLog.properties.service),\r\n                        monitorService == \"Platform\", tostring(properties.context.AffectedConfigurationItems),\r\n                        \"Unmapped\"\r\n                        )\r\n| project createdOn, name, Severity, lastModified, AffectedObjects, Details = \"Click for more details\", Description, alertState, monitorService, properties\r\n| sort by createdOn desc",
+        "size": 0,
+        "title": "Closed Alerts",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "createdOn",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            },
+            {
+              "columnMatch": "lastModified",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "AffectedObjects",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "alertState",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "monitorService",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "properties",
+              "formatter": 5
+            }
+          ],
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "createdOn",
+              "label": "Created On"
+            },
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "lastModified",
+              "label": "Last modified"
+            },
+            {
+              "columnId": "AffectedObjects",
+              "label": "Affected Object(s)"
+            },
+            {
+              "columnId": "Details"
+            },
+            {
+              "columnId": "alertState",
+              "label": "Alert state"
+            },
+            {
+              "columnId": "monitorService",
+              "label": "Monitor service"
+            },
+            {
+              "columnId": "properties",
+              "label": "Properties"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "showPin": true,
+      "name": "closedAlerts",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"Acknowledged\"\r\n//| where properties.essentials.monitorCondition == \"Fired\"\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend AffectedObjects = case (\r\n                        monitorService == \"Log Analytics\", tostring(properties.context.AffectedConfigurationItems),\r\n                        monitorService == \"VM Insights\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"ServiceHealth\", tostring(properties.context.context.activityLog.properties.service),\r\n                        monitorService == \"Platform\", tostring(properties.context.AffectedConfigurationItems),\r\n                        \"Unmapped\"\r\n                        )\r\n| project createdOn, name, Severity, lastModified, AffectedObjects, Details = \"Click for more details\", Description, alertState, monitorService, properties\r\n| sort by createdOn desc",
+        "size": 0,
+        "title": "Acknowledged Alerts",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "createdOn",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            },
+            {
+              "columnMatch": "lastModified",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "AffectedObjects",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "alertState",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "monitorService",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "properties",
+              "formatter": 5
+            }
+          ],
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "createdOn",
+              "label": "Created On"
+            },
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "lastModified",
+              "label": "Last modified"
+            },
+            {
+              "columnId": "AffectedObjects",
+              "label": "Affected Object(s)"
+            },
+            {
+              "columnId": "Details"
+            },
+            {
+              "columnId": "alertState",
+              "label": "Alert state"
+            },
+            {
+              "columnId": "monitorService",
+              "label": "Monitor service"
+            },
+            {
+              "columnId": "properties",
+              "label": "Properties"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "showPin": true,
+      "name": "acknowledgedAlerts",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange}\r\n| where properties.essentials.alertState == \"New\"\r\n| where properties.essentials.monitorCondition == \"Resolved\"\r\n\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend monitorCondition = tostring(properties.essentials.monitorCondition)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend AffectedObjects = case (\r\n                        monitorService == \"Log Analytics\", tostring(properties.context.AffectedConfigurationItems),\r\n                        monitorService == \"VM Insights\", tostring(properties.essentials.targetResourceName),\r\n                        monitorService == \"ServiceHealth\", tostring(properties.context.context.activityLog.properties.service),\r\n                        monitorService == \"Platform\", tostring(properties.context.AffectedConfigurationItems),\r\n                        \"Unmapped\"\r\n                        )\r\n| project createdOn, name, Severity, lastModified, AffectedObjects, Details = \"Click for more details\", Description, alertState, monitorService, monitorCondition, properties\r\n| sort by createdOn desc",
+        "size": 0,
+        "title": "Inactive alerts ('Resolved' that could be set to 'Closed')",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "createdOn",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            },
+            {
+              "columnMatch": "lastModified",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "AffectedObjects",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "alertState",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "monitorService",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "monitorCondition",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "properties",
+              "formatter": 5
+            }
+          ],
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "createdOn",
+              "label": "Created On"
+            },
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "Severity"
+            },
+            {
+              "columnId": "lastModified",
+              "label": "Last modified"
+            },
+            {
+              "columnId": "AffectedObjects",
+              "label": "Affected Object(s)"
+            },
+            {
+              "columnId": "Details"
+            },
+            {
+              "columnId": "Description"
+            },
+            {
+              "columnId": "alertState",
+              "label": "Alert state"
+            },
+            {
+              "columnId": "monitorService",
+              "label": "Monitor service"
+            },
+            {
+              "columnId": "monitorCondition",
+              "label": "Monitor condition"
+            },
+            {
+              "columnId": "properties",
+              "label": "Properties"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "showPin": true,
+      "name": "closeableAlerts",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
