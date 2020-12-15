@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Line chart of response times
+// Description: Time series of mean response time (over 5 minute intervals).
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: Azure Metrics
+
+AzureMetrics 
+| extend timeBin = bin(TimeGenerated, 5m) 
+| summarize ResponseTime = sumif(Average, MetricName=="AverageResponseTime") by timeBin, bin(TimeGenerated, 1h) 
+| sort by TimeGenerated desc 
+| render timechart

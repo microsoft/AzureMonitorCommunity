@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Updates available for Windows machines
+// Description: List the Windows update KBIDs available by their classification and for each Computer.
+// Categories: Virtual Machines,Security
+// Resource types: Automation accounts
+// Topic: Azure Update Management
+
+Update
+| where TimeGenerated>ago(14h) 
+| where UpdateState =~ "Needed" and OSType != "Linux" 
+| summarize by Computer, Classification, Product, KBID

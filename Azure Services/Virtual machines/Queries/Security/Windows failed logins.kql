@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Windows failed logins
+// Description: Find reports of Windows accounts that failed to login.
+// Categories: Virtual Machines,Security
+// Resource types: Virtual machines
+// Topic: Security
+
+SecurityEvent
+| where EventID == 4625
+| summarize count() by TargetAccount, Computer, _ResourceId // count the reported security events for each account
+// This query requires the Security solution

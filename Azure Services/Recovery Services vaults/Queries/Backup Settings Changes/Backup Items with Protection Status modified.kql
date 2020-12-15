@@ -1,0 +1,23 @@
+// Author: Microsoft Azure
+// Display name: Backup Items with Protection Status modified
+// Description: Find out if the protection status for any Backup Item has been modified in the selected time range.
+// Categories: IT & Management Tools,Security
+// Resource types: Recovery Services vaults
+// Topic: Backup Settings Changes
+
+//Get Backup Items and their Protection State at the start of the selected time range.
+let BackupItemsAtStartOfPeriod = CoreAzureBackup
+| where OperationName == "BackupItem" 
+| summarize arg_min(TimeGenerated, *) by BackupItemUniqueId 
+| project BackupItemUniqueId , OldProtectionState=BackupItemProtectionState;
+
+//Get Backup Items and their Protection State at the end of the selected time range.
+let BackupItemsAtEndOfPeriod = CoreAzureBackup 
+| where OperationName == "BackupItem" 
+| summarize arg_max(TimeGenerated, *) by BackupItemUniqueId 
+| project BackupItemUniqueId , NewProtectionState=BackupItemProtectionState;
+
+//List Backup Items for which Protection State has been modified in the selected time range.
+BackupItemsAtStartOfPeriod 
+| join (BackupItemsAtEndOfPeriod) on BackupItemUniqueId 
+| where OldProtectionState != NewProtectionState

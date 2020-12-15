@@ -1,0 +1,29 @@
+// Author: Microsoft Azure
+// Display name: Readiness status per Node
+// Description: For all your cluster view count of all the nodes by readiness.
+// Categories: Containers
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Availability
+
+//Customize startDateTime, endDateTime to select custom time range
+let endDateTime = now();
+let startDateTime = ago(1h);
+let trendBinSize = 1m;
+KubeNodeInventory
+| where TimeGenerated < endDateTime
+| where TimeGenerated >= startDateTime
+| distinct ClusterName, Computer, _ResourceId,TimeGenerated
+| summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName, Computer, _ResourceId
+| join hint.strategy=broadcast kind=inner (
+    KubeNodeInventory //this calculating ready node count.
+    | where TimeGenerated < endDateTime
+    | where TimeGenerated >= startDateTime
+    | summarize TotalCount = count(), ReadyCount = sumif(1, Status contains ('Ready'))
+                by ClusterName, Computer,  bin(TimeGenerated, trendBinSize), _ResourceId //calculating NotReadyCount
+    | extend NotReadyCount = TotalCount - ReadyCount
+) on ClusterName, Computer, _ResourceId, TimeGenerated
+ //projecting all the fields
+| project   TimeGenerated, ClusterName, Computer, ReadyCount = todouble(ReadyCount) / ClusterSnapshotCount, 
+            NotReadyCount = todouble(NotReadyCount) / ClusterSnapshotCount, _ResourceId
+| order by ClusterName asc, Computer asc, TimeGenerated desc, _ResourceId

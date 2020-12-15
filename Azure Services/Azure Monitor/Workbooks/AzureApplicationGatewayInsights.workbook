@@ -1,0 +1,971 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "** Author **\r\n[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n\r\n** Version 1.0 **\r\n2020-10-22\r\n - Initial version. Inspired by https://github.com/iamrobdavies/MonitoringExamples/tree/master/ApplicationGateway/Dashboard and https://docs.microsoft.com/en-us/archive/blogs/robdavies/monitoring-application-gateway-with-azure-log-analytics"
+      },
+      "conditionalVisibility": {
+        "parameterName": "_",
+        "comparison": "isEqualTo",
+        "value": "_"
+      },
+      "name": "text - 20"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Azure Application Gateway Insights#"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "1e2b3246-fe4e-4d39-b265-7a42a4ae46c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "DefaultSubscription_Internal",
+            "type": 1,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ '{DefaultSubscription_Internal}', true, false)",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, selected = iff(id =~ todynamic('{DefaultSubscription_Internal}').ws, true, false), custId= properties.customerId",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "value": "/subscriptions/5733bcb3-7fde-4caf-8629-41dc15e3b352/resourceGroups/CH-OpsRG-Pri/providers/Microsoft.OperationalInsights/workspaces/CH-LA",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 172800000
+            }
+          },
+          {
+            "id": "ce7bc1af-150e-43c2-a3ee-2e31c86ed5c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "p_waf",
+            "label": "Application Gateway",
+            "type": 2,
+            "isRequired": true,
+            "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where ResourceType == \"APPLICATIONGATEWAYS\"\r\n| distinct Resource",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "value": "CH-APPFEAPPGATE-SEC",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "d4b63f41-737d-46e6-a441-81bf8d8467b1",
+            "version": "KqlParameterItem/1.0",
+            "name": "WAF_AzureDiagnostics_NotEnabled",
+            "type": 2,
+            "isRequired": true,
+            "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category in (\"ApplicationGatewayFirewallLog\", \"ApplicationGatewayAccessLog\", \"ApplicationGatewayPerformanceLog\")\r\n| top 10 by TimeGenerated desc\r\n| summarize count() by Resource\r\n",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 2419200000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::1",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "<br>\r\n### ⚠️ AzureDiagnostics for '{p_waf}' Azure Application Firewall not configured or not reporting to the selected workspace(s).\r\n---\r\n\r\nAzureDiagnosics has not been configured for the selected Application Gateways or is configured to store data in a different workspace.\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the Diagnostic logs at [this](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging) link."
+      },
+      "conditionalVisibility": {
+        "parameterName": "WAF_AzureDiagnostics_NotEnabled",
+        "comparison": "isEqualTo",
+        "value": "0"
+      },
+      "name": "WAF_AzureDiagnostics_NotEnabled"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "889cafa4-bb3c-4581-af2e-14d5b684ce4e",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Firewall Log",
+                  "subTarget": "ApplicationGatewayFirewallLog",
+                  "style": "link"
+                },
+                {
+                  "id": "3a4e0fee-692c-49b7-95fa-3a8354896c4f",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Access Log",
+                  "subTarget": "ApplicationGatewayAccessLog",
+                  "style": "link"
+                },
+                {
+                  "id": "231de103-7ab4-4049-8305-da7bdede4271",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Performance Log",
+                  "subTarget": "ApplicationGatewayPerformanceLog",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 7"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "parameters": [
+                {
+                  "id": "c7d07d8f-dad7-4b21-9166-10fbd8e5c6fa",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "IsFirewallLogConfigured",
+                  "type": 2,
+                  "isRequired": true,
+                  "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource in ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| summarize count()",
+                  "crossComponentResources": [
+                    "{Workspaces}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 2592000000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                {
+                  "id": "09cd6f07-a37e-4cbe-b4bc-1318e393529e",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "IsAccessLogConfigured",
+                  "type": 2,
+                  "isRequired": true,
+                  "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource in ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| summarize count()",
+                  "crossComponentResources": [
+                    "{Workspaces}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 2592000000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                {
+                  "id": "bf61516d-c629-4942-add5-75547b89b6cc",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "IsPerformanceLogConfigured",
+                  "type": 2,
+                  "isRequired": true,
+                  "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource in ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n//| take 1\r\n| summarize count()",
+                  "crossComponentResources": [
+                    "{Workspaces}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 2592000000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 4"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<br>\r\n### ⚠️ AzureDiagnostics for the selected '{p_waf}' Azure Application Firewall is not configured to log '{selectedTab}' to the selected workspace(s).\r\n---\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the Diagnostic logs at [this](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging) link."
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "ApplicationGatewayFirewallLog"
+              },
+              {
+                "parameterName": "IsFirewallLogConfigured",
+                "comparison": "isEqualTo",
+                "value": "0"
+              }
+            ],
+            "name": "warningFirewallLog"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<br>\r\n### ⚠️ AzureDiagnostics for the selected '{p_waf}' Azure Application Firewall is not configured to log '{selectedTab}' to the selected workspace(s).\r\n---\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the Diagnostic logs at [this](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging) link."
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "ApplicationGatewayAccessLog"
+              },
+              {
+                "parameterName": "IsAccessLogConfigured",
+                "comparison": "isEqualTo",
+                "value": "0"
+              }
+            ],
+            "name": "warningAccessLog"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<br>\r\n### ⚠️ AzureDiagnostics for the selected '{p_waf}' Azure Application Firewall is not configured to log '{selectedTab}' to the selected workspace(s).\r\n---\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the Diagnostic logs at [this](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging) link."
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "ApplicationGatewayPerformanceLog"
+              },
+              {
+                "parameterName": "IsPerformanceLogConfigured",
+                "comparison": "isEqualTo",
+                "value": "0"
+              }
+            ],
+            "name": "warningPerformanceLog"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "e5ffb1f9-376e-41be-a4dd-b49e81cdc26b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "p_msg",
+                        "label": "Message",
+                        "type": 2,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource in ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where Message !has \"Score Exceeded\"\r\n| where Message !has \"\\\\u0000\"\r\n| where Message != \"Mandatory rule. Cannot be disabled. Multipart parser detected a possible unmatched boundary.\"\r\n| distinct Message\r\n",
+                        "crossComponentResources": [
+                          "{Workspaces}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 0
+                        },
+                        "timeContextFromParameter": "TimeRange",
+                        "defaultValue": "value::all",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - 2"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where Message in ({p_msg})\r\n| summarize count() by action_s",
+                    "size": 1,
+                    "title": "Count of requests by Action",
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "piechart"
+                  },
+                  "customWidth": "50",
+                  "name": "Requests_By_Action",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where Message in ({p_msg})\r\n| where action_s == \"Blocked\"\r\n| summarize count() by ruleId_s",
+                    "size": 1,
+                    "title": "Count of blocked requests by rule Id",
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "piechart"
+                  },
+                  "customWidth": "50",
+                  "name": "CountOfBlockedRequestsByRuleId",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where Message in ({p_msg})\r\n| where action_s == \"Blocked\"\r\n| summarize count() by Message\r\n| top 50 by count_ desc",
+                    "size": 0,
+                    "title": "Count of blocked requests by rule name (Top 50 - Excluding \"Anomaly Score Exceeded\")",
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "Message"
+                        },
+                        {
+                          "columnId": "count_",
+                          "label": "Count"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "CountOfBlockedRequestsByRuleName_Top50",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where Message in ({p_msg})\r\n| where action_s == \"Blocked\"\r\n| extend patternMatch = replace(@\"Warning. Pattern match \",@\"\",details_message_s)\r\n| extend regExMatch = tostring(split(patternMatch,\" at \")[0])\r\n| extend requestType = tostring(split(split(patternMatch,\" at \")[1],\":\")[0])\r\n| extend object = tostring(split(split(patternMatch,\" at \")[1],\":\")[1])\r\n| summarize count() by requestType, object, details_file_s\r\n| sort by requestType asc, object asc",
+                    "size": 0,
+                    "title": "Blocked requests by request type and object",
+                    "timeContextFromParameter": "TimeRange",
+                    "exportedParameters": [
+                      {
+                        "fieldName": "requestType",
+                        "parameterName": "p_requestType",
+                        "parameterType": 1
+                      },
+                      {
+                        "fieldName": "object",
+                        "parameterName": "p_object",
+                        "parameterType": 1
+                      }
+                    ],
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "requestType",
+                          "formatter": 5
+                        }
+                      ],
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "requestType"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "requestType",
+                          "label": "Request Type"
+                        },
+                        {
+                          "columnId": "object",
+                          "label": "Request Object"
+                        },
+                        {
+                          "columnId": "details_file_s",
+                          "label": "Rule file name"
+                        },
+                        {
+                          "columnId": "count_",
+                          "label": "Count"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "BlockedRequestByRequestTypeAndObject",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "💡 _Click on the row to select an object to see more details._"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "p_requestType",
+                    "comparison": "isEqualTo"
+                  },
+                  "name": "GuideToRequestSelection"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayFirewallLog\"\r\n| where Message in ({p_msg})\r\n| where action_s == \"Blocked\"\r\n| extend patternMatch = replace(@\"Warning. Pattern match \",@\"\",details_message_s)\r\n| extend regExMatch = tostring(split(patternMatch,\" at \")[0])\r\n| extend requestType = tostring(split(split(patternMatch,\" at \")[1],\":\")[0])\r\n| extend object = tostring(split(split(patternMatch,\" at \")[1],\":\")[1])\r\n| extend matchedData = tostring(split(details_data_s,\":\")[3])\r\n| where requestType == (\"{p_requestType}\")\r\n| where object == (\"{p_object}\")\r\n| extend matchedData = iif(isempty(matchedData),\"This field was not populated.\",matchedData)\r\n| extend details_data_s = iif(isempty(details_data_s),\"This field was not populated.\",details_data_s)\r\n| project TimeGenerated, regExMatch, requestType, object, matchedData, details_data_s, ruleId_s, details_file_s, clientIp_s, requestUri_s",
+                    "size": 0,
+                    "title": "Details for requests with Request Type == '{p_requestType}' and Request Object == '{p_object}'. Click on the 'Request Object' column for more details.",
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "regExMatch",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "object",
+                          "formatter": 1,
+                          "formatOptions": {
+                            "linkTarget": "GenericDetails",
+                            "linkIsContextBlade": true
+                          }
+                        },
+                        {
+                          "columnMatch": "matchedData",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "ruleId_s",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "details_file_s",
+                          "formatter": 5
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "TimeGenerated"
+                        },
+                        {
+                          "columnId": "regExMatch",
+                          "label": "RegEx"
+                        },
+                        {
+                          "columnId": "requestType",
+                          "label": "Request Type"
+                        },
+                        {
+                          "columnId": "object",
+                          "label": "Request Object"
+                        },
+                        {
+                          "columnId": "matchedData",
+                          "label": "RegEx Matched Data"
+                        },
+                        {
+                          "columnId": "details_data_s",
+                          "label": "Matched Data Message"
+                        },
+                        {
+                          "columnId": "ruleId_s",
+                          "label": "Rule Id"
+                        },
+                        {
+                          "columnId": "details_file_s",
+                          "label": "Rule file name"
+                        },
+                        {
+                          "columnId": "clientIp_s",
+                          "label": "Client IP"
+                        },
+                        {
+                          "columnId": "requestUri_s",
+                          "label": "Request URI"
+                        }
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "p_requestType",
+                    "comparison": "isNotEqualTo"
+                  },
+                  "name": "BlockedRequestByRequestTypeAndObject_Details"
+                }
+              ]
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "ApplicationGatewayFirewallLog"
+              },
+              {
+                "parameterName": "IsFirewallLogConfigured",
+                "comparison": "isNotEqualTo",
+                "value": "0"
+              }
+            ],
+            "name": "grp_FirewallLog"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "87ab718a-3cdc-4737-9aa9-1505f41961b8",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "p_api",
+                        "label": "URI",
+                        "type": 2,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| distinct requestUri_s",
+                        "crossComponentResources": [
+                          "{Workspaces}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 2419200000
+                        },
+                        "timeContextFromParameter": "TimeRange",
+                        "defaultValue": "value::all",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - 1"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| where requestUri_s in ({p_api})\r\n| summarize count() by requestUri_s, bin(TimeGenerated, 1m)",
+                    "size": 0,
+                    "aggregation": 5,
+                    "title": "Requests/min by URI",
+                    "timeContext": {
+                      "durationMs": 172800000
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "exportFieldName": "requestURI_s",
+                    "exportParameterName": "p_requestURI_s",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "showPin": false,
+                  "name": "requestsPerMinByUri"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| where requestUri_s in ({p_api})\r\n| where httpStatus_d >= 400\r\n| summarize count() by httpStatus_d, requestUri_s\r\n| project httpStatus_d, requestUri_s, count_",
+                    "size": 0,
+                    "title": "Failed Requests by URI",
+                    "timeContext": {
+                      "durationMs": 172800000
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "filter": true
+                    }
+                  },
+                  "name": "countOfFailedRequestByURI"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| where requestUri_s in ({p_api})\r\n| where httpStatus_d >= 400\r\n| summarize count() by serverRouted_s, bin(TimeGenerated, 5m)",
+                    "size": 0,
+                    "aggregation": 5,
+                    "title": "Failed requests by back-end pools.",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "FailedRequestsByBackEndPools"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "💡 _Should you get any returned data in the below chart, please refer to [Troubleshooting bad gateway errors in Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-troubleshooting-502)."
+                  },
+                  "name": "text - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| where httpStatus_d == 502\r\n| summarize count() by serverRouted_s, bin(TimeGenerated, 5m)",
+                    "size": 0,
+                    "aggregation": 5,
+                    "title": "HTTP 502 errors by back-end pools (every 5 mins).",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "Http502ByBackEndPools"
+                }
+              ]
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "ApplicationGatewayAccessLog"
+              },
+              {
+                "parameterName": "IsAccessLogConfigured",
+                "comparison": "isNotEqualTo",
+                "value": "0"
+              }
+            ],
+            "name": "grp_AccessLog"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let unHealthyHostCount = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize max(unHealthyHostCount_d) by Resource, bin(TimeGenerated, 1m);\r\nlet HealthyHostCount = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize max(healthyHostCount_d) by Resource, bin(TimeGenerated, 1m);\r\nunHealthyHostCount\r\n| union HealthyHostCount\r\n",
+                    "size": 0,
+                    "title": "Count of  backend Virtual Machines by status.",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "CountOfVmByStatus"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let allReqs = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(requestCount_d) by bin(TimeGenerated, 1m);\r\nlet failedReqs = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(failedRequestCount_d) by bin(TimeGenerated, 1m);\r\nallReqs\r\n| union failedReqs\r\n",
+                    "size": 0,
+                    "title": "Avg Requests per min",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "AvgRequestsPerMin"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(throughput_d) by Resource, bin(TimeGenerated, 1m)\r\n| extend ThroughputMb = (avg_throughput_d/1000)/1000\r\n| project Resource, TimeGenerated, ThroughputMb",
+                    "size": 0,
+                    "title": "Avg throughput per second (Mb)",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "AvgThroughputPerSecMb"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(latency_d) by bin(TimeGenerated, 1m)",
+                    "size": 0,
+                    "title": "Avg Latency (ms)",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "AvgLatencyMs"
+                }
+              ]
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "ApplicationGatewayPerformanceLog"
+              },
+              {
+                "parameterName": "IsPerformanceLogConfigured",
+                "comparison": "isNotEqualTo",
+                "value": "0"
+              }
+            ],
+            "name": "grp_PerformanceLog"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "WAF_AzureDiagnostics_NotEnabled",
+        "comparison": "isNotEqualTo",
+        "value": "0"
+      },
+      "name": "Workbook_Content"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

@@ -1,0 +1,16 @@
+// Author: Microsoft Azure
+// Display name: Request errors by user agent
+// Description: Count number of requests with error responses by user agent.
+// Categories: Network
+// Resource types: CDN profiles
+// Topic: Errors
+
+// Request errors by user agent 
+// Count number of requests with error responses by user agent. 
+// Summarize number of requests per user agent and status codes >= 400
+AzureDiagnostics
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write" and Category == "AzureCdnAccessLog" 
+| where isReceivedFromClient_b == true
+| where toint(httpStatusCode_s) >= 400
+| summarize RequestCount = count() by UserAgent = userAgent_s, StatusCode = httpStatusCode_s , Resource
+| order by RequestCount desc

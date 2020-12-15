@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Windows Fireawall policy settings changed by machines
+// Description: Windows Fireawall policy settings changed by machines.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event 
+| where EventLog == "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall" and EventID == 2008 
+| summarize count() by Computer 
+| limit 10000

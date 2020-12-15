@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: SDK version of devices
+// Description: List of devices and their SDK versions.
+// Categories: Azure Resources
+// Resource types: IoT Hub
+// Topic: Diagnostics
+
+// this query works on device connection or when your device uses device to cloud twin operations
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DEVICES" and ResourceType == "IOTHUBS"
+| where Category == "Connections" or  Category == "D2CTwinOperations"
+| extend parsed_json = parse_json(properties_s) 
+| extend SDKVersion = tostring(parsed_json.sdkVersion) , DeviceId = tostring(parsed_json.deviceId)
+| distinct DeviceId, SDKVersion, TimeGenerated, _ResourceId

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Calculate Chat Operation Duration Percentiles
+// Description: Calculates the 90th, 95th, and 99th percentiles of run duration in ms for each Chat operation. It can be customized to be run for a single operation, or for other percentiles.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Performance
+
+ACSChatIncomingOperations
+// where OperationName == "<operation>" // This can be uncommented and specified to calculate only a single operation's duration percentiles
+| summarize percentiles(DurationMs, 90, 95, 99) by OperationName, OperationVersion // calculate 90th, 95th, and 99th percentiles of each Operation

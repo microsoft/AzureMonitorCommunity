@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: RD Client version
+// Description: List of RD client versions used in the last 24 hours.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Host pools
+// Topic: Usage
+
+// Use this query to understand which client version users are using. 
+// Count is by unique users there where connected in the specified timeframe. 
+WVDConnections  
+| where TimeGenerated > ago(24h) 
+| summarize UserCount=dcount(UserName) by ClientType, ClientVersion 
+| sort by ClientVersion, ClientType, UserCount desc

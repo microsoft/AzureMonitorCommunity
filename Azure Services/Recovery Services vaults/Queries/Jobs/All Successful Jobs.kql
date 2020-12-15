@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All Successful Jobs
+// Description: View all successful jobs in the selected time range.
+// Categories: Audit
+// Resource types: Recovery Services vaults
+// Topic: Jobs
+
+AddonAzureBackupJobs
+| summarize arg_max(TimeGenerated,*) by JobUniqueId
+| where JobStatus == "Completed"

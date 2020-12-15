@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Stopped Windows services
+// Description: Find all windows services that stopped in the last 30 minutes.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Diagnostics
+
+ConfigurationChange  // (relies on the Change Tracking solution): 
+| where ConfigChangeType == "WindowsServices" and SvcChangeType == "State"
+| where SvcPreviousState == "Running" and SvcState == "Stopped"
+| where SvcStartupType == "Auto" and TimeGenerated > ago(30m)

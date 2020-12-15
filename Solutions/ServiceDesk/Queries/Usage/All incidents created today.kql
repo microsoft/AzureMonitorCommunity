@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: All incidents created today
+// Description: Retrieves all Incident work items generated in this solution during the last day.
+// Categories: management
+// Solutions: ServiceDesk
+// Topic: Usage
+
+ServiceDesk_CL
+|where  ServiceDeskWorkItemType_s == "Incident" and CreatedDate_t > bin(now(), 1d) 
+| summarize arg_max(TimeGenerated, *) by ServiceDeskId_s 
+| sort by TimeGenerated desc

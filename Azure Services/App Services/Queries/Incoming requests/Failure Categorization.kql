@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Failure Categorization
+// Description: Categorize all requests which resulted in 5xx.
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: Incoming requests
+
+AppServiceHTTPLogs 
+//| where ResourceId = "MyResourceId" // Uncomment to get results for a specific resource Id when querying over a group of Apps
+| where ScStatus >= 500
+| reduce by strcat(CsMethod, ':\\', CsUriStem)

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Count app logs by severity
+// Description: Bar chart of app log severities over time.
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: App Logs
+
+AppServiceAppLogs 
+| summarize count()  by CustomLevel, bin(TimeGenerated, 1h), _ResourceId
+| render barchart

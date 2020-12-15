@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Top logical partition keys by storage
+// Description: Identify largest logical partition key values. PartitionKeyStatistics will emit data for top logical partition keys by storage.
+// Categories: Azure Resources
+// Resource types: Cosmos DB
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where Category == "PartitionKeyStatistics"
+//| where collectionName_s == "CollectionToAnalyze" //Replace to target the query to a collection
+| summarize arg_max(TimeGenerated, *) by databaseName_s, collectionName_s, partitionKey_s, _ResourceId //Get the latest storage size
+| extend utilizationOf20GBLogicalPartition = sizeKb_d / 20000000 //20GB
+| project TimeGenerated, databaseName_s , collectionName_s , partitionKey_s, sizeKb_d, utilizationOf20GBLogicalPartition, _ResourceId

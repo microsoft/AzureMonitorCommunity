@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Bytes received by each IIS computer
+// Description: Total bytes received by each IIS computer.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Usage
+
+W3CIISLog 
+| summarize sum_csBytes = sum(csBytes) by Computer 
+| top 500 by sum_csBytes desc

@@ -1,0 +1,315 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## NSG and Flow Logs Analytics\n---\n\nNSGs and Flow Logs statistics and anomalies. For the **rule age threshold**, input the age (in days) that a rule must have before being flagged as inactive. For the **rule inactivity threshold**, input the number of days without flow logs (counting backwards from now) a rule must have been to be flagged as inactive. The **overall time range** refers to the scope of this analysis and must be larger than any of the thresholds."
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "05338f3d-03ed-4dd6-b92e-b3a2bc3ea08d",
+            "version": "KqlParameterItem/1.0",
+            "name": "OverallTimeRange",
+            "label": "Overall Time Range",
+            "type": 4,
+            "description": "The time range to look for NSG Flow Logs and Topology records (depends on Workspace retention)",
+            "isRequired": true,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ]
+            }
+          },
+          {
+            "id": "4c8c4eb4-2f44-4600-aebe-117f246d9b8e",
+            "version": "KqlParameterItem/1.0",
+            "name": "RuleExistenceThreshold",
+            "label": "Rule Age Threshold (days)",
+            "type": 1,
+            "description": "The threshold in days an NSG rule must be existing in order to show up in inactivity analysis",
+            "isRequired": true,
+            "value": "6"
+          },
+          {
+            "id": "dac62969-3dbc-4d4a-b69e-c1b24cff535c",
+            "version": "KqlParameterItem/1.0",
+            "name": "RuleInactiveThreshold",
+            "label": "Rule Inactivity Threshold (days)",
+            "type": 1,
+            "description": "The threshold in days an NSG rule must be inactive in order to be flagged in analysis",
+            "isRequired": true,
+            "value": "5"
+          },
+          {
+            "id": "cbf1fbe1-719c-497a-a706-7b05b7958f7c",
+            "version": "KqlParameterItem/1.0",
+            "name": "Debug",
+            "type": 1,
+            "value": "false",
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "OverallTimeRange"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "ScopeParameters"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "resources \r\n| where type =~ 'microsoft.network/networksecuritygroups'\r\n| extend nsgId = tolower(id)\r\n| join kind = leftouter (\r\n    resources \r\n    | where type =~ 'microsoft.network/networkwatchers/flowlogs'\r\n\t| extend trafficAnalyticsEnabledField = tostring(properties.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.enabled)\r\n    | project nsgId = tolower(properties.targetResourceId), trafficAnalyticsEnabledField\r\n) on nsgId\r\n| extend trafficAnalyticsEnabled = iif((isnotempty(trafficAnalyticsEnabledField) and isnotnull(trafficAnalyticsEnabledField)), trafficAnalyticsEnabledField, 'false')\r\n| where trafficAnalyticsEnabled == 'true'\r\n| distinct nsgId\r\n",
+        "size": 0,
+        "title": "NSGs with Traffic Analytics enabled",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "gridSettings": {
+          "rowLimit": 1000
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Debug",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "name": "TrafficAnalyticsEnabledNSGs"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let RuleInactiveThreshold = {RuleInactiveThreshold:value}d;\r\n\r\nlet FlowEnabledNSGs = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroup' and IsFlowEnabled_b == 'true' and TimeGenerated > ago(24h)\r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', Name_s))\r\n| distinct NSGId;\r\n\r\nlet NSGsWithFlowLogs = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"FlowLog\" and TimeGenerated > ago(RuleInactiveThreshold)\r\n| extend NSGId = tolower(NSGList_s)\r\n| summarize NSGFlowCount = sum(FlowCount_d) by NSGId\r\n| where NSGFlowCount > 0;\r\n\r\nFlowEnabledNSGs\r\n| where NSGId !in (NSGsWithFlowLogs)\r\n| project NSGId = strcat('/subscriptions/', split(NSGId, \"/\")[0], '/resourceGroups/', split(NSGId, \"/\")[1], '/providers/Microsoft.Network/networkSecurityGroups/', split(NSGId, \"/\")[2])",
+        "size": 4,
+        "title": "NSGs with Traffic Analytics Enabled (Log Analytics) but without flow logs",
+        "noDataMessage": "All the Traffic Analytics enabled NSGs are streaming logs",
+        "noDataMessageStyle": 3,
+        "queryType": 0,
+        "visualization": "table"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Debug",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "customWidth": "100",
+      "name": "NSGsWithFlowLogsIssuesLogAnalytics"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "resources \r\n| where type =~ 'microsoft.network/networksecuritygroups'\r\n| extend nsgId = tolower(id)\r\n| join kind = leftouter (\r\n    resources \r\n    | where type =~ 'microsoft.network/networkwatchers/flowlogs'\r\n\t| extend trafficAnalyticsEnabledField = tostring(properties.flowAnalyticsConfiguration.networkWatcherFlowAnalyticsConfiguration.enabled)\r\n    | project nsgId = tolower(properties.targetResourceId), trafficAnalyticsEnabledField\r\n) on nsgId\r\n| extend trafficAnalyticsEnabled = iif((isnotempty(trafficAnalyticsEnabledField) and isnotnull(trafficAnalyticsEnabledField)), trafficAnalyticsEnabledField, 'false')\r\n| summarize count() by trafficAnalyticsEnabled\r\n",
+        "size": 1,
+        "title": "NSGs and Traffic Analytics state",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "visualization": "piechart",
+        "chartSettings": {
+          "seriesLabelSettings": [
+            {
+              "seriesName": "false",
+              "label": "Disabled",
+              "color": "redBright"
+            },
+            {
+              "seriesName": "true",
+              "label": "Enabled",
+              "color": "green"
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "NSGsTrafficAnalyticsState"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"c8b0e669-9cd9-4a35-ba29-1e66b1f7b04a\",\"mergeType\":\"inner\",\"leftTable\":\"TrafficAnalyticsEnabledNSGs\",\"rightTable\":\"NSGsWithFlowLogsIssuesLogAnalytics\",\"leftColumn\":\"nsgId\",\"rightColumn\":\"NSGId\"}],\"projectRename\":[{\"originalName\":\"[TrafficAnalyticsEnabledNSGs].nsgId\",\"mergedName\":\"NSG\",\"fromId\":\"c8b0e669-9cd9-4a35-ba29-1e66b1f7b04a\"},{\"originalName\":\"[NSGsWithFlowLogsIssuesLogAnalytics].NSGId\"}]}",
+        "size": 0,
+        "title": "NSGs with Traffic Analytics enabled but without flow logs",
+        "noDataMessage": "All the Traffic Analytics enabled NSGs are streaming logs",
+        "noDataMessageStyle": 3,
+        "queryType": 7
+      },
+      "customWidth": "50",
+      "name": "NSGsWithFlowLogsIssuesARGMerge"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let RuleInactiveThreshold = {RuleInactiveThreshold:value}d;\r\n\r\nlet FlowEnabledNSGs = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroup' and IsFlowEnabled_b == 'true' and TimeGenerated > ago(1d)\r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', Name_s))\r\n| distinct NSGId;\r\n\r\nlet NSGRules = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroupRule' and TimeGenerated {OverallTimeRange:value}\r\n| extend RuleName = tostring(split(Name_s, \"/\")[2]) \r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', split(Name_s, \"/\")[0], '/', split(Name_s, \"/\")[1]))\r\n| summarize ExistsSince = min(TimeGenerated), LastSeen = max(TimeGenerated) by RuleName, NSGId;\r\n\r\nlet NSGsWithFlowLogs = FlowEnabledNSGs \r\n| join kind=inner (\r\n    AzureNetworkAnalytics_CL\r\n    | where SubType_s == \"FlowLog\" and TimeGenerated > ago(RuleInactiveThreshold)\r\n    | extend NSGId = tolower(NSGList_s)\r\n    | summarize NSGFlowCount = sum(FlowCount_d) by NSGId\r\n    | where NSGFlowCount > 0\r\n) on NSGId\r\n| project-away NSGId1;\r\n\r\nNSGRules\r\n| where LastSeen > ago(1d)\r\n| join kind=inner ( NSGsWithFlowLogs ) on NSGId\r\n| project-away NSGId1\r\n| extend NSG = tostring(split(NSGId, \"/\")[2])\r\n| distinct NSG, RuleName\r\n| summarize count() by NSG\r\n| order by NSG asc",
+        "size": 1,
+        "title": "Rule count per NSG with Flow Logs",
+        "noDataMessage": "There aren't any NSGs with Flow Logs activity for the selected time range",
+        "noDataMessageStyle": 4,
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "OverallTimeRange",
+        "queryType": 0,
+        "visualization": "categoricalbar",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "ResourceGroup",
+              "formatter": 5,
+              "formatOptions": {}
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "ResourceGroup"
+            },
+            {
+              "columnId": "NSG"
+            },
+            {
+              "columnId": "count_",
+              "label": "Rules"
+            }
+          ]
+        },
+        "chartSettings": {
+          "ySettings": {
+            "max": 120
+          }
+        }
+      },
+      "name": "NSGsWithFlowLogsActivitySummary"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let RuleExistenceThreshold = {RuleExistenceThreshold:value}d;\r\nlet RuleInactiveThreshold = {RuleInactiveThreshold:value}d;\r\n\r\nlet FlowEnabledNSGs = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroup' and IsFlowEnabled_b == 'true' and TimeGenerated > ago(1d)\r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', Name_s))\r\n| distinct NSGId;\r\n\r\nlet NSGRules = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroupRule' and TimeGenerated {OverallTimeRange:value}\r\n| extend RuleName = tostring(split(Name_s, \"/\")[2]) \r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', split(Name_s, \"/\")[0], '/', split(Name_s, \"/\")[1]))\r\n| summarize ExistsSince = min(TimeGenerated), LastSeen = max(TimeGenerated) by RuleName, NSGId;\r\n\r\nlet NSGsWithFlowLogs = FlowEnabledNSGs \r\n| join kind=inner (\r\n    AzureNetworkAnalytics_CL\r\n    | where SubType_s == \"FlowLog\" and TimeGenerated > ago(RuleInactiveThreshold)\r\n    | extend NSGId = tolower(NSGList_s)\r\n    | summarize NSGFlowCount = sum(FlowCount_d) by NSGId\r\n    | where NSGFlowCount > 0\r\n) on NSGId\r\n| project-away NSGId1;\r\n\r\nlet FlowLogsByRule = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"FlowLog\" and TimeGenerated > ago(RuleInactiveThreshold)\r\n| extend NSGId = tolower(NSGList_s)\r\n| extend RuleName = NSGRule_s\r\n| project NSGId, RuleName, FlowCount_d;\r\n\r\nNSGRules\r\n| where ExistsSince < ago(RuleExistenceThreshold) and LastSeen > ago(1d)\r\n| join kind=inner ( NSGsWithFlowLogs ) on NSGId\r\n| project-away NSGId1\r\n| join kind=leftouter ( FlowLogsByRule) on NSGId, RuleName\r\n| project-away NSGId1, RuleName1\r\n| summarize RuleFlowCount = sum(FlowCount_d) by NSGId, RuleName\r\n| where RuleFlowCount == 0\r\n| extend NSG = tostring(split(NSGId, \"/\")[2])\r\n| distinct NSG, RuleName\r\n| summarize count() by NSG\r\n| order by NSG asc\r\n",
+        "size": 1,
+        "title": "Inactive Rules Summary",
+        "noDataMessage": "There aren't inactive rules",
+        "noDataMessageStyle": 3,
+        "timeContext": {
+          "durationMs": 2592000000
+        },
+        "timeContextFromParameter": "OverallTimeRange",
+        "queryType": 0,
+        "visualization": "categoricalbar",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "ResourceGroup",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "count_",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        },
+        "chartSettings": {
+          "xSettings": {},
+          "ySettings": {
+            "max": 120
+          }
+        }
+      },
+      "name": "InactiveRulesStatistics"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let RuleExistenceThreshold = {RuleExistenceThreshold:value}d;\r\nlet RuleInactiveThreshold = {RuleInactiveThreshold:value}d;\r\n\r\nlet FlowEnabledNSGs = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroup' and IsFlowEnabled_b == 'true' and TimeGenerated > ago(1d)\r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', Name_s))\r\n| distinct NSGId;\r\n\r\nlet NSGRules = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"Topology\" and ResourceType == 'NetworkSecurityGroupRule' and TimeGenerated {OverallTimeRange:value}\r\n| extend RuleName = tostring(split(Name_s, \"/\")[2]) \r\n| extend NSGId = tolower(strcat(tostring(Subscription_g), '/', split(Name_s, \"/\")[0], '/', split(Name_s, \"/\")[1]))\r\n| summarize ExistsSince = min(TimeGenerated), LastSeen = max(TimeGenerated) by RuleName, NSGId;\r\n\r\nlet NSGsWithFlowLogs = FlowEnabledNSGs \r\n| join kind=inner (\r\n    AzureNetworkAnalytics_CL\r\n    | where SubType_s == \"FlowLog\" and TimeGenerated > ago(RuleInactiveThreshold)\r\n    | extend NSGId = tolower(NSGList_s)\r\n    | summarize NSGFlowCount = sum(FlowCount_d) by NSGId\r\n    | where NSGFlowCount > 0\r\n) on NSGId\r\n| project-away NSGId1;\r\n\r\nlet FlowLogsByRule = AzureNetworkAnalytics_CL\r\n| where SubType_s == \"FlowLog\" and TimeGenerated > ago(RuleInactiveThreshold)\r\n| extend NSGId = tolower(NSGList_s)\r\n| extend RuleName = NSGRule_s\r\n| project NSGId, RuleName, FlowCount_d;\r\n\r\nNSGRules\r\n| where ExistsSince < ago(RuleExistenceThreshold) and LastSeen > ago(1d)\r\n| join kind=inner ( NSGsWithFlowLogs ) on NSGId\r\n| project-away NSGId1\r\n| join kind=leftouter ( FlowLogsByRule) on NSGId, RuleName\r\n| project-away NSGId1, RuleName1\r\n| summarize RuleFlowCount = sum(FlowCount_d) by NSGId, RuleName\r\n| where RuleFlowCount == 0\r\n| distinct NSGId, RuleName\r\n| project NSGId = strcat('/subscriptions/', split(NSGId, \"/\")[0], '/resourceGroups/', split(NSGId, \"/\")[1], '/providers/Microsoft.Network/networkSecurityGroups/', split(NSGId, \"/\")[2]), RuleName\r\n| order by NSGId asc, RuleName asc\r\n",
+        "size": 0,
+        "title": "Inactive Rules",
+        "noDataMessage": "There aren't inactive rules",
+        "noDataMessageStyle": 3,
+        "showExportToExcel": true,
+        "queryType": 0,
+        "gridSettings": {
+          "rowLimit": 1000,
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "NSGId",
+              "label": "NSG"
+            },
+            {
+              "columnId": "RuleName",
+              "label": "Rule Name"
+            }
+          ]
+        }
+      },
+      "name": "InactiveRulesList",
+      "styleSettings": {
+        "progressStyle": "loader"
+      }
+    }
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

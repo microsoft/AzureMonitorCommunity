@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Amount of Network Traffic by Process
+// Description: Amount of Network Traffic (in Bytes) by Process.
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| summarize sum(TotalBytes) by ProcessName

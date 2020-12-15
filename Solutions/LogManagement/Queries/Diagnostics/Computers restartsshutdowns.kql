@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Computers restarts/shutdowns
+// Description: List restart and shutdowns events for all monitor computers.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event
+| where  EventLog == "System" and Source == "User32" and EventID == 1074
+| search "shutdown"
+| sort by TimeGenerated desc 
+| project TimeGenerated, Computer

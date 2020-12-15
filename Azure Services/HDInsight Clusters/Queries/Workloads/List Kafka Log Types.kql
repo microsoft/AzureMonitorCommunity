@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: List Kafka Log Types
+// Description: All Kafka Log Types that have entered the workspace within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightKafkaLogs
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| summarize any(*) by LogType //displays each type of log that has entered workspace in specified timeframe
+| project LogType, any_LogLevel, any_Message

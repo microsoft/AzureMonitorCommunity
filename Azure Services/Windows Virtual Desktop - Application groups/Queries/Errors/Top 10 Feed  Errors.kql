@@ -1,0 +1,22 @@
+// Author: Microsoft Azure
+// Display name: Top 10 Feed  Errors
+// Description: Bar Chart of top 10 none service-related feed errors by user count in the last 24 hours.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Application groups.Windows Virtual Desktop - Host pools.Windows Virtual Desktop - Workspaces
+// Topic: Errors
+
+// Query top 10 feed errors by number of users experiencing a specific error when subscribing to list of applications.
+// Alternatively replace "UserName" in the query by "CorrelationID" to see how often the error has occurred.
+// The "CorrelationId" is unique for each connection attempt. 
+// The flag on ServiceError helps to focus on issues that are more likely mitigated by administrative tasks. 
+// Change the ActivityType based on the issues you are troubleshooting. 
+WVDErrors
+| where TimeGenerated > ago(24h)
+| where ServiceError == "false" 
+| where ActivityType == "Feed"  
+| summarize UserCount = count(UserName) by CodeSymbolic 
+| sort by UserCount desc 
+| top 10 by UserCount 
+| render barchart  
+// Go to https://aka.ms/wvdgetstarted and review additional guidance for diagnostics in the How To section.
+// Our troubleshooting guidance has information on escalation paths.

@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: ExpressRoute Circuit ArpAvailablility graph
+// Description: Traffic graph for ArpAvailability (5 minutes).
+// Categories: Azure Monitor,Network
+// Resource types: ExpressRoute circuits
+// Topic: Diagnostics
+
+AzureMetrics
+| where MetricName == "ArpAvailability"
+| summarize by Average, bin(TimeGenerated, 5m), Resource
+| render timechart

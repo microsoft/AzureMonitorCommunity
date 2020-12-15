@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Slowest queries
+// Description: Identify top 5 slowest queries.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Performance
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
+| where Category == "QueryStoreRuntimeStatistics"
+| where user_id_s != "10" //exclude azure system user
+| summarize avg(todouble(mean_time_s)) by event_class_s , db_id_s ,query_id_d
+| top 5 by avg_mean_time_s desc

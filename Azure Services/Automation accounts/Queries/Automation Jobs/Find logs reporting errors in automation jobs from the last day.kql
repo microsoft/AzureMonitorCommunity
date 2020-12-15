@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Find logs reporting errors in automation jobs from the last day
+// Description: List all the errors in the automation jobs.
+// Categories: Azure Resources
+// Resource types: Automation accounts
+// Topic: Automation Jobs
+
+AzureDiagnostics 
+| where ResourceProvider == "MICROSOFT.AUTOMATION" 
+| where StreamType_s == "Error" 
+| project TimeGenerated, Category, JobId_g, OperationName, RunbookName_s, ResultDescription, _ResourceId

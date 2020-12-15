@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Missing update specific product
+// Description: WSUS computer membership.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+UpdateSummary
+| summarize AggregatedValue = count() by WSUSServer, Computer, _ResourceId

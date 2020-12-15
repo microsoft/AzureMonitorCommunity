@@ -1,0 +1,10 @@
+// Author: Billy York www.cloudsma.com
+// Display name: FSLogix Profile Event Log
+// Description: parsing the FSLogix Event Log
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - FSLogix
+// Topic: Event log
+Event
+| where Source == 'FSLogix-Apps'
+| where EventID == 25
+| parse RenderedDescription with * "Username: " UserName:string " "*

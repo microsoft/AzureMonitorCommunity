@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Management operations in the last 7 days
+// Description: This lists all the management calls for the last 7 days.
+// Categories: Azure Monitor
+// Resource types: Service Bus
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where TimeGenerated > ago(7d)
+| where ResourceProvider =="MICROSOFT.SERVICEBUS"
+| where Category == "OperationalLogs"
+| summarize count() by EventName_s, _ResourceId

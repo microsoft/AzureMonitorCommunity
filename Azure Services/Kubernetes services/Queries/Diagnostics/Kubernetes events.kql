@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Kubernetes events
+// Description: Lists all the Kubernetes events.
+// Categories: Containers,Azure Resources
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Diagnostics
+
+KubeEvents
+| where TimeGenerated > ago(7d) 
+| where not(isempty(Namespace))
+| top 200 by TimeGenerated desc

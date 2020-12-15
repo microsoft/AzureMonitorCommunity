@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Shut down Virtual Machines
+// Description: Virtual Machines successfully shut down in the last 10 minutes.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Availability
+
+AzureActivity
+| where TimeGenerated > ago(10m)
+| where OperationName == "Deallocate Virtual Machine" and ActivityStatus == "Succeeded"

@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: GetDirectLineChannelLogs
+// Description: Retrieve all logs associated with Direct Line channel.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+// This query helps retrieve logs associated with Direct Line channel.
+// You can replace "directline" with any channel whose logs you 
+// would like to retrieve such as facebook, slack, etc. 
+
+ABSBotRequests
+| where TimeGenerated > ago(12h)
+| where Channel == "directline"
+| sort by TimeGenerated desc

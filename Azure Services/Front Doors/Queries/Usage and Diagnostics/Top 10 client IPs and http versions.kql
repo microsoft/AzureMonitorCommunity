@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Top 10 client IPs and http versions
+// Description: Show top 10 client IPs and http versions.
+// Categories: Network
+// Resource types: Front Doors
+// Topic: Usage and Diagnostics
+
+// Summarize top 10 client ips and http versions
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorAccessLog"
+| where isReceivedFromClient_b == true
+| summarize RequestCount = count() by ClientIP = clientIp_s, HttpVersion = httpVersion_s, Resource
+| top 10 by RequestCount 
+| order by RequestCount desc

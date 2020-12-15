@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: CPU utilization treshold above 95% on managed instances
+// Description: Display all managed instances with CPU treshold being over 95% of treshold.
+// Categories: IT & Management Tools
+// Resource types: SQL managed instances
+// Topic: Utilization
+
+let cpu_percentage_threshold = 95;
+let time_threshold = ago(1h);
+AzureDiagnostics
+| where Category == "ResourceUsageStats" and TimeGenerated > time_threshold
+| summarize avg_cpu = max(todouble(avg_cpu_percent_s)) by _ResourceId
+| where avg_cpu > cpu_percentage_threshold

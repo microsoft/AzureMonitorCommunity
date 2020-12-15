@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Find Errors
+// Description: Search for errors in the last 6 hours.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Errors
+
+AzureDiagnostics
+| where TimeGenerated > ago(6h)
+| where Category == "PostgreSQLLogs"
+| where  errorLevel_s contains "error"

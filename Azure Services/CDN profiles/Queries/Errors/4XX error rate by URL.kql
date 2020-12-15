@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: 4XX error rate by URL
+// Description: Show 4XX error rate by URL.
+// Categories: Network
+// Resource types: CDN profiles
+// Topic: Errors
+
+// Request errors rate by URL
+// Count number of requests with error responses by URL. 
+// Summarize number of requests by URL, and status codes are 4XX
+AzureDiagnostics
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write" and Category == "AzureCdnAccessLog" and isReceivedFromClient_b == true
+| extend Is4XX = (toint(httpStatusCode_s ) >= 400 and toint(httpStatusCode_s ) < 500)
+| summarize 4xxrate = (1.0 * countif(Is4XX)  / count()) * 100 by requestUri_s, bin(TimeGenerated, 1h)

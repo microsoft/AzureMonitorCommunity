@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Distinct Clients Resolving Malicious Domains
+// Description: Distinct clients resolving malicious domains.
+// Categories: security
+// Solutions: DnsAnalytics
+// Topic: Security
+
+DnsEvents
+| where SubType == 'LookupQuery' and isnotempty(MaliciousIP)
+| summarize count() by ClientIP

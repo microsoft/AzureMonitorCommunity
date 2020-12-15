@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Agents that provide wire data
+// Description: Agents providing wire data and sum of total bytes for each agent.
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| summarize sum(TotalBytes) by Computer

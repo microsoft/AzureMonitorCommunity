@@ -1,9 +1,0 @@
-// Author: Microsoft Azure
-// Display name: Search in multiple tables
-// Description: Search both Syslog and Event tables for the term "login".
-// Categories: virtualmachines
-// Resource types: Virtual machines
-// Topic: Diagnostics
-
-search in (Syslog, Event) "login"
-| where TimeGenerated > ago(1h) // return records from the last hour

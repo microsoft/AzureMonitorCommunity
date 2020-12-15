@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: DigitalTwin API Usage
+// Description: Count of DigitalTwin APIs by type (read, write and delete).
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Usage
+
+ADTDigitalTwinsOperation
+| summarize count() by OperationName
+| render piechart

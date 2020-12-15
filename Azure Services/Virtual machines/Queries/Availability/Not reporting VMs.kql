@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Not reporting VMs
+// Description: VMs that have not reported a heartbeat in the last 5 minutes.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Availability
+
+Heartbeat 
+| where TimeGenerated > ago(24h)
+| summarize LastCall = max(TimeGenerated) by Computer, _ResourceId
+| where LastCall < ago(5m)

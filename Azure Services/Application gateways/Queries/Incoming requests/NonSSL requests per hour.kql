@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Non-SSL requests per hour
+// Description: Count of the Non-SSL requests on the Application Gateway.
+// Categories: Network
+// Resource types: Application gateways
+// Topic: Incoming requests
+
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS" and OperationName == "ApplicationGatewayAccess" and sslEnabled_s == "off"
+| summarize AggregatedValue = count() by bin(TimeGenerated, 1h), _ResourceId
+| render timechart

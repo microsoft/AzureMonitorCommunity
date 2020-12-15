@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: AutoDeleted entities
+// Description: Summary of all the entities that have been auto-deleted.
+// Categories: Audit
+// Resource types: Service Bus
+// Topic: Usage
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.SERVICEBUS"
+| where Category == "OperationalLogs"
+| where EventName_s startswith "AutoDelete"
+| summarize count() by EventName_s, _ResourceId

@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Weekly Usage Breakdown
+// Description: Over the past week, get the total usage for each mode each day.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Usage
+
+ACSBillingUsage
+| where TimeGenerated > startofday(ago(7d)) and TimeGenerated < startofday(now()) // look at the usage for the past 7 full days
+| summarize Usage=sum(Quantity) by UsageType, bin(TimeGenerated, 1d) // count the number of units for each type of usage for each day
+| render columnchart

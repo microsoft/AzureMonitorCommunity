@@ -1,0 +1,332 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "f7f26206-8274-413b-a4c3-3720164f19a9",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 2419200000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "6b37afb3-f9ab-4d8b-8d16-e5a403ecf5f3",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "value::1"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1"
+              ],
+              "includeAll": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "483edb21-5f30-4903-92e1-8ef4061b443b",
+            "version": "KqlParameterItem/1.0",
+            "name": "ServiceBusNameSpace",
+            "label": "Service Bus",
+            "type": 5,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.servicebus/namespaces'\r\n| project id\r\n",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": "value::1",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 0"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "cellValue": "tabView",
+            "linkTarget": "parameter",
+            "linkLabel": "Messages",
+            "subTarget": "Messages",
+            "preText": "Messages",
+            "style": "link"
+          },
+          {
+            "cellValue": "tabView",
+            "linkTarget": "parameter",
+            "linkLabel": "Requests",
+            "subTarget": "Requests",
+            "preText": "Requests",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 3"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Messages",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook77909021-afde-439e-90ef-60f68a9a2cdf",
+              "version": "MetricsItem/2.0",
+              "size": 4,
+              "chartType": -1,
+              "resourceType": "microsoft.servicebus/namespaces",
+              "metricScope": 0,
+              "resourceParameter": "ServiceBusNameSpace",
+              "resourceIds": [
+                "{ServiceBusNameSpace}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 2419200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--DeadletteredMessages",
+                  "aggregation": 4,
+                  "columnName": "Dead Letter Messages"
+                },
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--ActiveMessages",
+                  "aggregation": 4,
+                  "columnName": "Active Messages"
+                },
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--ThrottledRequests",
+                  "aggregation": 1,
+                  "columnName": "Throttled Requests"
+                },
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--ScheduledMessages",
+                  "aggregation": 4,
+                  "columnName": "Scheduled Messages"
+                },
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--ServerErrors",
+                  "aggregation": 1,
+                  "columnName": "Server Errors"
+                }
+              ],
+              "gridFormatType": 1,
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Metric",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": null,
+                    "showIcon": true
+                  }
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                },
+                "showBorder": false
+              },
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "Summary"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbooke85a7c78-9793-492b-aefa-e146eedd3055",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.servicebus/namespaces",
+              "metricScope": 0,
+              "resourceParameter": "ServiceBusNameSpace",
+              "resourceIds": [
+                "{ServiceBusNameSpace}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 2419200000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--IncomingMessages",
+                  "aggregation": 1,
+                  "splitBy": null,
+                  "columnName": "Incoming Messages"
+                },
+                {
+                  "namespace": "microsoft.servicebus/namespaces",
+                  "metric": "microsoft.servicebus/namespaces--OutgoingMessages",
+                  "aggregation": 1,
+                  "columnName": "Outgoing Messages"
+                }
+              ],
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 0"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tabView",
+        "comparison": "isEqualTo",
+        "value": "Messages"
+      },
+      "name": "group - 4"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook835c1cb9-d40e-4703-853b-6f402ad18fa6",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.servicebus/namespaces",
+        "metricScope": 0,
+        "resourceParameter": "ServiceBusNameSpace",
+        "resourceIds": [
+          "{ServiceBusNameSpace}"
+        ],
+        "timeContextFromParameter": "TimeRange",
+        "timeContext": {
+          "durationMs": 2419200000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.servicebus/namespaces",
+            "metric": "microsoft.servicebus/namespaces--IncomingRequests",
+            "aggregation": 1,
+            "splitBy": null,
+            "columnName": "Incoming Requests"
+          },
+          {
+            "namespace": "microsoft.servicebus/namespaces",
+            "metric": "microsoft.servicebus/namespaces--SuccessfulRequests",
+            "aggregation": 1,
+            "columnName": "Successful Requests"
+          },
+          {
+            "namespace": "microsoft.servicebus/namespaces",
+            "metric": "microsoft.servicebus/namespaces--ServerErrors",
+            "aggregation": 1,
+            "columnName": "Server Errors"
+          },
+          {
+            "namespace": "microsoft.servicebus/namespaces",
+            "metric": "microsoft.servicebus/namespaces--UserErrors",
+            "aggregation": 1,
+            "columnName": "User Errors"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "tabView",
+        "comparison": "isEqualTo",
+        "value": "Requests"
+      },
+      "name": "metric - 2"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

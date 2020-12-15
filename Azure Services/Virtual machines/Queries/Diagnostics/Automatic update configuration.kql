@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Automatic update configuration
+// Description: Automatic update configuration.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+UpdateSummary
+| summarize AggregatedValue = count() by WindowsUpdateSetting, Computer, _ResourceId

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Summary of updates available across machines
+// Description: Count of updates available under various categories for each machine.
+// Categories: Virtual Machines,Security
+// Resource types: Automation accounts
+// Topic: Azure Update Management
+
+UpdateSummary 
+| where TimeGenerated>ago(14h) 
+| summarize by Computer, CriticalUpdatesMissing, SecurityUpdatesMissing, OtherUpdatesMissing, TotalUpdatesMissing

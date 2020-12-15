@@ -1,0 +1,16 @@
+// Author: Microsoft Azure
+// Display name: Requests per hour
+// Description: Render line chart showing total request per hour.
+// Categories: Network
+// Resource types: CDN profiles
+// Topic: Usage
+
+// Requests per hour 
+// Render line chart showing total requests per hour 
+// Summarize number of requests per hour 
+// Change bins resolution from 1hr to 5m to get real time results)
+AzureDiagnostics 
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write" and Category == "AzureCdnAccessLog" 
+| where isReceivedFromClient_b == "true"
+| summarize RequestCount = count() by bin(TimeGenerated, 1h), Resource
+| render timechart

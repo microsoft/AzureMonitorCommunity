@@ -1,0 +1,24 @@
+// Author: Microsoft Azure
+// Display name: Agent latency spikes - Heartbeat table
+// Description: Check for agent latency spikes in the ingestion of Heartbeats in the last 24 hour.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Health
+
+// This query calculates ingestion duration every 10 minutes, and looks for spikes
+let StartTime = ago(24h);
+let EndTime = now();
+let MinRSquare = 0.9; // Tune the sensitivity of the detection sensor. Higher numbers make the detector more sensitive
+Heartbeat
+| where TimeGenerated between (StartTime .. EndTime)
+// calculate ingestion duration in seconds
+| extend AgentLatencySeconds = (_TimeReceived-TimeGenerated)/1s
+// Create a time series
+| make-series RatioSeries=avg(AgentLatencySeconds) default=0 on TimeGenerated in range(StartTime , EndTime,10m)
+// Apply a 2-line regression to the time series
+| extend (RSquare2, SplitIdx, Variance2, RVariance2, LineFit2) = series_fit_2lines(RatioSeries)
+// Find out if our 2-line is trending up or down
+|extend (Slope, Interception, RSquare, Variance, RVariance, LineFit) = series_fit_line(LineFit2)
+// Check whether the line fit reaches the threshold, and if the spike represents an increase (rather than a decrease)
+| project PatternMatch = iff(RSquare2 > MinRSquare and Slope>0, "Spike detected", "No spike")

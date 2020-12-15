@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Response time trend
+// Description: Chart request duration over the last 12 hours.
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Performance
+
+AppRequests
+| where TimeGenerated > ago(12h) 
+| summarize avgRequestDuration=avg(DurationMs) by bin(TimeGenerated, 10m), _ResourceId // use a time grain of 10 minutes
+| render timechart

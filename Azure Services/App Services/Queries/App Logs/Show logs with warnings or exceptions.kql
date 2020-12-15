@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Show logs with warnings or exceptions
+// Description: A list of logs which contain warnings or exceptions (latest logs shown first).
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: App Logs
+
+FunctionAppLogs
+| where Level == "Warning" or Level == "Error"
+| project TimeGenerated, HostInstanceId, Level, Message, _ResourceId
+| sort by TimeGenerated desc

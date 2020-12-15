@@ -1,9 +1,0 @@
-// Author: Microsoft Azure
-// Display name: Latest metrics
-// Description: Show the latest metrics reports for each reported metric.
-// Categories: resources
-// Resource types: Azure Monitor
-// Topic: Azure diagnostics
-
-AzureMetrics 
-| summarize arg_max(TimeGenerated, UnitName, Total, Count, Maximum, Minimum, Average) by MetricName

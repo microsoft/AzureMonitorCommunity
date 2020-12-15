@@ -1,9 +1,0 @@
-// Author: Microsoft Azure
-// Display name: Operations' status
-// Description: Show the latest Azure activity log for each operation.
-// Categories: audit
-// Resource types: Azure Activity logs
-// Topic: Activity logs
-
-AzureActivity 
-| summarize arg_max(TimeGenerated, *) by OperationName 

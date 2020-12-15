@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Show the trend of a selected event
+// Description: Chart how many times an event was reported along the last day.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Diagnostics
+
+Event
+| where EventID == 44 // this ID indicates Windows Update started downloading an update
+| summarize count() by bin(TimeGenerated, 1h), Computer, _ResourceId // bin is used to set the time grain to 1 hour
+| render barchart

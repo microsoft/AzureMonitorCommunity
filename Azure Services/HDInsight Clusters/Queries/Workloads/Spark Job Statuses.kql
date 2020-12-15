@@ -1,0 +1,22 @@
+// Author: Microsoft Azure
+// Display name: Spark Job Statuses
+// Description: Returns a summary of the Spark jobs running for your application.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkJobEvents
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+//| where ApplicationId == '<your application id>'
+| where isnotnull(SubmissionTime)
+| join kind=fullouter (
+    HDInsightSparkJobEvents
+	//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+	//| where ApplicationId == '<your application id>'
+    | where isnotnull(CompletionTime) 
+) on ClusterDnsName, ApplicationId, JobId
+|order by ApplicationId, JobId asc 
+| extend CompletionTime = CompletionTime1
+| extend JobResult = JobResult1
+| extend Duration = iff(isempty(CompletionTime), "In Progress", tostring(datetime_diff("Millisecond",CompletionTime, SubmissionTime)))
+| project TimeGenerated, ApplicationId, JobId, Duration, JobResult, StageIds

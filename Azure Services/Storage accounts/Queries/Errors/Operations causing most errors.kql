@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Operations causing most errors
+// Description: List top 10 operations causing the most errors over the last 3 days.
+// Categories: IT & Management Tools
+// Resource types: Storage accounts
+// Topic: Errors
+
+StorageBlobLogs
+| where TimeGenerated > ago(3d) and StatusText !contains "Success"
+| summarize count() by OperationName
+| top 10 by count_ desc

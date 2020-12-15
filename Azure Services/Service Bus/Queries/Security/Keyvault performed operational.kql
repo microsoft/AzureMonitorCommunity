@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Keyvault performed operational
+// Description: Summarizes the operation performed with keyvault to disable or restore the key.
+// Categories: Security
+// Resource types: Service Bus
+// Topic: Security
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.SERVICEBUS"
+| where (Category == "info" and (OperationName == "disable" or OperationName == "restore"))
+| project Message, _ResourceId

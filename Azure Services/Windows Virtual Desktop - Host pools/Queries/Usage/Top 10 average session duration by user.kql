@@ -1,0 +1,21 @@
+// Author: Microsoft Azure
+// Display name: Top 10 average session duration by user
+// Description: Lists top 10 active users by average session duration and connection type in the past 7 days.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Host pools
+// Topic: Usage
+
+// Query average session duration time for all users that have been active in the past 7 days. 
+// Connection activities have 3 states. In this query the delta between "Connected" and "Completed".
+WVDConnections  
+| where TimeGenerated > ago(7d)  
+| where State == "Connected"  
+| project CorrelationId , UserName, ConnectionType , StartTime=TimeGenerated  
+| join (WVDConnections  
+    | where State == "Completed"  
+    | project EndTime=TimeGenerated, CorrelationId)  
+    on CorrelationId  
+| project Duration =EndTime - StartTime, ConnectionType, UserName  
+| summarize AVGDuration=avg(Duration) by UserName 
+| sort by AVGDuration desc 
+| limit 10

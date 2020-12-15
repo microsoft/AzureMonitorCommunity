@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Container memory
+// Description: View container CPU averaged over 30 mins intervals.
+// Categories: Containers,Azure Resources
+// Resource types: Kubernetes services
+// Topic: Performance
+
+//Select the Line chart display option: can we calculate percentage?
+let threshold = 75000000; // choose a threshold 
+Perf
+| where ObjectName == "K8SContainer" and CounterName == "memoryRssBytes"
+| summarize AvgUsedRssMemoryBytes = avg(CounterValue) by bin(TimeGenerated, 30m), InstanceName, _ResourceId
+| where AvgUsedRssMemoryBytes > threshold 
+| render timechart

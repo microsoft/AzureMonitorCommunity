@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Distinct missing updates cross computers
+// Description: Distinct missing updates across all computers.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+Update
+| where OSType != "Linux" and UpdateState == "Needed" and Optional == "false" 
+| distinct Title, Computer, _ResourceId

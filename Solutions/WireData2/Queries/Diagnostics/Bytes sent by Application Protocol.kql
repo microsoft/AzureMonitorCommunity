@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Bytes sent by Application Protocol
+// Description: Bytes sent by Application Protocol.
+// Categories: virtualmachines
+// Solutions: WireData2
+// Topic: Diagnostics
+
+WireData
+| where Direction == "Outbound"
+| summarize sum(SentBytes) by ApplicationProtocol

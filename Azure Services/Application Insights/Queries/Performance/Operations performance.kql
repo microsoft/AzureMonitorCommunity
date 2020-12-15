@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Operations performance
+// Description: Calculate request count and duration by operations.
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Performance
+
+AppRequests
+| summarize RequestsCount=sum(ItemCount), AverageDuration=avg(DurationMs), percentiles(DurationMs, 50, 95, 99) by OperationName, _ResourceId // you can replace 'OperationName' with another value to segment by a different property
+| order by RequestsCount desc // order from highest to lower (descending)

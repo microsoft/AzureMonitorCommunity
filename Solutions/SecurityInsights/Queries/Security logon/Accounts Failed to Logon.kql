@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Accounts Failed to Logon
+// Description: Counts failed logons by target account.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+SecurityEvent
+| where EventID == 4625
+| summarize count() by TargetAccount

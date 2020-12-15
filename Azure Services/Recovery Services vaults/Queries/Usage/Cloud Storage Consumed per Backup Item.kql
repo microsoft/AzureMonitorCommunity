@@ -1,0 +1,19 @@
+// Author: Microsoft Azure
+// Display name: Cloud Storage Consumed per Backup Item
+// Description: View the total Cloud Storage consumed by each Backup Item.
+// Categories: IT & Management Tools
+// Resource types: Recovery Services vaults
+// Topic: Usage
+
+CoreAzureBackup
+//Get all Backup Items
+| where OperationName == "BackupItem"
+//Get distinct Backup Items
+| distinct BackupItemUniqueId, BackupItemFriendlyName
+| join kind=leftouter(AddonAzureBackupStorage
+| where OperationName == "StorageAssociation"
+//Get latest record for each Backup Item
+| summarize arg_max(TimeGenerated, *) by BackupItemUniqueId 
+| project BackupItemUniqueId , StorageConsumedInMBs) on BackupItemUniqueId
+| project BackupItemUniqueId , BackupItemFriendlyName , StorageConsumedInMBs 
+| sort by StorageConsumedInMBs desc

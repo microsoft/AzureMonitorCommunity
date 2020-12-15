@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Summary of 'Failed' operations in the last 7 days
+// Description: Summary of 'Failed' operations in the last 7 days.
+// Categories: Azure Resources
+// Resource types: Stream Analytics jobs
+// Topic: Other errors and failures
+
+AzureDiagnostics
+| where TimeGenerated > ago(7d) //last 7 days
+| where ResourceProvider == "MICROSOFT.STREAMANALYTICS" and status_s == "Failed" 
+| summarize Count=count(), sampleEvent=any(properties_s) by JobName=Resource

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: GetFailedRequestsToDependencies
+// Description: Gets a distinct list of all the unsuccessful requests to dependencies.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+ABSBotRequests
+| where TimeGenerated > ago(12h)
+| where ResultCode !startswith "2"
+| where Category == 'ABSDependenciesRequests'
+| sort by TimeGenerated desc

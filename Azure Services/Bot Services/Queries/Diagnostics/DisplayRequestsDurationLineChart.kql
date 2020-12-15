@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: DisplayRequestsDurationLineChart
+// Description: Display a Line Chart showing requests response times/duration over a period of time.
+// Categories: Azure Resources
+// Resource types: Bot Services
+// Topic: Diagnostics
+
+let start_time = ago(12h);
+let end_time = now();
+ABSBotRequests
+| where TimeGenerated > start_time and TimeGenerated <= end_time
+| summarize DurationMs = avg(duration)  by bin(TimeGenerated, 10m)
+| render timechart

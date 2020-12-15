@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Client OS
+// Description: Bar Chart of OS used on client devices in the last 24 hours.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Host pools
+// Topic: Usage
+
+// Use this query to understand which OS version users have installed on their devices they are connecting from. 
+// Count is by unique users there where connected in the specified timeframe. 
+WVDConnections  
+| where TimeGenerated > ago(24h) 
+| summarize UserCount=dcount(UserName) by ClientOS 
+| sort by UserCount desc 
+| render barchart

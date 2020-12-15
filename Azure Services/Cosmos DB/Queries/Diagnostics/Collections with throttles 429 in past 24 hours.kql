@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Collections with throttles (429) in past 24 hours
+// Description: Identify collections and operations that have received 429 (throttles), which occur when consumed throughput (RU/s) exceeds provisioned throughput.
+// Categories: Azure Resources
+// Resource types: Cosmos DB
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where TimeGenerated >= ago(24hr)
+| where Category == "DataPlaneRequests"
+| where statusCode_s == 429 
+| summarize numberOfThrottles = count() by databaseName_s, collectionName_s, requestResourceType_s, _ResourceId, bin(TimeGenerated, 1hr)
+| order by numberOfThrottles

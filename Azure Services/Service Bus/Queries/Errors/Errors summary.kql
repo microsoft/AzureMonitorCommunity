@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Errors summary
+// Description: Summarizes all the errors seen in the last 7 days.
+// Categories: Azure Monitor
+// Resource types: Service Bus
+// Topic: Errors
+
+AzureDiagnostics
+| where TimeGenerated > ago(7d)
+| where ResourceProvider =="MICROSOFT.SERVICEBUS"
+| where Category == "Error" 
+| summarize count() by EventName_s, _ResourceId

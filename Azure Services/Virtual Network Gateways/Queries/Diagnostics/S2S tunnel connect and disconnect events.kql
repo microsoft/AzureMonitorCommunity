@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: S2S tunnel connect/disconnect events  
+// Description: S2S tunnel connect/disconnect events during the last 24 hours.  
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Diagnostics
+AzureDiagnostics 
+| where TimeGenerated > ago(24h)
+| where Category == "TunnelDiagnosticLog" and (status_s == "Connected" or status_s == "Disconnected")
+| project TimeGenerated, Resource , status_s, remoteIP_s, stateChangeReason_s

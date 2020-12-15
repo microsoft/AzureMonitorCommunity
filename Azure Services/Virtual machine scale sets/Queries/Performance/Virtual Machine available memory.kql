@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Virtual Machine available memory
+// Description: Virtual Machine available memory.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Performance
+
+InsightsMetrics
+| where TimeGenerated > ago(1h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "Memory"
+| where Name == "AvailableMB"
+| summarize avg(Val) by bin(TimeGenerated, 5m), Computer
+| render timechart

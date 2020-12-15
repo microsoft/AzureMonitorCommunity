@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Operations that have "Failed"
+// Description: Shows all operations on your job that have resulted in a failure.
+// Categories: Azure Resources
+// Resource types: Stream Analytics jobs
+// Topic: Other errors and failures
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.STREAMANALYTICS" and status_s == "Failed" 
+| project TimeGenerated, Resource, Region_s, OperationName, properties_s, Level

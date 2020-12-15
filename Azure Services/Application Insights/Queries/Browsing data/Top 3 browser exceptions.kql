@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Top 3 browser exceptions
+// Description: What were the highest reported exceptions today?
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Browsing data
+
+AppExceptions
+| where notempty(ClientBrowser) and ClientType == 'Browser'
+| summarize total_exceptions = sum(ItemCount) by ProblemId
+| top 3 by total_exceptions desc

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Join request for client
+// Description: Summarized the status of join request for client.
+// Categories: Azure Resources
+// Resource types: Event Hubs
+// Topic: Kafka
+
+AzureDiagnostics // Need to turn on the Capture for this 
+| where ResourceProvider == "MICROSOFT.EVENTHUB"
+|  project "OperationName"

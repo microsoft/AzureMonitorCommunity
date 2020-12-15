@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Reported errors
+// Description: Show error events from the last hour.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Errors
+
+union Event, Syslog // Event table stores Windows event records, Syslog stores Linux records
+| where TimeGenerated > ago(1h)
+| where EventLevelName == "Error" // EventLevelName is used in the Event (Windows) records
+or SeverityLevel== "err" // SeverityLevel is used in Syslog (Linux) records

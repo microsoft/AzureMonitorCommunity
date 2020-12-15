@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Bottom 10 Free disk space %
+// Description: Bottom 10 Free disk space % by computer.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Performance
+
+InsightsMetrics
+| where TimeGenerated > ago(24h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "LogicalDisk" and Name == "FreeSpacePercentage"
+| summarize P90 = percentile(Val, 90) by Computer
+| top 10 by P90 asc

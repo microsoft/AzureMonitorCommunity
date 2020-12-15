@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Software change type per computer
+// Description: Count software changes by computer.
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange 
+| where ConfigChangeType == "Software"
+| summarize AggregatedValue = count() by Computer

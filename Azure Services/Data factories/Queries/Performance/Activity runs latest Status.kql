@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Activity runs latest Status
+// Description: Returns latest Status of Activity runs.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Performance
+
+ADFActivityRun
+| summarize argmax(TimeGenerated, * ) by ActivityRunId, Status, _ResourceId

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Errors in the last 7 days
+// Description: This lists all the errors for the last 7 days.
+// Categories: Azure Resources
+// Resource types: Event Hubs
+// Topic: Errors
+
+AzureDiagnostics
+| where TimeGenerated > ago(7d)
+| where ResourceProvider =="MICROSOFT.EVENTHUB"
+| where Category == "OperationalLogs"
+| summarize count() by "EventName"

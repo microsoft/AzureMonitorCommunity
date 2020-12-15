@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: List Distinct Chat Operations
+// Description: Returns all distinct combinations of Chat operation / version pairs.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Audit
+
+ACSChatIncomingOperations
+| distinct OperationName, OperationVersion

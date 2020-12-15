@@ -1,0 +1,26 @@
+// Author: Microsoft Azure
+// Display name: Connection Errors
+// Description: List of errors by CorrelationId for connections established in the last 24 hours. (Advanced query).
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Application groups.Windows Virtual Desktop - Host pools.Windows Virtual Desktop - Workspaces
+// Topic: Errors
+
+// This query correlates WVDConnections, WVDErrors and WVDCheckpoints and exposes detailed information across all users. 
+// Recommendation is to add a WHERE clause and filter down for a specific user which you are troubleshooting an issue for. 
+// | where UserName == "ReplaceUserName" 
+WVDConnections 
+| where TimeGenerated > ago (24h) 
+| project-away TenantId,SourceSystem  
+| summarize arg_max(TimeGenerated, *), StartTime =  min(iff(State== 'Started', TimeGenerated , datetime(null) )), ConnectTime = min(iff(State== 'Connected', TimeGenerated , datetime(null) ))   by CorrelationId  
+| join kind=leftouter (WVDErrors
+    |summarize Errors=makelist(pack('Code', Code, 'CodeSymbolic', CodeSymbolic, 'Time', TimeGenerated, 'Message', Message ,'ServiceError', ServiceError, 'Source', Source)) by CorrelationId  
+    ) on CorrelationId
+| join kind=leftouter (WVDCheckpoints
+    | summarize Checkpoints=makelist(pack('Time', TimeGenerated, 'Name', Name, 'Parameters', Parameters, 'Source', Source)) by CorrelationId  
+    | mv-apply Checkpoints on (  
+        order by todatetime(Checkpoints['Time']) asc
+        | summarize Checkpoints=makelist(Checkpoints)
+        )
+    ) on CorrelationId  
+| project-away CorrelationId1, CorrelationId2  
+| order by TimeGenerated desc

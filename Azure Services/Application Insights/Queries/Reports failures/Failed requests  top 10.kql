@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Failed requests – top 10
+// Description: What are the 3 slowest pages, and how slow are they?
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Reports failures
+
+AppRequests
+| where Success == false
+| summarize failedCount=sum(ItemCount) by Name
+| top 10 by failedCount desc
+| render barchart

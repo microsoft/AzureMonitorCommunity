@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Model API Latency
+// Description: Time to complete Model operations by type over time.
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Diagnostics
+
+let grain = 5m;
+ADTModelsOperation
+| summarize avg(toint(DurationMs)) by OperationName, bin(TimeGenerated, grain)
+| render timechart

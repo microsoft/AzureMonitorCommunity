@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Performance troubleshooting
+// Description: Potentially query or deadlock on the system that could lead to poor performance.
+// Categories: Databases
+// Resource types: SQL databases.SQL Servers
+// Topic: Performance
+
+//potentially a query or deadlock on the system that could lead to poor performance
+AzureMetrics
+| where ResourceProvider == "MICROSOFT.SQL"
+| where TimeGenerated >=ago(60min)
+| where MetricName in ('deadlock')
+| parse _ResourceId with * "/microsoft.sql/servers/" Resource // subtract Resource name for _ResourceId
+| summarize Deadlock_max_60Mins = max(Maximum) by Resource, MetricName

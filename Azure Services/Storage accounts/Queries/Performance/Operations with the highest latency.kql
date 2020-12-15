@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Operations with the highest latency
+// Description: List top 10 operations with the longest end to end latency over the last 3 days.
+// Categories: IT & Management Tools
+// Resource types: Storage accounts
+// Topic: Performance
+
+StorageBlobLogs
+| where TimeGenerated > ago(3d)
+| top 10 by DurationMs desc
+| project TimeGenerated, OperationName, DurationMs, ServerLatencyMs, ClientLatencyMs = DurationMs - ServerLatencyMs

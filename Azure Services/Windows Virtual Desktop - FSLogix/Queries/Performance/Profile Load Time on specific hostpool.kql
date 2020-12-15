@@ -1,0 +1,23 @@
+// Author: Billy York www.cloudsma.com
+// Display name: Min, Max, Average WVD Profile Load time
+// Description: Average profile load time a specific Hostpool.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - FSLogix
+// Topic: Performance
+SecurityEvent
+| where EventID == 4624
+| where AccountType == "User"
+| where LogonType == 3
+| project UserName = TargetAccount, Computer, LogonTime=TimeGenerated, TimeCollected
+| extend UserName = replace(@"CORP.DOMAIN.COM\\", @"", UserName)
+| extend UserName = replace(@"CORP\\", @"", UserName)
+| join(Event
+| where Source == 'FSLogix-Apps'
+| where EventID == 25
+| parse RenderedDescription with * "Username: " UserName:string " "*
+| project UserName, Computer, LoadTime=TimeGenerated) on UserName, Computer
+| extend ProfileLoad = datetime_diff('second',LoadTime,LogonTime)
+| where ProfileLoad > 0
+| where ProfileLoad < 1800
+| where Computer has "prd-eus-poolprefix"  //change to computername of specific hostpool
+| summarize avg(ProfileLoad), min(ProfileLoad), max(ProfileLoad)

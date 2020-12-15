@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Removed software changes
+// Description: Shows change records for removed software.
+// Categories: management
+// Solutions: ChangeTracking
+// Topic: Diagnostics
+
+ConfigurationChange
+| where ConfigChangeType == "Software" and ChangeCategory == "Removed"
+| order by TimeGenerated desc

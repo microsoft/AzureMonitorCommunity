@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Domain Security Policy Changes
+// Description: Counts events of domain policy changed.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 4739
+| summarize count() by DomainPolicyChanged

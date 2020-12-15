@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Request errors by host and path
+// Description: Count number of requests with error responses by host and path.
+// Categories: Network
+// Resource types: Front Doors
+// Topic: Errors
+
+// Summarize number of requests by host, path, and status codes >= 400
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.NETWORK" and Category == "FrontdoorAccessLog"
+| where isReceivedFromClient_b == true
+| where toint(httpStatusCode_s) >= 400
+| extend ParsedUrl = parseurl(requestUri_s)
+| summarize RequestCount = count() by Host = tostring(ParsedUrl.Host), Path = tostring(ParsedUrl.Path), StatusCode = httpStatusCode_s
+| order by RequestCount desc

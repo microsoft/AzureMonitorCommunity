@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Count failed sent snapshots
+// Description: Total count of failed snapshots over the last 7 days.
+// Categories: Audit
+// Resource types: Data Shares
+// Topic: Errors
+
+MicrosoftDataShareSentSnapshotLog
+| where TimeGenerated > ago(7d)  
+| where Status == "Failed" 
+| summarize count() by _ResourceId

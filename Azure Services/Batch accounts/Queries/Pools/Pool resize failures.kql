@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Pool resize failures
+// Description: List pool resize failures by error code and time.
+// Categories: Azure Resources
+// Resource types: Batch accounts
+// Topic: Pools
+
+AzureDiagnostics
+| where OperationName=="PoolResizeCompleteEvent"
+| where resultCode_s=="Failure" // Filter only on failed pool resizes
+| summarize by poolName=id_s, resultCode=resultCode_s, resultMessage=resultMessage_s, operationTime=startTime_s

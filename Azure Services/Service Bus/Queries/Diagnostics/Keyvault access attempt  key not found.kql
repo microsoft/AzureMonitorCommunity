@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Keyvault access attempt - key not found
+// Description: Summarizes the access to keyvault when key is not found.
+// Categories: Security
+// Resource types: Service Bus
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.SERVICEBUS" 
+| where Category == "Error" and OperationName == "wrapkey"
+| project Message, _ResourceId

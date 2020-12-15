@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Maximum node disk
+// Description: Max node disk usage averaged over 30 mins intervals.
+// Categories: Containers,Azure Resources
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Performance
+
+//InsightMetrics contains all the custom metrics for Container Insights solution
+InsightsMetrics // Replace Name with your custom metric
+| where Name == "used_percent" and Namespace == "container.azm.ms/disk" 
+| summarize val= max(Val) by bin(TimeGenerated, 15m), _ResourceId
+| render timechart

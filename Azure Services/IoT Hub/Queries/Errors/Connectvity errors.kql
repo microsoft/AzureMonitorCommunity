@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Connectvity errors
+// Description: Identify device connection errors.
+// Categories: Azure Resources
+// Resource types: IoT Hub
+// Topic: Errors
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DEVICES" and ResourceType == "IOTHUBS"
+| where Category == "Connections" and Level == "Error"

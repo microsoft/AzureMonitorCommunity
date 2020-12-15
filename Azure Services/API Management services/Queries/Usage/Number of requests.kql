@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Number of requests
+// Description: Count the total number of calls across all APIs in the last 24 hours.
+// Categories: Azure Resources
+// Resource types: API Management services
+// Topic: Usage
+
+//Total number of call per resource
+ApiManagementGatewayLogs
+| where TimeGenerated > ago(1d)
+| summarize count(CorrelationId) by _ResourceId

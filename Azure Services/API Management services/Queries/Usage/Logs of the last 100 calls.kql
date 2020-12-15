@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Logs of the last 100 calls
+// Description: Get the logs of the most recent 100 calls in the last 24 hours.
+// Categories: Azure Resources
+// Resource types: API Management services
+// Topic: Usage
+
+ApiManagementGatewayLogs
+| top 100 by TimeGenerated desc

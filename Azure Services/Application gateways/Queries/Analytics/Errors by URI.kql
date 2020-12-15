@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Errors by URI
+// Description: Number of errors by URI.
+// Categories: Network
+// Resource types: Application gateways
+// Topic: Analytics
+
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS" and OperationName == "ApplicationGatewayAccess" and httpStatus_d > 399
+| summarize AggregatedValue = count() by requestUri_s, _ResourceId
+| sort by AggregatedValue desc

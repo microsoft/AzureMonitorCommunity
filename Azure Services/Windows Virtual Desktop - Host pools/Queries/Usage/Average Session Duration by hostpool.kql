@@ -1,0 +1,21 @@
+// Author: Microsoft Azure
+// Display name: Average Session Duration by hostpool
+// Description: Lists hostpools by average session duration in the past 7 days.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Host pools
+// Topic: Usage
+
+// Query average session duration per hostpool to determine the usage on hostpools for the past 7 days
+WVDConnections  
+| where TimeGenerated > ago(7d) 
+| where State == "Connected"
+| project ResourceAlias, CorrelationId, StartTime=TimeGenerated, _ResourceId
+| join kind = leftouter (WVDConnections  
+    | where State == "Completed"  
+    | project EndTime=TimeGenerated, CorrelationId)  
+    on CorrelationId  
+| project Duration =EndTime - StartTime, _ResourceId 
+| summarize AvgDuration=avg(Duration) by _ResourceId
+| sort by AvgDuration asc
+| extend Multi=split(_ResourceId, "/")
+| project AvgDuration, ResourceGroup=Multi[4], HostPool=Multi[8]

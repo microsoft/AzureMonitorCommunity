@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Most Requested ResourceIds
+// Description: Most queried resources over the last 24 hours.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Audit
+
+LAQueryLogs
+| extend reqContext = parse_json(RequestContext)
+| extend datasources = array_concat(reqContext["resources"], reqContext["workspaces"], reqContext["applications"])
+| mv-expand datasources
+| summarize reqCount = count() by tostring(datasources)
+| order by reqCount desc

@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Display top Autoscale 50 logs
+// Description: Show the latest Azure Autoscale logs in the last 24 hours.
+// Categories: Azure Monitor
+// Resource types: Azure Monitor autoscale settings
+// Topic: Autoscale
+
+AutoscaleScaleActionsLog 
+| where TimeGenerated > ago(24h) 
+| limit 50

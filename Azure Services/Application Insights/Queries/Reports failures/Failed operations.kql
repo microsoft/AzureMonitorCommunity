@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Failed operations
+// Description: Calculate how many times operations failed, and how many users were impacted.
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Reports failures
+
+AppRequests
+| where Success == false
+| summarize failedCount=sum(ItemCount), impactedUsers=dcount(UserId) by OperationName, _ResourceId
+| order by failedCount desc

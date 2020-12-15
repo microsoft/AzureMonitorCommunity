@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Client TLS versions
+// Description: Breakdown of client TLS versions in the last 24 hours.
+// Categories: Azure Resources
+// Resource types: API Management services
+// Topic: Diagnostics
+
+ApiManagementGatewayLogs
+| where TimeGenerated > ago(1d)
+| summarize count(CorrelationId) by ClientTlsVersion, _ResourceId

@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Audit Logs relating to unexpected users
+// Description: List Audit Logs for users who logged in that aren't a listed user.
+// Categories: Azure Resources
+// Resource types: App Services
+// Topic: Audit Logs
+
+AppServiceAuditLogs
+| where UserDisplayName != "user@company.com"

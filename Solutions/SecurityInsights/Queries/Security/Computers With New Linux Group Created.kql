@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With New Linux Group Created
+// Description: Lists computers with new Linux group created.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+Syslog
+| where Facility == 'authpriv' and SyslogMessage has 'new group'
+| summarize count() by Computer

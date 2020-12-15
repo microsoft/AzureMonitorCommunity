@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: ExpressRoute Circuit BitsOutPerSecond traffic graph
+// Description: Traffic graph BitsOutPerSecond (last one hour).
+// Categories: Azure Monitor,Network
+// Resource types: ExpressRoute circuits
+// Topic: Diagnostics
+
+AzureMetrics
+| where MetricName == "BitsOutPerSecond"
+| summarize by Average, bin(TimeGenerated, 1h), Resource
+| render timechart

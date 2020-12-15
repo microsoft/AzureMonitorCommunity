@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Bandwidth consumed
+// Description: Total bandwidth consumed in the last 24 hours.
+// Categories: Azure Resources
+// Resource types: API Management services
+// Topic: Performance
+
+ApiManagementGatewayLogs
+| where TimeGenerated > ago(1d)
+| extend bandwidth = RequestSize + ResponseSize 
+| summarize sum(bandwidth) by bin(TimeGenerated, 15m), _ResourceId 
+| render timechart

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Environment variable enriching
+// Description: View data ingested by environment variables per hour.
+// Categories: Containers
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Costing
+
+//Update the TimeGenerated to customize the timerange
+ContainerInventory
+| where TimeGenerated > ago(1h)
+| summarize envvarsMB = sum(string_size(EnvironmentVar)) / (1000. * 1000.)

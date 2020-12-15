@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Distribution of Backup Jobs by Status
+// Description: View the number of completed and failed Backup Jobs in the selected time range.
+// Categories: IT & Management Tools
+// Resource types: Recovery Services vaults
+// Topic: Jobs
+
+AddonAzureBackupJobs
+//Get all Backup Jobs
+| where JobOperation  == "Backup"
+//Remove duplicate records if any
+| summarize arg_max(TimeGenerated, *) by JobUniqueId
+//Summarize by Job Status
+| summarize count(JobUniqueId) by JobStatus

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Track VM availability
+// Description: Display the VM's reported availability during the last day.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Availability
+
+Heartbeat
+| where TimeGenerated > ago(1d)
+| summarize heartbeat_count = count() by bin(TimeGenerated, 30m), Computer, _ResourceId // bin is used to set the time grain to 30 minutes
+| extend alive=iff(heartbeat_count > 0, true, false)
+| sort by TimeGenerated asc // sort the results by time (ascending order)

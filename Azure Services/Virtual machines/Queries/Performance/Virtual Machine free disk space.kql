@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Virtual Machine free disk space
+// Description: Show the latest report of free disk space, per instance.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Performance
+
+Perf
+| where ObjectName == "LogicalDisk" or // the object name used in Windows records
+ObjectName == "Logical Disk" // the object name used in Linux records
+| where CounterName == "Free Megabytes"
+| summarize arg_max(TimeGenerated, *) by InstanceName // arg_max over TimeGenerated returns the latest record
+| project TimeGenerated, InstanceName, CounterValue, Computer, _ResourceId

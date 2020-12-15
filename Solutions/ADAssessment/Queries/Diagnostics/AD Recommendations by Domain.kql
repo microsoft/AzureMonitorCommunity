@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: AD Recommendations by Domain
+// Description: Count AD recommendations with failed result by domain.
+// Categories: workloads
+// Solutions: ADAssessment
+// Topic: Diagnostics
+
+ADAssessmentRecommendation 
+| where RecommendationResult == "Failed" 
+| summarize AggregatedValue = count() by Domain

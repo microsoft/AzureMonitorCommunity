@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: List sent snapshots by duration
+// Description: A list of the snapshots sorted by duration time over the last 7 days.
+// Categories: Audit
+// Resource types: Data Shares
+// Topic: Audit
+
+MicrosoftDataShareSentSnapshotLog
+| where TimeGenerated > ago(7d) 
+| where StartTime != "" and EndTime  != "" 
+| project StartTime , EndTime , DurationSeconds =(todatetime(EndTime)-todatetime(StartTime))/1s , ResourceName = split(_ResourceId,"/accounts/",1) 
+| sort by DurationSeconds desc nulls last

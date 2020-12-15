@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Are there any slow requests?
+// Description: List of KeyVault requests that took longer than 1sec.
+// Categories: Security
+// Resource types: Key vaults
+// Topic: Usage and Diagnostics
+
+let threshold=1000; // let operator defines a constant that can be further used in the query
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.KEYVAULT" 
+| where DurationMs > threshold
+| summarize count() by OperationName, _ResourceId

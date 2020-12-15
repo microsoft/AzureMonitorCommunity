@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Signatures out of date
+// Description: Devices with Signatures out of date.
+// Categories: Security
+// Resource types: Virtual machines
+// Solutions: AntiMalware
+// Topic: Diagnostics
+
+ProtectionStatus
+| summarize Rank = max(ProtectionStatusRank) by Computer, _ResourceId
+| where Rank == "250"

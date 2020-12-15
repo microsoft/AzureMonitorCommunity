@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Delivery failures by domain and error
+// Description: Delivery failures logs by domain name and error message.
+// Categories: Azure Resources
+// Resource types: Event Grid Domains
+// Topic: Diagnostics
+
+AegDeliveryFailureLogs 
+| parse Message with * ", httpStatusCode=" HttpStatusCode "," * "., errorMessage=" ErrorMessage "," *
+| parse _ResourceId with * "/domains/" DomainName 
+| project TimeGenerated, _ResourceId, DomainName, TenantId, EventSubscriptionName, SubResourceName, OperationName, HttpStatusCode, ErrorMessage
+| summarize by _ResourceId, DomainName, SubResourceName, EventSubscriptionName, ErrorMessage

@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Spark Executor Max Memory
+// Description: Renders a column chart that shows the max memory used by Executor for an application on your Spark cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkBlockManagerEvents
+//| where ClusterDnsName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+//| where ApplicationId == '<your application id>' // remove the preceding "//" and specify your application id to see its logs
+| where TimeGenerated> ago(24h)
+| summarize max(MaxMemory) by ExecutorId
+| render columnchart

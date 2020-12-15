@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Deadlocks
+// Description: Search for deadlock events.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 
+| where Category == "PostgreSQLLogs"
+| where Message contains "deadlock detected"

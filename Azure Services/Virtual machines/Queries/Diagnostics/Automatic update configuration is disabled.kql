@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Automatic update configuration is disabled
+// Description: Computers with automatic update disabled.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+UpdateSummary
+| where WindowsUpdateSetting == "Manual" 
+| sort by TimeGenerated desc

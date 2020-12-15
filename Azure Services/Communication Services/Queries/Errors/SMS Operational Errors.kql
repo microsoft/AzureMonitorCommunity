@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: SMS Operational Errors
+// Description: List every SMS error ordered by recency.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Errors
+
+ACSSMSIncomingOperations
+| where ResultType == "Failed"
+| project TimeGenerated, OperationName, OperationVersion, ResultSignature, ResultDescription
+| order by TimeGenerated desc

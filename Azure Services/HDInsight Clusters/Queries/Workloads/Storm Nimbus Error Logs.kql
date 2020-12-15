@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Storm Nimbus Error Logs
+// Description: All Strom Nimbus Logs of trace level Error within the past 24 hours.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightStormLogs 
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| where LogType == 'StormNimbusLog' //can set which type of logs you want to see (ex: StormNimbusLog, StormSupervisorLog)
+| where LogLevel == 'ERROR' //set which LogLevels you want to see
+| take 1000

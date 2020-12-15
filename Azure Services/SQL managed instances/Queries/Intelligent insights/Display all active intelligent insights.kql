@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Display all active intelligent insights
+// Description: Display all active performance issues detected by intelligent insights. Please note that SQLInsights log needs to be enabled for each database monitored.
+// Categories: IT & Management Tools
+// Resource types: SQL managed instances
+// Topic: Intelligent insights
+
+AzureDiagnostics
+| where Category == "SQLInsights" and status_s == "Active"
+| distinct rootCauseAnalysis_s

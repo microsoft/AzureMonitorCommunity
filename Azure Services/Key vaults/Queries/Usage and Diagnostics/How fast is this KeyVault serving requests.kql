@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: How fast is this KeyVault serving requests?
+// Description: Line chart showing trend of request duration over time using different aggregations.
+// Categories: Security
+// Resource types: Key vaults
+// Topic: Usage and Diagnostics
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.KEYVAULT" 
+| summarize avg(DurationMs) by requestUri_s, bin(TimeGenerated, 1h) // requestUri_s contains the URI of the request
+| render timechart

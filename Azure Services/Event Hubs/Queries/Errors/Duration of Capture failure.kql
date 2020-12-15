@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Duration of Capture failure
+// Description: Summarizes the duaration of failure on Capture.
+// Categories: Azure Resources
+// Resource types: Event Hubs
+// Topic: Errors
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.EVENTHUB"
+| where Category == "ArchiveLogs"
+| summarize count() by "failures", "durationInSeconds"

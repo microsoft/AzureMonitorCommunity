@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Error event on computer missing security co critical update
+// Description: Error events for machines that are missing critical or security required updates.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Errors
+
+Event
+| where EventLevelName == "error"
+    | join kind=inner (Update |where (Classification == "Security Updates" or Classification == "Critical Updates") and UpdateState == "Needed" and Optional == "false" | distinct Computer) on Computer 
+    | sort by TimeGenerated desc

@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Missing security or critical where update is manual
+// Description: Critical or security updates needed by machines where updates are manually applied.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+Update
+| where OSType != "Linux" and UpdateState == "Needed" and Optional == "false"
+ |where (Classification == "Security Updates" or Classification == "Critical Updates")
+| join kind=inner (UpdateSummary |where WindowsUpdateSetting == "Manual" |distinct Computer) on Computer 
+| distinct KBID, Computer, _ResourceId

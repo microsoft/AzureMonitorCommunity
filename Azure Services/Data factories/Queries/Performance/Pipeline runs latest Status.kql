@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Pipeline runs latest Status
+// Description: Returns latest Status of pipeline runs.
+// Categories: Azure Resources
+// Resource types: Data factories
+// Topic: Performance
+
+ADFPipelineRun
+| summarize argmax(TimeGenerated, * ) by RunId, Status, _ResourceId

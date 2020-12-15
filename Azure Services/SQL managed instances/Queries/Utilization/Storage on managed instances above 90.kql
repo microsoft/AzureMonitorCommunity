@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Storage on managed instances above 90%
+// Description: Display all managed instances with storage utilization above 90%.
+// Categories: IT & Management Tools
+// Resource types: SQL managed instances
+// Topic: Utilization
+
+let storage_percentage_threshold = 90;
+AzureDiagnostics
+| where Category =="ResourceUsageStats"
+| summarize (TimeGenerated, calculated_storage_percentage) = arg_max(TimeGenerated, todouble(storage_space_used_mb_s) *100 / todouble (reserved_storage_mb_s))
+   by _ResourceId
+| where calculated_storage_percentage > storage_percentage_threshold

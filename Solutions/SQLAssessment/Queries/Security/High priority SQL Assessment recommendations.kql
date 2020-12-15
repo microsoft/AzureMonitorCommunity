@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: High priority SQL Assessment recommendations
+// Description: Latest high priority security recommendation with result failed by recommendation Id.
+// Categories: security
+// Solutions: SQLAssessment
+// Topic: Security
+
+SQLAssessmentRecommendation
+| where FocusArea == 'Security and Compliance' and RecommendationResult == 'Failed' and RecommendationScore>=35
+| summarize arg_max(TimeGenerated, *) by RecommendationId

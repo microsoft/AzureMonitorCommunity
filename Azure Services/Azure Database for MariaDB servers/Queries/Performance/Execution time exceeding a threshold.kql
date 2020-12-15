@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Execution time exceeding a threshold
+// Description: Identify queries that their run time exceeds 10 seconds.
+// Categories: Workloads
+// Resource types: Azure Database for MariaDB servers
+// Topic: Performance
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.DBFORMARIADB" 
+| where Category == 'MySqlSlowLogs'
+| project TimeGenerated, LogicalServerName_s, event_class_s, start_time_t , query_time_d, sql_text_s 
+| where query_time_d > 10 // You may change the time threshold

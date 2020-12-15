@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Top 10 countries by traffic
+// Description: Chart the amount of requests from the top 10 countries.
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Performance
+
+AppRequests
+| summarize CountByCountry=count() by ClientCountryOrRegion
+| top 10 by CountByCountry
+| render piechart

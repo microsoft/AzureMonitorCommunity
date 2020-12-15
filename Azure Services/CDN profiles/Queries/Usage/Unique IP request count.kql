@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Unique IP request count
+// Description: Show Unique IP request count.
+// Categories: Network
+// Resource types: CDN profiles
+// Topic: Usage
+
+AzureDiagnostics
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write"and Category == "AzureCdnAccessLog"
+| where isReceivedFromClient_b == true
+| summarize dcount(clientIp_s) by bin(TimeGenerated, 1h)
+| render timechart

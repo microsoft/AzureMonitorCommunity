@@ -1,0 +1,22 @@
+// Author: Microsoft Azure
+// Display name: Path diagnostics
+// Description: Gets path or all hops along with identified issues between given source and destination of a resource.
+// Categories: Network
+// Resource types: Network Watcher - Connection Monitor
+// Topic: Diagnostics
+
+// For specific results, insert values in the let statements and uncomment the where filters within the query
+// let connectionMonitorResourceId = "<Connection Monitor Resource Id>";
+// let sourceName = "<Source Name>";
+// let destinationName = "<Destination Name>";
+// let testGroupName = "<Test Group Name>";
+// let testConfigurationName = "<Test Configuration Name>";
+NWConnectionMonitorPathResult 
+| where TimeGenerated > ago(24h) 
+// | where ConnectionMonitorResourceId has connectionMonitorResourceId
+// | where SourceName has sourceName
+// | where DestinationName has destinationName
+// | where TestGroupName has testGroupName
+// | where TestConfigurationName has testConfigurationName
+| project TimeGenerated, ConnectionMonitorResourceId, PathTestResult, SourceName, SourceAddress, DestinationName, DestinationAddress, Hops
+| order by TimeGenerated desc;

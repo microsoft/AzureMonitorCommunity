@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Latest 50 logs
+// Description: Show the latest Azure Activity logs for this resource.
+// Categories: audit
+// Resource types: Azure Activity logs
+// Topic: Activity logs
+
+AzureActivity 
+| top 50 by TimeGenerated desc

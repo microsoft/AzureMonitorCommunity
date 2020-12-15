@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Missing update rollups
+// Description: All computers with missing update rollups.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+Update
+| where OSType != "Linux" and Optional == "false" and Classification == "Update Rollups" and UpdateState == "Needed" 
+| project TimeGenerated, Computer, Title, KBID, Classification, MSRCSeverity, PublishedDate, _ResourceId
+| sort by TimeGenerated desc

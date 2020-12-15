@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Failing dependencies
+// Description: Which 5 dependencies failed the most today?
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Reports failures
+
+AppDependencies
+| where Success == false
+| summarize totalCount=sum(ItemCount) by DependencyType
+| top 5 by totalCount desc

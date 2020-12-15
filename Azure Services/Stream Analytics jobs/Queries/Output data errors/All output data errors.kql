@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: All output data errors
+// Description: Shows all errors that occurred while writing the results of the query to the outputs in your job.
+// Categories: Azure Resources
+// Resource types: Stream Analytics jobs
+// Topic: Output data errors
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.STREAMANALYTICS" and parse_json(properties_s).DataErrorType in ("OutputDataConversionError.RequiredColumnMissing", "OutputDataConversionError.ColumnNameInvalid", "OutputDataConversionError.TypeConversionError", "OutputDataConversionError.RecordExceededSizeLimit", "OutputDataConversionError.DuplicateKey")
+| project TimeGenerated, Resource, Region_s, OperationName, properties_s, Level

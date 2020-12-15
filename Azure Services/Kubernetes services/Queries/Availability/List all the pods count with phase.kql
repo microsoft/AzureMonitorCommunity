@@ -1,0 +1,37 @@
+// Author: Microsoft Azure
+// Display name: List all the pods count with phase
+// Description: View pod phase counts based on all phases: Failed, Pending, Unknown, Running, or Succeeded.
+// Categories: Containers
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Availability
+
+//Customize endDateTime, startDateTime to select different time range
+   let endDateTime = now();
+    let startDateTime = ago(1h);
+    let trendBinSize = 1m;
+    KubePodInventory
+    | where TimeGenerated < endDateTime
+    | where TimeGenerated >= startDateTime
+    | distinct ClusterName, TimeGenerated, _ResourceId
+    | summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName, _ResourceId
+    | join hint.strategy=broadcast (
+        KubePodInventory
+        | where TimeGenerated < endDateTime
+        | where TimeGenerated >= startDateTime
+        | distinct ClusterName, Computer, PodUid, TimeGenerated, PodStatus, _ResourceId
+        | summarize TotalCount = count(), //Calculating count for per pod status
+                    PendingCount = sumif(1, PodStatus =~ 'Pending'),
+                    RunningCount = sumif(1, PodStatus =~ 'Running'),
+                    SucceededCount = sumif(1, PodStatus =~ 'Succeeded'),
+                    FailedCount = sumif(1, PodStatus =~ 'Failed')
+                 by ClusterName, bin(TimeGenerated, trendBinSize), _ResourceId
+    ) on ClusterName, TimeGenerated, _ResourceId
+    | extend UnknownCount = TotalCount - PendingCount - RunningCount - SucceededCount - FailedCount
+    | project TimeGenerated, _ResourceId,
+    TotalCount = todouble(TotalCount) / ClusterSnapshotCount,
+              PendingCount = todouble(PendingCount) / ClusterSnapshotCount,
+              RunningCount = todouble(RunningCount) / ClusterSnapshotCount,
+              SucceededCount = todouble(SucceededCount) / ClusterSnapshotCount,
+              FailedCount = todouble(FailedCount) / ClusterSnapshotCount,
+              UnknownCount = todouble(UnknownCount) / ClusterSnapshotCount

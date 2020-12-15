@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Using wild-cards
+// Description: Search for terms that follow the pattern "corp*.com".
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Diagnostics
+
+search in (Event) "corp*.com" // Search terms that follow the pattern "corp"-something-".com", such as "corp.mydomain.com"
+| take 50 // return only 50 results (not guaranteed to be the latest)

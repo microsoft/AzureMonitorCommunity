@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: What data is being collected?
+// Description: List the collected performance counters and object types (Process, Memory, Processor…)
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Performance
+
+Perf
+| summarize by ObjectName, CounterName

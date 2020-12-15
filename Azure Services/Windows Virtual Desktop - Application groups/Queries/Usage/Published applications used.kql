@@ -1,0 +1,16 @@
+// Author: Microsoft Azure
+// Display name: Published applications used
+// Description: Bar chart of remote applications users have executed from the remote desktop client.
+// Categories: Windows Virtual Desktop
+// Resource types: Windows Virtual Desktop - Application groups.Windows Virtual Desktop - Host pools.Windows Virtual Desktop - Workspaces
+// Topic: Usage
+
+// The checkpoints table keeps track of any application or desktop a user has started from the remote desktop client UI. 
+// Note: The Windows Virtual Desktop service doesn't have information of started applications for a published desktop in the remote session. 
+WVDCheckpoints  
+| where TimeGenerated > ago(7d) 
+| where Name == "LaunchExecutable" 
+| extend App = parse_json(Parameters).filename 
+| summarize Usage = count(UserName) by tostring(App) 
+| sort by Usage desc 
+| render barchart

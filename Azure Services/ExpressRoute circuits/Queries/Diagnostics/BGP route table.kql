@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: BGP route table
+// Description: BPG route table learned over last 12 hours.
+// Categories: Network
+// Resource types: ExpressRoute circuits
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where TimeGenerated > ago(12h)
+| where ResourceType == "EXPRESSROUTECIRCUITS"
+| project TimeGenerated , ResourceType , network_s , path_s , OperationName

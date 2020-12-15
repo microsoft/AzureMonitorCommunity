@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Operations causing server side throttling
+// Description: List all operations causing server side throttling errors over the last 3 days.
+// Categories: IT & Management Tools
+// Resource types: Storage accounts
+// Topic: Errors
+
+StorageBlobLogs
+| where TimeGenerated > ago(3d) and StatusText contains "ServerBusy"
+| project TimeGenerated, OperationName, StatusCode, StatusText

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Number of Completed Spark Applications
+// Description: Returns the number of Spark Applications that have completed for your cluster.
+// Categories: Workloads
+// Resource types: HDInsight Clusters
+// Topic: Workloads
+
+HDInsightSparkApplicationEvents
+//| where ClusterName == '<your cluster name>' // remove the preceding "//" and specify your cluster name to see its logs
+| where TimeGenerated > ago(24h)
+| where isnotempty(CompletionTime)
+| count

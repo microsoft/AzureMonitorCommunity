@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: View historical job status
+// Description: List all automation jobs.
+// Categories: Azure Resources
+// Resource types: Automation accounts
+// Topic: Automation Jobs
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.AUTOMATION" and Category == "JobLogs" and ResultType != "started"
+| summarize AggregatedValue = count() by ResultType, bin(TimeGenerated, 1h) , RunbookName_s , JobId_g, _ResourceId

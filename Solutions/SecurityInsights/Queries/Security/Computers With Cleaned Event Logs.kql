@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With Cleaned Event Logs
+// Description: Computers with cleaned event logs.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID in (1102, 517) and EventSourceName == 'Microsoft-Windows-Eventlog'
+| summarize count() by Computer

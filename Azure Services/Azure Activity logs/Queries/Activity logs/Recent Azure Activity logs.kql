@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Recent Azure Activity logs
+// Description: Display all Azure Activity logs from the last hour.
+// Categories: audit
+// Resource types: Azure Activity logs
+// Topic: Activity logs
+
+AzureActivity 
+| where Level == "Error" or Level == "Warning"
+| project TimeGenerated, Level, ResourceProvider, ActivityStatus, Caller, Category, Properties, CorrelationId

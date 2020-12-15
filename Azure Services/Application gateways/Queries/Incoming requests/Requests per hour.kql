@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Requests per hour
+// Description: Count of the incoming requests on the Application Gateway.
+// Categories: Network
+// Resource types: Application gateways
+// Topic: Incoming requests
+
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS" and OperationName == "ApplicationGatewayAccess"
+| summarize AggregatedValue = count() by bin(TimeGenerated, 1h), _ResourceId
+| render timechart

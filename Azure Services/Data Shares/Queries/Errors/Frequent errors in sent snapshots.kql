@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Frequent errors in sent snapshots
+// Description: List top 10 errors over the last 7 days.
+// Categories: Audit
+// Resource types: Data Shares
+// Topic: Errors
+
+MicrosoftDataShareSentSnapshotLog 
+| where TimeGenerated > ago(7d)  
+| where Status == "Failed" 
+| summarize count() by _ResourceId, DataSetType// Counting failed logs per datasettype
+| top 10 by count_ desc nulls last

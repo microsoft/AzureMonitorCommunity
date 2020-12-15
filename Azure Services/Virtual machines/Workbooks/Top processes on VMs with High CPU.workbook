@@ -1,0 +1,276 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "parameters": [
+          {
+            "id": "c070a83a-a27f-4cc6-9441-bd7247300891",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 3600000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "169f8095-2450-4cbe-8ecb-68eb927f62dd",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "value": [
+              "value::1"
+            ],
+            "typeSettings": {
+              "limitSelectTo": 100,
+              "additionalResourceOptions": [
+                "value::1"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "5508d554-6215-4356-94b8-49f7cba34cd1",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "value": [
+              "value::1"
+            ],
+            "typeSettings": {
+              "limitSelectTo": 100,
+              "additionalResourceOptions": [
+                "value::1"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "c1d212ba-c721-441a-b181-d4ae02c6d5de",
+            "version": "KqlParameterItem/1.0",
+            "name": "ServerCPUThreshold",
+            "label": " Server CPU Threshold",
+            "type": 1,
+            "isRequired": true,
+            "value": "0",
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "dc94d9de-725d-4203-a080-9ac6bd89dd5e",
+            "version": "KqlParameterItem/1.0",
+            "name": "ProcessCPUThreshold",
+            "label": "Process CPU Threshold",
+            "type": 1,
+            "value": "0",
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# This workbook will show the top 5 processes for servers with high CPU %\r\n\r\n\r\n### In order to use this workbook you must be collecting the following peformance counters\r\n\r\n* Process(*)% Processor Time\r\n* Process(*)% User Time\r\n* Processor(*) % Processor Time\r\n\r\n\r\n"
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "//Find Top processes utilizing CPU\r\n// by finding the machine(s) using over 90% of CPU\r\n// then finding the processes using the CPU\r\n// also finding CPU count of the machines to find the actual percentage of CPU being used\r\n \r\n//defining our CPU threshold\r\nlet CPUThreshold = {ServerCPUThreshold};\r\n \r\n//define time sample rate\r\nlet Time = 10m;\r\n \r\n//define Count of processes to return\r\nlet Count = 5;\r\n \r\n//Find instances of total cpu being used above 90% over the last 10 minutes\r\nlet TopCPU = Perf\r\n| where TimeGenerated > now(-Time)\r\n              and ObjectName == \"Processor\"\r\n              and CounterName == \"% Processor Time\"\r\n              and InstanceName == \"_Total\"\r\n              and CounterValue > CPUThreshold\r\n| project Computer, ObjectName\r\n              , CounterName, CounterValue\r\n              , TimeGenerated;\r\n//end query\r\n \r\n// find top Processes, excluding _Total and Idle instances, there may be other instances you want to exclude as well\r\nlet TopProcess = Perf\r\n| where TimeGenerated > now(-Time)\r\n               and CounterName == \"% Processor Time\"\r\n               and InstanceName != \"_Total\"\r\n               and InstanceName != \"Idle\"\r\n| project Computer, ObjectName\r\n              , CounterName, InstanceName\r\n              , CounterValue, TimeGenerated;\r\n// end query\r\n \r\n// find CPU count for servers(s)\r\nlet FindCPU = Perf\r\n| where TimeGenerated >= ago(1h)\r\n| where ObjectName == \"Processor\"\r\n              and CounterName == \"% Processor Time\"\r\n              and InstanceName!=\"_Total\"\r\n| sort by InstanceName asc nulls first\r\n| summarize CPUCount = dcount(InstanceName) by Computer;\r\n// end query\r\n \r\n//Join all 3 datasets together\r\nFindCPU | join(TopCPU) on Computer \r\n| join(TopProcess)on Computer\r\n| extend PercentProcessorUsed = CounterValue1 / CPUCount\r\n| summarize avg(PercentProcessorUsed) by Computer, ObjectName\r\n                  , CounterName, CPUCount \r\n                  , TotalCPU=CounterValue //rename CounterValue to TotalCPU \r\n                  , Process=ObjectName1 //rename ObjectName1 to Process \r\n                  , ProcessTime=CounterName1 //rename CounterName1 to ProcessTime \r\n                  , ProcessName=InstanceName //rename InstanceName to ProcessName \r\n                  , TimeGenerated\r\n| where Process == \"Process\"\r\nand avg_PercentProcessorUsed > {ProcessCPUThreshold} // only return processes that are using more than 25%\r\n| top Count by avg_PercentProcessorUsed desc\r\n| project Computer, CPUCount\r\n                , ProcessName , avg_PercentProcessorUsed\r\n                , TotalCPU, Process\r\n                , ProcessTime, TimeGenerated",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 16,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "Computer",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "ProcessName",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "avg_PercentProcessorUsed",
+              "formatter": 8,
+              "formatOptions": {
+                "min": 70,
+                "max": 90,
+                "palette": "blue"
+              },
+              "numberFormat": {
+                "unit": 1,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2
+                }
+              }
+            },
+            {
+              "columnMatch": "TotalCPU",
+              "formatter": 8,
+              "formatOptions": {
+                "min": 70,
+                "max": 90,
+                "palette": "blue"
+              },
+              "numberFormat": {
+                "unit": 1,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2
+                }
+              }
+            },
+            {
+              "columnMatch": "Process",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "ProcessTime",
+              "formatter": 5
+            }
+          ],
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "Computer"
+            ],
+            "expandTopLevel": true,
+            "finalBy": "ProcessName"
+          },
+          "labelSettings": [
+            {
+              "columnId": "Computer"
+            },
+            {
+              "columnId": "CPUCount",
+              "label": "CPU Count"
+            },
+            {
+              "columnId": "ProcessName",
+              "label": "Process"
+            },
+            {
+              "columnId": "avg_PercentProcessorUsed",
+              "label": "Avg % CPU Used"
+            },
+            {
+              "columnId": "TotalCPU",
+              "label": "Total CPU"
+            },
+            {
+              "columnId": "Process"
+            },
+            {
+              "columnId": "ProcessTime",
+              "label": "Process Time"
+            },
+            {
+              "columnId": "TimeGenerated",
+              "label": "Time Generated"
+            }
+          ]
+        }
+      },
+      "name": "query - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

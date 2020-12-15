@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Update deployment failures
+// Description: Update deployment failures by device and update classification.
+// Categories: desktopanalytics
+// Solutions: WaaSUpdateInsights
+// Topic: Diagnostics
+
+WaaSDeploymentStatus
+| where DeploymentStatus == "Failed"
+| summarize arg_max(TimeGenerated, *) by ComputerID, UpdateClassification 
+| project Computer, ComputerID, ReleaseName, UpdateCategory, UpdateClassification, DeploymentError, DeploymentErrorCode

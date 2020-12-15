@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: BGP informational messages
+// Description: BGP informational messages by level, resource type and network.
+// Categories: Network
+// Resource types: ExpressRoute circuits
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where Level == "Informational"
+| project TimeGenerated , ResourceId, Level, ResourceType , network_s , path_s

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Function activity over time
+// Description: Line chart showing trend of Function requests volume, per Function over time.
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: Usage and Performance
+
+FunctionAppLogs
+//| where _ResourceId == "MyResourceId" // Uncomment and enter a resource ID to get results for a specific resource
+| where Category startswith "Function." and Message startswith "Executed "
+| summarize count() by bin(TimeGenerated, 1h), FunctionName // Aggregate by hour
+| render timechart

@@ -1,0 +1,16 @@
+// Author: Microsoft Azure
+// Display name: Track VM Availability using Heartbeat
+// Description: Display the VM's reported availability during the last hour.
+// Categories: Virtual Machines
+// Resource types: Virtual machine scale sets
+// Topic: Availability
+
+InsightsMetrics
+| where TimeGenerated > ago(1h)
+| where Origin == "vm.azm.ms"
+| where Namespace == "Computer"
+| where Name == "Heartbeat"
+| summarize heartbeat_count = count() by bin(TimeGenerated, 5m), Computer
+| extend alive=iff(heartbeat_count > 2, 1.0, 0.0) //computer considered "down" if it has 2 or fewer heartbeats in 5 min interval
+| project TimeGenerated, alive, Computer
+| render timechart with (ymin = 0, ymax = 1)

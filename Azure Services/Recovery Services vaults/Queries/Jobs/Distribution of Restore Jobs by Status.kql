@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Distribution of Restore Jobs by Status
+// Description: View the number of completed and failed Restore Jobs in the selected time range.
+// Categories: IT & Management Tools
+// Resource types: Recovery Services vaults
+// Topic: Jobs
+
+AddonAzureBackupJobs
+//Get all Restore Jobs
+| where JobOperation  in~ ("Restore","Recovery") 
+//Remove duplicate records if any
+| summarize arg_max(TimeGenerated, *) by JobUniqueId
+//Summarize by Job Status
+| summarize count(JobUniqueId) by JobStatus

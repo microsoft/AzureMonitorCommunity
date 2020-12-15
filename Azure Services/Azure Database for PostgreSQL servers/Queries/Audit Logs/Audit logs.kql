@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Audit logs
+// Description: Get all audit logs. It requires audit logs to be enabled [https://docs.microsoft.com/azure/postgresql/concepts-audit].
+// Categories: Workloads,Audit
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Audit Logs
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 
+| where Category == "PostgreSQLLogs"
+| where Message contains "AUDIT:"

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Autovacuum events
+// Description: Search for autovacuum events over the last 24 hours. It requires parameter 'log_autovacuum_min_duration' enabled.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where TimeGenerated > ago(1d) 
+| where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 
+| where Category == "PostgreSQLLogs"
+| where Message contains "automatic vacuum"

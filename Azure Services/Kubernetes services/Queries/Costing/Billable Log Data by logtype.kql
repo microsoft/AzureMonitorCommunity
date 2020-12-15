@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Billable Log Data by log-type
+// Description: See container logs billable data for the last 7d ,segregated by log-type.
+// Categories: Containers,Azure Resources
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Costing
+
+// Set the requested time, anytime greater than 15d can take longer
+let billableTimeView = 7d;  
+//Join ContainerLog on KubePodInventory for LogEntry source
+ContainerLog
+| join(KubePodInventory | where TimeGenerated > startofday(ago(billableTimeView)))on ContainerID
+| where TimeGenerated > startofday(ago(billableTimeView))
+| summarize Total=sum(_BilledSize)/ 1000 by bin(TimeGenerated, 1d), LogEntrySource

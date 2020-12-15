@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Remote Procedure Call Attempts
+// Description: Counts remote procedure call attempts per computer.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security
+
+SecurityEvent
+| where EventID == 5712
+| summarize count() by Computer

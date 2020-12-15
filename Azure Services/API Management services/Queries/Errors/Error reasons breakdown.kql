@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Error reasons breakdown
+// Description: Breakdown of all error reasons in the last 24 hours.
+// Categories: Azure Resources
+// Resource types: API Management services
+// Topic: Errors
+
+ApiManagementGatewayLogs
+| where TimeGenerated > ago(1d)
+| where IsRequestSuccess == false
+| summarize count(CorrelationId) by LastErrorReason, _ResourceId

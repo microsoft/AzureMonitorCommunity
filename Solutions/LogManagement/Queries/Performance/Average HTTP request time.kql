@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Average HTTP request time
+// Description: Average HTTP request time for HTTP method.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Performance
+
+W3CIISLog 
+| summarize avg(TimeTaken) by csMethod

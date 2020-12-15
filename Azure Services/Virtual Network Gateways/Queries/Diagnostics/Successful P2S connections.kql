@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Successful P2S connections 
+// Description: Successful P2S connections in the last 12 hours.
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Diagnostics
+
+AzureDiagnostics 
+| where TimeGenerated > ago(12h)
+| where Category == "P2SDiagnosticLog" and Message has "Connection successful"
+| project TimeGenerated, Resource ,Message

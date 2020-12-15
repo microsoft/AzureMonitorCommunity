@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Top 10 Client IPs
+// Description: Count of requests per client IP.
+// Categories: Network
+// Resource types: Application gateways
+// Topic: Analytics
+
+AzureDiagnostics
+| where ResourceType == "APPLICATIONGATEWAYS" and OperationName == "ApplicationGatewayAccess"
+| summarize AggregatedValue = count() by clientIP_s
+| top 10 by AggregatedValue

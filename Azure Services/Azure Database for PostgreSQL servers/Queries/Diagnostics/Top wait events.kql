@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Top wait events
+// Description: Identify top 5 wait events by queries.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
+| where Category == "QueryStoreWaitStatistics"
+| where user_id_s != "10" //exclude azure system user
+| where query_id_d != 0
+| summarize sum(toint(calls_s)) by event_s, query_id_d, bin(TimeGenerated, 15m)
+| top 5 by sum_calls_s desc nulls last

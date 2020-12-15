@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Missing required updates for server
+// Description: Missing updates for a specific computer "ComputerName" (replace with your own computer name).
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+let ComputerName = "Enter your computer name here";
+Update
+|where OSType != "Linux" and UpdateState == "Needed" and Optional == "false" and Computer == ComputerName
+| project TimeGenerated, Computer, Title, KBID, Product, MSRCSeverity, PublishedDate, _ResourceId
+| sort by TimeGenerated desc

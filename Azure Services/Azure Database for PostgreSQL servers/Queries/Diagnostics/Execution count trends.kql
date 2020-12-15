@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Execution count trends
+// Description: Execution trend by query aggregated by 15 minute-intervals.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
+| where Category == "QueryStoreRuntimeStatistics"
+| where user_id_s != "10" //exclude azure system user
+| summarize sum(toint(calls_s)) by  tostring(query_id_d), bin(TimeGenerated, 15m)
+| render timechart

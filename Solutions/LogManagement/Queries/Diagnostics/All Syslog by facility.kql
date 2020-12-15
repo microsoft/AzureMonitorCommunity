@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: All Syslog by facility
+// Description: All Syslog by facility.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Syslog 
+| summarize count() by Facility

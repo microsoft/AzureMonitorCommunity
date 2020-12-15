@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Events in OM between 2000 to 3000
+// Description: Operation manger events with IDs in range of 2000 to 3000.
+// Categories: virtualmachines
+// Solutions: LogManagement
+// Topic: Diagnostics
+
+Event 
+| where EventLog == "Operations Manager" and (EventID >= 2000 and EventID <= 3000) 
+| sort by TimeGenerated desc

@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Delivery failures by topic and error
+// Description: Delivery failures logs by topic name and error message.
+// Categories: Azure Resources
+// Resource types: Event Grid Topics
+// Topic: Diagnostics
+
+AegDeliveryFailureLogs 
+| parse Message with * ", httpStatusCode=" HttpStatusCode "," * "., errorMessage=" ErrorMessage "," *
+| parse _ResourceId with * "/topics/" TopicName 
+| project TimeGenerated, _ResourceId, TopicName, TenantId, EventSubscriptionName, OperationName, HttpStatusCode, ErrorMessage
+| summarize by _ResourceId, TopicName, ErrorMessage

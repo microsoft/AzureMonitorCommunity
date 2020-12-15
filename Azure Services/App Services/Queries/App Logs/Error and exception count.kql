@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Error and exception count
+// Description: Show a column chart of the number of the logs containing warnings or errors in the last hour, per application.
+// Categories: Azure Resources,Applications
+// Resource types: App Services
+// Topic: App Logs
+
+FunctionAppLogs 
+| where TimeGenerated > ago(1h)
+| where Level == "Warning" or Level == "Error"
+| summarize count_per_app = count() by _ResourceId
+| sort by count_per_app desc 
+| render columnchart

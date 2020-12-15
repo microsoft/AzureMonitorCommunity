@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Unauthorized connections
+// Description: Search for unauthorized (rejected) connection attempts.
+// Categories: Workloads,Security
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Troubleshooting
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.DBFORPOSTGRESQL" 
+| where Category == "PostgreSQLLogs"
+| where Message contains "password authentication failed" or Message contains "no pg_hba.conf entry for host"

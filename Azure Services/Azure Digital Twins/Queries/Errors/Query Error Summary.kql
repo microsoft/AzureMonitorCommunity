@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Query Error Summary
+// Description: List of all Query call errors.
+// Categories: Audit,Azure Monitor
+// Resource types: Azure Digital Twins
+// Topic: Errors
+
+ADTQueryOperation
+| where ResultType != 'Success'

@@ -1,0 +1,9 @@
+// Author: Microsoft Azure
+// Display name: Top 10 resource intensive queries
+// Description: Get top 10 resource intesive queries (based on CPU consumption) in last 24 hours.
+// Categories: Audit,Azure Monitor
+// Resource types: Log Analytics workspaces
+// Topic: Audit
+
+LAQueryLogs
+| top 10 by StatsCPUTimeMs desc nulls last

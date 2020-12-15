@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Computers With Failed Su Logons
+// Description: Lists computers with failed su logons.
+// Categories: security
+// Solutions: SecurityInsights
+// Topic: Security logon
+
+Syslog
+| where (Facility == 'authpriv' and SyslogMessage has 'su:auth' and SyslogMessage has 'authentication failure') or (Facility == 'auth' and SyslogMessage has 'FAILED SU')
+| summarize count() by Computer

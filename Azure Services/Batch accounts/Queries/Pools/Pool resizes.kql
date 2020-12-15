@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Pool resizes
+// Description: List resize times by pool and result code (success or failure).
+// Categories: Azure Resources
+// Resource types: Batch accounts
+// Topic: Pools
+
+AzureDiagnostics
+| where OperationName=="PoolResizeCompleteEvent"
+| summarize operationTimes=make_list(startTime_s) by poolName=id_s, resultCode=resultCode_s

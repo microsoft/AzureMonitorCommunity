@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: Show login events reported over the last hour
+// Description: A list of login event logs, sorted by time (earliest logs shown first).
+// Categories: Containers
+// Resource types: Container registries
+// Topic: App Logs
+
+ContainerRegistryLoginEvents
+| where TimeGenerated > ago(1h)
+| sort by TimeGenerated asc

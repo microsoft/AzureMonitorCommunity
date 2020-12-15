@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Access to keyvault - key not found
+// Description: Summarizes the access to keyvault when key is not found.
+// Categories: Azure Resources
+// Resource types: Event Hubs
+// Topic: Errors
+
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.EVENTHUB" 
+| where Category == "Error" and OperationName == "wrapkey"
+| project Message

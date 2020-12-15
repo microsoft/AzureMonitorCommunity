@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Response sizes
+// Description: Statistics of response sizes in the last 24 hours.
+// Categories: Azure Resources
+// Resource types: API Management services
+// Topic: Usage
+
+ApiManagementGatewayLogs
+| where TimeGenerated > ago(1d)
+| summarize Average=avg(ResponseSize), Median=percentile(ResponseSize, 50), 90th_Percentile=percentile(ResponseSize, 90) by bin(TimeGenerated, 5m) 
+| render timechart

@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Members added to security groups
+// Description: Who was added to security-enabled group over the last day?
+// Categories: Virtual Machines,Security
+// Resource types: Virtual machines
+// Topic: Security
+
+SecurityEvent
+| where EventID in (4728, 4732, 4756) // these event IDs indicate a member was added to a security-enabled group
+| summarize count() by SubjectAccount, Computer, _ResourceId
+// This query requires the Security solution

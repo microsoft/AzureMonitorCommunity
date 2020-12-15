@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Consumed RU/s in last 24 hours
+// Description: Identify consumed RU/s on Cosmos databases and collections.
+// Categories: Azure Resources
+// Resource types: Cosmos DB
+// Topic: Diagnostics
+
+//You can compare the RU/s consumption with your provisioned RU/s to determine if you should scale up or down RU/s based on your workload.
+AzureDiagnostics
+| where TimeGenerated >= ago(24hr)
+| where Category == "DataPlaneRequests"
+//| where collectionName_s == "CollectionToAnalyze" //Replace to target the query to a collection
+| summarize ConsumedRUsPerMinute = sum(todouble(requestCharge_s)) by collectionName_s, _ResourceId, bin(TimeGenerated, 1m)
+| project TimeGenerated , ConsumedRUsPerMinute , collectionName_s, _ResourceId
+| render timechart

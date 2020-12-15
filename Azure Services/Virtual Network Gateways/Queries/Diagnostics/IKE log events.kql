@@ -1,0 +1,23 @@
+// Author: Daniel Mauser (Microsoft)
+// Display name: IKE logs events
+// Description: IKe log events from the last 30 minutes
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Diagnostics
+
+AzureDiagnostics 
+| where Category == "IKEDiagnosticLog" 
+| where TimeGenerated > ago(30m) 
+// 1) Use Time range to look for issues on specific time range. Useful for finding root cause of IPSec connection issues.
+//| where TimeGenerated >= datetime(2020-09-18 15:43) and TimeGenerated <= datetime(2020-09-18 15:45) // Set a time range.
+| where Message contains "SESSION_ID"
+| extend SessionID = extract("{(.*)}", 1, Message), RemoteIP = extract("Remote (.*?):", 1, Message), LocalIP = extract("Local (.*?):", 1, Message), IKEMessage = extract("Local .*00: (.*)", 1, Message), GWIN = extract("\\d",0,instance_s)
+//| parse Message with "SESSION_ID :{" SESSION_ID "} Remote " Remote ":" RemotePort ": Local " Local ":" LocalPort ": [" Direction "]" Message
+// 2) Narrow down to dump IKE events only for remote by specify remote VPN IP. It is useful for scenarios when VPN is connected has multiple S2S VPN Connections.
+//| where RemoteIP == "104.215.122.58"
+// 3) This is useful to filter on Active-Active Azure VPN GW Scenarios and Azure Virtual WAN
+// | where GWIN == "0" // Filters Gateway Instance (GW_IN) 0 just change from 0 to 1 to filter second VPN Gateway instance
+// 4) Narrow down to specific session ID
+//| where SessionID == "F71C1B4E-17C2-4028-961B-AA1BED2E6C4D" 
+| project TimeGenerated, GWIN, SessionID, RemoteIP, LocalIP, IKEMessage
+| sort by TimeGenerated asc    // Change to "desc" to invert most recent event first

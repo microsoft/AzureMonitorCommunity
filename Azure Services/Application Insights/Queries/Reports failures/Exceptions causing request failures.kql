@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Exceptions causing request failures
+// Description: Find which exceptions led to failed requests in the past hour.
+// Categories: Applications
+// Resource types: Application Insights
+// Topic: Reports failures
+
+AppRequests
+| where TimeGenerated > ago(1h) and Success == false
+| join kind= inner (
+AppExceptions
+| where TimeGenerated > ago(1h)
+) on OperationId
+| project exceptionType = Type, failedMethod = Method, requestName = Name, requestDuration = DurationMs, _ResourceId

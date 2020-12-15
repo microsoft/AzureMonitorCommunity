@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Top 5 IP Addresses per Chat Operation
+// Description: For every Chat operation, fetch the 5 IP addresses that have called that operaiton the most.
+// Categories: Azure Resources
+// Resource types: Communication Services
+// Topic: Usage
+
+ACSChatIncomingOperations
+// | where OperationName == "<operation>" // This can be uncommented and specified to calculate only a single operation's count
+| top-nested of OperationName by dummy=max(0), // For all the Operations...
+  top-nested 5 of CallerIpAddress by count() // List the IP address that have called that operation the most
+| project-away dummy // Remove dummy line from the result set

@@ -1,0 +1,23 @@
+// Author: Microsoft Azure
+// Display name: Queries waiting
+// Description: Identify if slowest queries wait on anything.
+// Categories: Workloads
+// Resource types: Azure Database for PostgreSQL servers
+// Topic: Performance
+
+let top5 = AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
+//| where LogicalServerName_s == "your server name" // you can run this query for a specific server 
+| where Category == "QueryStoreRuntimeStatistics"
+| where user_id_s != "10" //exclude azure system user
+| summarize avg(todouble(mean_time_s)) by event_class_s , db_id_s ,query_id_d
+| order by avg_mean_time_s desc nulls last 
+| project query_id_d , db_id_s
+| take 5;
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
+| where Category == "QueryStoreWaitStatistics"
+| extend query_id_s = tostring(query_id_d)
+| join top5 on query_id_d
+| summarize sum(toint(calls_s)) by event_s, query_id_s, bin(TimeGenerated, 15m)
+| render timechart

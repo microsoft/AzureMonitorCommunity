@@ -1,0 +1,10 @@
+// Author: Microsoft Azure
+// Display name: BGP route updates 
+// Description: BGP route updates over the last 24 hours.
+// Categories: Network
+// Resource types: Virtual Network Gateways
+// Topic: Diagnostics
+
+AzureDiagnostics
+| where TimeGenerated > ago(24h)
+| where Category == "RouteDiagnosticLog" and OperationName == "BgpRouteUpdate"

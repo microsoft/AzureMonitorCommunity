@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Computer with missing updates
+// Description: All computers with missing updates.
+// Categories: IT & Management Tools
+// Resource types: Virtual machines
+// Solutions: Updates
+// Topic: Diagnostics
+
+Update
+|where OSType != "Linux" and UpdateState == "Needed" and Optional == "false" 
+| project TimeGenerated, Computer, Title, KBID, Classification, MSRCSeverity, PublishedDate, _ResourceId
+| sort by TimeGenerated desc

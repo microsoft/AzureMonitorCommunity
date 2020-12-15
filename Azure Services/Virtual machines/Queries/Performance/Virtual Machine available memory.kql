@@ -1,0 +1,13 @@
+// Author: Microsoft Azure
+// Display name: Virtual Machine available memory
+// Description: Chart the VM's available memory over time.
+// Categories: Virtual Machines
+// Resource types: Virtual machines
+// Topic: Performance
+
+Perf
+| where ObjectName == "Memory" and
+(CounterName == "Available MBytes Memory" or // the name used in Linux records
+CounterName == "Available MBytes") // the name used in Windows records
+|  summarize avg(CounterValue) by bin(TimeGenerated, 15min), Computer, _ResourceId // bin is used to set the time grain to 15 minutes
+| render timechart
