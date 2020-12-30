@@ -57,3 +57,4 @@ Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call 
 
 ## Redistribution
 Upon redistribution of this repo, please be respectful of the readers and authors of this documentation, and include a link to the [original repo master branch](https://github.com/microsoft/AzureMonitorCommunity).
+Luis
