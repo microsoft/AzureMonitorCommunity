@@ -4,18 +4,6 @@
     {
       "type": 1,
       "content": {
-        "json": "** Author **\r\n[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n\r\n** Version 1.2 **\r\n2020-09-15\r\n- Added Event Level filter\r\n- Added the new parameters to queries\r\n- Added \"Count of all events by Event Level\" pie chart\r\n\r\n** Version 1.1 **\r\n2020-09-15\r\n - Added Tabs to better organize tiles\r\n - Added specific Connection and Trust tiles\r\n - Added references to CVE-2020-1472 articles\r\n\r\n** Version 1.0 **\r\n2020-09-07\r\n - Initial version"
-      },
-      "conditionalVisibility": {
-        "parameterName": "_",
-        "comparison": "isEqualTo",
-        "value": "_"
-      },
-      "name": "text - 20"
-    },
-    {
-      "type": 1,
-      "content": {
         "json": "# Windows Event log Search Engine #"
       },
       "name": "text - 0"
@@ -60,7 +48,10 @@
             },
             "defaultValue": "value::all",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/05a1b94d-16d2-461a-8e0d-af047c697628"
+            ]
           },
           {
             "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
@@ -84,7 +75,10 @@
             "timeContextFromParameter": "TimeRange",
             "defaultValue": "value::all",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/05a1b94d-16d2-461a-8e0d-af047c697628/resourceGroups/mms-weu/providers/Microsoft.OperationalInsights/workspaces/OMS-BR1"
+            ]
           },
           {
             "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
@@ -93,7 +87,7 @@
             "type": 4,
             "isRequired": true,
             "value": {
-              "durationMs": 14400000
+              "durationMs": 604800000
             },
             "typeSettings": {
               "selectableValues": [
@@ -249,6 +243,18 @@
             "defaultValue": "value::all",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "6bf73b62-be70-4f44-b11a-23cd2d04a888",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]"
           }
         ],
         "style": "pills",
@@ -256,6 +262,41 @@
         "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "parameters - 2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.3 **\r\n>2020-12-09\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>** Version 1.2 **\r\n>2020-09-15\r\n>- Added Event Level filter\r\n>- Added the new parameters to queries\r\n>- Added \"Count of all events by Event Level\" pie chart\r\n>\r\n>** Version 1.1 **\r\n>2020-09-15\r\n> - Added Tabs to better organize tiles\r\n> - Added specific Connection and Trust tiles\r\n> - Added references to CVE-2020-1472 articles\r\n>\r\n>** Version 1.0 **\r\n>2020-09-07\r\n> - Initial version"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "66",
+      "name": "ChangeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ""
+      },
+      "name": "text - 12"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\nWelcome to the Windows Event log Search Engine (aka WESE). This workbook is designed to provide you with a search engine for your centralized Windows event log data. In addition to the statistics-oriented charts, you also have:\r\n\r\n* a tab called **Event Search Box** containing trend info and a table with search field for specific event lookup\r\n* a tab called **CVE-2020-1472 Specific** which gives you a glance on the named vulnerability.\r\n\r\n## Requirements ##\r\n\r\n* A [Log Analytics workspace.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n\r\nIn order to work, the workbook needs the collect information from Windows Event Log. If you're unfamiliar with how to enable Windows Event collection, see [Collect Windows event log data sources with Log Analytics agent](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
     },
     {
       "type": 1,
@@ -278,7 +319,7 @@
         "showAnalytics": true,
         "title": "Count of all events by Event Log",
         "timeContext": {
-          "durationMs": 14400000
+          "durationMs": 604800000
         },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
@@ -330,7 +371,7 @@
         "showAnalytics": true,
         "title": "Count of all events by Event Level",
         "timeContext": {
-          "durationMs": 14400000
+          "durationMs": 604800000
         },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
@@ -361,7 +402,7 @@
         "showAnalytics": true,
         "title": "Count of all events by Event Id",
         "timeContext": {
-          "durationMs": 14400000
+          "durationMs": 604800000
         },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
@@ -408,7 +449,7 @@
         "showAnalytics": true,
         "title": "Event Trend",
         "timeContext": {
-          "durationMs": 14400000
+          "durationMs": 604800000
         },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
@@ -431,6 +472,7 @@
         "style": "tabs",
         "links": [
           {
+            "id": "bb2e71bf-c855-4c32-8411-a802a119a7a3",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "CVE-2020-1472 Specific",
@@ -438,6 +480,7 @@
             "style": "link"
           },
           {
+            "id": "160b4d30-20f4-4005-9dd8-b4fb93e02641",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
             "linkLabel": "All Events",
@@ -536,7 +579,7 @@
               "showAnalytics": true,
               "title": "EventSearchBox_hidden",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -727,7 +770,7 @@
               "title": "CVE-2020-1472_hidden",
               "noDataMessage": "No machine accounts using vulnerable Netlogon secure channel connections were detected with the current selection.",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -756,7 +799,7 @@
               "showAnalytics": true,
               "title": "ConnectionInfo_hidden",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -785,7 +828,7 @@
               "showAnalytics": true,
               "title": "trustInfo_hidden",
               "timeContext": {
-                "durationMs": 14400000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
