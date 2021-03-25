@@ -1,4 +1,4 @@
-// Author: Chris Witte
+// Author: Pantalones411
 // Display name: Average Job Run Time by jobId
 // Description: This query provides the average delta of runStart and runSucceeded times in 10 minute bins
 // Categories: Azure Resources
