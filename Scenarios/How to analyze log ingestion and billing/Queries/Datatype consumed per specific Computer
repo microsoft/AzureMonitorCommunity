@@ -1,0 +1,23 @@
+// Author: Microsoft Azure
+// Display name: Billable data by computer and data type
+// Description: Calculate the volume of billable data (in GB) for Perf data, over the last day.
+// Categories: monitor
+// Resource types: Azure Monitor
+// Solutions: LogManagement
+// Topic: Usage
+
+// Ingested bytes by computer and data type, sorted by BillableDataBytes (ingestion volume)
+union withsource = tt *
+| where IsBillable = true
+| extend computerName = tolower(tostring(split(Computer,'.')[0]))
+// optionally filter for a specific computer name: | where computerName == "mycomputer"
+| summarize BillableDataBytes = sum(_BilledSize) by computerName, Type 
+| sort by BillableDataBytes nulls last
+
+//Top 4 data types consumed by specific computers, sorted by BillableDataBytes (ingestion volume)
+union withsource = tt *
+| where IsBillable = true
+| extend computerName = tolower(tostring(split(Computer,'.')[0]))
+// optionally filter for a specific computer name: | where computerName == "mycomputer"
+| summarize BillableDataBytes = sum(_BilledSize) by computerName, Type 
+| top 4 by BillableDataBytes
