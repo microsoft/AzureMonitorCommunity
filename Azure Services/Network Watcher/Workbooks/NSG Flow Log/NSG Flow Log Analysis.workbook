@@ -5,6 +5,7 @@
         "type": 9,
         "content": {
           "version": "KqlParameterItem/1.0",
+          "description": "** Author ** \r\n [Chiwoo Park](qkrcldn12@gmail.conm)\r\n\r\n** Version 1.0 ** \r\n2020-04-06",
           "crossComponentResources": [
             "value::all"
           ],

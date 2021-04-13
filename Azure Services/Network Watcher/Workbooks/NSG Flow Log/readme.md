@@ -1,6 +1,6 @@
 # Installation to your workbook
 ----
-1. Copy "NSG Flow Log Analysis.workbook" to your workbook
+1. Copy & Paste "NSG Flow Log Analysis.workbook" to your workbook
 2. Select a workspace
 ![1 how-to-use](https://user-images.githubusercontent.com/32254293/113839087-54fd3380-97ca-11eb-92b0-06697c4cc94c.png)
 
