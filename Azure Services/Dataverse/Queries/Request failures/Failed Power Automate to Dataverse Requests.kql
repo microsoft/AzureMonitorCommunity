@@ -1,0 +1,11 @@
+// Author: aliyoussefi
+// Display name: Failed Power Automate to Dataverse Requests
+// Description: List unsuccessful calls to the Dataverse API from Power Automate.
+// Categories: Azure Resources,Applications
+// Resource types: Dataverse
+// Topic: Other errors and failures
+
+requests
+| where timestamp between(ago(30d).. now()) //last 30 days
+| extend cd=parse_json(customDimensions)
+| where cd.userAgent has "Microsoft Flow" and success == "False"
