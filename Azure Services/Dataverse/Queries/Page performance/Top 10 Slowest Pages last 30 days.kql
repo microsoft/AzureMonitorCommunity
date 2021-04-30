@@ -1,0 +1,16 @@
+// Author: aliyoussefi
+// Display name: Top 10 Slowest Pages last 30 days
+// Description: Summary of Table and View load duration.
+// Categories: Azure Resources
+// Resource types: Dataverse
+// Topic: Page performance
+
+// Slowest pages 
+// What are the 10 slowest pages, and how slow are they? 
+pageViews
+|where timestamp between(ago(30d)..now())
+| where notempty(duration)
+| extend total_duration=duration*itemCount
+| summarize avg_duration=(sum(total_duration)/sum(itemCount)) by operation_Name
+| top 10 by avg_duration desc
+| render columnchart 

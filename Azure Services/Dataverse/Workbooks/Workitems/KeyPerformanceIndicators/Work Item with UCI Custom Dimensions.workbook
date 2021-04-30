@@ -1,0 +1,223 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "5eaa3561-5587-44b0-b4d3-c372613fdf41",
+            "version": "KqlParameterItem/1.0",
+            "name": "operationid",
+            "type": 1,
+            "value": "",
+            "isHiddenWhenLocked": true,
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "092e592b-96d2-44ae-825a-20c82c711818",
+            "version": "KqlParameterItem/1.0",
+            "name": "timestamp",
+            "type": 1,
+            "value": "",
+            "isHiddenWhenLocked": true
+          },
+          {
+            "id": "4d3ed30a-caa8-4a30-b518-904685e8a511",
+            "version": "KqlParameterItem/1.0",
+            "name": "httpendpoint",
+            "type": 1,
+            "value": "https://dev.azure.com/mip-d365-easyrepro/Contoso%20Software",
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "paramValidationRules": [
+                {
+                  "regExp": "(https:\\/\\/dev\\.azure\\.com\\/[^\\/]+\\/[^\\/]+$)|(https:\\/\\/[^\\.]+\\.visualstudio\\.com\\/[^\\/]+$)",
+                  "match": true,
+                  "message": ""
+                }
+              ]
+            }
+          },
+          {
+            "id": "9e031a62-faf3-4943-867a-a8e306da0ea5",
+            "version": "KqlParameterItem/1.0",
+            "name": "eventid",
+            "type": 1,
+            "isHiddenWhenLocked": true
+          },
+          {
+            "id": "93bfbcff-d3bc-444f-a604-b297934a7992",
+            "version": "KqlParameterItem/1.0",
+            "name": "eventlink",
+            "type": 1,
+            "isHiddenWhenLocked": true
+          },
+          {
+            "id": "9a4c978f-e020-4bbf-b573-e97989877fec",
+            "version": "KqlParameterItem/1.0",
+            "name": "hidewelcome",
+            "type": 1,
+            "isHiddenWhenLocked": true
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "parameters - TopLevel"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# How to use this workbook\r\n\r\nIf you're seeing this message this means you're editing your workbook to customize it or debug it. Please navigate to the correct section to get started. Please note this text is shared between both the Azure DevOps and GitHub versions of the template as they share the same features.\r\n\r\n## Customize the Template\r\n\r\nBelow there are two queries. The first query takes in the itemId and passes it to the Log Analytics query to get the specific item. The second query takes in the operation_Id and will show ALL related telemetry.\r\n\r\nThe general structure of the query is \r\n```\r\n// Required parameters\r\n// Helper functions to keep code down\r\n// Direct queries to get the item information\r\n// Union of direct queries and URL creation\r\n```\r\n\r\n### Infomation about Work Item or Issue creation\r\nFor Azure DevOps there is the [\"Define an ad hoc work item template using a hyperlink\"](https://docs.microsoft.com/en-us/azure/devops/boards/backlogs/work-item-template?view=azure-devops&tabs=browser#define-an-ad-hoc-work-item-template-using-a-hyperlink) document which gives some details on how to create a work item with a URL.\r\n\r\nFor GitHub there is the [\"About automation for issues and pull requests with query parameters\"](https://docs.github.com/en/free-pro-team@latest/github/managing-your-work-on-github/about-automation-for-issues-and-pull-requests-with-query-parameters) document which explains the details of creating an issue.\r\n\r\n\r\n### Required parameters\r\n\r\n`timestamp` - Required so we can filter the queries down to the correct 10 minutes window. This is passed in by the UX when you select the workbook. Generates the `starttime` and `endtime` parameters used in the queries\r\n`operationid` - Required so we can create the related items query. This is passed in by the UX when you select the workbook.\r\n`eventid` - Required so we can create the specific item query. This is passed in by the UX when you select the workbook.\r\n`eventlink` - The link that is added to the work item so you can see the details of the operation. This is passed in by the UX when you select the workbook.\r\n`httpendpoint` - Required to generate the URL to create the work item. This is passed in by the create wizard.\r\n\r\n### Helper functions\r\n`returnundefined (name: string)` - Takes in a string and returns. <undefined> if it's empty\r\n`returnline (key: string, value: string)` - Returns a single formated line to be added to the details of the work item. This will generate a key/value pair where the key is bolded.\r\n`urlPrefix (workItemType:string)` - Generates the URL to create the full work item creation URL. Takes in the work item type to create the correct endpoint. For DevOps the workItem type must be a valid work item name \"bug\", \"task\", etc.\r\n`description (witType:string, itemType:string)` - Utility to identify what type of work item and what type of telemetry type, only used in the query output.\r\n`witTitle (witType:string, itemType:string, opName:string)` - This generates the work item or issue title and takes in the folloing: witType to state in the title if it's a Bug, Task, etc., the itemType to help idenitfy if it's a request, dependency, etc., and the operation name to give context about what specific item needs to be investigated\r\n`witDescription (bodyOfWit: string, itemType:string)` - This generate the work item or issue body and take in the following: bodyOfWit which is a plaintext string, see the query for examples, itemType, which is used to change a specific field name for AzureDevOps work items see the note.\r\n`appendquerystring (fieldToAppend:string)` - Simply appends an ampersand (&) to the front of a querystring parameter.\r\n\r\n> **Note about Bug Work Item Types** Azure DevOps uses \"Repro Steps\" for the Bug work item type, so if you change this function your work item details may not show up.\r\n\r\n> **Note about hyperlinks** Azure DevOps will not allow you to inject a clickable hyperlink in a work item. The best we can do is provide the URL.\r\n\r\n### Direct queries\r\n\r\nThese have the following format:\r\n\r\n`<<anyname>>` - An arbitrary name for the union query\r\n`<<telemetrytable>>` - requests, traces, etc.\r\n`bodyOfWit` - The string you want to be added to the work item or issue.\r\n`nameForTitle` - Used to generate the correct title for a specific telemetry type. For example, avalabilityResults may not have an operation_Name defined.\r\n`workItemKey` - This is always 1 and is used to automatically generate the correct list of work item types (if you want multiple) for Azure DevOps. See below in the union section.\r\n\r\n```\r\nlet <<anyname>> = <<telemetrytable>> | where timestamp between(starttime..endtime) | where itemId == itemIdFromWorkbook\r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = name\r\n| extend workItemKey = 1;\r\n\r\n```\r\n### workItemTypes datatable \r\n\r\nIn order to give you the option to create a Bug for one type of telemetry and a task for another type we generate a data table that has a list of workItemTypes with a hard coded id of 1. We join with the hardcoded key so we can repeat the rows for each work item type and generate the correct URL with the correct parameters. You can see this in the query and it looks like this.\r\n\r\n```\r\nlet workItemTypes = datatable ( workItemType: string, workItemKey: long )['Bug', 1, 'Task', 1];\r\n```\r\n\r\nIf you want to add another work item type or only have one you can modify the data table to reflect any built in or custom type.\r\n\r\n### Union of direct queries\r\n\r\nAfter the direct queries are defined we combine them into one unified query to generate the correct table. For Azure DevOps we do one special thing here and that is join the uninoned query with a custom datatable called workItemType. This simply repeat the row so we can create multiple work item types if desired.\r\n\r\n## Troubleshooting\r\n\r\n### 404 Page Not Found\r\n\r\nThis indicates that either the organization name is incorrect or the project is incorrect. Check the URL you entered into the wizard and try again.\r\n\r\n### 403 Unauthorized\r\n\r\nThis means that you do not have access to the organization or the project. Please validate you have the correct URL and if so contact your administrator to get access.\r\n\r\n### Work Item Data is truncated\r\n\r\nThere are two reasons for this and you only have a few options to correct them.\r\n\r\n**Data Length** - For most web servers there is a max URL length. If your data is particularly long or if there is a URL length restriction you may not see the end of your data\r\n**URL Encoding** - By default we URL encode the values going into the `returnline` function. But if you alter this or if you are doing something custom you should check to see if using url_encode() fixes the issue"
+      },
+      "conditionalVisibility": {
+        "parameterName": "hidewelcome",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "name": "Hidden Info Pannel"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Create an Azure Dev Ops Work Item\r\n---\r\n\r\nUsing the table generated by the analytics query below we can create many types of work items. If you want to customize this view, go to the Work Items menu and select the workbook that was created when you first set up the work item configuration."
+      },
+      "name": "text - description"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Create Work Item for specific event"
+      },
+      "name": "text - eventTitle"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "//*\r\n//* These definitions will be used to filter the queries below\r\n//*\r\nlet starttime = todatetime(\"{timestamp}\")-5m;\r\nlet endtime = todatetime(\"{timestamp}\")+5m;\r\nlet operationId = \"{operationid}\";\r\nlet itemIdFromWorkbook = \"{eventid}\";\r\nlet urlToDetails = \"{eventlink}\";\r\n//*\r\n//* These helper methods will generate the correctly formatted output for the work item creation. You can edit these to suit your needs.\r\n//*\r\n// Return a string of <undefined> if the input is empty\r\nlet returnundefined = (name: string) { iif(isempty(name), '<undefined>', name) };\r\n// Generate a line inside of the work item using a key and value. Bold the key.\r\nlet returnline = (key: string, value: string) { strcat(\"<p><b>\", key ,\":</b> \", url_encode(returnundefined(value)), \"</p>\") };\r\n// Generate the URL to the work item creation screen, will generate all the way up to the query string.\r\nlet urlPrefix = (workItemType:string) {strcat(\"{httpendpoint}\",\"/_workItems/create/\", workItemType, \"?\")};\r\n// Generate the description of what kind of work item and for what type the URL is. The workbook will automatically render the URL as a hyper link so you can click it\r\nlet description = (witType:string, itemType:string){ strcat(\"Create a \", witType, \" for this \", itemType, \" item type\")}; \r\n// Generate the default title of the work item along with its field\r\nlet witTitle = (witType:string, itemType:string, opName:string){ strcat(\"[System.Title]=\", witType,\" for \", itemType, \" (\", returnundefined(opName), \")\")}; \r\n// Generate the work item description along with its field\r\nlet witDescription = (bodyOfWit: string, itemType:string) { case(itemType == \"Bug\", strcat(\"[Repro Steps]=\", bodyOfWit), strcat(\"[System.Description]=\", bodyOfWit)) };\r\n// Append the field to the query string\r\nlet appendquerystring = (fieldToAppend:string){ strcat(\"&\", fieldToAppend)}; \r\n//*\r\n//* This data table is used to specify what types of work items you want to generate links for. You can add or remove any type here.\r\n//*\r\nlet workItemTypes = datatable ( workItemType: string, workItemKey: long )['Bug', 1, 'Task', 1];\r\n//*\r\n//* These queries are used to get the event or operation from the data provided to the workbook\r\n//*\r\n//* Note: If you alter the query you must make sure to define the workItemKey by adding | extend workItemKey = 1\r\n//* Note: You must also define a bodyOfWit field (this can be any freeform text)\r\n//*\r\n// Create a specific work item setup for request types\r\nlet requesttable = requests | where timestamp between(starttime..endtime) | where itemId== itemIdFromWorkbook\r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = name\r\n| extend workItemKey = 1;\r\n// Dependecny\r\nlet dependencytable = dependencies | where timestamp between(starttime..endtime) | where itemId== itemIdFromWorkbook \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Dependency Type\", type), returnline(\"Dependency Name\", name), returnline(\"Dependency Data\", data),  returnline(\"Dependency Result\", resultCode), returnline(\"Dependency Success\", success), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = strcat(['type'], \": \", name)\r\n| extend workItemKey = 1;\r\n// Custom Events\r\nlet eventstable = customEvents | extend cd=parse_json(customDimensions) | where timestamp between(starttime..endtime) | where itemId== itemIdFromWorkbook \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Event Name\", name), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City or town2\", client_City), returnline(\"Link\", urlToDetails), returnline(\"telemetryActivityId\", cd.telemetryActivityId), returnline(\"telemetrySessionId\", cd.telemetrySessionId), returnline(\"serverVersion\", cd.serverVersion))\r\n| extend nameForTitle = name\r\n| extend workItemKey = 1;\r\n// Traces\r\nlet tracetable = traces | where timestamp between(starttime..endtime) | where itemId== itemIdFromWorkbook \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Trace Message\", message), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = operation_Name\r\n| extend workItemKey = 1;\r\n// Exceptions\r\nlet exceptionstable = exceptions | where timestamp between(starttime..endtime) | where itemId== itemIdFromWorkbook \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Problem Id\", ['type']), returnline(\"Assembly\", assembly), returnline(\"Exception Type\", ['type']), returnline(\"Method\", method), returnline(\"Outer Exception Type\", outerType), returnline(\"Outer Exception Message\", outerMessage), returnline(\"Outer Exception Assembly\", outerAssembly), returnline(\"Outer Exception Method\", outerMethod), returnline(\"Innermost Exception Type\", innermostType), returnline(\"Innermost Exception Message\", innermostMessage), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails)), returnline(\"CustomDimensions\", customDimensions)\r\n| extend nameForTitle = ['type']\r\n| extend workItemKey = 1;\r\n// Availability Tests\r\nlet avialabilitytable = availabilityResults | where timestamp between(starttime..endtime) | where itemId== itemIdFromWorkbook \r\n| extend nameForTitle = name\r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend workItemKey = 1;\r\nunion requesttable, dependencytable, exceptionstable, avialabilitytable, eventstable, tracetable | project timestamp, workItemKey, nameForTitle, bodyOfWit, itemType| join kind=fullouter workItemTypes on workItemKey\r\n| project timestamp, Name = nameForTitle, [\"Description\"] = description(workItemType, itemType),  Url = strcat(urlPrefix(workItemType),  witTitle(workItemType, itemType, url_encode(nameForTitle)), appendquerystring(witDescription(bodyOfWit, workItemType)))",
+        "size": 4,
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "timestamp",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Name",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Description",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Url",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "Url",
+                "linkLabel": "Click here to create work item"
+              }
+            }
+          ]
+        },
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "id",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "duration",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "name": "query - event"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Create work items related to this event"
+      },
+      "name": "text - relatedEventsTitle"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "//*\r\n//* These definitions will be used to filter the queries below\r\n//*\r\nlet starttime = todatetime(\"{timestamp}\")-5m;\r\nlet endtime = todatetime(\"{timestamp}\")+5m;\r\nlet operationId = \"{operationid}\";\r\nlet itemIdFromWorkbook = \"{eventid}\";\r\nlet urlToDetails = \"{eventlink}\";\r\n//*\r\n//* These helper methods will generate the correctly formatted output for the work item creation. You can edit these to suit your needs.\r\n//*\r\n// Return a string of <undefined> if the input is empty\r\nlet returnundefined = (name: string) { iif(isempty(name), '<undefined>', name) };\r\n// Generate a line inside of the work item using a key and value. Bold the key.\r\nlet returnline = (key: string, value: string) { strcat(\"<p><b>\", key ,\":</b> \", url_encode(returnundefined(value)), \"</p>\") };\r\n// Generate the URL to the work item creation screen, will generate all the way up to the query string.\r\nlet urlPrefix = (workItemType:string) {strcat(\"{httpendpoint}\",\"/_workItems/create/\", workItemType, \"?\")};\r\n// Generate the description of what kind of work item and for what type the URL is. The workbook will automatically render the URL as a hyper link so you can click it\r\nlet description = (witType:string, itemType:string){ strcat(\"Create a \", witType, \" for this \", itemType, \" item type\")}; \r\n// Generate the default title of the work item along with its field\r\nlet witTitle = (witType:string, itemType:string, opName:string){ strcat(\"[System.Title]=\", witType,\" for \", itemType, \" (\", returnundefined(opName), \")\")}; \r\n// Generate the work item description along with its field\r\nlet witDescription = (bodyOfWit: string, itemType:string) { case(itemType == \"Bug\", strcat(\"[Repro Steps]=\", bodyOfWit), strcat(\"[System.Description]=\", bodyOfWit)) };\r\n// Append the field to the query string\r\nlet appendquerystring = (fieldToAppend:string){ strcat(\"&\", fieldToAppend)}; \r\n//*\r\n//* This data table is used to specify what types of work items you want to generate links for. You can add or remove any type here.\r\n//*\r\nlet workItemTypes = datatable ( workItemType: string, workItemKey: long )['Bug', 1, 'Task', 1];\r\n//*\r\n//* These queries are used to get the event or operation from the data provided to the workbook\r\n//*\r\n//* Note: If you alter the query you must make sure to define the workItemKey by adding | extend workItemKey = 1\r\n//* Note: You must also define a bodyOfWit field (this can be any freeform text)\r\n//*\r\n// Create a specific work item setup for request types\r\nlet requesttable = requests | where timestamp between(starttime..endtime) | where operation_Id == operationId\r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = name\r\n| extend workItemKey = 1;\r\n// Dependecny\r\nlet dependencytable = dependencies | where timestamp between(starttime..endtime) | where operation_Id == operationId \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Dependency Type\", type), returnline(\"Dependency Name\", name), returnline(\"Dependency Data\", data),  returnline(\"Dependency Result\", resultCode), returnline(\"Dependency Success\", success), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = strcat(['type'], \": \", name)\r\n| extend workItemKey = 1;\r\n// Custom Events\r\nlet eventstable = customEvents | where timestamp between(starttime..endtime) | where operation_Id == operationId \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Event Name\", name), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = name\r\n| extend workItemKey = 1;\r\n// Traces\r\nlet tracetable = traces | where timestamp between(starttime..endtime) | where operation_Id == operationId \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Trace Message\", message), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = operation_Name\r\n| extend workItemKey = 1;\r\n// Exceptions\r\nlet exceptionstable = exceptions | where timestamp between(starttime..endtime) | where operation_Id == operationId \r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Problem Id\", ['type']), returnline(\"Assembly\", assembly), returnline(\"Exception Type\", ['type']), returnline(\"Method\", method), returnline(\"Outer Exception Type\", outerType), returnline(\"Outer Exception Message\", outerMessage), returnline(\"Outer Exception Assembly\", outerAssembly), returnline(\"Outer Exception Method\", outerMethod), returnline(\"Innermost Exception Type\", innermostType), returnline(\"Innermost Exception Message\", innermostMessage), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend nameForTitle = ['type']\r\n| extend workItemKey = 1;\r\n// Availability Tests\r\nlet avialabilitytable = availabilityResults | where timestamp between(starttime..endtime) | where operation_Id == operationId \r\n| extend nameForTitle = name\r\n| extend bodyOfWit = strcat(returnline(\"Operation Name\", operation_Name), returnline(\"Timestamp\", timestamp), returnline(\"Duration (ms)\", duration), returnline(\"Country or region\", client_CountryOrRegion), returnline(\"State or province\", client_StateOrProvince), returnline(\"City\", client_City), returnline(\"Link\", urlToDetails))\r\n| extend workItemKey = 1;\r\nunion requesttable, dependencytable, exceptionstable, avialabilitytable, eventstable, tracetable | project timestamp, workItemKey, nameForTitle, bodyOfWit, itemType| join kind=fullouter workItemTypes on workItemKey\r\n| project timestamp, Name = nameForTitle, [\"Description\"] = description(workItemType, itemType),  Url = strcat(urlPrefix(workItemType),  witTitle(workItemType, itemType, url_encode(nameForTitle)), appendquerystring(witDescription(bodyOfWit, workItemType)))",
+        "size": 0,
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "timestamp",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "Name",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Description",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "Url",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "Url",
+                "linkLabel": "Click here to create work item"
+              }
+            }
+          ]
+        },
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "id",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "duration",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "name": "query - relatedEvents"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/527e910a-287d-42a6-af7d-995051d65bef/resourceGroups/D365-PerformanceTool/providers/microsoft.insights/components/D365-PerformanceTool-Insights"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
