@@ -4,6 +4,8 @@ This solution provides high-level monitoring for SAP Cloud Platform Integration 
 
 The workbook and its queries rely on a certain log structure that is given by the SAP Cloud Platform Alert Notification Service. Please read this [blog](https://blogs.sap.com/2020/11/11/broadcast-cpi-errors-to-azure-monitor-via-scp-alert-notifications/) to get more details on the service setup.
 
+As an alternative a direct connection from CPI to Azure Log Analytics can be done. The required SAP iFlow is published as part of the package [here](https://github.com/MartinPankraz/SAP-CPI-Azure-Monitor).
+
 In addition to that the workbook allows deep linking to your SAP Cloud Platform Integration tenant.
 
 Alerts can be created from the "Failure Rate" column of table "Failed messages by iFlow" at your convenience.
