@@ -1,424 +1,510 @@
 {
-    "version": "Notebook/1.0",
-    "items": [
-      {
-        "type": 1,
-        "content": {
-          "json": "## SAP CPI Monitor\r\n1. Check out my Blog [post](https://blogs.sap.com/2020/11/11/broadcast-cpi-errors-to-azure-monitor-via-scp-alert-notifications/) first before continuing. Fill your Log Analytics Workspace and SAP CPI Base URL params below to get started.\r\n2. To replace the below views with your own queries, select the `Edit` button in the toolbar at the top of the page to enter the `Edit Mode`.\r\n3. Then choose the `↑ Edit` option in the lower right hand corner of the Charts and List cells and paste your query.\r\n💡 Read more about other features in the [Workbooks Documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/app/usage-workbooks)<br/>\r\n<br/>\r\n\r\n",
-          "style": "info"
-        },
-        "name": "Workbook-Header"
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## SAP CPI Monitor\r\n1. Check out my Blog [post](https://blogs.sap.com/2020/11/11/broadcast-cpi-errors-to-azure-monitor-via-scp-alert-notifications/) first before continuing. Fill your subscription and Log Analytics Workspace params below to get started.\r\n2. To replace the below views with your own queries, select the `Edit` button in the toolbar at the top of the page to enter the `Edit Mode`.\r\n3. Then choose the `↑ Edit` option in the lower right hand corner of the Charts and List cells and paste your query.\r\n💡 Read more about other features in the [Workbooks Documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/app/usage-workbooks)<br/>\r\n<br/>\r\n\r\n",
+        "style": "info"
       },
-      {
-        "type": 11,
-        "content": {
-          "version": "LinkItem/1.0",
-          "style": "nav",
-          "links": [
+      "name": "Workbook-Header"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "nav",
+        "links": [
+          {
+            "id": "1e61627e-1b48-47f0-b08f-c8504d1bbd8f",
+            "cellValue": "https://www.sap.com/about/trust-center/cloud-service-status.html",
+            "linkTarget": "Url",
+            "linkLabel": "Status",
+            "preText": "SAP Cloud Service ",
+            "style": "link"
+          },
+          {
+            "id": "d97e2713-7751-49cc-afb7-0aac20d95b32",
+            "cellValue": "https://launchpad.support.sap.com/#/cacv2",
+            "linkTarget": "Url",
+            "linkLabel": "Availability Center",
+            "preText": "SAP Cloud",
+            "style": "link"
+          },
+          {
+            "id": "a9e34ad4-6972-427b-9998-b764db87d483",
+            "cellValue": "https://sapcp.statuspage.io/",
+            "linkTarget": "Url",
+            "linkLabel": "Page",
+            "preText": "BTP Status",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "Link to SAP CPI"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{SCP_CPI_Workspace}"
+        ],
+        "parameters": [
+          {
+            "id": "7629dbeb-8563-435e-b616-2c2c8c5d69c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat('/subscriptions/', subscriptionId), label = subscriptionId, selected = true",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ]
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/a1a90e6d-585e-4e50-98bf-893d80d6705c"
+            ]
+          },
+          {
+            "id": "4c13b758-0035-45e1-9bd0-a01a3174a871",
+            "version": "KqlParameterItem/1.0",
+            "name": "SCP_CPI_Workspace",
+            "label": "Az Log Analytics Workspace",
+            "type": 5,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": "/subscriptions/a1a90e6d-585e-4e50-98bf-893d80d6705c/resourceGroups/sap-demo-rg/providers/Microsoft.OperationalInsights/workspaces/SCPLogsForCPI",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "46935ea6-2890-475e-8ce9-381450443191",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 259200000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "27fb887d-309f-4af0-a0b5-8c29bb318eca",
+            "version": "KqlParameterItem/1.0",
+            "name": "Instance",
+            "type": 2,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "CPIFailure_CL\r\n| distinct cpiDomain_s\r\n| project value = cpiDomain_s, name = cpiDomain_s, selected = true",
+            "crossComponentResources": [
+              "{SCP_CPI_Workspace}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Parameters-Section"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "CPI Instances will only be listed if there is at least one log entry for them in the chosen Time Range.",
+        "style": "info"
+      },
+      "name": "text - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "CPIFailure_CL | where cpiDomain_s in ({Instance:value}) | extend myLink=strcat('https://',cpiDomain_s,'.cfapps.',region_s,'.hana.ondemand.com/itspaces') | project cpiDomain_s, region_s, myLink | distinct cpiDomain_s, region_s, myLink",
+        "size": 4,
+        "timeContext": {
+          "durationMs": 259200000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{SCP_CPI_Workspace}"
+        ],
+        "gridSettings": {
+          "formatters": [
             {
-              "id": "2dce4f65-14b4-4272-a317-86628d9d5ba4",
-              "cellValue": "https://<your cpi>.cfapps.<cp region>.hana.ondemand.com/itspaces/shell/monitoring/Overview",
-              "linkTarget": "Url",
-              "linkLabel": "SAP CPI Admin UI",
-              "preText": "Go to",
-              "postText": "for troubleshooting",
-              "style": "link"
+              "columnMatch": "cpiDomain_s",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "myLink",
+                "linkTarget": "Url"
+              }
+            },
+            {
+              "columnMatch": "myLink",
+              "formatter": 5
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "cpiDomain_s",
+              "label": "CPI Instance"
+            },
+            {
+              "columnId": "region_s",
+              "label": "BTP region"
+            },
+            {
+              "columnId": "myLink"
             }
           ]
-        },
-        "name": "Link to SAP CPI"
+        }
       },
-      {
-        "type": 9,
-        "content": {
-          "version": "KqlParameterItem/1.0",
-          "crossComponentResources": [
-            "{Subscription}"
-          ],
-          "parameters": [
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "CPIFailure_CL | where cpiDomain_s in ({Instance:value}) | summarize Count = count() by severity_s",
+        "size": 3,
+        "title": "Distribution of Severity Types",
+        "timeContext": {
+          "durationMs": 259200000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{SCP_CPI_Workspace}"
+        ],
+        "visualization": "piechart",
+        "chartSettings": {
+          "seriesLabelSettings": [
             {
-              "id": "7629dbeb-8563-435e-b616-2c2c8c5d69c1",
-              "version": "KqlParameterItem/1.0",
-              "name": "Subscription",
-              "type": 6,
-              "isRequired": true,
-              "multiSelect": true,
-              "quote": "'",
-              "delimiter": ",",
-              "query": "summarize by subscriptionId\r\n| project value = strcat('/subscriptions/', subscriptionId), label = subscriptionId, selected = true",
-              "crossComponentResources": [
-                "value::selected"
-              ],
-              "typeSettings": {
-                "additionalResourceOptions": [
-                  "value::all"
-                ]
-              },
-              "queryType": 1,
-              "resourceType": "microsoft.resourcegraph/resources"
+              "seriesName": "ERROR",
+              "color": "redBright"
             },
             {
-              "id": "4c13b758-0035-45e1-9bd0-a01a3174a871",
-              "version": "KqlParameterItem/1.0",
-              "name": "SCP_CPI_Workspace",
-              "label": "Az Log Analytics Workspace",
-              "type": 5,
-              "isRequired": true,
-              "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
-              "crossComponentResources": [
-                "{Subscription}"
-              ],
-              "value": "",
-              "typeSettings": {
-                "additionalResourceOptions": [],
-                "showDefault": false
-              },
-              "queryType": 1,
-              "resourceType": "microsoft.resourcegraph/resources"
+              "seriesName": "INFO",
+              "color": "green"
             },
             {
-              "id": "46935ea6-2890-475e-8ce9-381450443191",
-              "version": "KqlParameterItem/1.0",
-              "name": "TimeRange",
-              "type": 4,
-              "isRequired": true,
-              "value": {
-                "durationMs": 172800000
-              },
-              "typeSettings": {
-                "selectableValues": [
-                  {
-                    "durationMs": 900000
-                  },
-                  {
-                    "durationMs": 1800000
-                  },
-                  {
-                    "durationMs": 3600000
-                  },
-                  {
-                    "durationMs": 14400000
-                  },
-                  {
-                    "durationMs": 43200000
-                  },
-                  {
-                    "durationMs": 86400000
-                  },
-                  {
-                    "durationMs": 172800000
-                  },
-                  {
-                    "durationMs": 259200000
-                  },
-                  {
-                    "durationMs": 604800000
-                  },
-                  {
-                    "durationMs": 1209600000
-                  },
-                  {
-                    "durationMs": 2419200000
-                  },
-                  {
-                    "durationMs": 2592000000
-                  }
-                ],
-                "allowCustom": true
-              },
-              "timeContext": {
-                "durationMs": 86400000
-              },
-              "label": "Time Range"
-            },
-            {
-              "id": "969a50da-d4f0-4e8f-ab1b-59849108846c",
-              "version": "KqlParameterItem/1.0",
-              "name": "CPI_BASE_URL",
-              "type": 1,
-              "isRequired": true,
-              "value": "https://<your cpi>.cfapps.<cp region>.hana.ondemand.com",
-              "label": "Base URL of SAP CPI"
+              "seriesName": "",
+              "label": "Empty",
+              "color": "gray"
             }
           ],
-          "style": "pills",
-          "queryType": 1,
-          "resourceType": "microsoft.resourcegraph/resources"
-        },
-        "name": "Parameters-Section"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "CPIFailure_CL | summarize Count = count() by severity_s",
-          "size": 3,
-          "title": "Distribution of Severity Types",
-          "timeContext": {
-            "durationMs": 0
-          },
-          "timeContextFromParameter": "TimeRange",
-          "queryType": 0,
-          "resourceType": "microsoft.operationalinsights/workspaces",
-          "crossComponentResources": [
-            "{SCP_CPI_Workspace}"
-          ],
-          "visualization": "piechart",
-          "chartSettings": {
-            "seriesLabelSettings": [
-              {
-                "seriesName": "ERROR",
-                "color": "redBright"
-              },
-              {
-                "seriesName": "INFO",
-                "color": "green"
-              },
-              {
-                "seriesName": "",
-                "label": "Empty",
-                "color": "gray"
-              }
-            ],
-            "ySettings": {
-              "numberFormatSettings": {
-                "unit": 0,
-                "options": {
-                  "style": "decimal",
-                  "useGrouping": true
-                }
+          "ySettings": {
+            "numberFormatSettings": {
+              "unit": 0,
+              "options": {
+                "style": "decimal",
+                "useGrouping": true
               }
             }
           }
-        },
-        "customWidth": "0",
-        "name": "Notification Distribution Chart"
+        }
       },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "CPIFailure_CL \r\n| summarize Failure=countif(severity_s == \"ERROR\"),All=count(severity_s == \"ERROR\" or severity_s == \"INFO\")\r\n",
-          "size": 3,
-          "title": "# of overall Errors",
-          "timeContext": {
-            "durationMs": 0
+      "customWidth": "0",
+      "name": "Notification Distribution Chart"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "CPIFailure_CL | where cpiDomain_s in ({Instance:value}) \r\n| summarize Failure=countif(severity_s == \"ERROR\"),All=count(severity_s == \"ERROR\" or severity_s == \"INFO\")\r\n",
+        "size": 3,
+        "title": "# of overall Errors",
+        "timeContext": {
+          "durationMs": 259200000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{SCP_CPI_Workspace}"
+        ],
+        "visualization": "tiles",
+        "tileSettings": {
+          "titleContent": {},
+          "leftContent": {
+            "columnMatch": "Failure",
+            "formatter": 12,
+            "formatOptions": {
+              "min": 0,
+              "palette": "redBright"
+            },
+            "tooltipFormat": {
+              "tooltip": "All Errors in Time Range"
+            }
           },
-          "timeContextFromParameter": "TimeRange",
-          "queryType": 0,
-          "resourceType": "microsoft.operationalinsights/workspaces",
-          "crossComponentResources": [
-            "{SCP_CPI_Workspace}"
-          ],
-          "visualization": "tiles",
-          "tileSettings": {
-            "titleContent": {},
-            "leftContent": {
-              "columnMatch": "Failure",
-              "formatter": 12,
+          "secondaryContent": {
+            "columnMatch": "All",
+            "formatter": 1,
+            "tooltipFormat": {
+              "tooltip": "All notifications"
+            }
+          },
+          "showBorder": false,
+          "size": "auto"
+        }
+      },
+      "customWidth": "0",
+      "name": "Overall Error Tile"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "CPIFailure_CL\r\n| where cpiDomain_s in ({Instance:value})\r\n| make-series NotificationTrend = count() default=0 on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by tags_cpi_IntegrationArtifact_Id_s\r\n| join (\r\nCPIFailure_CL\r\n| where cpiDomain_s in ({Instance:value})\r\n| summarize Failures = countif(severity_s == \"ERROR\"), Success = countif(severity_s == \"INFO\") by tags_cpi_IntegrationArtifact_Id_s, cpiDomain_s, region_s \r\n) on tags_cpi_IntegrationArtifact_Id_s\r\n| extend All=Success+Failures\r\n| extend failureRate=Failures*100/All\r\n| extend myId='{SCP_CPI_Workspace}'\r\n| extend myLink=strcat('https://',cpiDomain_s ,'.cfapps.',region_s,'.hana.ondemand.com/itspaces/shell/monitoring/Messages/{\"status\":\"FAILED\",\"artifact\":\"',tags_cpi_IntegrationArtifact_Id_s,'\"}')\r\n| project tags_cpi_IntegrationArtifact_Id_s,NotificationTrend,Success,Failures,failureRate,myId,myLink\r\n| order by failureRate desc",
+        "size": 1,
+        "aggregation": 3,
+        "showAnalytics": true,
+        "title": "Failed messages by iFlow",
+        "timeContext": {
+          "durationMs": 259200000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "tags_cpi_IntegrationArtifact_Id_s",
+        "exportParameterName": "tags_cpi_IntegrationArtifact_Id_s",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{SCP_CPI_Workspace}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "tags_cpi_IntegrationArtifact_Id_s",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "myLink",
+                "linkTarget": "Url"
+              }
+            },
+            {
+              "columnMatch": "NotificationTrend",
+              "formatter": 9,
+              "formatOptions": {
+                "palette": "greenRed"
+              }
+            },
+            {
+              "columnMatch": "Failures",
+              "formatter": 8,
               "formatOptions": {
                 "min": 0,
-                "palette": "redBright"
-              },
-              "tooltipFormat": {
-                "tooltip": "All Errors in Time Range"
+                "max": 3,
+                "palette": "greenRed"
               }
             },
-            "secondaryContent": {
-              "columnMatch": "All",
-              "formatter": 1,
-              "tooltipFormat": {
-                "tooltip": "All notifications"
-              }
-            },
-            "showBorder": false,
-            "size": "auto"
-          }
-        },
-        "customWidth": "0",
-        "name": "Overall Error Tile"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "CPIFailure_CL\r\n| make-series NotificationTrend = count() default=0 on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by tags_cpi_IntegrationArtifact_Id_s\r\n| join (\r\nCPIFailure_CL\r\n| summarize Failures = countif(severity_s == \"ERROR\"), Success = countif(severity_s == \"INFO\") by tags_cpi_IntegrationArtifact_Id_s\r\n) on tags_cpi_IntegrationArtifact_Id_s\r\n| extend All=Success+Failures\r\n| extend failureRate=Failures*100/All\r\n| extend myId='{SCP_CPI_Workspace}'\r\n| extend myBaseURL='{CPI_BASE_URL}'\r\n| extend myLink=strcat(myBaseURL,'/itspaces/shell/monitoring/Messages/{\"status\":\"FAILED\",\"artifact\":\"',tags_cpi_IntegrationArtifact_Id_s,'\"}')\r\n| project tags_cpi_IntegrationArtifact_Id_s,NotificationTrend,Failures,failureRate,myId,myLink\r\n| order by failureRate desc",
-          "size": 1,
-          "aggregation": 3,
-          "showAnalytics": true,
-          "title": "Failed messages by iFlow",
-          "timeContext": {
-            "durationMs": 0
-          },
-          "timeContextFromParameter": "TimeRange",
-          "exportFieldName": "tags_cpi_IntegrationArtifact_Id_s",
-          "exportParameterName": "tags_cpi_IntegrationArtifact_Id_s",
-          "showExportToExcel": true,
-          "queryType": 0,
-          "resourceType": "microsoft.operationalinsights/workspaces",
-          "crossComponentResources": [
-            "{SCP_CPI_Workspace}"
-          ],
-          "gridSettings": {
-            "formatters": [
-              {
-                "columnMatch": "tags_cpi_IntegrationArtifact_Id_s",
-                "formatter": 1,
-                "formatOptions": {
-                  "linkColumn": "myLink",
-                  "linkTarget": "Url"
-                }
-              },
-              {
-                "columnMatch": "NotificationTrend",
-                "formatter": 9,
-                "formatOptions": {
-                  "palette": "greenRed"
-                }
-              },
-              {
-                "columnMatch": "Failures",
-                "formatter": 8,
-                "formatOptions": {
-                  "min": 0,
-                  "max": 3,
-                  "palette": "greenRed"
-                }
-              },
-              {
-                "columnMatch": "failureRate",
-                "formatter": 3,
-                "formatOptions": {
-                  "min": 0,
-                  "max": 100,
-                  "palette": "redBright",
-                  "linkColumn": "myId",
-                  "linkTarget": "AlertCreation",
-                  "linkIsContextBlade": false,
-                  "alertRuleContext": {
-                    "alertType": "Log",
-                    "customLogQuery": "CPIFailure_CL | where TimeGenerated > ago(1h) and severity_s == \"ERROR\" | summarize count() "
-                  }
-                },
-                "numberFormat": {
-                  "unit": 1,
-                  "options": {
-                    "style": "decimal",
-                    "useGrouping": false
-                  }
-                },
-                "tooltipFormat": {
-                  "tooltip": "Click to create alert"
-                }
-              },
-              {
-                "columnMatch": "myId",
-                "formatter": 5
-              },
-              {
-                "columnMatch": "myLink",
-                "formatter": 5
-              }
-            ],
-            "filter": true,
-            "labelSettings": [
-              {
-                "columnId": "tags_cpi_IntegrationArtifact_Id_s",
-                "label": "iFlow Id"
-              },
-              {
-                "columnId": "NotificationTrend",
-                "label": "Notification Trend"
-              },
-              {
-                "columnId": "Failures"
-              },
-              {
-                "columnId": "failureRate",
-                "label": "Failure Rate"
-              },
-              {
-                "columnId": "myId"
-              }
-            ]
-          },
-          "tileSettings": {
-            "showBorder": false
-          }
-        },
-        "customWidth": "0",
-        "showPin": true,
-        "name": "query - 1"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "CPIFailure_CL | where tags_cpi_IntegrationArtifact_Id_s == '{tags_cpi_IntegrationArtifact_Id_s}' | project TimeGenerated, resource_resourceName_s, body_s, region_s, severity_s | order by TimeGenerated asc",
-          "size": 0,
-          "title": "Message Log (filter with iflows from above)",
-          "timeContext": {
-            "durationMs": 0
-          },
-          "timeContextFromParameter": "TimeRange",
-          "queryType": 0,
-          "resourceType": "microsoft.operationalinsights/workspaces",
-          "crossComponentResources": [
-            "{SCP_CPI_Workspace}"
-          ],
-          "visualization": "table",
-          "gridSettings": {
-            "filter": true,
-            "sortBy": [
-              {
-                "itemKey": "TimeGenerated",
-                "sortOrder": 2
-              }
-            ],
-            "labelSettings": [
-              {
-                "columnId": "TimeGenerated",
-                "label": "Time Received"
-              },
-              {
-                "columnId": "resource_resourceName_s",
-                "label": "iFlow Name"
-              },
-              {
-                "columnId": "body_s",
-                "label": "Notification Msg"
-              },
-              {
-                "columnId": "region_s",
-                "label": "SCP Region"
-              },
-              {
-                "columnId": "severity_s",
-                "label": "Severity"
-              }
-            ]
-          },
-          "sortBy": [
             {
-              "itemKey": "TimeGenerated",
-              "sortOrder": 2
+              "columnMatch": "failureRate",
+              "formatter": 3,
+              "formatOptions": {
+                "min": 0,
+                "max": 100,
+                "palette": "redBright",
+                "linkColumn": "myId",
+                "linkTarget": "AlertCreation",
+                "linkIsContextBlade": false,
+                "alertRuleContext": {
+                  "alertType": "Log",
+                  "customLogQuery": "CPIFailure_CL | where TimeGenerated > ago(1h) and severity_s == \"ERROR\" | summarize count() "
+                }
+              },
+              "numberFormat": {
+                "unit": 1,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false
+                }
+              },
+              "tooltipFormat": {
+                "tooltip": "Click to create alert"
+              }
+            },
+            {
+              "columnMatch": "myId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "myLink",
+              "formatter": 5
+            }
+          ],
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "tags_cpi_IntegrationArtifact_Id_s",
+              "label": "iFlow Id"
+            },
+            {
+              "columnId": "NotificationTrend",
+              "label": "Notification Trend"
+            },
+            {
+              "columnId": "Failures"
+            },
+            {
+              "columnId": "failureRate",
+              "label": "Failure Rate"
+            },
+            {
+              "columnId": "myId"
             }
           ]
         },
-        "conditionalVisibility": {
-          "parameterName": "tags_cpi_IntegrationArtifact_Id_s",
-          "comparison": "isNotEqualTo"
-        },
-        "customWidth": "0",
-        "name": "Message Log"
-      }
-    ],
-    "fallbackResourceIds": [
-      ""
-    ],
-    "styleSettings": {
-      "spacingStyle": "none"
+        "tileSettings": {
+          "showBorder": false
+        }
+      },
+      "customWidth": "0",
+      "showPin": true,
+      "name": "query - 1"
     },
-    "fromTemplateId": "community-Workbooks/View Designer/Timeline List",
-    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-  }
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "CPIFailure_CL | where tags_cpi_IntegrationArtifact_Id_s == '{tags_cpi_IntegrationArtifact_Id_s}' and cpiDomain_s in ({Instance:value}) | project TimeGenerated, resource_resourceName_s, body_s, region_s, severity_s | order by TimeGenerated asc",
+        "size": 0,
+        "title": "Message Log (filter with iflows from above)",
+        "timeContext": {
+          "durationMs": 259200000
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{SCP_CPI_Workspace}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "filter": true,
+          "sortBy": [
+            {
+              "itemKey": "severity_s",
+              "sortOrder": 1
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "TimeGenerated",
+              "label": "Time Received"
+            },
+            {
+              "columnId": "resource_resourceName_s",
+              "label": "iFlow Name"
+            },
+            {
+              "columnId": "body_s",
+              "label": "Notification Msg"
+            },
+            {
+              "columnId": "region_s",
+              "label": "SCP Region"
+            },
+            {
+              "columnId": "severity_s",
+              "label": "Severity"
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "severity_s",
+            "sortOrder": 1
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tags_cpi_IntegrationArtifact_Id_s",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "0",
+      "name": "Message Log"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/a1a90e6d-585e-4e50-98bf-893d80d6705c/resourcegroups/sap-demo-rg/providers/microsoft.operationalinsights/workspaces/scplogsforcpi"
+  ],
+  "styleSettings": {
+    "spacingStyle": "none"
+  },
+  "fromTemplateId": "community-Workbooks/View Designer/Timeline List",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
