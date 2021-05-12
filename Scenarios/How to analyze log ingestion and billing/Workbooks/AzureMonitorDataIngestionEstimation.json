@@ -54,7 +54,9 @@
             "crossComponentResources": [
               "{Subscription}"
             ],
-            "value": [],
+            "value": [
+              ""
+            ],
             "typeSettings": {
               "additionalResourceOptions": []
             },
@@ -252,7 +254,7 @@
               "showAnalytics": true,
               "title": "Cost Per Computer",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportedParameters": [
@@ -276,7 +278,7 @@
                 "formatters": [
                   {
                     "columnMatch": "TotalIngestBytes",
-                    "formatter": 4,
+                    "formatter": 3,
                     "formatOptions": {
                       "palette": "blue"
                     },
@@ -469,16 +471,21 @@
               "version": "KqlItem/1.0",
               "query": "Perf\r\n| extend computerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where computerName == \"{ComputerName:value}\"\r\n| summarize PerfCount = count() by ObjectName, CounterName\r\n| order by PerfCount desc ",
               "size": 2,
+              "showAnalytics": true,
               "title": "Perf Counter Collections for {ComputerName:value}",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
               "crossComponentResources": [
                 "{Workspace}"
-              ]
+              ],
+              "gridSettings": {
+                "filter": true
+              }
             },
             "customWidth": "50",
             "conditionalVisibility": {
@@ -552,7 +559,7 @@
               "showAnalytics": true,
               "title": "Ingestion by Data Type - {TimeRange}",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 1209600000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Type",
@@ -636,7 +643,7 @@
               "showAnalytics": true,
               "title": "Ingested data for {Type:value} - {TimeRange}",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 1209600000
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
