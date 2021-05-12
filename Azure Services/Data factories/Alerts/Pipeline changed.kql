@@ -1,0 +1,14 @@
+// Author: David Reynolds @ Microsoft
+// Display name: ADF Pipeline Added/Modified/Deleted
+// Description: Alerts when an ADF pipeline is added, changed, or deleted
+// Categories: Azure Data Factory
+// Resource types: Azure Data Factory
+// Topic: Alert
+
+AzureActivity 
+| where OperationNameValue in ("MICROSOFT.DATAFACTORY/FACTORIES/PIPELINES/WRITE","MICROSOFT.DATAFACTORY/FACTORIES/PIPELINES/DELETE")
+| summarize arg_max(TimeGenerated, *) by CorrelationId
+| extend Res=tostring(Properties_d.resource),
+         Op=tostring(trim_start("MICROSOFT.DATAFACTORY/FACTORIES/PIPELINES/", OperationNameValue))
+| where Res has "ADF Name"                        // replace with the name of your ADF
+| project TimeGenerated, ResourceGroup, Caller, Res, ActivityStatusValue, Op

@@ -1,0 +1,16 @@
+// Author: David Reynolds @ Microsoft
+// Display name: Long running pipelines
+// Description: Alerts when an ADF pipeline runs longer than an hour
+// Categories: Azure Data Factory
+// Resource types: Azure Data Factory
+// Topic: Alert
+
+ADFPipelineRun 
+| where Status != "Queued" and Status != "Canceling"
+| where PipelineName == "Pipeline name 1"                    // replace with the name of the pipeline you wish to monitor
+| extend ActualEnd = case(End < datetime(1990), now(), End)  // running pipelines do not have an end time yet, so treat it as now
+| summarize arg_max(TimeGenerated, *) by RunId
+| extend Runtime = ActualEnd - Start
+| where Runtime > timespan(1h)
+| project TimeGenerated, PipelineName, Status, Runtime, Start, End, Parameters
+| order by Runtime desc
