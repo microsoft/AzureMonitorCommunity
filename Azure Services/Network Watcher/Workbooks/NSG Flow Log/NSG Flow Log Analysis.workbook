@@ -1,0 +1,628 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "description": "** Author ** \r\n [Chiwoo Park](qkrcldn12@gmail.conm)\r\n\r\n ** Version 1.1 ** \r\n2021-04-14\r\n- Change the order of parameters. su users can use this workbooks easil. \r\n- The [timeContext] are changed for each panel. so users can use custom time filter.  \r\n\r\n ** Version 1.0 **",
+          "crossComponentResources": [
+            "value::all"
+          ],
+          "parameters": [
+            {
+              "id": "85fbf801-c13d-4ea2-8fc7-907fc790fe0c",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeFilter",
+              "type": 4,
+              "isRequired": true,
+              "value": {
+                "durationMs": 3600000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ],
+                "allowCustom": true
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            },            {
+              "id": "297cafcc-b40f-4950-9293-01b798c3d9b3",
+              "version": "KqlParameterItem/1.0",
+              "name": "workspaces",
+              "label": "Workspaces",
+              "type": 2,
+              "isRequired": true,
+              "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| project id, name\r\n",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": []
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "930196bc-6fd3-4823-9cac-bf0c922a88bc",
+              "version": "KqlParameterItem/1.0",
+              "name": "NSG",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "Resources\r\n| where type == \"microsoft.network/networksecuritygroups\"\r\n| project id",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "showDefault": false
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "defaultValue": "value::all",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "77213a2e-9cb1-4c25-bca0-579743a73499",
+              "version": "KqlParameterItem/1.0",
+              "name": "FlowType",
+              "type": 2,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n| where SubType_s == \"FlowLog\"\r\n| summarize by FlowType_s",
+              "crossComponentResources": [
+                "{workspaces}"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "showDefault": false
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "timeContextFromParameter": "TimeFilter",
+              "defaultValue": "value::all",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            {
+              "id": "6ed7be95-1087-4806-8b40-a174516629ff",
+              "version": "KqlParameterItem/1.0",
+              "name": "FlowDirection",
+              "type": 2,
+              "description": "I : 인바운드 <br>O : 아웃바운드",
+              "isRequired": true,
+              "value": "I",
+              "typeSettings": {
+                "additionalResourceOptions": [],
+                "showDefault": false
+              },
+              "jsonData": "[\r\n    {\"value\": \"I\", \"selected\": \"true\"},\r\n    {\"value\": \"O\"}\r\n]",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "defaultValue": "value::all"
+            },
+            {
+              "id": "5a14da16-efa3-434e-9d6c-8e2e714155c0",
+              "version": "KqlParameterItem/1.0",
+              "name": "SrcIP",
+              "type": 1,
+              "description": ", 구분자를 사용하여 여러 개의 IP를 검색 할 수 있습니다. 구분자 사용시 띄어쓰기는 하지 않습니다.<br/> 예시 : 10.0.0.1,10.0.0.2",
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            },
+            {
+              "id": "bc97bfb6-cf61-4653-bd4e-e70aa8da960d",
+              "version": "KqlParameterItem/1.0",
+              "name": "DestIP",
+              "type": 1,
+              "description": ", 구분자를 사용하여 여러 개의 IP를 검색 할 수 있습니다. 구분자 사용시 띄어쓰기는 하지 않습니다.<br/> 예시 : 10.0.0.1,10.0.0.2",
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            },
+            {
+              "id": "29b5ec4f-0d6a-4ff6-8048-b35821a4721c",
+              "version": "KqlParameterItem/1.0",
+              "name": "DestPort",
+              "type": 1,
+              "description": ", 구분자를 사용하여 여러 개의 포트를 검색 할 수 있습니다. 구분자 사용시 띄어쓰기는 하지 않습니다.<br/> 예시 : 80,443",
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            },
+            {
+              "id": "50355613-67bd-464d-869a-1b1cf4db4bc1",
+              "version": "KqlParameterItem/1.0",
+              "name": "FlowStatus",
+              "type": 2,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "value": [
+                "Allow"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": [
+                  "value::all"
+                ],
+                "showDefault": false
+              },
+              "jsonData": "[\"Allow\", \"Deny\"]",
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            }
+          ],
+          "style": "above",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "name": "parameters - 1"
+      },
+      {
+        "type": 11,
+        "content": {
+          "version": "LinkItem/1.0",
+          "style": "tabs",
+          "links": [
+            {
+              "id": "bf4679aa-b08b-408c-b238-152128f9f4a2",
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Overview",
+              "subTarget": "Overview",
+              "style": "link"
+            },
+            {
+              "id": "a2ad6300-c702-4e4f-ad96-d15186f220e4",
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Chart",
+              "subTarget": "Chart",
+              "style": "link"
+            },
+            {
+              "id": "b887b713-05b8-4f97-befe-a378896ba0dd",
+              "cellValue": "selectedTab",
+              "linkTarget": "parameter",
+              "linkLabel": "Map",
+              "subTarget": "Map",
+              "style": "link"
+            }
+          ]
+        },
+        "name": "links - 2"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n| where SubType_s == \"FlowLog\"\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| where _ResourceId in~ ({NSG})\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowStatus in ({FlowStatus})\r\n| where FlowType_s in ({FlowType})\r\n| where FlowDirection_s in ('{FlowDirection}')\r\n| project st=(FlowStartTime_t), et=(FlowEndTime_t), _ResourceId, Src_IP_UD, Dst_IP_UD, DestPort_d, FlowDirection_s, FlowStatus, L4Protocol_s, L7Protocol_s, FlowType_s, Country_s\r\n| extend findIP = strcat(\"https://ip-46.com/\", Src_IP_UD)\r\n| order by st desc",
+                "size": 0,
+                "exportToExcelOptions": "all",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{workspaces}"
+                ],
+                "visualization": "table",
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "Src_IP_UD",
+                      "formatter": 1,
+                      "formatOptions": {
+                        "linkColumn": "findIP",
+                        "linkTarget": "Url",
+                        "linkIsContextBlade": false
+                      },
+                      "tooltipFormat": {
+                        "tooltip": "Open url : Find Who is it"
+                      }
+                    },
+                    {
+                      "columnMatch": "findIP",
+                      "formatter": 5
+                    }
+                  ],
+                  "rowLimit": 500
+                }
+              },
+              "name": "query - 0"
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 1,
+                    "content": {
+                      "json": "## User Defined Rules Hit Count",
+                      "style": "info"
+                    },
+                    "name": "text - 1"
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "AzureNetworkAnalytics_CL\r\n| where SubType_s == \"FlowLog\"\r\n| where TimeGenerated {TimeFilter:query}\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| where _ResourceId in~ ({NSG})\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowStatus in ({FlowStatus})\r\n| where FlowType_s in ({FlowType})\r\n| where NSGRuleType_s == \"UserDefined\"\r\n| summarize RulesHit=count() by _ResourceId, NSGRule_s, FlowDirection_s\r\n| order by _ResourceId, FlowDirection_s asc",
+                      "size": 0,
+                      "queryType": 0,
+                      "resourceType": "microsoft.operationalinsights/workspaces",
+                      "crossComponentResources": [
+                        "{workspaces}"
+                      ]
+                    },
+                    "name": "query - 0"
+                  }
+                ]
+              },
+              "customWidth": "50",
+              "name": "group - 1"
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 1,
+                    "content": {
+                      "json": "## Default Rules Hit Count",
+                      "style": "info"
+                    },
+                    "name": "text - 1"
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "AzureNetworkAnalytics_CL\r\n| where SubType_s == \"FlowLog\"\r\n| where TimeGenerated {TimeFilter:query}\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| where _ResourceId in~ ({NSG})\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowStatus in ({FlowStatus})\r\n| where FlowType_s in ({FlowType})\r\n| where NSGRuleType_s != \"UserDefined\"\r\n| summarize RulesHit=count() by _ResourceId, NSGRule_s, FlowDirection_s\r\n| order by _ResourceId, FlowDirection_s asc",
+                      "size": 0,
+                      "queryType": 0,
+                      "resourceType": "microsoft.operationalinsights/workspaces",
+                      "crossComponentResources": [
+                        "{workspaces}"
+                      ]
+                    },
+                    "name": "query - 0"
+                  }
+                ]
+              },
+              "customWidth": "50",
+              "name": "group - 1 - Copy"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "Overview"
+        },
+        "name": "group - 2 - Copy"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "loadType": "always",
+          "items": [
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 1,
+                    "content": {
+                      "json": "# Total Inbound Flows"
+                    },
+                    "name": "text - 1"
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n| where SubType_s == \"FlowLog\"\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowType_s in ({FlowType})\r\n| project st=(FlowStartTime_t), et=(FlowEndTime_t), _ResourceId, Src_IP_UD, Dst_IP_UD, DestPort_d, FlowDirection_s, FlowStatus, L4Protocol_s, L7Protocol_s, FlowType_s, Country_s\r\n| where FlowDirection_s == \"I\"\r\n| summarize FlowCount = count() by bin(st, {TimeFilter:grain}), FlowStatus",
+                      "size": 0,
+                      "queryType": 0,
+                      "resourceType": "microsoft.operationalinsights/workspaces",
+                      "crossComponentResources": [
+                        "{workspaces}"
+                      ],
+                      "visualization": "barchart",
+                      "chartSettings": {
+                        "seriesLabelSettings": [
+                          {
+                            "seriesName": "Deny",
+                            "color": "redBright"
+                          },
+                          {
+                            "seriesName": "Allow",
+                            "color": "green"
+                          }
+                        ]
+                      }
+                    },
+                    "name": "query - 2"
+                  }
+                ]
+              },
+              "name": "Total Inbound Flows"
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 1,
+                    "content": {
+                      "json": "# Allowed Inbound Flows by Country",
+                      "style": "success"
+                    },
+                    "name": "text - 1"
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n| where SubType_s == \"FlowLog\"\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowType_s in ({FlowType})\r\n| project st=(FlowStartTime_t), et=(FlowEndTime_t), _ResourceId, Src_IP_UD, Dst_IP_UD, DestPort_d, FlowDirection_s, FlowStatus, L4Protocol_s, L7Protocol_s, FlowType_s, Country_s\r\n| where FlowDirection_s == \"I\" and FlowStatus == \"Allow\"\r\n| summarize FlowCount = count() by bin(st, {TimeFilter:grain}), Country_s",
+                      "size": 0,
+                      "queryType": 0,
+                      "resourceType": "microsoft.operationalinsights/workspaces",
+                      "crossComponentResources": [
+                        "{workspaces}"
+                      ],
+                      "visualization": "barchart"
+                    },
+                    "name": "query - 0",
+                    "styleSettings": {
+                      "padding": "5%"
+                    }
+                  }
+                ]
+              },
+              "customWidth": "50",
+              "name": "barchart-Allow",
+              "styleSettings": {
+                "showBorder": true
+              }
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 1,
+                    "content": {
+                      "json": "# Denied Inbound Flows by Country",
+                      "style": "warning"
+                    },
+                    "name": "text - 1"
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n| where SubType_s == \"FlowLog\"\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowType_s in ({FlowType})\r\n| project st=(FlowStartTime_t), et=(FlowEndTime_t), _ResourceId, Src_IP_UD, Dst_IP_UD, DestPort_d, FlowDirection_s, FlowStatus, L4Protocol_s, L7Protocol_s, FlowType_s, Country_s\r\n| where FlowDirection_s == \"I\" and FlowStatus == \"Deny\"\r\n| summarize FlowCount = count() by bin(st, {TimeFilter:grain}), Country_s",
+                      "size": 0,
+                      "color": "redBright",
+                      "queryType": 0,
+                      "resourceType": "microsoft.operationalinsights/workspaces",
+                      "crossComponentResources": [
+                        "{workspaces}"
+                      ],
+                      "visualization": "barchart"
+                    },
+                    "name": "query - 1",
+                    "styleSettings": {
+                      "padding": "5%"
+                    }
+                  }
+                ]
+              },
+              "customWidth": "50",
+              "name": "barchart-Deny",
+              "styleSettings": {
+                "showBorder": true
+              }
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "Chart"
+        },
+        "name": "group - 4"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 1,
+              "content": {
+                "json": "# Category by Parameters"
+              },
+              "name": "text - 2"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n//| where $__timeFilter(FlowStartTime_t)\r\n| where SubType_s == \"FlowLog\"\r\n//| extend NSGList_s = extract(\"[a-zA-Z0-9-]{0,100}/[a-zA-Z0-9-_]{0,100}/([a-zA-Z0-9-]{0,100})\", 1, NSGList_s)\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowStatus in ({FlowStatus})\r\n| where FlowType_s in ({FlowType})\r\n| where FlowDirection_s in ('{FlowDirection}')\r\n| project st=(FlowStartTime_t), et=(FlowEndTime_t), _ResourceId, Src_IP_UD, Dst_IP_UD, DestPort_d, FlowDirection_s, FlowStatus, L4Protocol_s, L7Protocol_s, FlowType_s, Country_s\r\n| summarize cnt = count() by Country_s\r\n| extend Country_s = case(\r\n    isempty(Country_s), 'unknown',\r\n    Country_s\r\n)",
+                "size": 2,
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{workspaces}"
+                ],
+                "visualization": "map",
+                "mapSettings": {
+                  "locInfo": "CountryRegion",
+                  "locInfoColumn": "Country_s",
+                  "sizeSettings": "cnt",
+                  "sizeAggregation": "Sum",
+                  "minSize": 10,
+                  "maxSize": 50,
+                  "defaultSize": 10,
+                  "legendMetric": "cnt",
+                  "numberOfMetrics": 10,
+                  "legendAggregation": "Sum",
+                  "itemColorSettings": {
+                    "nodeColorField": "cnt",
+                    "colorAggregation": "Sum",
+                    "type": "heatmap",
+                    "heatmapPalette": "green"
+                  }
+                }
+              },
+              "customWidth": "55",
+              "name": "query - 0"
+            },
+            {
+              "type": 12,
+              "content": {
+                "version": "NotebookGroup/1.0",
+                "groupType": "editable",
+                "items": [
+                  {
+                    "type": 1,
+                    "content": {
+                      "json": "## Pie Chart by Country"
+                    },
+                    "name": "text - 2"
+                  },
+                  {
+                    "type": 3,
+                    "content": {
+                      "version": "KqlItem/1.0",
+                      "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {TimeFilter:query}\r\n//| where $__timeFilter(FlowStartTime_t)\r\n| where SubType_s == \"FlowLog\"\r\n//| extend NSGList_s = extract(\"[a-zA-Z0-9-]{0,100}/[a-zA-Z0-9-_]{0,100}/([a-zA-Z0-9-]{0,100})\", 1, NSGList_s)\r\n| extend FlowStatus = case(FlowStatus_s==\"A\", \"Allow\", \"Deny\")\r\n| extend tmpSplitDst=split(DestPublicIPs_s, \" \")\r\n| extend tmpSplitSrc=split(SrcPublicIPs_s, \" \")\r\n| extend NSG = extract(\"/[a-zA-Z-]{0,10}/(.*)\", 1, NSGList_s)\r\n| mvexpand tmpSplitDst\r\n| mvexpand tmpSplitSrc\r\n| extend splited_SrcPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitSrc))\r\n| extend splited_DstPublicIP=extract(\"((([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}.){3}(([0-9]||[1-9][0-9]||1[0-9]{2}||2[0-4][0-9]||25[0-5]){3}))\", 1, tostring(tmpSplitDst))\r\n| extend Src_IP_UD=case(\r\n                        isempty(splited_SrcPublicIP), SrcIP_s,\r\n                        splited_SrcPublicIP\r\n                   )\r\n| extend Dst_IP_UD=case(\r\n                        isempty(splited_DstPublicIP), DestIP_s,\r\n                        splited_DstPublicIP\r\n                   )\r\n| where Src_IP_UD != \"168.63.129.16\"\r\n| where Dst_IP_UD != \"168.63.129.16\"\r\n| extend DestPort_d=extract(\"([0-9]{1,7}).[0-9]{1,7}\", 1, tostring(DestPort_d))\r\n| extend ResourceGroup = extract(\"[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})/[a-zA-Z0-9-]{0,60}\", 1, NSGList_s)\r\n| extend nsgName = extract(\"[a-zA-Z0-9-]{0,60}/[a-zA-Z0-9-]{0,60}/([a-zA-Z0-9-]{0,60})\", 1, NSGList_s)\r\n| extend _ResourceId = strcat(\"/subscriptions/\",Subscription_g, \"/resourceGroups/\", ResourceGroup, \"/providers/Microsoft.Network/networkSecurityGroups/\", nsgName)\r\n| extend inputSrc = case(\r\n        isempty('{SrcIP}'), Src_IP_UD,\r\n        Src_IP_UD in ('{SrcIP}'), '{SrcIP}',\r\n        '{SrcIP}'\r\n    )\r\n| extend inputDest = case(\r\n        isempty('{DestIP}'), Dst_IP_UD,\r\n        '{DestIP}'\r\n    )\r\n| extend inputDestPort = case(\r\n        isempty('{DestPort}'), DestPort_d,\r\n        '{DestPort}'\r\n    )\r\n| where DestPort_d in (split('{DestPort}',\",\")) or DestPort_d == inputDestPort\r\n| where (Src_IP_UD in (split('{SrcIP}',\",\")) or Src_IP_UD == inputSrc) and (Dst_IP_UD in (split('{DestIP}',\",\")) or Dst_IP_UD == inputDest)\r\n| where FlowStatus in ({FlowStatus})\r\n| where FlowType_s in ({FlowType})\r\n| where FlowDirection_s in ('{FlowDirection}')\r\n| project st=(FlowStartTime_t), et=(FlowEndTime_t), _ResourceId, Src_IP_UD, Dst_IP_UD, DestPort_d, FlowDirection_s, FlowStatus, L4Protocol_s, L7Protocol_s, FlowType_s, Country_s\r\n| summarize cnt = count() by Country_s\r\n| extend Country_s = case(\r\n    isempty(Country_s), 'unknown',\r\n    Country_s\r\n)",
+                      "size": 2,
+                      "queryType": 0,
+                      "resourceType": "microsoft.operationalinsights/workspaces",
+                      "crossComponentResources": [
+                        "{workspaces}"
+                      ],
+                      "visualization": "piechart",
+                      "mapSettings": {
+                        "locInfo": "CountryRegion",
+                        "locInfoColumn": "Country_s",
+                        "sizeSettings": "cnt",
+                        "sizeAggregation": "Sum",
+                        "minSize": 10,
+                        "maxSize": 50,
+                        "defaultSize": 10,
+                        "legendMetric": "cnt",
+                        "numberOfMetrics": 10,
+                        "legendAggregation": "Sum",
+                        "itemColorSettings": {
+                          "nodeColorField": "cnt",
+                          "colorAggregation": "Sum",
+                          "type": "heatmap",
+                          "heatmapPalette": "green"
+                        }
+                      }
+                    },
+                    "name": "query - 0 - Copy"
+                  }
+                ]
+              },
+              "customWidth": "45",
+              "name": "piechart"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "Map"
+        },
+        "name": "group - 2"
+      }
+    ],
+    "fallbackResourceIds": [
+      "azure monitor"
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
