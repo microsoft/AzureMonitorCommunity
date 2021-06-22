@@ -1,0 +1,191 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "description": "** Author ** \r\n [Chiwoo Park](qkrcldn12@gmail.conm)\r\n\r\n** Version 1.0 ** \r\n2020-04-13",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "parameters": [
+          {
+            "id": "19fa19be-14ad-466e-9e1e-9326926936e7",
+            "version": "KqlParameterItem/1.0",
+            "name": "subscription_Id",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| project val = subscriptionId, label = name",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "value": [
+              "9f0e76c5-9a52-42a9-b546-839594887539",
+              "58dbbd07-eb52-47cc-88b3-bbaea99036a4"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "매개 변수 - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "resources\r\n| where type contains \"microsoft.network\"\r\n| where type == \"microsoft.network/virtualnetworks\"\r\n| mvexpand subnetProperties = properties['subnets']\r\n| extend subnetName = subnetProperties['name']\r\n| extend subnetId = subnetProperties['id']\r\n| extend subnetPrefix = subnetProperties['properties']['addressPrefix']\r\n| extend subnetNSG = subnetProperties['properties']['networkSecurityGroup']['id']\r\n| extend routeTable = subnetProperties['properties']['routeTable']['id']\r\n| parse subnetPrefix with subnetAddress \"/\" subnetMask\r\n| extend parsedSubnetIp = parse_ipv4_mask(subnetAddress, toint(subnetMask))\r\n//| project id, name, tenantId, subscriptionId, subnetName, subnetId, subnetPrefix, subnetNSG, routeTable, parsedSubnetIp\r\n| join kind = leftouter(\r\n\tresources\r\n\t| where type contains \"microsoft.network\"\r\n\t| where type == \"microsoft.network/virtualnetworks\"\r\n\t| mvexpand vnetAddressspace = properties['addressSpace']['addressPrefixes']\r\n\t| parse vnetAddressspace with vnetAddress \"/\" mask\r\n\t| extend vnetStartIp = parse_ipv4_mask(vnetAddress, toint(mask))\r\n\t| extend vnetEndIp = vnetStartIp + pow(2, (32 - toint(mask)))\r\n\t| project id, name, tenantId, subscriptionId, vnetAddressspace, vnetStartIp, vnetEndIp\r\n) on id\r\n| extend motherVnet = case(\r\n\t\t\t\t\t\t\t(parsedSubnetIp >= vnetStartIp and parsedSubnetIp < vnetEndIp), name,\r\n\t\t\t\t\t\t\t\"delete\"\r\n\t\t\t\t\t\t\t)\r\n| where motherVnet != \"delete\"\r\n| extend totalSubnetAllowedIpCount = toint(pow(2, (32 - toint(subnetMask))) - 5)\r\n| project id, name, subnetPrefix, tenantId, vnetAddressspace, location, subscriptionId, subnetId = tostring(subnetId), subnetName, subnetNSG, routeTable, totalSubnetAllowedIpCount\r\n| join kind = inner (\r\nresources\r\n| where type == \"microsoft.network/networkinterfaces\"\r\n| mvexpand nicDetails = properties['ipConfigurations']\r\n| extend subnet = nicDetails['properties']['subnet']['id']\r\n| extend privateIp = nicDetails['properties']['privateIPAddress']\r\n| extend associatedAppGw = nicDetails['properties']['applicationGatewayBackendAddressPools']\r\n| extend associatedLoadBalancer = nicDetails['properties']['loadBalancerBackendAddressPools']\r\n| extend associatedVm = properties['virtualMachine']['id']\r\n| project id, name, tenantId, subscriptionId, location, subnet, privateIp, associatedAppGw, associatedLoadBalancer, associatedVm\r\n| union (\r\n\tresources\r\n\t| where type == \"microsoft.network/loadbalancers\"\r\n\t| mvexpand frontConf = properties['frontendIPConfigurations']\r\n\t| extend frontEndIpConf = frontConf['properties']['subnet']['id']\r\n\t| where isnotempty(frontEndIpConf)\r\n\t| project name, subnet = frontEndIpConf\r\n)\r\n| summarize usingSubnetIpCount = count() by tostring(subnet)\r\n) on $left.subnetId == $right.subnet\r\n| where subscriptionId in ({subscription_Id:value})\r\n| extend usingSpaces = strcat(tostring(usingSubnetIpCount), \"/\", tostring(totalSubnetAllowedIpCount))\r\n| order by id asc",
+        "size": 3,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": null,
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "id",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "name",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "tenantId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "vnetAddressspace",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "subscriptionId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "subnetId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "subnet",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "subnetNSG",
+              "formatter": 13,
+              "formatOptions": {
+                "linkColumn": "subnetNSG",
+                "linkTarget": "Resource",
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "routeTable",
+              "formatter": 13,
+              "formatOptions": {
+                "linkColumn": "routeTable",
+                "linkTarget": "Resource",
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "totalSubnetAllowedIpCount",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "usingSubnetIpCount",
+              "formatter": 5
+            }
+          ],
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "id",
+              "vnetAddressspace"
+            ],
+            "expandTopLevel": true,
+            "finalBy": "subnetName"
+          },
+          "labelSettings": [
+            {
+              "columnId": "id",
+              "label": "VirtualNetworks"
+            },
+            {
+              "columnId": "name"
+            },
+            {
+              "columnId": "subnetPrefix",
+              "label": "SubnetPrefix"
+            },
+            {
+              "columnId": "tenantId"
+            },
+            {
+              "columnId": "vnetAddressspace"
+            },
+            {
+              "columnId": "location"
+            },
+            {
+              "columnId": "subscriptionId"
+            },
+            {
+              "columnId": "subnetId"
+            },
+            {
+              "columnId": "subnetNSG"
+            },
+            {
+              "columnId": "routeTable"
+            },
+            {
+              "columnId": "totalSubnetAllowedIpCount"
+            },
+            {
+              "columnId": "subnet"
+            },
+            {
+              "columnId": "usingSubnetIpCount"
+            },
+            {
+              "columnId": "usingSpaces"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "name": "쿼리 - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

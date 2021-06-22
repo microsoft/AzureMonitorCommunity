@@ -1,0 +1,22 @@
+// Author: Pantalones411
+// Display name: Average Job Run Time by jobId
+// Description: This query provides the average delta of runStart and runSucceeded times in 10 minute bins
+// Categories: Azure Resources
+// Resource types: Azure Databricks Services	
+// Topic: Performance
+
+let allJobs = DatabricksJobs 
+	| where ActionName == "runStart"
+	| extend runid = extractjson('$runId', RequestParams)
+	| extend jobid = extractjson('$jobId', RequestParams)
+	| project jobid, runid,TimeGenerated,ActionName
+		| join kind=inner (DatabricksJobs
+		| where ActionName == 'runSucceeded'
+		| extend runid = extractjson('$runId', RequestParams)
+		| extend jobid = extractjson('$jobId', RequestParams)
+		| project jobid, runid,TimeGenerated,ActionName
+		) on runid;
+allJobs
+	| extend timediff = TimeGenerated1-TimeGenerated
+	| extend Success_Seconds = split(timediff,':')[0] * 3600 + split(timediff,':')[1] * 60 + split(timediff,':')[2]
+	| summarize avg(Success_Seconds) by jobid, bin(TimeGenerated, 10m)

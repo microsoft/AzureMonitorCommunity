@@ -53,7 +53,6 @@
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources",
             "value": [
-              "/subscriptions/05a1b94d-16d2-461a-8e0d-af047c697628"
             ]
           },
           {
@@ -171,6 +170,7 @@
             "value": [
               "value::all"
             ]
+
           },
           {
             "id": "7d383415-a188-420b-bca8-7286db9d677f",
@@ -585,6 +585,7 @@
             "content": {
               "version": "KqlItem/1.0",
               "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where SourceComputerId == tostring(\"{row}\")\r\n| where Optional==false\r\n| where Approved!=false\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| summarize arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| project TimeGenerated, Computer, UpdateState, Classification, KBID, TenantId, Title, PublishedDate, Product, MSRCSeverity, RebootBehavior, Approved",
+
               "size": 0,
               "showAnalytics": true,
               "title": "updateBySelectedComputer_hidden",

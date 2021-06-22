@@ -53,7 +53,6 @@
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources",
             "value": [
-              "/subscriptions/dca471f2-eef4-4179-b2d2-e3413c414def"
             ]
           },
           {
