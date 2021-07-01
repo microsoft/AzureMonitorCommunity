@@ -170,7 +170,6 @@
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces",
             "value": [
-              "IFOMS002RM01.italferr.corp.local"
             ]
           },
           {
