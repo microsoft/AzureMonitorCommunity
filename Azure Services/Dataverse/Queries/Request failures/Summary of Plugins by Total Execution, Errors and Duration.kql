@@ -1,0 +1,15 @@
+// Author: aliyoussefi
+// Display name: Summary of Plugins by Total Execution, Errors and Duration
+// Description: Summary of Plugins by Total Execution, Errors and Duration
+// Categories: Dataverse,Server,BusinessLogic
+// Resource types: Dataverse
+// Topic: Other errors and failures
+
+dependencies
+| where timestamp between(ago(30d).. now())
+| where type == "Plugin"
+| extend cd = parse_json(customDimensions)
+| summarize TotalExecution = count(), PerceivedErrors = countif(success=="False"),
+            Slow3s = countif(duration >=3000),Slow5s = countif(duration >=5000),        
+            Slow8s = countif(duration >=8000),Slow15s = countif(duration >=15000),Slow30s = countif(duration >=30000), maxExecutionTime = max(duration)
+  by name
