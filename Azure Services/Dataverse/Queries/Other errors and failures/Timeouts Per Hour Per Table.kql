@@ -1,0 +1,14 @@
+// Author: Jeff Thompson and Darrin Devine
+// Display name: timeouts per hour per table
+// Description: timeouts per hour per table
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Other errors and failures
+
+exceptions
+| where timestamp >= ago(7d)
+| where outerMessage has "timeout"
+| extend Table= tostring(customDimensions.entityName)
+| summarize count(),dcount(user_Id) by Table,bin(timestamp,1h)
+| render timechart 
+
