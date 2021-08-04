@@ -4700,7 +4700,7 @@
     {
       "type": 1,
       "content": {
-        "json": "Note: User viewing this workbook needs to have reader access on the billing account selected above to get data",
+        "json": "Note:  \r\n>User viewing this workbook needs to have reader access on the billing account selected above to get data back.  \r\n>Go to Cost Management + Billing and choose Access control (IAM) and add user account as reader.",
         "style": "info"
       },
       "conditionalVisibility": {
