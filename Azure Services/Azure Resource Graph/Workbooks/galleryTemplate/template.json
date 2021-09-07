@@ -143,20 +143,18 @@
         "sortBy": [],
         "tileSettings": {
           "titleContent": {
-            "formatter": 1,
-            "formatOptions": {
-              "showIcon": true
-            }
-          },
-          "leftContent": {
             "columnMatch": "count_type",
             "formatter": 12,
             "formatOptions": {
-              "showIcon": true
+              "palette": "auto"
             }
           },
           "showBorder": true,
-          "sortOrderField": 2
+          "sortOrderField": 2,
+          "size": "auto"
+        },
+        "textSettings": {
+          "style": "bignumber"
         }
       },
       "conditionalVisibility": {
@@ -264,7 +262,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Resources \r\n| where type != 'microsoft.compute/disks' \r\n| where type != 'microsoft.compute/virtualmachines/extensions'\r\n| where type !has 'microsoft.insights'\r\n| where type != 'microsoft.operationsmanagement/solutions'\r\n| where type != 'microsoft.compute/images'\r\n| where type != 'microsoft.netapp/netappaccounts/capacitypools/volumes'\r\n| extend type = case(\r\ntype =~ 'microsoft.automation/automationaccounts', 'Automation Accounts',\r\ntype =~ 'microsoft.operationalinsights/workspaces', 'Log Analytics Workspaces',\r\ntype =~ 'microsoft.netapp/netappaccounts', 'NetApp Accounts',\r\ntype == 'microsoft.web/serverfarms', \"App Service Plans\",\r\ntype == 'microsoft.web/sites', \"App Services\",\r\ntype =~ \"microsoft.compute/virtualmachines\", \"Azure Compute\",\r\ntype =~ \"microsoft.logic/workflows\", \"LogicApps\",\r\ntype =~ 'microsoft.keyvault/vaults', \"Key Vaults\",\r\ntype =~ 'microsoft.keyvault/vaults', \"Hybrid Compute\",\r\ntype =~ 'microsoft.storage/storageaccounts', \"Storage Accounts\",\r\ntype =~ 'microsoft.compute/availabilitysets', 'Availability Sets',\r\ntype =~ 'microsoft.insights/components','Application Insights',\r\ntype =~ 'microsoft.desktopvirtualization/applicationgroups', 'WVD Application Groups',\r\ntype =~ 'microsoft.desktopvirtualization/workspaces', 'WVD Workspaces',\r\ntype =~ 'microsoft.desktopvirtualization/hostpools', 'WVD Hostpools',\r\ntype =~ 'microsoft.recoveryservices/vaults', 'Backup Vaults',\r\ntype =~ 'microsoft.insights/webtests', 'URL Web Tests',\r\ntype =~ 'microsoft.web/connections', 'LogicApp Connectors',\r\ntype =~ 'microsoft.web/customapis','LogicApp API Connectors',\r\ntype =~ 'microsoft.managedidentity/userassignedidentities','Managed Identities',\r\ntype =~ 'microsoft.storagesync/storagesyncservices', 'Azure File Sync',\r\ntype =~ 'microsoft.hybridcompute/machines', 'ARC Machines',\r\ntype has 'microsoft.network', 'Network Resources',\r\nstrcat(\"Not Translated: \", type))\r\n| summarize count() by type\r\n| where type !has \"Not Translated\"",
+        "query": "Resources \r\n| where type != 'microsoft.compute/disks' \r\n| where type != 'microsoft.compute/virtualmachines/extensions'\r\n| where type !has 'microsoft.insights'\r\n| where type != 'microsoft.operationsmanagement/solutions'\r\n| where type != 'microsoft.compute/images'\r\n| where type != 'microsoft.netapp/netappaccounts/capacitypools/volumes'\r\n| extend type = case(\r\ntype =~ 'microsoft.automation/automationaccounts', 'Automation Accounts',\r\ntype =~ 'microsoft.operationalinsights/workspaces', 'Log Analytics Workspaces',\r\ntype =~ 'microsoft.netapp/netappaccounts', 'NetApp Accounts',\r\ntype == 'microsoft.web/serverfarms', \"App Service Plans\",\r\ntype == 'microsoft.web/sites', \"App Services\",\r\ntype =~ \"microsoft.compute/virtualmachines\", \"Azure Compute\",\r\ntype =~ \"microsoft.logic/workflows\", \"LogicApps\",\r\ntype =~ 'microsoft.keyvault/vaults', \"Key Vaults\",\r\ntype =~ 'microsoft.storage/storageaccounts', \"Storage Accounts\",\r\ntype =~ 'microsoft.compute/availabilitysets', 'Availability Sets',\r\ntype =~ 'microsoft.insights/components','Application Insights',\r\ntype =~ 'microsoft.desktopvirtualization/applicationgroups', 'WVD Application Groups',\r\ntype =~ 'microsoft.desktopvirtualization/workspaces', 'WVD Workspaces',\r\ntype =~ 'microsoft.desktopvirtualization/hostpools', 'WVD Hostpools',\r\ntype =~ 'microsoft.recoveryservices/vaults', 'Backup Vaults',\r\ntype =~ 'microsoft.insights/webtests', 'URL Web Tests',\r\ntype =~ 'microsoft.web/connections', 'LogicApp Connectors',\r\ntype =~ 'microsoft.web/customapis','LogicApp API Connectors',\r\ntype =~ 'microsoft.managedidentity/userassignedidentities','User Managed Identities',\r\ntype =~ 'microsoft.storagesync/storagesyncservices', 'Azure File Sync',\r\ntype =~ 'microsoft.hybridcompute/machines', 'ARC Machines',\r\ntype =~ 'microsoft.eventhub/namespaces', 'Event Hub Namespaces',\r\ntype =~ 'microsoft.serviceBus/namespaces', 'Service Bus Namespaces',\r\ntype =~ 'microsoft.apimanagement/service', 'API Management',\r\ntype =~ 'microsoft.documentdb/databaseaccounts', 'Cosmos DB',\r\ntype =~ 'Microsoft.Network/publicIPAddresses', 'Public IPs',\r\ntype =~ 'Microsoft.Network/loadBalancers', 'Load Balancers',\r\ntype =~ 'Microsoft.ContainerService/ManagedClusters', 'AKS',\r\ntype =~ 'Microsoft.Sql/servers/databases', 'SQL Databases',\r\ntype =~ 'Microsoft.Sql/servers', 'SQL Servers',\r\ntype =~ 'Microsoft.DBforPostgreSQL/servers', 'PostgreSQL Servers',\r\ntype =~ 'microsoft.dbforpostgresql/flexibleservers', 'PostgreSQL Flexi Servers',\r\ntype =~ 'Microsoft.Network/dnszones', 'Azure DNS Zones',\r\ntype =~ 'Microsoft.Network/applicationGateways', 'Application Gateways',\r\ntype =~ 'Microsoft.Network/privateDnsZones', 'Private DNS Zones',\r\ntype =~ 'Microsoft.Cache/Redis', 'Azure Cache for Redis',\r\ntype =~ 'Microsoft.DBforMariaDB/servers', 'MariaDB Servers',\r\ntype =~ 'Microsoft.DBforMySQL/servers', 'MySQL Servers',\r\ntype =~ 'microsoft.network/virtualnetworkgateways', 'Virtual Network Gateways',\r\ntype =~ 'microsoft.network/expressroutecircuits', 'Express Routes',\r\ntype =~ 'microsoft.maps/accounts', 'Azure Maps',\r\ntype =~ 'microsoft.network/virtualnetworks', 'Virtual Networks',\r\ntype has 'microsoft.network', 'Network Resources',\r\nstrcat(\"Not Translated: \", type))\r\n| summarize count() by type\r\n| where type !has \"Not Translated\"",
         "size": 2,
         "title": "Resource Count by Type",
         "queryType": 1,
@@ -1508,7 +1506,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "resources\r\n| where type has 'microsoft.web'\r\n\t or type =~ 'microsoft.apimanagement/service'\r\n\t or type =~ 'microsoft.network/frontdoors'\r\n\t or type =~ 'microsoft.network/applicationgateways'\r\n\t or type =~ 'microsoft.appconfiguration/configurationstores'\r\n| extend type = case(\r\n\ttype == 'microsoft.web/serverfarms', \"App Service Plans\",\r\n\tkind == 'functionapp', \"Azure Functions\", \r\n\tkind == \"api\", \"API Apps\", \r\n\ttype == 'microsoft.web/sites', \"App Services\",\r\n\ttype =~ 'microsoft.network/applicationgateways', 'App Gateways',\r\n\ttype =~ 'microsoft.network/frontdoors', 'Front Door',\r\n\ttype =~ 'microsoft.apimanagement/service', 'API Management',\r\n\ttype =~ 'microsoft.web/certificates', 'App Certificates',\r\n\ttype =~ 'microsoft.appconfiguration/configurationstores', 'App Config Stores',\r\n\tstrcat(\"Not Translated: \", type))\r\n| where type !has \"Not Translated\"\r\n| extend Sku = case(\r\n\ttype =~ 'App Gateways', properties.sku.name, \r\n\ttype =~ 'Azure Functions', properties.sku,\r\n\ttype =~ 'API Management', sku.name,\r\n\ttype =~ 'App Service Plans', sku.name,\r\n\ttype =~ 'App Services', properties.sku,\r\n\ttype =~ 'App Config Stores', sku.name,\r\n\t' ')\r\n| extend State = case(\r\n\ttype =~ 'App Config Stores', properties.provisioningState,\r\n\ttype =~ 'App Service Plans', properties.status,\r\n\ttype =~ 'Azure Functions', properties.enabled,\r\n\ttype =~ 'App Services', properties.state,\r\n\ttype =~ 'API Management', properties.provisioningState,\r\n\ttype =~ 'App Gateways', properties.provisioningState,\r\n\ttype =~ 'Front Door', properties.provisioningState,\r\n\t' ')\r\n| mv-expand publicIpId=properties.frontendIPConfigurations\r\n| mv-expand publicIpId = publicIpId.properties.publicIPAddress.id\r\n| extend publicIpId = tostring(publicIpId)\r\n\t| join kind=leftouter(\r\n\t  \tResources\r\n  \t\t| where type =~ 'microsoft.network/publicipaddresses'\r\n  \t\t| project publicIpId = id, publicIpAddress = tostring(properties.ipAddress)) on publicIpId\r\n| extend PublicIP = case(\r\n\ttype =~ 'API Management', properties.publicIPAddresses,\r\n\ttype =~ 'App Gateways', publicIpAddress,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, type, subscriptionId, Sku, State, PublicIP, Details",
+        "query": "resources\r\n| where type has 'microsoft.web'\r\n\t or type =~ 'microsoft.apimanagement/service'\r\n\t or type =~ 'microsoft.network/frontdoors'\r\n\t or type =~ 'microsoft.network/applicationgateways'\r\n\t or type =~ 'microsoft.appconfiguration/configurationstores'\r\n| extend type = case(\r\n\ttype == 'microsoft.web/serverfarms', \"App Service Plans\",\r\n\tkind == 'functionapp', \"Azure Functions\", \r\n\tkind == \"api\", \"API Apps\", \r\n\ttype == 'microsoft.web/sites', \"App Services\",\r\n\ttype =~ 'microsoft.network/applicationgateways', 'App Gateways',\r\n\ttype =~ 'microsoft.network/frontdoors', 'Front Door',\r\n\ttype =~ 'microsoft.apimanagement/service', 'API Management',\r\n\ttype =~ 'microsoft.web/certificates', 'App Certificates',\r\n\ttype =~ 'microsoft.appconfiguration/configurationstores', 'App Config Stores',\r\n\tstrcat(\"Not Translated: \", type))\r\n| where type !has \"Not Translated\"\r\n| extend Sku = case(\r\n\ttype =~ 'App Gateways', properties.sku.name, \r\n\ttype =~ 'Azure Functions', properties.sku,\r\n\ttype =~ 'API Management', sku.name,\r\n\ttype =~ 'App Service Plans', sku.name,\r\n\ttype =~ 'App Services', properties.sku,\r\n\ttype =~ 'App Config Stores', sku.name,\r\n\t' ')\r\n| extend State = case(\r\n\ttype =~ 'App Config Stores', properties.provisioningState,\r\n\ttype =~ 'App Service Plans', properties.status,\r\n\ttype =~ 'Azure Functions', properties.state,\r\n\ttype =~ 'App Services', properties.state,\r\n\ttype =~ 'API Management', properties.provisioningState,\r\n\ttype =~ 'App Gateways', properties.provisioningState,\r\n\ttype =~ 'Front Door', properties.provisioningState,\r\n\t' ')\r\n| mv-expand publicIpId = properties.frontendIPConfigurations\r\n| mv-expand publicIpId = publicIpId.properties.publicIPAddress.id\r\n| extend publicIpId = tostring(publicIpId)\r\n\t| join kind=leftouter(\r\n\t  \tResources\r\n  \t\t| where type =~ 'microsoft.network/publicipaddresses'\r\n  \t\t| project publicIpId = id, publicIpAddress = tostring(properties.ipAddress)) on publicIpId\r\n| extend PublicIP = case(\r\n\ttype =~ 'API Management', properties.publicIPAddresses,\r\n\ttype =~ 'App Gateways', publicIpAddress,\r\n    type =~ 'App Services', properties.inboundIpAddress,\r\n    type =~ 'Azure Functions', properties.inboundIpAddress,\r\n\t' ')\r\n| extend Instances = case(\r\n\ttype =~ 'API Management', sku.capacity,\r\n    type =~ 'App Services', properties.siteConfig.numberOfWorkers,\r\n    type =~ 'Azure Functions', properties.siteConfig.numberOfWorkers,\r\n    type =~ 'App Service Plans', properties.currentNumberOfWorkers,\r\n\t' ')\r\n| extend ServicePlan = case(\r\n    type =~ 'App Services', properties.serverFarmId,\r\n    type =~ 'Azure Functions', properties.serverFarmId,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, type, subscriptionId, Sku, State, PublicIP, Instances, ServicePlan, Details",
         "size": 2,
         "noDataMessage": "No resources found",
         "showExportToExcel": true,
@@ -1723,7 +1721,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "resources\r\n| where type has 'microsoft.servicebus'\r\n\tor type has 'microsoft.eventhub'\r\n\tor type has 'microsoft.eventgrid'\r\n\tor type has 'microsoft.relay'\r\n| extend type = case(\r\n\ttype == 'microsoft.eventgrid/systemtopics', \"EventGrid System Topics\",\r\n\ttype =~ \"microsoft.eventgrid/topics\", \"EventGrid Topics\",\r\n\ttype =~ 'microsoft.eventhub/namespaces', \"EventHub Namespaces\",\r\n\ttype =~ 'microsoft.servicebus/namespaces', 'ServiceBus Namespaces',\r\n\ttype =~ 'microsoft.relay/namespaces', 'Relays',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend Sku = case(\r\n\ttype =~ 'Relays', sku.name, \r\n\ttype =~ 'EventGrid System Topics', properties.sku,\r\n\ttype =~ 'EventGrid Topics', sku.name,\r\n\ttype =~ 'EventHub Namespaces', sku.name,\r\n\ttype =~ 'ServiceBus Namespaces', sku.sku,\r\n\t' ')\r\n| extend Endpoint = case(\r\n\ttype =~ 'Relays', properties.serviceBusEndpoint,\r\n\ttype =~ 'EventGrid Topics', properties.endpoint,\r\n\ttype =~ 'EventHub Namespaces', properties.serviceBusEndpoint,\r\n\ttype =~ 'ServiceBus Namespaces', properties.serviceBusEndpoint,\r\n\t' ')\r\n| extend Status = case(\r\n\ttype =~ 'Relays', properties.provisioningState,\r\n\ttype =~ 'EventGrid System Topics', properties.provisioningState,\r\n\ttype =~ 'EventGrid Topics', properties.publicNetworkAccess,\r\n\ttype =~ 'EventHub Namespaces', properties.status,\r\n\ttype =~ 'ServiceBus Namespaces', properties.status,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, Sku, Status, Endpoint, Details",
+        "query": "resources\r\n| where type has 'microsoft.servicebus'\r\n\tor type has 'microsoft.eventhub'\r\n\tor type has 'microsoft.eventgrid'\r\n\tor type has 'microsoft.relay'\r\n| extend type = case(\r\n\ttype == 'microsoft.eventgrid/systemtopics', \"EventGrid System Topics\",\r\n\ttype =~ \"microsoft.eventgrid/topics\", \"EventGrid Topics\",\r\n\ttype =~ 'microsoft.eventhub/namespaces', \"EventHub Namespaces\",\r\n\ttype =~ 'microsoft.servicebus/namespaces', 'ServiceBus Namespaces',\r\n\ttype =~ 'microsoft.relay/namespaces', 'Relays',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend Sku = case(\r\n\ttype =~ 'Relays', sku.name, \r\n\ttype =~ 'EventGrid System Topics', properties.sku,\r\n\ttype =~ 'EventGrid Topics', sku.name,\r\n\ttype =~ 'EventHub Namespaces', sku.name,\r\n\ttype =~ 'ServiceBus Namespaces', sku.name,\r\n\t' ')\r\n| extend Endpoint = case(\r\n\ttype =~ 'Relays', properties.serviceBusEndpoint,\r\n\ttype =~ 'EventGrid Topics', properties.endpoint,\r\n\ttype =~ 'EventHub Namespaces', properties.serviceBusEndpoint,\r\n\ttype =~ 'ServiceBus Namespaces', properties.serviceBusEndpoint,\r\n\t' ')\r\n| extend Status = case(\r\n\ttype =~ 'Relays', properties.provisioningState,\r\n\ttype =~ 'EventGrid System Topics', properties.provisioningState,\r\n\ttype =~ 'EventGrid Topics', properties.publicNetworkAccess,\r\n\ttype =~ 'EventHub Namespaces', properties.status,\r\n\ttype =~ 'ServiceBus Namespaces', properties.status,\r\n\t' ')\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, location, resourceGroup, type, Sku, Status, Endpoint, Details",
         "size": 2,
         "noDataMessage": "No resources found",
         "showExportToExcel": true,
@@ -1840,7 +1838,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "resources \r\n| where type =~ 'microsoft.documentdb/databaseaccounts'\r\n\tor type =~ 'microsoft.sql/servers/databases'\r\n\tor type =~ 'microsoft.dbformysql/servers'\r\n\tor type =~ 'microsoft.sql/servers'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.documentdb/databaseaccounts', 'CosmosDB',\r\n\ttype =~ 'microsoft.sql/servers/databases', 'SQL DBs',\r\n\ttype =~ 'microsoft.dbformysql/servers', 'MySQL',\r\n\ttype =~ 'microsoft.sql/servers', 'SQL Servers',\r\n\tstrcat(\"Not Translated: \", type))\r\n| where type !has \"Not Translated\"\r\n| summarize count() by type",
+        "query": "resources \r\n| where type =~ 'microsoft.documentdb/databaseaccounts'\r\n\tor type =~ 'microsoft.sql/servers/databases'\r\n\tor type =~ 'microsoft.dbformysql/servers'\r\n\tor type =~ 'microsoft.sql/servers'\r\n    or type =~ 'Microsoft.DBforPostgreSQL/servers'\r\n    or type =~ 'Microsoft.DBforMariaDB/servers'\r\n    or type =~ 'microsoft.dbforpostgresql/flexibleservers'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.documentdb/databaseaccounts', 'CosmosDB',\r\n\ttype =~ 'microsoft.sql/servers/databases', 'SQL DBs',\r\n\ttype =~ 'microsoft.dbformysql/servers', 'MySQL Servers',\r\n\ttype =~ 'microsoft.sql/servers', 'SQL Servers',\r\n    type =~ 'Microsoft.DBforPostgreSQL/servers', 'PostgreSQL Servers',\r\n    type =~ 'microsoft.dbforpostgresql/flexibleservers', 'PostgreSQL Flexi Servers',\r\n    type =~ 'Microsoft.DBforMariaDB/servers', 'MariaDB Servers',\r\n\tstrcat(\"Not Translated: \", type))\r\n| where type !has \"Not Translated\"\r\n| summarize count() by type",
         "size": 1,
         "noDataMessage": "No resources found",
         "queryType": 1,
@@ -1938,7 +1936,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "// data\r\n// Click the \"Run query\" command above to execute the query and see results.\r\nresources \r\n| where type =~ 'microsoft.documentdb/databaseaccounts'\r\n\tor type =~ 'microsoft.sql/servers/databases'\r\n\tor type =~ 'microsoft.dbformysql/servers'\r\n\tor type =~ 'microsoft.sql/servers'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.documentdb/databaseaccounts', 'CosmosDB',\r\n\ttype =~ 'microsoft.sql/servers/databases', 'SQL DBs',\r\n\ttype =~ 'microsoft.dbformysql/servers', 'MySQL',\r\n\ttype =~ 'microsoft.sql/servers', 'SQL Servers',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend Sku = case(\r\n\ttype =~ 'CosmosDB', properties.databaseAccountOfferType,\r\n\ttype =~ 'SQL DBs', sku.name,\r\n\ttype =~ 'MySQL', sku.name,\r\n\t' ')\r\n| extend Status = case(\r\n\ttype =~ 'CosmosDB', properties.provisioningState,\r\n\ttype =~ 'SQL DBs', properties.status,\r\n\ttype =~ 'MySQL', properties.userVisibleState,\r\n\t' ')\r\n| extend Endpoint = case(\r\n\ttype =~ 'MySQL', properties.fullyQualifiedDomainName,\r\n\ttype =~ 'SQL Servers', properties.fullyQualifiedDomainName,\r\n\ttype =~ 'CosmosDB', properties.documentEndpoint,\r\n\t' ')\r\n| extend maxSizeGB = todouble(case(\r\n\ttype =~ 'SQL DBs', properties.maxSizeBytes,\r\n\ttype =~ 'MySQL', properties.storageProfile.storageMB,\r\n\t' '))\r\n| extend maxSizeGB = iif(type has 'SQL DBs', maxSizeGB /1000 /1000, maxSizeGB)\r\n| extend Details = pack_all()\r\n| project Resource=id, resourceGroup, subscriptionId, type, Sku, Status, Endpoint, maxSizeGB, Details\r\n\r\n",
+        "query": "// data\r\n// Click the \"Run query\" command above to execute the query and see results.\r\nresources \r\n| where type =~ 'microsoft.documentdb/databaseaccounts'\r\n\tor type =~ 'microsoft.sql/servers/databases'\r\n\tor type =~ 'microsoft.dbformysql/servers'\r\n\tor type =~ 'microsoft.sql/servers'\r\n    or type =~ 'Microsoft.DBforPostgreSQL/servers'\r\n    or type =~ 'Microsoft.DBforMariaDB/servers'\r\n    or type =~ 'microsoft.dbforpostgresql/flexibleservers'\r\n| extend type = case(\r\n\ttype =~ 'microsoft.documentdb/databaseaccounts', 'CosmosDB',\r\n\ttype =~ 'microsoft.sql/servers/databases', 'SQL DBs',\r\n\ttype =~ 'microsoft.dbformysql/servers', 'MySQL Servers',\r\n\ttype =~ 'microsoft.sql/servers', 'SQL Servers',\r\n    type =~ 'Microsoft.DBforPostgreSQL/servers', 'PostgreSQL Servers',\r\n    type =~ 'microsoft.dbforpostgresql/flexibleservers', 'PostgreSQL Flexi Servers',\r\n    type =~ 'Microsoft.DBforMariaDB/servers', 'MariaDB Servers',\r\n\tstrcat(\"Not Translated: \", type))\r\n| extend Sku = case(\r\n\ttype =~ 'CosmosDB', properties.databaseAccountOfferType,\r\n\ttype =~ 'SQL DBs', sku.name,\r\n\ttype =~ 'MySQL Servers', sku.name,\r\n    type =~ 'PostgreSQL Servers', sku.name,\r\n    type =~ 'PostgreSQL Flexi Servers', sku.name,\r\n    type =~ 'MariaDB Servers', sku.name,\r\n\t' ')\r\n| extend Status = case(\r\n\ttype =~ 'CosmosDB', properties.provisioningState,\r\n\ttype =~ 'SQL DBs', properties.status,\r\n    type =~ 'SQL Servers', properties.state,\r\n\ttype =~ 'MySQL Servers', properties.userVisibleState,\r\n    type =~ 'PostgreSQL Servers', properties.state,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.state,\r\n    type =~ 'MariaDB Servers', properties.userVisibleState,\r\n\t' ')\r\n| extend Endpoint = case(\r\n\ttype =~ 'MySQL Servers', properties.fullyQualifiedDomainName,\r\n\ttype =~ 'SQL Servers', properties.fullyQualifiedDomainName,\r\n\ttype =~ 'CosmosDB', properties.documentEndpoint,\r\n    type =~ 'PostgreSQL Servers', properties.fullyQualifiedDomainName,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.fullyQualifiedDomainName,\r\n    type =~ 'MariaDB Servers', properties.fullyQualifiedDomainName,\r\n\t' ')\r\n| extend PublicNetworkAccess = case(\r\n\ttype =~ 'MySQL Servers', properties.publicNetworkAccess,\r\n\ttype =~ 'SQL Servers', properties.publicNetworkAccess,\r\n    type =~ 'PostgreSQL Servers', properties.publicNetworkAccess,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.publicNetworkAccess,\r\n    type =~ 'MariaDB Servers', properties.publicNetworkAccess,\r\n\t' ')\r\n| extend Version = case(\r\n\ttype =~ 'MySQL Servers', properties.version,\r\n\ttype =~ 'SQL Servers', properties.version,\r\n    type =~ 'PostgreSQL Servers', properties.version,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.version,\r\n    type =~ 'MariaDB Servers', properties.version,\r\n\t' ')\r\n| extend maxSizeGB = todouble(case(\r\n\ttype =~ 'SQL DBs', properties.maxSizeBytes,\r\n\ttype =~ 'MySQL Servers', properties.storageProfile.storageMB,\r\n    type =~ 'PostgreSQL Servers', properties.storageProfile.storageMB,\r\n    type =~ 'PostgreSQL Flexi Servers', properties.storageProfile.storageMB,\r\n    type =~ 'MariaDB Servers', properties.storageProfile.storageMB,\r\n\t' '))\r\n| extend maxSizeGB = iif(type has 'SQL DBs', maxSizeGB /1000 /1000, maxSizeGB)\r\n| extend Details = pack_all()\r\n| project Resource=id, resourceGroup, subscriptionId, type, Sku, Status, Endpoint, Version, PublicNetworkAccess, maxSizeGB, Details\r\n\r\n",
         "size": 2,
         "noDataMessage": "No resources found",
         "showExportToExcel": true,
@@ -2269,7 +2267,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "where type has \"microsoft.network\"\r\n| extend type = case(\r\n\ttype == 'microsoft.network/networkinterfaces', \"NICs\",\r\n\ttype == 'microsoft.network/networksecuritygroups', \"NSGs\", \r\n\ttype == \"microsoft.network/publicipaddresses\", \"Public IPs\", \r\n\ttype == 'microsoft.network/virtualnetworks', \"vNets\",\r\n\ttype == 'microsoft.network/networkwatchers/connectionmonitors', \"Connection Monitors\",\r\n\ttype == 'microsoft.network/privatednszones', \"Private DNS\",\r\n\ttype == 'microsoft.network/virtualnetworkgateways', @\"vNet Gateways\",\r\n\ttype == 'microsoft.network/connections', \"Connections\",\r\n\ttype == 'microsoft.network/networkwatchers', \"Network Watchers\",\r\n\ttype == 'microsoft.network/privateendpoints', \"Private Endpoints\",\r\n\ttype == 'microsoft.network/localnetworkgateways', \"Local Network Gateways\",\r\n\ttype == 'microsoft.network/privatednszones/virtualnetworklinks', \"vNet Links\",\r\n\ttype == 'microsoft.network/dnszones', 'DNS Zones',\r\n\ttype == 'microsoft.network/networkwatchers/flowlogs', 'Flow Logs',\r\n\ttype == 'microsoft.network/routetables', 'Route Tables',\r\n\ttype == 'microsoft.network/loadbalancers', 'Load Balancers',\r\n\tstrcat(\"Not Translated: \", type))\r\n| summarize count() by type\r\n| where type !has \"Not Translated\"",
+        "query": "where type has \"microsoft.network\"\r\n| extend type = case(\r\n\ttype == 'microsoft.network/networkinterfaces', \"NICs\",\r\n\ttype == 'microsoft.network/networksecuritygroups', \"NSGs\", \r\n\ttype == \"microsoft.network/publicipaddresses\", \"Public IPs\", \r\n\ttype == 'microsoft.network/virtualnetworks', \"vNets\",\r\n\ttype == 'microsoft.network/networkwatchers/connectionmonitors', \"Connection Monitors\",\r\n\ttype == 'microsoft.network/privatednszones', \"Private DNS\",\r\n\ttype == 'microsoft.network/virtualnetworkgateways', @\"vNet Gateways\",\r\n\ttype == 'microsoft.network/connections', \"Connections\",\r\n\ttype == 'microsoft.network/networkwatchers', \"Network Watchers\",\r\n\ttype == 'microsoft.network/privateendpoints', \"Private Endpoints\",\r\n\ttype == 'microsoft.network/localnetworkgateways', \"Local Network Gateways\",\r\n\ttype == 'microsoft.network/privatednszones/virtualnetworklinks', \"vNet Links\",\r\n\ttype == 'microsoft.network/dnszones', 'DNS Zones',\r\n\ttype == 'microsoft.network/networkwatchers/flowlogs', 'Flow Logs',\r\n\ttype == 'microsoft.network/routetables', 'Route Tables',\r\n\ttype == 'microsoft.network/loadbalancers', 'Load Balancers',\r\n    type =~ 'Microsoft.Network/applicationGateways', 'Application Gateways',\r\n\tstrcat(\"Not Translated: \", type))\r\n| summarize count() by type\r\n| where type !has \"Not Translated\"",
         "size": 2,
         "queryType": 1,
         "resourceType": "microsoft.resourcegraph/resources",
@@ -2340,6 +2338,14 @@
             "linkTarget": "parameter",
             "linkLabel": "NSG Rules",
             "subTarget": "nsgrules",
+            "style": "link"
+          },
+          {
+            "id": "d36b1b09-17de-4dd4-838d-7f3973a7efbf",
+            "cellValue": "network",
+            "linkTarget": "parameter",
+            "linkLabel": "Unused PiPs",
+            "subTarget": "blankpip",
             "style": "link"
           }
         ]
@@ -2547,6 +2553,73 @@
       "styleSettings": {
         "padding": "0 0 200px 0"
       }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Resources\r\n| where type =~ 'Microsoft.Network/publicIPAddresses' and isnull(properties.ipAddress)\r\n| extend ipAddress = properties.ipAddress\r\n| extend sku = sku.name\r\n| extend Details = pack_all()\r\n| project Resource=id, subscriptionId, resourceGroup, name, location,sku,Details",
+        "size": 0,
+        "showExportToExcel": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "linkIsContextBlade": true,
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "Resource",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "subscriptionId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "CellDetails",
+                "linkLabel": "🔍 View Details",
+                "linkIsContextBlade": true
+              }
+            }
+          ],
+          "filter": true,
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "subscriptionId"
+            ],
+            "expandTopLevel": true,
+            "finalBy": "Resource"
+          }
+        }
+      },
+      "conditionalVisibilities": [
+        {
+          "parameterName": "selectedTab",
+          "comparison": "isEqualTo",
+          "value": "network"
+        },
+        {
+          "parameterName": "network",
+          "comparison": "isEqualTo",
+          "value": "blankpip"
+        }
+      ],
+      "name": "query - Networking Details - Unused PiPs"
     },
     {
       "type": 1,
@@ -4379,7 +4452,7 @@
               "{Subscriptions}"
             ],
             "value": [
-              "value::all"
+              "value::1"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
@@ -4436,7 +4509,7 @@
     {
       "type": 1,
       "content": {
-        "json": "## Showing Resources for {Environment} and Application(s) {Application}"
+        "json": "## Showing Resources for {Environment} and Application(s) {Application}\r\n> For this to work there must be a Environment and Application tag with value on resources"
       },
       "conditionalVisibility": {
         "parameterName": "selectedTab",

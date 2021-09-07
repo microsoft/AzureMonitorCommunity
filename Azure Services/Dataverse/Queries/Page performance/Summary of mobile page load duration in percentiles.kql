@@ -1,0 +1,21 @@
+// Author: aliyoussefi
+// Display name: Summary of mobile page load duration in percentiles
+// Description: Summary of Table and View load duration in 50%, 75% and 95% percentiles in last 30 days.
+// Categories: Azure Resources
+// Resource types: Dataverse
+// Topic: Page performance
+
+pageViews
+|where timestamp between(ago(30d).. now())
+| extend cd = parse_json(customDimensions)
+| where cd.isBoot == 'false'
+|summarize
+    WarmPageCounts=countif(tostring(cd.loadType)=="1"),
+    ColdPageCounts=countif(tostring(cd.loadType)=="0"),
+    Mobile=countif(tostring(cd.hostType) == "MobileApplication"),
+    PageLoadCount = count(), 
+    UserCount = dcount(user_AuthenticatedId), 
+    (P50,P75,P95)=percentiles(duration,50,75,95) by bin(timestamp,1d)
+|project startTime = timestamp ,P50, P75,P95,PageLoadCount, Mobile, UserCount, WarmPageCounts, ColdPageCounts
+|order by startTime asc nulls last
+|render columnchart 

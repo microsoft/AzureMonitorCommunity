@@ -1,0 +1,14 @@
+// Author: aliyoussefi
+// Display name: ServiceBus Exceptions with Column Chart
+// Description: visualization of exceptions encountered when delivering to registered service bus endpoint
+// Categories: Dataverse
+// Resource types: Dataverse, Azure Service Bus
+// Topic: Other errors and failures
+
+exceptions
+| where timestamp between (ago(30d)..now())
+| extend cd = parse_json(customDimensions)
+| where cd.exceptionSource has 'ServiceBus.WebhookPlugin'
+| project timestamp, outerMessage, cd.correlationId, cd.entityName, cd.organizationId
+| summarize count() by bin(timestamp, 1d)
+| render columnchart

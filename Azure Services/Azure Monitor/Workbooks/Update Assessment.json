@@ -13,7 +13,7 @@
       "content": {
         "version": "KqlParameterItem/1.0",
         "crossComponentResources": [
-          "{Subscriptions}"
+          "{Workspaces}"
         ],
         "parameters": [
           {
@@ -51,7 +51,9 @@
             },
             "defaultValue": "value::all",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+            ]
           },
           {
             "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
@@ -71,10 +73,11 @@
             ],
             "typeSettings": {
               "additionalResourceOptions": [
-                "value::1"
+                "value::all"
               ],
               "showDefault": false
             },
+            "defaultValue": "value::all",
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources"
           },
@@ -85,7 +88,7 @@
             "type": 4,
             "isRequired": true,
             "value": {
-              "durationMs": 7776000000
+              "durationMs": 604800000
             },
             "typeSettings": {
               "selectableValues": [
@@ -134,7 +137,8 @@
                 {
                   "durationMs": 7776000000
                 }
-              ]
+              ],
+              "allowCustom": true
             }
           },
           {
@@ -146,48 +150,27 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "Update\r\n| distinct SourceComputerId, Computer\r\n| project Computer\r\n| order by Computer desc",
+            "query": "Update\r\n| distinct SourceComputerId, Computer\r\n| project Computer\r\n| order by Computer asc",
             "crossComponentResources": [
               "{Workspaces}"
-            ],
-            "value": [
-              "value::all"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
-              ]
+              ],
+              "showDefault": false
             },
             "timeContext": {
-              "durationMs": 0
+              "durationMs": 172800000
             },
             "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
             "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
-          },
-          {
-            "id": "b672f960-bf26-4368-b002-e1e6e9a8990d",
-            "version": "KqlParameterItem/1.0",
-            "name": "IsUpdateManagementEnabled",
-            "type": 2,
-            "isRequired": true,
-            "query": "Update\r\n| take 1\r\n| summarize count() ",
-            "crossComponentResources": [
-              "{Workspaces}"
-            ],
-            "value": "value::1",
-            "isHiddenWhenLocked": true,
-            "typeSettings": {
-              "additionalResourceOptions": [
-                "value::1"
-              ]
-            },
-            "timeContext": {
-              "durationMs": 0
-            },
-            "timeContextFromParameter": "TimeRange",
-            "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+
           },
           {
             "id": "7d383415-a188-420b-bca8-7286db9d677f",
@@ -278,18 +261,41 @@
               "additionalResourceOptions": []
             },
             "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]"
+          },
+          {
+            "id": "381923f4-82a2-4575-a734-21292c84b476",
+            "version": "KqlParameterItem/1.0",
+            "name": "IsUpdateManagementEnabled",
+            "type": 2,
+            "isRequired": true,
+            "query": "Update\r\n| take 1\r\n| summarize recCount = count() \r\n| project selected = iff(recCount > 0, true, false)",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "defaultItemsText": "true"
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::1",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
           }
         ],
         "style": "pills",
-        "queryType": 1,
-        "resourceType": "microsoft.resourcegraph/resources"
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "ParameterSection-1"
     },
     {
       "type": 1,
       "content": {
-        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.4 **\r\n>2020-12-10\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>** Version 1.4 **\r\n>2020-05-21\r\n>- Revisited parameter section to avoid null selection and error messages.\r\n>- Added guidance to configure the UpdateManagement if missing\r\n>\r\n>** Version 1.3 **\r\n>2020-04-06\r\n>- Fixed a bug that was preventing a text from being displayed correctly.\r\n>\r\n>** Version 1.2 **\r\n>2020-03-24\r\n>- Changed some of the distinct and summarize instructions to use SourceComputerId in order to include Computer names which are the same across different workspaces (duplicate computer names are allowed inside different workspaces).\r\n>- Added workspace lookup query to allow duplicate computer name to be recognized based on the WS they are reporting to.\r\n>- Moved update details queries inside the group.\r\n>- Named the group *Missing Update Details*\r\n>\r\n>** Version 1.1 **\r\n>2020-03-11\r\n>- Grouped together the *Total missing updates by computer* tile and the related *List of all updates by selected computer* tile\r\n>\r\n>** Version 1.0 **\r\n>2020-02-27\r\n> - Initial version"
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.6 **\r\n>2021-04-08\r\n>- Revised, fixed and optimized queries.\r\n>\r\n>** Version 1.5 **\r\n>2020-12-10\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>** Version 1.4 **\r\n>2020-05-21\r\n>- Revisited parameter section to avoid null selection and error messages.\r\n>- Added guidance to configure the UpdateManagement if missing\r\n>\r\n>** Version 1.3 **\r\n>2020-04-06\r\n>- Fixed a bug that was preventing a text from being displayed correctly.\r\n>\r\n>** Version 1.2 **\r\n>2020-03-24\r\n>- Changed some of the distinct and summarize instructions to use SourceComputerId in order to include Computer names which are the same across different workspaces (duplicate computer names are allowed inside different workspaces).\r\n>- Added workspace lookup query to allow duplicate computer name to be recognized based on the WS they are reporting to.\r\n>- Moved update details queries inside the group.\r\n>- Named the group *Missing Update Details*\r\n>\r\n>** Version 1.1 **\r\n>2020-03-11\r\n>- Grouped together the *Total missing updates by computer* tile and the related *List of all updates by selected computer* tile\r\n>\r\n>** Version 1.0 **\r\n>2020-02-27\r\n> - Initial version"
       },
       "conditionalVisibility": {
         "parameterName": "Help",
@@ -321,8 +327,8 @@
       },
       "conditionalVisibility": {
         "parameterName": "IsUpdateManagementEnabled",
-        "comparison": "isEqualTo",
-        "value": "0"
+        "comparison": "isNotEqualTo",
+        "value": "true"
       },
       "name": "UpdateManagementNotEnabled"
     },
@@ -330,12 +336,12 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));Update\r\n| where Optional==false\r\n| where Approved!=false\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where Computer in ({Servers})\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| summarize nonCompl=countif(UpdateState==\"Needed\"), compl=countif(UpdateState!=\"Needed\") by SourceComputerId\r\n| extend status = iif((compl>0 and nonCompl==0),\"Compliant\",iif((compl>=0 and nonCompl>0),\"Not-Compliant\",\"Unknown\"))\r\n| summarize compliance = count() by status\r\n| sort by status asc\r\n\r\n",
+        "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Computer in ({Servers})\r\n| where Optional==false\r\n| where Approved!=false\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| summarize arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| summarize nonCompl=countif(UpdateState==\"Needed\"), compl=countif(UpdateState!=\"Needed\") by SourceComputerId\r\n| extend status = iif((compl>0 and nonCompl==0),\"Compliant\",iif((compl>=0 and nonCompl>0),\"Not-Compliant\",\"Unknown\"))\r\n| summarize compliance = count() by status\r\n| sort by status asc",
         "size": 0,
         "title": "Update compliance status",
         "noDataMessage": "No data for the selected conditions.",
         "timeContext": {
-          "durationMs": 7776000000
+          "durationMs": 604800000
         },
         "timeContextFromParameter": "TimeRange",
         "queryType": 0,
@@ -452,13 +458,13 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Optional==false\r\n| where Approved!=false\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where Computer in ({Servers})\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| summarize Updates_Count=countif(UpdateState==\"Needed\") by Classification\r\n| sort by Classification asc",
+        "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Computer in ({Servers})\r\n| where Optional==false\r\n| where Approved!=false\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| summarize arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| summarize Updates_Count=countif(UpdateState==\"Needed\") by Classification\r\n| sort by Classification asc",
         "size": 0,
         "showAnalytics": true,
         "title": "Total missing updates by Classification",
         "noDataMessage": "No data for the selected conditions.",
         "timeContext": {
-          "durationMs": 7776000000
+          "durationMs": 604800000
         },
         "timeContextFromParameter": "TimeRange",
         "showExportToExcel": true,
@@ -487,13 +493,13 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Optional==false\r\n| where Approved!=false\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where Computer in ({Servers})\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| summarize Updates_Count=count() by SourceComputerId, Computer\r\n| order by Updates_Count desc",
+              "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Computer in ({Servers})\r\n| where Optional==false\r\n| where Approved!=false\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| summarize arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| summarize Updates_Count=count() by SourceComputerId, Computer\r\n| order by Updates_Count desc",
               "size": 0,
               "showAnalytics": true,
               "title": "Total by computer",
               "noDataMessage": "No data for the selected conditions.",
               "timeContext": {
-                "durationMs": 7776000000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "SourceComputerId",
@@ -578,12 +584,13 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "//print nn=\"{row}\"\r\n//let selectedRow = dynamic({row});\r\n//print ppp = dynamic({row}), ppp2 = selectedRow.Computer, ppp3 = selectedRow.Updates_Count\r\nlet excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Optional==false\r\n| where Approved!=false\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where SourceComputerId == tostring(\"{row}\")\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| project TimeGenerated, Computer, UpdateState, Classification, KBID, TenantId, Title, PublishedDate, Product, MSRCSeverity, RebootBehavior, Approved",
+              "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where SourceComputerId == tostring(\"{row}\")\r\n| where Optional==false\r\n| where Approved!=false\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| summarize arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| project TimeGenerated, Computer, UpdateState, Classification, KBID, TenantId, Title, PublishedDate, Product, MSRCSeverity, RebootBehavior, Approved",
+
               "size": 0,
               "showAnalytics": true,
               "title": "updateBySelectedComputer_hidden",
               "timeContext": {
-                "durationMs": 7776000000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
@@ -674,13 +681,13 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Optional==false\r\n| where Approved!=false\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where Computer in ({Servers})\r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| project TimeGenerated, Computer, UpdateState, Classification, KBID, TenantId, Title, PublishedDate, Product, MSRCSeverity, RebootBehavior, Approved\r\n",
+              "query": "let excludedPublishedDates = iif(\"{ExcludeByPublishedDate}\"==\"\", dynamic(['9999-01-01','9999-02-01']), dynamic([{ExcludeByPublishedDate}]));\r\nlet excludedKBID = iif(\"{ExcludeByKBID}\"==\"\", dynamic(['Blank','Blank2']), dynamic([{ExcludeByKBID}]));\r\nlet excludedClassification = iif(\"{ExcludeByClassification}\"==\"\", dynamic(['Blank3','Blank4']), dynamic([{ExcludeByClassification}]));\r\nUpdate\r\n| where Computer in ({Servers})\r\n| where Optional==false\r\n| where Approved!=false\r\n| where KBID !in (excludedKBID)\r\n| where Classification !in (excludedClassification)\r\n| where substring(PublishedDate,0,7) !in (excludedPublishedDates)\r\n| summarize arg_max(TimeGenerated, *) by SourceComputerId, KBID, Classification\r\n| where UpdateState == \"Needed\" \r\n| project TimeGenerated, Computer, UpdateState, Classification, KBID, TenantId, Title, PublishedDate, Product, MSRCSeverity, RebootBehavior, Approved\r\n",
               "size": 0,
               "showAnalytics": true,
               "title": "AllUpdateNeeded_hidden",
               "noDataMessage": "No data for the selected conditions.",
               "timeContext": {
-                "durationMs": 7776000000
+                "durationMs": 604800000
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
