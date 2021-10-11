@@ -1,0 +1,44 @@
+// Author: Microsoft Azure
+// Display name: Check if Pods have Resources or Limits
+// Description: Check if Pods have Resources or Limits.
+// Categories: Containers,Azure Resources
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Diagnostics
+
+let podCounters = Perf 
+    | where ObjectName == 'K8SContainer' and  (CounterName == 'cpuLimitNanoCores' or CounterName == 'cpuRequestNanoCores' or CounterName == 'memoryLimitBytes' or CounterName == 'memoryRequestBytes') 
+    | summarize d = make_bag(pack(CounterName, CounterValue)) by InstanceName
+    | evaluate bag_unpack(d);
+let podResourcesAndLimits = podCounters
+    | extend InstanceNameParts = split(InstanceName, "/")
+    | extend PodUI = tostring(InstanceNameParts[(array_length(InstanceNameParts)-2)]) 
+    | extend PodName = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
+    | project PodUI, PodName, cpuLimitNanoCores, cpuRequestNanoCores, memoryLimitBytes, memoryRequestBytes;
+let nodeCounters = Perf 
+    | where ObjectName == "K8SNode" and  (CounterName == 'cpuAllocatableNanoCores' or CounterName == 'cpuCapacityNanoCores' or CounterName == 'memoryAllocatableBytes' or CounterName == 'memoryCapacityBytes')
+    | summarize d = make_bag(pack(CounterName, CounterValue)) by InstanceName
+    | evaluate bag_unpack(d);
+let nodeCapacity = nodeCounters
+    | extend InstanceNameParts = split(InstanceName, "/")
+    | extend Computer = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
+    | project-away InstanceNameParts, InstanceName;
+KubePodInventory
+    | distinct ClusterName, Computer, Namespace, ContainerName
+    | extend InstanceNameParts = split(ContainerName, "/") 
+    | extend PodUI = tostring(InstanceNameParts[(array_length(InstanceNameParts)-2)])
+    | extend PodName = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
+    | project ClusterName, Computer, Namespace, PodUI, PodName
+    | join kind= leftouter (nodeCapacity) on Computer
+    | join kind= leftouter (podResourcesAndLimits) on PodUI, PodName
+      // Pods without CPU Requests. If container cpu resource requests are not specified, cpuRequestNanoCores metric will not be collected
+    | extend CPURequests = isnotnull(cpuRequestNanoCores)
+      // Pods without CPU Limits. If container resource limits are not specified, node's capacity will be rolled-up as container's limit
+    | extend CPULimits = cpuAllocatableNanoCores != cpuLimitNanoCores 
+      // Pods without Memory Requests. If container memory resource requests are not specified, memoryRequestBytes metric will not be collected
+    | extend MemoryRequests = isnotnull(memoryRequestBytes) 
+      // Pods without Memory Limits. If container resource limits are not specified, node's capacity will be rolled-up as container's limit
+    | extend MemoryLimits = memoryAllocatableBytes != memoryLimitBytes 
+    | distinct ClusterName, Namespace, PodName, CPURequests, CPULimits, MemoryRequests, MemoryLimits
+    | where not(CPURequests) or not(CPULimits) or not(MemoryRequests) or not(MemoryLimits)
+    | project ClusterName, Namespace, PodName, CPURequests, CPULimits, MemoryRequests, MemoryLimits
