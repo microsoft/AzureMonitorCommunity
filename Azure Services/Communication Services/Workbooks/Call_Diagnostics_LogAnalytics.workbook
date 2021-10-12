@@ -1,0 +1,1091 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Communication Service"
+      },
+      "name": "text - 1"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "bb077035-d197-45dc-bfb4-d872a204bf47",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Overview",
+            "subTarget": "overview",
+            "style": "link"
+          },
+          {
+            "id": "666e153e-688d-4c46-aa22-958401423542",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Calling",
+            "subTarget": "calling",
+            "style": "link"
+          },
+          {
+            "id": "8c3e53ce-25cd-432e-b9f8-e7201f501111",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Auth",
+            "subTarget": "auth",
+            "style": "link"
+          },
+          {
+            "id": "ab89abea-8f97-4f27-8c8a-42c91d71d90f",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "SMS",
+            "subTarget": "sms",
+            "style": "link"
+          },
+          {
+            "id": "a72508b3-b261-4226-a907-06dd581cd903",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Chat",
+            "subTarget": "chat",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "nav_menu"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "b1841bbb-0dec-444a-9873-ee90e6749e99",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "call_time_range",
+                  "label": "Call time range",
+                  "type": 4,
+                  "description": "Define a time range to aggregate calls over",
+                  "isRequired": true,
+                  "value": {
+                    "durationMs": 604800000
+                  },
+                  "typeSettings": {
+                    "selectableValues": [
+                      {
+                        "durationMs": 300000
+                      },
+                      {
+                        "durationMs": 900000
+                      },
+                      {
+                        "durationMs": 1800000
+                      },
+                      {
+                        "durationMs": 3600000
+                      },
+                      {
+                        "durationMs": 14400000
+                      },
+                      {
+                        "durationMs": 43200000
+                      },
+                      {
+                        "durationMs": 86400000
+                      },
+                      {
+                        "durationMs": 172800000
+                      },
+                      {
+                        "durationMs": 259200000
+                      },
+                      {
+                        "durationMs": 604800000
+                      },
+                      {
+                        "durationMs": 1209600000
+                      },
+                      {
+                        "durationMs": 2419200000
+                      },
+                      {
+                        "durationMs": 2592000000
+                      },
+                      {
+                        "durationMs": 5184000000
+                      },
+                      {
+                        "durationMs": 7776000000
+                      }
+                    ]
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "83d98c35-4d74-457c-9353-79397fcbfa81",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "call_time_granularity",
+                  "label": "Call time granularity",
+                  "type": 2,
+                  "description": "Choose the time granularity to use to aggregate the calls",
+                  "isRequired": true,
+                  "value": "12h",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    { \"value\":\"1m\", \"label\":\"1 minute\" },\r\n    { \"value\":\"10m\", \"label\":\"10 minutes\" },\r\n    { \"value\":\"15m\", \"label\":\"15 minutes\" },\r\n    { \"value\":\"30m\", \"label\":\"30 minutes\" },\r\n    { \"value\":\"1h\", \"label\":\"1 hour\" },\r\n    { \"value\":\"2h\", \"label\":\"2 hours\" },\r\n    { \"value\":\"12h\", \"label\":\"12 hours\" },\r\n    { \"value\":\"1d\", \"label\":\"1 day\" },\r\n    { \"value\":\"2d\", \"label\":\"2 days\" },\r\n    { \"value\":\"3d\", \"label\":\"3 days\" },\r\n    { \"value\":\"1w\", \"label\":\"1 week\" }\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "73fba8a0-6d9f-4294-ab73-da624fb78934",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "call_grouping",
+                  "label": "Call Grouping",
+                  "type": 2,
+                  "description": "Determine how to group calls",
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "",
+                  "delimiter": ",",
+                  "value": [
+                    "time_span"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    {\"value\": \"time_span\", \"label\": \"Time span\", \"selected\": true},\r\n    {\"value\": \"CallType\", \"label\": \"Call type\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "57fe26da-33f4-429f-bffb-0cc6396ce238",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "plot_type",
+                  "label": "Plot type",
+                  "type": 2,
+                  "description": "Select the type of plot to visualize the data",
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": []
+                  },
+                  "jsonData": "[\r\n    {\"value\": \"columnchart\", \"label\": \"Bar chart\", \"selected\":true},\r\n    {\"value\": \"areachart\", \"label\": \"Area chart\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.kusto/clusters"
+            },
+            "name": "parameters - 8"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "ACSCallSummary\r\n| where CallStartTime {call_time_range:query}\r\n| distinct CorrelationId, CallStartTime, CallType\r\n| extend time_span = floor(CallStartTime, {call_time_granularity})\r\n| make-series event_count=count() default=0 on CallStartTime from {call_time_range:start} to {call_time_range:end} step {call_time_granularity} by {call_grouping}\r\n| sort by  {call_grouping} asc\r\n| render {plot_type} // title=\"Number of calls by {call_grouping}\"",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "query - 0"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tab",
+        "comparison": "isEqualTo",
+        "value": "overview"
+      },
+      "name": "overview"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "7c2f282b-4005-4f41-ab99-ed720c1e14b7",
+                  "cellValue": "calling_tab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "General",
+                  "subTarget": "general",
+                  "style": "link"
+                },
+                {
+                  "id": "8614c8ca-beb7-4cac-9766-119a196393ff",
+                  "cellValue": "calling_tab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Usage",
+                  "subTarget": "usage",
+                  "style": "link"
+                },
+                {
+                  "id": "6747113b-1bd8-42f6-9b83-636e6b6a97a3",
+                  "cellValue": "calling_tab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Quality",
+                  "subTarget": "quality",
+                  "style": "link"
+                },
+                {
+                  "id": "91fd1f28-5f6f-4c4e-a731-2c7c61cfdf75",
+                  "cellValue": "calling_tab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Details",
+                  "subTarget": "details",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 3"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Call Quality",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "4bbbcc6b-d4cc-4275-9dfb-c5965093383c",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_quality_time_range",
+                        "label": "Time range",
+                        "type": 4,
+                        "isRequired": true,
+                        "value": {
+                          "durationMs": 7776000000
+                        },
+                        "typeSettings": {
+                          "selectableValues": [
+                            {
+                              "durationMs": 300000
+                            },
+                            {
+                              "durationMs": 900000
+                            },
+                            {
+                              "durationMs": 1800000
+                            },
+                            {
+                              "durationMs": 3600000
+                            },
+                            {
+                              "durationMs": 14400000
+                            },
+                            {
+                              "durationMs": 43200000
+                            },
+                            {
+                              "durationMs": 86400000
+                            },
+                            {
+                              "durationMs": 172800000
+                            },
+                            {
+                              "durationMs": 259200000
+                            },
+                            {
+                              "durationMs": 604800000
+                            },
+                            {
+                              "durationMs": 1209600000
+                            },
+                            {
+                              "durationMs": 2419200000
+                            },
+                            {
+                              "durationMs": 2592000000
+                            },
+                            {
+                              "durationMs": 5184000000
+                            },
+                            {
+                              "durationMs": 7776000000
+                            }
+                          ],
+                          "allowCustom": true
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "id": "d0e9a84f-f911-4184-a73d-02d6f6cd0148",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_quality_time_granularity",
+                        "label": "Time granularity",
+                        "type": 2,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"1m\", \"label\":\"1 minute\" },\r\n    { \"value\":\"10m\", \"label\":\"10 minutes\" },\r\n    { \"value\":\"15m\", \"label\":\"15 minutes\" },\r\n    { \"value\":\"30m\", \"label\":\"30 minutes\" },\r\n    { \"value\":\"1h\", \"label\":\"1 hour\" },\r\n    { \"value\":\"2h\", \"label\":\"2 hours\" },\r\n    { \"value\":\"12h\", \"label\":\"12 hours\" },\r\n    { \"value\":\"1d\", \"label\":\"1 day\", \"selected\":true },\r\n    { \"value\":\"2d\", \"label\":\"2 days\" },\r\n    { \"value\":\"3d\", \"label\":\"3 days\" },\r\n    { \"value\":\"1w\", \"label\":\"1 week\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "id": "bb9e8d89-0532-49e5-b699-403c33fce006",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_quality_media_types",
+                        "label": "Media types",
+                        "type": 2,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "value": [
+                          "Video",
+                          "Audio",
+                          "VBSS",
+                          "AppSharing"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    {\"value\": \"Audio\", \"label\": \"Audio\", \"selected\":true},\r\n    {\"value\": \"Video\", \"label\": \"Video\", \"selected\":true},\r\n    {\"value\": \"VBSS\", \"label\": \"Screen sharing\", \"selected\":true},\r\n    {\"value\": \"AppSharing\", \"label\": \"App sharing\", \"selected\":true}\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_quality_endpoint_types",
+                        "label": "Endpoint types",
+                        "type": 2,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    {\"value\": \"VoIP\", \"label\": \"VoIP\", \"selected\":true},\r\n    {\"value\": \"PSTN\", \"label\": \"PSTN\", \"selected\":true},\r\n    {\"value\": \"Bot\", \"label\": \"Bot\", \"selected\":true},\r\n    {\"value\": \"Server\", \"label\": \"Server\", \"selected\":true},\r\n    {\"value\": \"Unknown\", \"label\": \"Unknown\", \"selected\":true}\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "id": "2666fe6a-842f-46ad-9f75-5e52e8517ff8"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.kusto/clusters"
+                  },
+                  "name": "parameters - 1 - Copy"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId\r\n| where MediaType in ({call_quality_media_types}) and EndpointType in ({call_quality_endpoint_types})\r\n| order by CallStartTime asc, ParticipantStartTime asc\r\n| extend JitterQuality = iff(JitterAvg > 30, \"Poor\", \"Good\")\r\n| extend PacketLossRateQuality = iff(PacketLossRateAvg > 0.1, \"Poor\", \"Good\")\r\n| extend RoundTripTimeQuality = iff(RoundTripTimeAvg > 500, \"Poor\", \"Good\")\r\n| extend StreamQuality = iff((JitterQuality == \"Poor\") or (PacketLossRateQuality == \"Poor\") or (RoundTripTimeQuality == \"Poor\"), \"Poor\", \"Good\")\r\n| summarize count() by StreamQuality\r\n| render piechart",
+                    "size": 0,
+                    "title": "Stream quality",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId\r\n| where MediaType in ({call_quality_media_types}) and EndpointType in ({call_quality_endpoint_types})\r\n| extend JitterQuality = iff(JitterAvg > 30, \"Poor\", \"Good\")\r\n| extend PacketLossRateQuality = iff(PacketLossRateAvg > 0.1, \"Poor\", \"Good\")\r\n| extend RoundTripTimeQuality = iff(RoundTripTimeAvg > 500, \"Poor\", \"Good\")\r\n| extend StreamQuality = iff((JitterQuality == \"Poor\") or (PacketLossRateQuality == \"Poor\") or (RoundTripTimeQuality == \"Poor\"), \"Poor\", \"Good\")\r\n| distinct CorrelationId, StreamQuality\r\n| summarize CallQuality=arg_max(StreamQuality, *) by CorrelationId\r\n| summarize count() by CallQuality\r\n| render piechart",
+                    "size": 0,
+                    "title": "Impacted calls",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId\r\n| where MediaType in ({call_quality_media_types}) and EndpointType in ({call_quality_endpoint_types})\r\n| order by CallStartTime asc, ParticipantStartTime asc\r\n| extend ParticipantEndReason = case(\r\n                                tostring(ParticipantEndReason) startswith \"0\", \"Success\",\r\n                                tostring(ParticipantEndReason) startswith \"1\", \"Provisional\",\r\n                                tostring(ParticipantEndReason) startswith \"2\", \"Success\",\r\n                                tostring(ParticipantEndReason) startswith \"3\", \"Redirection\",\r\n                                tostring(ParticipantEndReason) startswith \"4\", \"Client Failure\",\r\n                                tostring(ParticipantEndReason) startswith \"5\", \"Server Failure\",\r\n                                tostring(ParticipantEndReason) startswith \"6\", \"Global Failure\",\r\n                            ParticipantEndReason\r\n                        )\r\n| summarize count() by ParticipantEndReason\r\n| render piechart",
+                    "size": 0,
+                    "title": "Participant End Reasons",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "35",
+                  "name": "query - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId\r\n| where MediaType in ({call_quality_media_types}) and EndpointType in ({call_quality_endpoint_types})\r\n| order by CallStartTime asc, ParticipantStartTime asc\r\n| extend ParticipantEndReason = case(\r\n                                tostring(ParticipantEndReason) startswith \"0\", \"Success\",\r\n                                tostring(ParticipantEndReason) startswith \"1\", \"Provisional\",\r\n                                tostring(ParticipantEndReason) startswith \"2\", \"Success\",\r\n                                tostring(ParticipantEndReason) startswith \"3\", \"Redirection\",\r\n                                tostring(ParticipantEndReason) startswith \"4\", \"Client Failure\",\r\n                                tostring(ParticipantEndReason) startswith \"5\", \"Server Failure\",\r\n                                tostring(ParticipantEndReason) startswith \"6\", \"Global Failure\",\r\n                            ParticipantEndReason\r\n                        )\r\n| make-series event_count=count() default=0 on CallStartTime from {call_quality_time_range:start} to {call_quality_time_range:end} step {call_quality_time_granularity} by ParticipantEndReason",
+                    "size": 0,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart"
+                  },
+                  "customWidth": "65",
+                  "name": "query - 5"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "calling_tab",
+              "comparison": "isEqualTo",
+              "value": "quality"
+            },
+            "name": "call_quality"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "7ac1d664-6344-4b3e-a137-5e862040fd69",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_time_range",
+                        "label": "Call time range",
+                        "type": 4,
+                        "description": "Define a time range to aggregate calls over",
+                        "isRequired": true,
+                        "value": {
+                          "durationMs": 7776000000
+                        },
+                        "typeSettings": {
+                          "selectableValues": [
+                            {
+                              "durationMs": 300000
+                            },
+                            {
+                              "durationMs": 900000
+                            },
+                            {
+                              "durationMs": 1800000
+                            },
+                            {
+                              "durationMs": 3600000
+                            },
+                            {
+                              "durationMs": 14400000
+                            },
+                            {
+                              "durationMs": 43200000
+                            },
+                            {
+                              "durationMs": 86400000
+                            },
+                            {
+                              "durationMs": 172800000
+                            },
+                            {
+                              "durationMs": 259200000
+                            },
+                            {
+                              "durationMs": 604800000
+                            },
+                            {
+                              "durationMs": 1209600000
+                            },
+                            {
+                              "durationMs": 2419200000
+                            },
+                            {
+                              "durationMs": 2592000000
+                            },
+                            {
+                              "durationMs": 5184000000
+                            },
+                            {
+                              "durationMs": 7776000000
+                            }
+                          ]
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "id": "8eeeb355-830e-4d53-ba4f-d13bad215b5f",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_time_granularity",
+                        "label": "Call time granularity",
+                        "type": 2,
+                        "description": "Choose the time granularity to use to aggregate the calls",
+                        "isRequired": true,
+                        "value": "12h",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"1m\", \"label\":\"1 minute\" },\r\n    { \"value\":\"10m\", \"label\":\"10 minutes\" },\r\n    { \"value\":\"15m\", \"label\":\"15 minutes\" },\r\n    { \"value\":\"30m\", \"label\":\"30 minutes\" },\r\n    { \"value\":\"1h\", \"label\":\"1 hour\" },\r\n    { \"value\":\"2h\", \"label\":\"2 hours\" },\r\n    { \"value\":\"12h\", \"label\":\"12 hours\" },\r\n    { \"value\":\"1d\", \"label\":\"1 day\" },\r\n    { \"value\":\"2d\", \"label\":\"2 days\" },\r\n    { \"value\":\"3d\", \"label\":\"3 days\" },\r\n    { \"value\":\"1w\", \"label\":\"1 week\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.kusto/clusters"
+                  },
+                  "name": "parameters - 8 - Copy"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let CallOverview = ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId;\r\n\r\nCallOverview\r\n| where CallStartTime {call_time_range:query}\r\n| summarize media_types=count() by MediaType\r\n| render piechart",
+                    "size": 0,
+                    "title": "Media Type Ratio",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let CallOverview = ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId;\r\n\r\nCallOverview\r\n| where CallStartTime {call_time_range:query}\r\n| summarize endpoint_types=count() by EndpointType\r\n| render piechart",
+                    "size": 0,
+                    "title": "Endpoint Types",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallSummary\r\n| where CallStartTime {call_time_range:query}\r\n| extend SimpleOs = case(  indexof(OsVersion, \"Android\") != -1, tostring(split(OsVersion, \";\")[0]),\r\n                            indexof(OsVersion, \"Darwin\") != -1, tostring(split(OsVersion, \":\")[0]),\r\n                            indexof(OsVersion, \"Windows\") != -1, tostring(split(OsVersion, \".\")[0]),\r\n                            OsVersion\r\n                        )\r\n| summarize OsCounts=count() by SimpleOs\r\n| render piechart",
+                    "size": 0,
+                    "title": "OS Usage",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 5"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let SIPCodes =  datatable(ParticipantEndReason: string, SIPCode: string)\r\n[\r\n    \"100\", \"Trying\",\r\n    \"180\", \"Ringing\",\r\n    \"181\", \"Call Is Being Forwarded\",\r\n    \"182\", \"Queued\",\r\n    \"183\", \"Session Progress\",\r\n    \"199\", \"Early Dialog Terminated\",\r\n    \"200\", \"OK\",\r\n    \"202\", \"Accepted\",\r\n    \"204\", \"No Notification\",\r\n    \"300\", \"Multiple Choices\",\r\n    \"301\", \"Moved Permanently\",\r\n    \"302\", \"Moved Temporarily\",\r\n    \"305\", \"Use Proxy\",\r\n    \"380\", \"Alternative Service\",\r\n    \"400\", \"Bad Request\",\r\n    \"401\", \"Unauthorized\",\r\n    \"402\", \"Payment Required\",\r\n    \"403\", \"Forbidden\",\r\n    \"404\", \"Not Found\",\r\n    \"405\", \"Method Not Allowed\",\r\n    \"406\", \"Not Acceptable\",\r\n    \"407\", \"Proxy Authentication Required\",\r\n    \"408\", \"Request Timeout\",\r\n    \"409\", \"Conflict\",\r\n    \"410\", \"Gone\",\r\n    \"411\", \"Length Required\",\r\n    \"412\", \"Conditional Request Failed\",\r\n    \"413\", \"Request Entity Too Large\",\r\n    \"414\", \"Request-URI Too Large\",\r\n    \"415\", \"Unsupported Media Type\",\r\n    \"416\", \"Unsupported URI Scheme\",\r\n    \"417\", \"Unknown Resource-Priority\",\r\n    \"420\", \"Bad Extension\",\r\n    \"421\", \"Extension Required\",\r\n    \"422\", \"Session Interval Too Small\",\r\n    \"423\", \"Interval Too Brief\",\r\n    \"424\", \"Bad Location Information\",\r\n    \"428\", \"Use Identity Header\",\r\n    \"429\", \"Provide Referrer Identity\",\r\n    \"430\", \"Flow Failed\",\r\n    \"433\", \"Anonymity Disallowed\",\r\n    \"436\", \"Bad Identity-Info\",\r\n    \"437\", \"Unsupported Certificate\",\r\n    \"438\", \"Invalid Identity Header\",\r\n    \"439\", \"First Hop Lacks Outbound Support\",\r\n    \"440\", \"Max-Breadth Exceeded\",\r\n    \"469\", \"Bad Info Package\",\r\n    \"470\", \"Consent Needed\",\r\n    \"480\", \"Temporarily Unavailable\",\r\n    \"481\", \"Call/Transaction Does Not Exist\",\r\n    \"482\", \"Loop Detected\",\r\n    \"483\", \"Too Many Hops\",\r\n    \"484\", \"Address Incomplete\",\r\n    \"485\", \"Ambiguous\",\r\n    \"486\", \"Busy Here\",\r\n    \"487\", \"Request Terminated\",\r\n    \"488\", \"Not Acceptable Here\",\r\n    \"489\", \"Bad Event\",\r\n    \"491\", \"Request Pending\",\r\n    \"493\", \"Undecipherable\",\r\n    \"494\", \"Security Agreement Required\",\r\n    \"500\", \"Internal Server Error\",\r\n    \"501\", \"Not Implemented\",\r\n    \"502\", \"Bad Gateway\",\r\n    \"503\", \"Service Unavailable\",\r\n    \"504\", \"Server Time-out\",\r\n    \"505\", \"Version Not Supported\",\r\n    \"513\", \"Message Too Large\",\r\n    \"555\", \"Push Notification Service Not Supported\",\r\n    \"580\", \"Precondition Failure\",\r\n    \"600\", \"Busy Everywhere\",\r\n    \"603\", \"Decline\",\r\n    \"604\", \"Does Not Exist Anywhere\",\r\n    \"606\", \"Not Acceptable\",\r\n    \"607\", \"Unwanted\",\r\n    \"608\", \"Rejected\",\r\n];\r\n\r\n\r\nACSCallSummary\r\n| where CallStartTime {call_time_range:query}\r\n| join kind=inner SIPCodes on ParticipantEndReason\r\n| extend EndReason=strcat(ParticipantEndReason, \": \", SIPCode)\r\n| summarize EndReasonCounts=count() by EndReason//ParticipantEndReason, SIPCode=SIPCode\r\n| render piechart",
+                    "size": 0,
+                    "title": "Participant End Reasons",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 5"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "calling_tab",
+              "comparison": "isEqualTo",
+              "value": "general"
+            },
+            "name": "pie-charts"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Usage",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "dc6ebe5c-d964-45f1-b842-fb0eb4c1ed93",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "usage_time_range",
+                        "label": "Time range",
+                        "type": 4,
+                        "isRequired": true,
+                        "value": {
+                          "durationMs": 604800000
+                        },
+                        "typeSettings": {
+                          "selectableValues": [
+                            {
+                              "durationMs": 300000
+                            },
+                            {
+                              "durationMs": 900000
+                            },
+                            {
+                              "durationMs": 1800000
+                            },
+                            {
+                              "durationMs": 3600000
+                            },
+                            {
+                              "durationMs": 14400000
+                            },
+                            {
+                              "durationMs": 43200000
+                            },
+                            {
+                              "durationMs": 86400000
+                            },
+                            {
+                              "durationMs": 172800000
+                            },
+                            {
+                              "durationMs": 259200000
+                            },
+                            {
+                              "durationMs": 604800000
+                            },
+                            {
+                              "durationMs": 1209600000
+                            },
+                            {
+                              "durationMs": 2419200000
+                            },
+                            {
+                              "durationMs": 2592000000
+                            },
+                            {
+                              "durationMs": 5184000000
+                            },
+                            {
+                              "durationMs": 7776000000
+                            }
+                          ],
+                          "allowCustom": true
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      },
+                      {
+                        "id": "01f1b289-72f9-4a52-8ef4-853e2d86b1fa",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "usage_time_granularity",
+                        "label": "Time granularity",
+                        "type": 2,
+                        "isRequired": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    { \"value\":\"1m\", \"label\":\"1 minute\" },\r\n    { \"value\":\"10m\", \"label\":\"10 minutes\" },\r\n    { \"value\":\"15m\", \"label\":\"15 minutes\" },\r\n    { \"value\":\"30m\", \"label\":\"30 minutes\" },\r\n    { \"value\":\"1h\", \"label\":\"1 hour\" },\r\n    { \"value\":\"2h\", \"label\":\"2 hours\" },\r\n    { \"value\":\"12h\", \"label\":\"12 hours\" },\r\n    { \"value\":\"1d\", \"label\":\"1 day\", \"selected\":true },\r\n    { \"value\":\"2d\", \"label\":\"2 days\" },\r\n    { \"value\":\"3d\", \"label\":\"3 days\" },\r\n    { \"value\":\"1w\", \"label\":\"1 week\" }\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "value": "12h"
+                      },
+                      {
+                        "id": "d2f5dd7b-1559-4d49-aff9-d7e046049210",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "usage_grouping",
+                        "label": "Grouping",
+                        "type": 2,
+                        "value": "by CallType",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "jsonData": "[\r\n    {\"value\": \"by Interop\", \"label\": \"Interop Calls\"},\r\n    {\"value\": \"by CallType\", \"label\": \"Call type\"}\r\n]",
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.kusto/clusters"
+                  },
+                  "name": "parameters - 1"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallSummary\r\n//| extend granularity = floor(CallStartTime, {usage_time_granularity})\r\n// | summarize TotalDuration=sum(CallDuration) by granularity\r\n| distinct CorrelationId, TeamsThreadId, CallStartTime, CallType\r\n//| extend Interop=iff(isnull(TeamsThreadId), \"ACS\", \"Teams Interop\") // Current data might not have the right null format\r\n| extend Interop=iff(TeamsThreadId == \"null\", \"ACS\", \"Teams Interop\")\r\n| make-series event_count=count() default=0 on CallStartTime from {usage_time_range:start} to {usage_time_range:end} step {usage_time_granularity} {usage_grouping}",
+                    "size": 0,
+                    "title": "Calls",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 3"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallSummary\r\n| distinct CorrelationId, TeamsThreadId, CallStartTime, CallType, ParticipantId, EndpointId, Identifier\r\n//| extend Interop=iff(isnull(TeamsThreadId), \"ACS\", \"Teams Interop\")\r\n| extend Interop=iff(Identifier startswith \"acs:\", \"ACS\", \"Teams Interop\")\r\n| make-series event_count=count() default=0 on CallStartTime from {usage_time_range:start} to {usage_time_range:end} step {usage_time_granularity} {usage_grouping}",
+                    "size": 0,
+                    "title": "Participants",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "barchart"
+                  },
+                  "customWidth": "50",
+                  "name": "query - 3"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "calling_tab",
+              "comparison": "isEqualTo",
+              "value": "usage"
+            },
+            "name": "usage"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Call Details",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "b5af1360-b51e-452c-8a90-93318ff7ac1e",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "call_time_range",
+                        "label": "Call Time Range",
+                        "type": 4,
+                        "description": "Define a time range for which to get call information",
+                        "isRequired": true,
+                        "value": {
+                          "durationMs": 7776000000
+                        },
+                        "typeSettings": {
+                          "selectableValues": [
+                            {
+                              "durationMs": 300000
+                            },
+                            {
+                              "durationMs": 900000
+                            },
+                            {
+                              "durationMs": 1800000
+                            },
+                            {
+                              "durationMs": 3600000
+                            },
+                            {
+                              "durationMs": 14400000
+                            },
+                            {
+                              "durationMs": 43200000
+                            },
+                            {
+                              "durationMs": 86400000
+                            },
+                            {
+                              "durationMs": 172800000
+                            },
+                            {
+                              "durationMs": 259200000
+                            },
+                            {
+                              "durationMs": 604800000
+                            },
+                            {
+                              "durationMs": 1209600000
+                            },
+                            {
+                              "durationMs": 2419200000
+                            },
+                            {
+                              "durationMs": 2592000000
+                            },
+                            {
+                              "durationMs": 5184000000
+                            },
+                            {
+                              "durationMs": 7776000000
+                            }
+                          ],
+                          "allowCustom": true
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        }
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.kusto/clusters"
+                  },
+                  "name": "parameters - 0"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "ACSCallDiagnostics\r\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId\r\n| where CallStartTime {call_time_range:query}\r\n| order by CallStartTime asc, ParticipantStartTime asc\r\n| extend CallDate=format_datetime(CallStartTime, 'MM/dd/y')\r\n| extend CallTime=format_datetime(CallStartTime, 'h:m:s')\r\n| extend ParticipantTime=format_datetime(ParticipantStartTime, 'h:m:s')\r\n| extend ProportionalDuration=(toreal(ParticipantDuration) / toreal(CallDuration))\r\n| extend CallInfo=strcat(\"☎️ \", CallTime, \" ⏱️ \", CallDuration, \" seconds 🆔 CorrelationId = \", CorrelationId)\r\n| extend EndpointType = case(  indexof(EndpointType, \"VoIP\") != -1, strcat(\"🗣️ \", EndpointType),\r\n                            indexof(EndpointType, \"PSTN\") != -1, strcat(\"📞 \", EndpointType),\r\n                            indexof(EndpointType, \"Bot\") != -1, strcat(\"🤖 \", EndpointType),\r\n                            indexof(EndpointType, \"Server\") != -1, strcat(\"🖥️ \", EndpointType),\r\n                            indexof(EndpointType, \"Unknown\") != -1, strcat(\"👽 \", EndpointType),\r\n                            EndpointType\r\n                        )\r\n| extend ParticipantInfo=strcat(EndpointType, \" \", ParticipantTime, \" ⏱️ \", ParticipantDuration, \" seconds 🆔 ParticipantId = \", ParticipantId, \" 🆔 EndpointId = \", EndpointId)\r\n| extend MediaType = case(  indexof(MediaType, \"Audio\") != -1, strcat(\"🔊 \", MediaType),\r\n                            indexof(MediaType, \"Video\") != -1, strcat(\"🎥 \", MediaType),\r\n                            indexof(MediaType, \"VBSS\") != -1, strcat(\"💻 \", MediaType),\r\n                            indexof(MediaType, \"AppSharing\") != -1, strcat(\"📲 \", MediaType),\r\n                            MediaType\r\n                        )\r\n//| project CallInfo, ParticipantInfo, MediaType, JitterAvg, PacketLossRateAvg, RoundTripTimeAvg\r\n| project CallDate, CallInfo, ParticipantInfo, ProportionalDuration, MediaType, JitterAvg, PacketLossRateAvg, RoundTripTimeAvg",
+                    "size": 0,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "ProportionalDuration",
+                          "formatter": 3,
+                          "formatOptions": {
+                            "palette": "blue"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": "query - 2"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "{\"version\":\"AzureDataExplorerQuery/1.0\",\"queryText\":\"ACSCallDiagnostics\\r\\n| join kind=inner ACSCallSummary on CorrelationId, ParticipantId, EndpointId\\r\\n| where CallStartTime {call_time_range:query}\\r\\n| order by CallStartTime asc, ParticipantStartTime asc\\r\\n| extend CallDate=format_datetime(CallStartTime, 'MM/dd/y')\\r\\n| extend CallTime=format_datetime(CallStartTime, 'h:m:s')\\r\\n| extend ParticipantTime=format_datetime(ParticipantStartTime, 'h:m:s')\\r\\n| extend ProportionalDuration=(toreal(ParticipantDuration) / toreal(CallDuration))\\r\\n| extend CallInfo=strcat(\\\"☎️ \\\", CallTime, \\\" ⏱️ \\\", CallDuration, \\\" seconds 🆔 CorrelationId = \\\", CorrelationId)\\r\\n| extend EndpointType = case(  indexof(EndpointType, \\\"VoIP\\\") != -1, strcat(\\\"🗣️ \\\", EndpointType),\\r\\n                            indexof(EndpointType, \\\"PSTN\\\") != -1, strcat(\\\"📞 \\\", EndpointType),\\r\\n                            indexof(EndpointType, \\\"Bot\\\") != -1, strcat(\\\"🤖 \\\", EndpointType),\\r\\n                            indexof(EndpointType, \\\"Server\\\") != -1, strcat(\\\"🖥️ \\\", EndpointType),\\r\\n                            indexof(EndpointType, \\\"Unknown\\\") != -1, strcat(\\\"👽 \\\", EndpointType),\\r\\n                            EndpointType\\r\\n                        )\\r\\n| extend ParticipantInfo=strcat(EndpointType, \\\" \\\", ParticipantTime, \\\" ⏱️ \\\", ParticipantDuration, \\\" seconds 🆔 ParticipantId = \\\", ParticipantId, \\\" 🆔 EndpointId = \\\", EndpointId)\\r\\n| extend MediaType = case(  indexof(MediaType, \\\"Audio\\\") != -1, strcat(\\\"🔊 \\\", MediaType),\\r\\n                            indexof(MediaType, \\\"Video\\\") != -1, strcat(\\\"🎥 \\\", MediaType),\\r\\n                            indexof(MediaType, \\\"VBSS\\\") != -1, strcat(\\\"💻 \\\", MediaType),\\r\\n                            indexof(MediaType, \\\"AppSharing\\\") != -1, strcat(\\\"📲 \\\", MediaType),\\r\\n                            MediaType\\r\\n                        )\\r\\n//| project CallInfo, ParticipantInfo, MediaType, JitterAvg, PacketLossRateAvg, RoundTripTimeAvg\\r\\n| project CallDate, CallInfo, ParticipantInfo, ProportionalDuration, MediaType, JitterAvg, PacketLossRateAvg, RoundTripTimeAvg\",\"clusterName\":\"testcallinglogs.eastus\",\"databaseName\":\"callinglogs\"}",
+                    "size": 0,
+                    "queryType": 9,
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "50ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "CallDate",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "CallInfo",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "ParticipantInfo",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "ProportionalDuration",
+                          "formatter": 3,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 1,
+                            "palette": "blue"
+                          }
+                        },
+                        {
+                          "columnMatch": "MediaType",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "JitterAvg",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": ">",
+                                "thresholdValue": "30",
+                                "representation": "redBright",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          },
+                          "tooltipFormat": {
+                            "tooltip": "The threshold for a poor quality jitter value is currently set at 30ms"
+                          }
+                        },
+                        {
+                          "columnMatch": "PacketLossRateAvg",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": ">",
+                                "thresholdValue": "0.1",
+                                "representation": "redBright",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          },
+                          "tooltipFormat": {
+                            "tooltip": "The threshold for a poor quality packet loss rate value is currently set at 10% (0.1)"
+                          }
+                        },
+                        {
+                          "columnMatch": "RoundTripTimeAvg",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": ">",
+                                "thresholdValue": "500",
+                                "representation": "redBright",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          },
+                          "tooltipFormat": {
+                            "tooltip": "The threshold for a poor quality round trip time is currently set at 500ms"
+                          }
+                        },
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "50ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "ParticipantDuration",
+                          "formatter": 19,
+                          "formatOptions": {
+                            "palette": "blue"
+                          }
+                        },
+                        {
+                          "columnMatch": "CorrelationId",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "ParticipantId",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "EndpointId",
+                          "formatter": 5
+                        }
+                      ],
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "CallDate",
+                          "CallInfo",
+                          "ParticipantInfo"
+                        ],
+                        "expandTopLevel": true,
+                        "finalBy": "MediaType"
+                      }
+                    },
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "CallDate",
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "CallInfo",
+                        "formatter": 1,
+                        "formatOptions": {
+                          "linkColumn": "ParticipantInfo",
+                          "linkTarget": "CellDetails",
+                          "linkIsContextBlade": true
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2,
+                            "maximumSignificantDigits": 3
+                          }
+                        }
+                      },
+                      "showBorder": false
+                    }
+                  },
+                  "name": "Call Overview Tree - Copy"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "calling_tab",
+              "comparison": "isEqualTo",
+              "value": "details"
+            },
+            "name": "Call Overview"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tab",
+        "comparison": "isEqualTo",
+        "value": "calling"
+      },
+      "name": "call_quality"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/378e5be3-6163-4ae6-9b38-9f10c1429f24/resourceGroups/ingestion_e2e/providers/Microsoft.OperationalInsights/workspaces/canaryinestiontest"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
