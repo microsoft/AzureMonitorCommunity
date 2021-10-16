@@ -1,6 +1,6 @@
 // Author: Microsoft Azure
-// Display name: Check if Pods have Resources or Limits
-// Description: Check if Pods have Resources or Limits.
+// Display name: Check if Pods have Requests or Limits
+// Description: Check if Pods have Requests or Limits.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Solutions: ContainerInsights
@@ -10,7 +10,7 @@ let podCounters = Perf
     | where ObjectName == 'K8SContainer' and  (CounterName == 'cpuLimitNanoCores' or CounterName == 'cpuRequestNanoCores' or CounterName == 'memoryLimitBytes' or CounterName == 'memoryRequestBytes') 
     | summarize d = make_bag(pack(CounterName, CounterValue)) by InstanceName
     | evaluate bag_unpack(d);
-let podResourcesAndLimits = podCounters
+let podRequestsAndLimits = podCounters
     | extend InstanceNameParts = split(InstanceName, "/")
     | extend PodUI = tostring(InstanceNameParts[(array_length(InstanceNameParts)-2)]) 
     | extend PodName = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
@@ -30,7 +30,7 @@ KubePodInventory
     | extend PodName = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
     | project ClusterName, Computer, Namespace, PodUI, PodName
     | join kind= leftouter (nodeCapacity) on Computer
-    | join kind= leftouter (podResourcesAndLimits) on PodUI, PodName
+    | join kind= leftouter (podRequestsAndLimits) on PodUI, PodName
       // Pods without CPU Requests. If container cpu resource requests are not specified, cpuRequestNanoCores metric will not be collected
     | extend CPURequests = isnotnull(cpuRequestNanoCores)
       // Pods without CPU Limits. If container resource limits are not specified, node's capacity will be rolled-up as container's limit
