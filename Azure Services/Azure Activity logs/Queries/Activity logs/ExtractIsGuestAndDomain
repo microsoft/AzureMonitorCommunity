@@ -1,0 +1,16 @@
+// Author: Alistair Ross - MSFT
+// Display name: Extract UPN and Domain
+// Description: Filters the activity logs to only output activities that have been performed by a user, and returns if they are a guest account and the domain
+// Categories: audit
+// Resource types: Azure Activity logs
+// Topic: Activity logs
+
+AzureActivity
+// Return only those accounts which is a UPN (Local or Guest)
+| where Caller matches regex @"^\w+[+.\w-]*(#EXT#@|@)([\w\-]+.)*.([a-z]{2,4}|\d+)"
+//
+// Add a column if the account matches a guest account
+| extend IsGuest = iif(Caller matches regex @"^\w+[+.\w-]*#EXT#@([\w\-]+.)*.([a-z]{2,4}|\d+)", true, false)
+//
+// Extract the domain from the caller
+| extend Domain = tolower(extract(@"^(\w+[+.\w-]*(#EXT#@|@))(([\w\-]+.)*.([a-z]{2,4}|\d+))",3,Caller))
