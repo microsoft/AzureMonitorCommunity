@@ -1,0 +1,16 @@
+// Author: Jeff Thompson and Darrin Devine
+// Display name: timeouts by Table and UserId
+// Description: timeouts by Table and UserId
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Other errors and failures
+
+
+exceptions
+| where timestamp >= ago(14d)
+| where outerMessage has "timeout"
+| extend Table= tostring(customDimensions.entityName)
+| summarize count() by Table,user_Id
+| order by count_ desc
+
+

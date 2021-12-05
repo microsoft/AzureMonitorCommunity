@@ -1,0 +1,18 @@
+// Author: Jeff Thompson and Darrin Devine
+// Display name: timeout correlation id's by table
+// Description: timeout correlation id's by table
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Other errors and failures
+
+
+exceptions
+| where timestamp >= ago(1d)
+| where outerMessage has "timeout"
+| extend Table= tostring(customDimensions.entityName)
+| where Table == 'enter Table'
+| where userId == 'enter UserId'
+| project timestamp, user_Id, customDimensions.correlationId
+
+
+
