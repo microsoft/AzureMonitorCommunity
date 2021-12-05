@@ -1,0 +1,15 @@
+// Author: David Reynolds @ Microsoft
+// Display name: Failed or canceled pipelines
+// Description: Alerts when an ADF pipeline does not complete successfully
+// Categories: Azure Data Factory
+// Resource types: Azure Data Factory
+// Topic: Alert
+
+ADFPipelineRun 
+| where Status != "Queued" and Status != "InProgress" and Status != "Succeeded" and Status != "Canceling"
+| where PipelineName in (    // list pipelines to monitor here
+    "Pipeline Name 1",
+    "Pipeline Name 2",
+    "Pipeline Name 3",
+    "Pipeline Name 4")
+| project TimeGenerated, PipelineName, Status, Start, End, Parameters
