@@ -10,7 +10,6 @@
 datatable(ContainerName:string)["my-container-name-1","my-container-name-2"]
 | join kind=innerunique (
     KubePodInventory
-    | where isnotempty(ClusterName)
     | extend ContainerName = tostring(split(ContainerName, '/')[1])
     | summarize arg_max(TimeGenerated, *) by ContainerName)
 on ContainerName
