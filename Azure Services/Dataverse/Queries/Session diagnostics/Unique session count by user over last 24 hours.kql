@@ -1,0 +1,11 @@
+// Author: aliyoussefi
+// Display name: Unique session count by user over last 24 hours drilled down by hour
+// Description: Summary of Sessions by Users over last 24 hour drilled down by hour. Returns timestamp, user and session count.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Session Diagnostics
+
+// Unique session count by user over last 24 hours drilled down by hour
+requests
+| where timestamp > ago(1d)
+| summarize sessions = dcount(session_Id) by bin(timestamp, 1h), user_Id

@@ -1,0 +1,40 @@
+// Author: Jeff Thompson
+// Display name: Warm and Cold Form Load Data by Table
+// Description: Shows loads, avg duration, p90 duration for both cold and warm loads and by table.
+// Categories: Azure Resources
+// Resource types: Dataverse
+// Topic: Page performance
+
+// warm and cold form Load data by Table
+let start = datetime(2021-12-13 00:00);
+let end = datetime(2021-12-13 23:59);
+let table = 'opportunity'; // Enter Table
+pageViews
+| where timestamp between(start..end) //>= ago(1d)
+| where name startswith "EditForm Load"
+| extend LoadType = todouble(customDimensions.loadType)
+| extend LoadTypeName = case( LoadType in (0,1), 'Cold', LoadType in (2,3) , 'Warm', 'Other')
+| extend warmLatency = todouble(customDimensions.warmLatency)
+| extend warmThroughput = todouble(customDimensions.warmThroughput)
+| extend syncRequestTime = tostring(customDimensions.syncRequestTime)
+| extend isBoot = tostring(customDimensions.isBoot)
+| extend Table = tostring(customDimensions.entityName)
+| where Table == table
+| where LoadTypeName == 'Warm'
+| summarize ['Warm Loads']=count(LoadTypeName=='Warm'), ['Warm Avg MS']=round(avg(duration)), ['Warm P90 MS']=round(percentile(duration,90)) by Table
+|join kind = inner
+(pageViews
+| where timestamp between(start..end) //>= ago(1d)
+| where name startswith "EditForm Load"
+| extend LoadType = todouble(customDimensions.loadType)
+| extend LoadTypeName = case( LoadType in (0,1), 'Cold', LoadType in (2,3) , 'Warm', 'Other')
+| extend warmLatency = todouble(customDimensions.warmLatency)
+| extend warmThroughput = todouble(customDimensions.warmThroughput)
+| extend syncRequestTime = tostring(customDimensions.syncRequestTime)
+| extend isBoot = tostring(customDimensions.isBoot)
+| extend Table = tostring(customDimensions.entityName)
+| where Table == table
+| where LoadTypeName == 'Cold'
+| summarize ['Cold Loads']=count(), ['Cold Avg MS']=round(avg(duration)), ['Cold P90 MS']=round(percentile(duration,90)) by Table) 
+on Table
+| project Table,['Warm Loads'], ['Cold Loads'], ['Warm Avg MS'], ['Cold Avg MS'], ['Warm P90 MS'], ['Cold P90 MS']
