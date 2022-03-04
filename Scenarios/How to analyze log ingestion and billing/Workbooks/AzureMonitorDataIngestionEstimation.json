@@ -27,7 +27,7 @@
               "value::selected"
             ],
             "value": [
-              ""
+              "value::all"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
@@ -73,7 +73,7 @@
             "label": "Time range",
             "type": 4,
             "value": {
-              "durationMs": 1209600000
+              "durationMs": 2592000000
             },
             "typeSettings": {
               "selectableValues": [
@@ -129,7 +129,7 @@
             "name": "Price",
             "label": "Price per gigabyte (GB)",
             "type": 1,
-            "value": "2.522",
+            "value": "2.5",
             "timeContext": {
               "durationMs": 86400000
             }
@@ -185,6 +185,14 @@
             "style": "link"
           },
           {
+            "id": "6f1c1308-03a6-4c20-b3af-759a83b7f5b0",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Azure Metrics",
+            "subTarget": "AzureMetrics",
+            "style": "link"
+          },
+          {
             "id": "67006272-1705-4624-a0ba-33e75158956e",
             "cellValue": "selectedTab",
             "linkTarget": "parameter",
@@ -217,7 +225,7 @@
               "size": 1,
               "title": "Top 5 Computers ingesting data - {TimeRange}",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -249,12 +257,12 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let pricebytes = {Price:value} / 104857600;\r\nunion * \r\n{BillableOnly}\r\n| extend ComputerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where ComputerName != \"\" and ComputerName !contains \"deprecated\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ComputerName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+              "query": "let pricebytes = {Price:value} / 1048576000;\r\nunion * \r\n{BillableOnly}\r\n| extend ComputerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where ComputerName != \"\" and ComputerName !contains \"deprecated\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ComputerName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
               "size": 0,
               "showAnalytics": true,
               "title": "Cost Per Computer",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "exportedParameters": [
@@ -313,9 +321,6 @@
                   }
                 ],
                 "labelSettings": [
-                  {
-                    "columnId": "ComputerName"
-                  },
                   {
                     "columnId": "TotalIngestBytes",
                     "label": "Total Amount Data Ingested"
@@ -385,12 +390,12 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let pricebytes = {Price:value} / 104857600;\r\nunion * \r\n{BillableOnly}\r\n| extend computerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where computerName == \"{ComputerName:value}\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+              "query": "let pricebytes = {Price:value} / 1048576000;\r\nunion * \r\n{BillableOnly}\r\n| extend computerName = tolower(tostring(split(Computer, '.')[0]))\r\n| where computerName == \"{ComputerName:value}\"\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
               "size": 2,
               "showAnalytics": true,
               "title": "Datatypes for {ComputerName:value}",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
@@ -439,9 +444,6 @@
                 ],
                 "labelSettings": [
                   {
-                    "columnId": "Type"
-                  },
-                  {
                     "columnId": "TotalIngestBytes",
                     "label": "Total Amount Data Ingested"
                   },
@@ -474,7 +476,7 @@
               "showAnalytics": true,
               "title": "Perf Counter Collections for {ComputerName:value}",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
@@ -554,12 +556,12 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let pricebytes = {Price:value} / 104857600;\r\nunion * \r\n{BillableOnly}\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by TotalIngestBytes",
+              "query": "let pricebytes = {Price:value} / 1048576000;\r\nunion * \r\n{BillableOnly}\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Type\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by TotalIngestBytes",
               "size": 0,
               "showAnalytics": true,
               "title": "Ingestion by Data Type - {TimeRange}",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "exportFieldName": "Type",
@@ -737,7 +739,7 @@
               "size": 1,
               "title": "Top 5 Resources ingesting data - {TimeRange}",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
@@ -767,12 +769,12 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let pricebytes = {Price}/104857600;\r\nAzureDiagnostics\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Resource, Category, OperationName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+              "query": "let pricebytes = {Price}/1048576000;\r\nAzureDiagnostics\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ResourceId, Category, OperationName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
               "size": 0,
               "showAnalytics": true,
               "title": "Azure Diagnostics - {TimeRange}",
               "timeContext": {
-                "durationMs": 1209600000
+                "durationMs": 0
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
@@ -812,7 +814,8 @@
                 ],
                 "labelSettings": [
                   {
-                    "columnId": "Resource"
+                    "columnId": "ResourceId",
+                    "label": "Resource"
                   },
                   {
                     "columnId": "Category"
@@ -840,6 +843,105 @@
         "value": "AzureDiagnostics"
       },
       "name": "AzureDiagnosticsgroup"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "# Azure Metrics data ingestion for {TimeRange}"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureMetrics\r\n| summarize TotalIngestBytes=sum(_BilledSize) by Resource, ResourceId\r\n| order by TotalIngestBytes desc\r\n| take 5",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "Resource",
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": true
+                    }
+                  }
+                }
+              }
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let pricebytes = {Price}/1048576000;\r\nAzureMetrics\r\n| summarize TotalIngestBytes=sum(_BilledSize) by ResourceId, MetricName\r\n| extend Cost = TotalIngestBytes * pricebytes\r\n| order by Cost desc",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TotalIngestBytes",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Cost",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "query - 2"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "AzureMetrics"
+      },
+      "name": "AzureMetrics-group"
     },
     {
       "type": 12,
