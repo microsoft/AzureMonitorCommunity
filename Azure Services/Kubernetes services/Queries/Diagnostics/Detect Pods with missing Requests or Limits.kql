@@ -1,6 +1,6 @@
 // Author: Microsoft Azure
-// Display name: Check if Pods have Requests or Limits
-// Description: Check if Pods have Requests or Limits.
+// Display name: Detect Pods with missing Requests or Limits
+// Description: Detect Pods with missing Requests or Limits.
 // Categories: Containers,Azure Resources
 // Resource types: Kubernetes services
 // Solutions: ContainerInsights
