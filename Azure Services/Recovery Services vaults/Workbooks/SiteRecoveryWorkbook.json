@@ -98,9 +98,7 @@
               },
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "[parameters('workspaceId')]"
-              ],
+              "crossComponentResources": "[parameters('workspaceId')]",
               "visualization": "graph",
               "tileSettings": {
                 "showBorder": false
