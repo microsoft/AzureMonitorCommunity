@@ -31,9 +31,6 @@
       },
       "workspaceId": {
         "type": "array",
-        "defaultValue": [
-    "/subscriptions/3d3c613c-3828-4c8d-bc51-8871f888c18e/resourcegroups/arav-rg-aue-hubmgmt-bicep-01/providers/microsoft.operationalinsights/workspaces/arav-law-aue-bicep-01"
-        ],
         "metadata": {
           "description": "Resource ID of Log Analytics Workspace"
         }
