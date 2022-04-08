@@ -377,7 +377,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "AzureDiagnostics \r\n| where replicationProviderName_s == \"A2A\"   \r\n| where isnotempty(name_s) and isnotnull(name_s)   \r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by name_s   \r\n| project VirtualMachine = name_s , Vault = Resource , ReplicationHealth = replicationHealth_s, Status = protectionState_s, RPO_in_seconds = rpoInSeconds_d, TestFailoverStatus = failoverHealth_s, AgentVersion = agentVersion_s, ReplicationError = replicationHealthErrors_s, SourceLocation = primaryFabricName_s",
+              "query": "AzureDiagnostics \r\n| where replicationProviderName_s == \"A2A\"   \r\n| where isnotempty(name_s) and isnotnull(name_s)   \r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by name_s   \r\n| project VirtualMachine = name_s , Vault = Resource , ReplicationHealth = replicationHealth_s, Status = protectionState_s, RPO_in_seconds = rpoInSeconds_d, TestFailoverStatus = failoverHealth_s, AgentVersion = agentVersion_s, SourceLocation = primaryFabricName_s",
               "size": 0,
               "timeContext": {
                 "durationMs": 86400000
