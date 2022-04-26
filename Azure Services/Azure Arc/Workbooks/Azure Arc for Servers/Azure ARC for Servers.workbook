@@ -1,0 +1,1612 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "1ca69445-60fc-4806-b43d-ac7e6aad630a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "description": "Subscriptions that contain ARC-Enabled Servers",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.hybridcompute/machines'\r\n\t| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "value": [
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "b51227d5-990f-41f2-99b7-9627c3859a28",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogAnalytics",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type =~ 'Microsoft.OperationalInsights/workspaces'",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "49f1041c-e928-40f1-9677-79407c9e70ba",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ],
+              "allowCustom": true
+            }
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameter block"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "84aed0a6-77ff-4509-b1e6-0f035e9997eb",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Overview",
+            "subTarget": "Overview",
+            "style": "link"
+          },
+          {
+            "id": "f6c9e4d3-5c9a-4d03-9dc0-917839ec66ad",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Server Health",
+            "subTarget": "Health",
+            "style": "link"
+          },
+          {
+            "id": "bb1f04cf-2874-4f78-8d89-beaee5a3ff49",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Extension Health",
+            "subTarget": "ExtensionHealth",
+            "style": "link"
+          },
+          {
+            "id": "2b419f33-37c3-4ffd-bcf8-833574208b0e",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Security",
+            "subTarget": "Security",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "Tabs"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Server List"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.hybridcompute/machines'\r\n| extend CloudProvider = properties.cloudMetadata.provider\r\n| extend datacenter = iif(isnull(tags.Datacenter), '', tags.Datacenter)\r\n| extend state = properties.status\r\n| extend status = case(\r\nstate =~ 'Connected', 'Connected',\r\nstate =~ 'Disconnected', 'Offline',\r\nstate =~ 'Error', 'Error',\r\nstate =~ 'Expired', 'Expired',\r\n'')\r\n| extend os = properties.osName\r\n| extend operatingSystem = case(\r\nos =~ 'windows', 'Windows',\r\nos =~ 'linux', 'Linux',\r\n'')\r\n| project name, status, CloudProvider, resourceGroup, subscriptionId, datacenter, operatingSystem, id, type, location, kind, tags\r\n| join kind=inner (\r\n    resourcecontainers\r\n    | where type == 'microsoft.resources/subscriptions'\r\n    | project subscriptionId, subscriptionName = name)\r\n    on subscriptionId\r\n| extend locationDisplayName=case(location =~ 'eastus','East US',location =~ 'eastus2','East US 2',location =~ 'southcentralus','South Central US',location =~ 'westus2','West US 2',location =~ 'westus3','West US 3',location =~ 'australiaeast','Australia East',location =~ 'southeastasia','Southeast Asia',location =~ 'northeurope','North Europe',location =~ 'swedencentral','Sweden Central',location =~ 'uksouth','UK South',location =~ 'westeurope','West Europe',location =~ 'centralus','Central US',location =~ 'northcentralus','North Central US',location =~ 'westus','West US',location =~ 'southafricanorth','South Africa North',location =~ 'centralindia','Central India',location =~ 'eastasia','East Asia',location =~ 'japaneast','Japan East',location =~ 'jioindiawest','Jio India West',location =~ 'koreacentral','Korea Central',location =~ 'canadacentral','Canada Central',location =~ 'francecentral','France Central',location =~ 'germanywestcentral','Germany West Central',location =~ 'norwayeast','Norway East',location =~ 'switzerlandnorth','Switzerland North',location =~ 'uaenorth','UAE North',location =~ 'brazilsouth','Brazil South',location =~ 'centralusstage','Central US (Stage)',location =~ 'eastusstage','East US (Stage)',location =~ 'eastus2stage','East US 2 (Stage)',location =~ 'northcentralusstage','North Central US (Stage)',location =~ 'southcentralusstage','South Central US (Stage)',location =~ 'westusstage','West US (Stage)',location =~ 'westus2stage','West US 2 (Stage)',location =~ 'asia','Asia',location =~ 'asiapacific','Asia Pacific',location =~ 'australia','Australia',location =~ 'brazil','Brazil',location =~ 'canada','Canada',location =~ 'europe','Europe',location =~ 'france','France',location =~ 'germany','Germany',location =~ 'global','Global',location =~ 'india','India',location =~ 'japan','Japan',location =~ 'korea','Korea',location =~ 'norway','Norway',location =~ 'southafrica','South Africa',location =~ 'switzerland','Switzerland',location =~ 'uae','United Arab Emirates',location =~ 'uk','United Kingdom',location =~ 'unitedstates','United States',location =~ 'eastasiastage','East Asia (Stage)',location =~ 'southeastasiastage','Southeast Asia (Stage)',location =~ 'westcentralus','West Central US',location =~ 'southafricawest','South Africa West',location =~ 'australiacentral','Australia Central',location =~ 'australiacentral2','Australia Central 2',location =~ 'australiasoutheast','Australia Southeast',location =~ 'japanwest','Japan West',location =~ 'jioindiacentral','Jio India Central',location =~ 'koreasouth','Korea South',location =~ 'southindia','South India',location =~ 'westindia','West India',location =~ 'canadaeast','Canada East',location =~ 'francesouth','France South',location =~ 'germanynorth','Germany North',location =~ 'norwaywest','Norway West',location =~ 'switzerlandwest','Switzerland West',location =~ 'ukwest','UK West',location =~ 'uaecentral','UAE Central',location =~ 'brazilsoutheast','Brazil Southeast',location)\r\n| where (type !~ ('dynatrace.observability/monitors'))\r\n| where (type !~ ('nginx.nginxplus/nginxdeployments'))\r\n| where (type !~ ('microsoft.agfoodplatform/farmbeats'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints'))\r\n| where (type !~ ('microsoft.cdn/profiles/customdomains'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets'))\r\n| where (type !~ ('microsoft.cdn/profiles/secrets'))\r\n| where (type !~ ('microsoft.cdn/profiles/securitypolicies'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints/routes'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups/origins'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets/rules'))\r\n| where (type !~ ('microsoft.kubernetes/connectedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.containerservice/managedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.portal/extensions/deployments'))\r\n| where (type !~ ('microsoft.portal/extensions'))\r\n| where (type !~ ('microsoft.portal/extensions/slots'))\r\n| where (type !~ ('microsoft.portal/extensions/versions'))\r\n| where (type !~ ('microsoft.datacollaboration/workspaces'))\r\n| where (type !~ ('microsoft.network/dnsforwardingrulesets'))\r\n| where (type !~ ('microsoft.network/dnsresolvers'))\r\n| where (type !~ ('microsoft.azurestack/registrations'))\r\n| where (type !~ ('microsoft.communication/emailservices'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters/sessionclusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools'))\r\n| where (type !~ ('microsoft.hpcworkbench/instances'))\r\n| where (type !~ ('microsoft.scvmm/vmmservers'))\r\n| where (type !~ ('microsoft.connectedvmwarevsphere/vcenters'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/assets'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/tests'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/executionplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/testplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins'))\r\n| where not((type =~ ('microsoft.network/serviceendpointpolicies')) and ((kind =~ ('internal'))))\r\n| where (type !~ ('microsoft.openlogisticsplatform/workspaces'))\r\n| where (type !~ ('microsoft.scom/managedinstances'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts/contacts'))\r\n| where (type !~ ('microsoft.orbital/contactprofiles'))\r\n| where (type !~ ('microsoft.orbital/edgesites'))\r\n| where (type !~ ('microsoft.orbital/groundstations'))\r\n| where (type !~ ('microsoft.orbital/l2connections'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts'))\r\n| where (type !~ ('microsoft.azurepercept/accounts'))\r\n| where (type !~ ('microsoft.workloads/phpworkloads'))\r\n| where (type !~ ('microsoft.playfab/playeraccountpools'))\r\n| where (type !~ ('microsoft.playfab/playfabresources'))\r\n| where (type !~ ('microsoft.playfab/titles'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/modeling'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/serviceendpoints'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd2/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd2/vaults'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/applicationinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/centralinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/databaseinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances'))\r\n| where (type !~ ('microsoft.datareplication/replicationvaults'))\r\n| where (type !~ ('microsoft.storagecache/amlfilesystems'))\r\n| where not((type =~ ('microsoft.synapse/workspaces/sqlpools')) and ((kind =~ ('v3'))))\r\n| where (type !~ ('microsoft.testbase/testbaseaccounts/packages'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/sites'))\r\n| where (type !~ ('microsoft.mobilenetwork/packetcorecontrolplanes'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/services'))\r\n| where (type !~ ('microsoft.mobilenetwork/sims'))\r\n| where (type !~ ('microsoft.workloads/monitors'))\r\n| where (type !~ ('sendgrid.email/accounts'))\r\n| where not((type =~ ('microsoft.sql/servers/databases')) and ((kind in~ ('system','v2.0,system','v12.0,system','v12.0,user,datawarehouse,gen2,analytics'))))\r\n| where not((type =~ ('microsoft.sql/servers')) and ((kind =~ ('v12.0,analytics'))))\r\n| project id,status,CloudProvider,subscriptionName,resourceGroup,datacenter,operatingSystem,locationDisplayName,type,kind,location,subscriptionId,tags\r\n| sort by (tolower(tostring(id))) asc",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Connected",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Expired",
+                          "representation": "3",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "columnId": "subscriptionName",
+                    "label": "SubscriptionName"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "ResourceGroup"
+                  },
+                  {
+                    "columnId": "datacenter",
+                    "label": "Datacenter"
+                  },
+                  {
+                    "columnId": "operatingSystem",
+                    "label": "OperatingSystem"
+                  },
+                  {
+                    "columnId": "locationDisplayName",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "type",
+                    "label": "Type"
+                  },
+                  {
+                    "columnId": "kind",
+                    "label": "Kind"
+                  },
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "SubscriptionID"
+                  },
+                  {
+                    "columnId": "tags",
+                    "label": "Tags"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview-By-Servers"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Operating Systems"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.hybridcompute/machines'\r\n| extend CloudProvider = properties.cloudMetadata.provider\r\n| extend datacenter = iif(isnull(tags.Datacenter), '', tags.Datacenter)\r\n| extend state = properties.status\r\n| extend status = case(\r\nstate =~ 'Connected', 'Connected',\r\nstate =~ 'Disconnected', 'Offline',\r\nstate =~ 'Error', 'Error',\r\nstate =~ 'Expired', 'Expired',\r\n'')\r\n| extend os = properties.osName\r\n| extend operatingSystem = case(\r\nos =~ 'windows', 'Windows',\r\nos =~ 'linux', 'Linux',\r\n'')\r\n| project name, status, CloudProvider, resourceGroup, subscriptionId, datacenter, operatingSystem, id, type, location, kind, tags\r\n| join kind=inner (\r\n    resourcecontainers\r\n    | where type == 'microsoft.resources/subscriptions'\r\n    | project subscriptionId, subscriptionName = name)\r\n    on subscriptionId\r\n| extend locationDisplayName=case(location =~ 'eastus','East US',location =~ 'eastus2','East US 2',location =~ 'southcentralus','South Central US',location =~ 'westus2','West US 2',location =~ 'westus3','West US 3',location =~ 'australiaeast','Australia East',location =~ 'southeastasia','Southeast Asia',location =~ 'northeurope','North Europe',location =~ 'swedencentral','Sweden Central',location =~ 'uksouth','UK South',location =~ 'westeurope','West Europe',location =~ 'centralus','Central US',location =~ 'northcentralus','North Central US',location =~ 'westus','West US',location =~ 'southafricanorth','South Africa North',location =~ 'centralindia','Central India',location =~ 'eastasia','East Asia',location =~ 'japaneast','Japan East',location =~ 'jioindiawest','Jio India West',location =~ 'koreacentral','Korea Central',location =~ 'canadacentral','Canada Central',location =~ 'francecentral','France Central',location =~ 'germanywestcentral','Germany West Central',location =~ 'norwayeast','Norway East',location =~ 'switzerlandnorth','Switzerland North',location =~ 'uaenorth','UAE North',location =~ 'brazilsouth','Brazil South',location =~ 'centralusstage','Central US (Stage)',location =~ 'eastusstage','East US (Stage)',location =~ 'eastus2stage','East US 2 (Stage)',location =~ 'northcentralusstage','North Central US (Stage)',location =~ 'southcentralusstage','South Central US (Stage)',location =~ 'westusstage','West US (Stage)',location =~ 'westus2stage','West US 2 (Stage)',location =~ 'asia','Asia',location =~ 'asiapacific','Asia Pacific',location =~ 'australia','Australia',location =~ 'brazil','Brazil',location =~ 'canada','Canada',location =~ 'europe','Europe',location =~ 'france','France',location =~ 'germany','Germany',location =~ 'global','Global',location =~ 'india','India',location =~ 'japan','Japan',location =~ 'korea','Korea',location =~ 'norway','Norway',location =~ 'southafrica','South Africa',location =~ 'switzerland','Switzerland',location =~ 'uae','United Arab Emirates',location =~ 'uk','United Kingdom',location =~ 'unitedstates','United States',location =~ 'eastasiastage','East Asia (Stage)',location =~ 'southeastasiastage','Southeast Asia (Stage)',location =~ 'westcentralus','West Central US',location =~ 'southafricawest','South Africa West',location =~ 'australiacentral','Australia Central',location =~ 'australiacentral2','Australia Central 2',location =~ 'australiasoutheast','Australia Southeast',location =~ 'japanwest','Japan West',location =~ 'jioindiacentral','Jio India Central',location =~ 'koreasouth','Korea South',location =~ 'southindia','South India',location =~ 'westindia','West India',location =~ 'canadaeast','Canada East',location =~ 'francesouth','France South',location =~ 'germanynorth','Germany North',location =~ 'norwaywest','Norway West',location =~ 'switzerlandwest','Switzerland West',location =~ 'ukwest','UK West',location =~ 'uaecentral','UAE Central',location =~ 'brazilsoutheast','Brazil Southeast',location)\r\n| where (type !~ ('dynatrace.observability/monitors'))\r\n| where (type !~ ('nginx.nginxplus/nginxdeployments'))\r\n| where (type !~ ('microsoft.agfoodplatform/farmbeats'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints'))\r\n| where (type !~ ('microsoft.cdn/profiles/customdomains'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets'))\r\n| where (type !~ ('microsoft.cdn/profiles/secrets'))\r\n| where (type !~ ('microsoft.cdn/profiles/securitypolicies'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints/routes'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups/origins'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets/rules'))\r\n| where (type !~ ('microsoft.kubernetes/connectedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.containerservice/managedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.portal/extensions/deployments'))\r\n| where (type !~ ('microsoft.portal/extensions'))\r\n| where (type !~ ('microsoft.portal/extensions/slots'))\r\n| where (type !~ ('microsoft.portal/extensions/versions'))\r\n| where (type !~ ('microsoft.datacollaboration/workspaces'))\r\n| where (type !~ ('microsoft.network/dnsforwardingrulesets'))\r\n| where (type !~ ('microsoft.network/dnsresolvers'))\r\n| where (type !~ ('microsoft.azurestack/registrations'))\r\n| where (type !~ ('microsoft.communication/emailservices'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters/sessionclusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools'))\r\n| where (type !~ ('microsoft.hpcworkbench/instances'))\r\n| where (type !~ ('microsoft.scvmm/vmmservers'))\r\n| where (type !~ ('microsoft.connectedvmwarevsphere/vcenters'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/assets'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/tests'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/executionplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/testplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins'))\r\n| where not((type =~ ('microsoft.network/serviceendpointpolicies')) and ((kind =~ ('internal'))))\r\n| where (type !~ ('microsoft.openlogisticsplatform/workspaces'))\r\n| where (type !~ ('microsoft.scom/managedinstances'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts/contacts'))\r\n| where (type !~ ('microsoft.orbital/contactprofiles'))\r\n| where (type !~ ('microsoft.orbital/edgesites'))\r\n| where (type !~ ('microsoft.orbital/groundstations'))\r\n| where (type !~ ('microsoft.orbital/l2connections'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts'))\r\n| where (type !~ ('microsoft.azurepercept/accounts'))\r\n| where (type !~ ('microsoft.workloads/phpworkloads'))\r\n| where (type !~ ('microsoft.playfab/playeraccountpools'))\r\n| where (type !~ ('microsoft.playfab/playfabresources'))\r\n| where (type !~ ('microsoft.playfab/titles'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/modeling'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/serviceendpoints'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd2/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd2/vaults'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/applicationinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/centralinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/databaseinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances'))\r\n| where (type !~ ('microsoft.datareplication/replicationvaults'))\r\n| where (type !~ ('microsoft.storagecache/amlfilesystems'))\r\n| where not((type =~ ('microsoft.synapse/workspaces/sqlpools')) and ((kind =~ ('v3'))))\r\n| where (type !~ ('microsoft.testbase/testbaseaccounts/packages'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/sites'))\r\n| where (type !~ ('microsoft.mobilenetwork/packetcorecontrolplanes'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/services'))\r\n| where (type !~ ('microsoft.mobilenetwork/sims'))\r\n| where (type !~ ('microsoft.workloads/monitors'))\r\n| where (type !~ ('sendgrid.email/accounts'))\r\n| where not((type =~ ('microsoft.sql/servers/databases')) and ((kind in~ ('system','v2.0,system','v12.0,system','v12.0,user,datawarehouse,gen2,analytics'))))\r\n| where not((type =~ ('microsoft.sql/servers')) and ((kind =~ ('v12.0,analytics'))))\r\n| project id,status,CloudProvider,subscriptionName,resourceGroup,datacenter,operatingSystem,locationDisplayName,type,kind,location,subscriptionId,tags\r\n| summarize count() by operatingSystem",
+              "size": 2,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "tiles",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Connected",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Expired",
+                          "representation": "3",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "operatingSystem",
+                    "label": "OperatingSystem"
+                  }
+                ]
+              },
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "operatingSystem",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "count_",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  }
+                },
+                "showBorder": true
+              }
+            },
+            "showPin": true,
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "customWidth": "50",
+      "name": "Overview-By-Servers-OS",
+      "styleSettings": {
+        "maxWidth": "50"
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Status"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.hybridcompute/machines'\r\n| extend CloudProvider = properties.cloudMetadata.provider\r\n| extend datacenter = iif(isnull(tags.Datacenter), '', tags.Datacenter)\r\n| extend state = properties.status\r\n| extend status = case(\r\nstate =~ 'Connected', 'Connected',\r\nstate =~ 'Disconnected', 'Offline',\r\nstate =~ 'Error', 'Error',\r\nstate =~ 'Expired', 'Expired',\r\n'')\r\n| extend os = properties.osName\r\n| extend operatingSystem = case(\r\nos =~ 'windows', 'Windows',\r\nos =~ 'linux', 'Linux',\r\n'')\r\n| project name, status, CloudProvider, resourceGroup, subscriptionId, datacenter, operatingSystem, id, type, location, kind, tags\r\n| join kind=inner (\r\n    resourcecontainers\r\n    | where type == 'microsoft.resources/subscriptions'\r\n    | project subscriptionId, subscriptionName = name)\r\n    on subscriptionId\r\n| extend locationDisplayName=case(location =~ 'eastus','East US',location =~ 'eastus2','East US 2',location =~ 'southcentralus','South Central US',location =~ 'westus2','West US 2',location =~ 'westus3','West US 3',location =~ 'australiaeast','Australia East',location =~ 'southeastasia','Southeast Asia',location =~ 'northeurope','North Europe',location =~ 'swedencentral','Sweden Central',location =~ 'uksouth','UK South',location =~ 'westeurope','West Europe',location =~ 'centralus','Central US',location =~ 'northcentralus','North Central US',location =~ 'westus','West US',location =~ 'southafricanorth','South Africa North',location =~ 'centralindia','Central India',location =~ 'eastasia','East Asia',location =~ 'japaneast','Japan East',location =~ 'jioindiawest','Jio India West',location =~ 'koreacentral','Korea Central',location =~ 'canadacentral','Canada Central',location =~ 'francecentral','France Central',location =~ 'germanywestcentral','Germany West Central',location =~ 'norwayeast','Norway East',location =~ 'switzerlandnorth','Switzerland North',location =~ 'uaenorth','UAE North',location =~ 'brazilsouth','Brazil South',location =~ 'centralusstage','Central US (Stage)',location =~ 'eastusstage','East US (Stage)',location =~ 'eastus2stage','East US 2 (Stage)',location =~ 'northcentralusstage','North Central US (Stage)',location =~ 'southcentralusstage','South Central US (Stage)',location =~ 'westusstage','West US (Stage)',location =~ 'westus2stage','West US 2 (Stage)',location =~ 'asia','Asia',location =~ 'asiapacific','Asia Pacific',location =~ 'australia','Australia',location =~ 'brazil','Brazil',location =~ 'canada','Canada',location =~ 'europe','Europe',location =~ 'france','France',location =~ 'germany','Germany',location =~ 'global','Global',location =~ 'india','India',location =~ 'japan','Japan',location =~ 'korea','Korea',location =~ 'norway','Norway',location =~ 'southafrica','South Africa',location =~ 'switzerland','Switzerland',location =~ 'uae','United Arab Emirates',location =~ 'uk','United Kingdom',location =~ 'unitedstates','United States',location =~ 'eastasiastage','East Asia (Stage)',location =~ 'southeastasiastage','Southeast Asia (Stage)',location =~ 'westcentralus','West Central US',location =~ 'southafricawest','South Africa West',location =~ 'australiacentral','Australia Central',location =~ 'australiacentral2','Australia Central 2',location =~ 'australiasoutheast','Australia Southeast',location =~ 'japanwest','Japan West',location =~ 'jioindiacentral','Jio India Central',location =~ 'koreasouth','Korea South',location =~ 'southindia','South India',location =~ 'westindia','West India',location =~ 'canadaeast','Canada East',location =~ 'francesouth','France South',location =~ 'germanynorth','Germany North',location =~ 'norwaywest','Norway West',location =~ 'switzerlandwest','Switzerland West',location =~ 'ukwest','UK West',location =~ 'uaecentral','UAE Central',location =~ 'brazilsoutheast','Brazil Southeast',location)\r\n| where (type !~ ('dynatrace.observability/monitors'))\r\n| where (type !~ ('nginx.nginxplus/nginxdeployments'))\r\n| where (type !~ ('microsoft.agfoodplatform/farmbeats'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints'))\r\n| where (type !~ ('microsoft.cdn/profiles/customdomains'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets'))\r\n| where (type !~ ('microsoft.cdn/profiles/secrets'))\r\n| where (type !~ ('microsoft.cdn/profiles/securitypolicies'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints/routes'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups/origins'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets/rules'))\r\n| where (type !~ ('microsoft.kubernetes/connectedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.containerservice/managedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.portal/extensions/deployments'))\r\n| where (type !~ ('microsoft.portal/extensions'))\r\n| where (type !~ ('microsoft.portal/extensions/slots'))\r\n| where (type !~ ('microsoft.portal/extensions/versions'))\r\n| where (type !~ ('microsoft.datacollaboration/workspaces'))\r\n| where (type !~ ('microsoft.network/dnsforwardingrulesets'))\r\n| where (type !~ ('microsoft.network/dnsresolvers'))\r\n| where (type !~ ('microsoft.azurestack/registrations'))\r\n| where (type !~ ('microsoft.communication/emailservices'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters/sessionclusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools'))\r\n| where (type !~ ('microsoft.hpcworkbench/instances'))\r\n| where (type !~ ('microsoft.scvmm/vmmservers'))\r\n| where (type !~ ('microsoft.connectedvmwarevsphere/vcenters'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/assets'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/tests'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/executionplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/testplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins'))\r\n| where not((type =~ ('microsoft.network/serviceendpointpolicies')) and ((kind =~ ('internal'))))\r\n| where (type !~ ('microsoft.openlogisticsplatform/workspaces'))\r\n| where (type !~ ('microsoft.scom/managedinstances'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts/contacts'))\r\n| where (type !~ ('microsoft.orbital/contactprofiles'))\r\n| where (type !~ ('microsoft.orbital/edgesites'))\r\n| where (type !~ ('microsoft.orbital/groundstations'))\r\n| where (type !~ ('microsoft.orbital/l2connections'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts'))\r\n| where (type !~ ('microsoft.azurepercept/accounts'))\r\n| where (type !~ ('microsoft.workloads/phpworkloads'))\r\n| where (type !~ ('microsoft.playfab/playeraccountpools'))\r\n| where (type !~ ('microsoft.playfab/playfabresources'))\r\n| where (type !~ ('microsoft.playfab/titles'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/modeling'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/serviceendpoints'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd2/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd2/vaults'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/applicationinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/centralinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/databaseinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances'))\r\n| where (type !~ ('microsoft.datareplication/replicationvaults'))\r\n| where (type !~ ('microsoft.storagecache/amlfilesystems'))\r\n| where not((type =~ ('microsoft.synapse/workspaces/sqlpools')) and ((kind =~ ('v3'))))\r\n| where (type !~ ('microsoft.testbase/testbaseaccounts/packages'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/sites'))\r\n| where (type !~ ('microsoft.mobilenetwork/packetcorecontrolplanes'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/services'))\r\n| where (type !~ ('microsoft.mobilenetwork/sims'))\r\n| where (type !~ ('microsoft.workloads/monitors'))\r\n| where (type !~ ('sendgrid.email/accounts'))\r\n| where not((type =~ ('microsoft.sql/servers/databases')) and ((kind in~ ('system','v2.0,system','v12.0,system','v12.0,user,datawarehouse,gen2,analytics'))))\r\n| where not((type =~ ('microsoft.sql/servers')) and ((kind =~ ('v12.0,analytics'))))\r\n| project id,status,CloudProvider,subscriptionName,resourceGroup,datacenter,operatingSystem,locationDisplayName,type,kind,location,subscriptionId,tags\r\n| summarize count() by status",
+              "size": 2,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "tiles",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Connected",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Expired",
+                          "representation": "3",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "operatingSystem",
+                    "label": "OperatingSystem"
+                  }
+                ]
+              },
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "status",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "count_",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  }
+                },
+                "showBorder": true
+              }
+            },
+            "showPin": true,
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "customWidth": "50",
+      "name": "Overview-By-Servers-Online-Offline",
+      "styleSettings": {
+        "maxWidth": "50"
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Map by Country using Source IP\r\n#### Note: Requires ARC-Enabled Server to be connected to Log Analytics"
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Heartbeat \r\n| where TimeGenerated > ago(24h)\r\n| distinct ComputerIP, Computer, RemoteIPLongitude, RemoteIPLatitude, RemoteIPCountry, _ResourceId\r\n",
+              "size": 0,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalytics}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "FreeSpace",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "min": 1,
+                      "max": 100,
+                      "palette": "redGreen"
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "CounterValue",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "Computer",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "FreeSpace",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "mapSettings": {
+                "locInfo": "LatLong",
+                "latitude": "RemoteIPLatitude",
+                "longitude": "RemoteIPLongitude",
+                "sizeSettings": "RemoteIPLatitude",
+                "sizeAggregation": "Sum",
+                "legendMetric": "RemoteIPLatitude",
+                "legendAggregation": "Sum",
+                "itemColorSettings": {
+                  "nodeColorField": "RemoteIPLatitude",
+                  "colorAggregation": "Sum",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed"
+                }
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "Hide",
+              "comparison": "isEqualTo",
+              "value": "True"
+            },
+            "name": "Map-Query-LA"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type =~ 'microsoft.hybridcompute/machines'",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "Hide",
+              "comparison": "isEqualTo",
+              "value": "True"
+            },
+            "name": "Map-Query-RG"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\",\"mergeType\":\"innerunique\",\"leftTable\":\"Map-Query-LA\",\"rightTable\":\"Map-Query-RG\",\"leftColumn\":\"_ResourceId\",\"rightColumn\":\"id\"}],\"projectRename\":[{\"originalName\":\"[Map-Query-LA].TenantId\",\"mergedName\":\"TenantId\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].SourceSystem\",\"mergedName\":\"SourceSystem\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].TimeGenerated\",\"mergedName\":\"TimeGenerated\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].MG\",\"mergedName\":\"MG\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ManagementGroupName\",\"mergedName\":\"ManagementGroupName\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].SourceComputerId\",\"mergedName\":\"SourceComputerId\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ComputerIP\",\"mergedName\":\"ComputerIP\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].Category\",\"mergedName\":\"Category\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].OSType\",\"mergedName\":\"OSType\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].OSName\",\"mergedName\":\"OSName\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].OSMajorVersion\",\"mergedName\":\"OSMajorVersion\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].OSMinorVersion\",\"mergedName\":\"OSMinorVersion\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].Version\",\"mergedName\":\"Version\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].SCAgentChannel\",\"mergedName\":\"SCAgentChannel\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].IsGatewayInstalled\",\"mergedName\":\"IsGatewayInstalled\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].RemoteIPCountry\",\"mergedName\":\"RemoteIPCountry\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].SubscriptionId\",\"mergedName\":\"SubscriptionId\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ResourceGroup\",\"mergedName\":\"ResourceGroup\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ResourceProvider\",\"mergedName\":\"ResourceProvider\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].Resource\",\"mergedName\":\"Resource\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ResourceId\",\"mergedName\":\"ResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ResourceType\",\"mergedName\":\"ResourceType\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ComputerEnvironment\",\"mergedName\":\"ComputerEnvironment\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].Solutions\",\"mergedName\":\"Solutions\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].VMUUID\",\"mergedName\":\"VMUUID\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].ComputerPrivateIPs\",\"mergedName\":\"ComputerPrivateIPs\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].Type\",\"mergedName\":\"Type\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA]._ResourceId\",\"mergedName\":\"_ResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"ComputerIP\",\"mergedName\":\"ComputerIP\",\"fromId\":\"unknown\"},{\"originalName\":\"_ResourceId\",\"mergedName\":\"_ResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"RemoteIPLongitude\",\"mergedName\":\"RemoteIPLongitude\",\"fromId\":\"unknown\"},{\"originalName\":\"RemoteIPLatitude\",\"mergedName\":\"RemoteIPLatitude\",\"fromId\":\"unknown\"},{\"originalName\":\"RemoteIPCountry\",\"mergedName\":\"RemoteIPCountry\",\"fromId\":\"unknown\"},{\"originalName\":\"Computer\",\"mergedName\":\"Computer\",\"fromId\":\"unknown\"},{\"originalName\":\"[Map-Query-LA].Computer\",\"mergedName\":\"Computer1\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-LA].RemoteIPLongitude\",\"mergedName\":\"RemoteIPLongitude1\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-LA].RemoteIPLatitude\",\"mergedName\":\"RemoteIPLatitude1\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].id\",\"mergedName\":\"id\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].name\",\"mergedName\":\"name\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].type\",\"mergedName\":\"type\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].tenantId\",\"mergedName\":\"tenantId\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].kind\",\"mergedName\":\"kind\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].location\",\"mergedName\":\"location\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].resourceGroup\",\"mergedName\":\"resourceGroup\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].subscriptionId\",\"mergedName\":\"subscriptionId\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].managedBy\",\"mergedName\":\"managedBy\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].sku\",\"mergedName\":\"sku\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].plan\",\"mergedName\":\"plan\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].properties\",\"mergedName\":\"properties\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].tags\",\"mergedName\":\"tags\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].identity\",\"mergedName\":\"identity\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].zones\",\"mergedName\":\"zones\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"},{\"originalName\":\"[Map-Query-RG].extendedLocation\",\"mergedName\":\"extendedLocation\",\"fromId\":\"a56aa465-9dc3-471c-8b7f-f7fe653ca0a2\"}]}",
+              "size": 3,
+              "queryType": 7,
+              "visualization": "map",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "RemoteIPCountry",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "RemoteIPCountry",
+                  "sortOrder": 1
+                }
+              ],
+              "mapSettings": {
+                "locInfo": "CountryRegion",
+                "locInfoColumn": "RemoteIPCountry",
+                "latitude": "RemoteIPLatitude1",
+                "longitude": "RemoteIPLongitude1",
+                "sizeSettings": "RemoteIPCountry",
+                "sizeAggregation": "Count",
+                "labelSettings": "RemoteIPCountry",
+                "legendMetric": "RemoteIPCountry",
+                "legendAggregation": "Count",
+                "itemColorSettings": {
+                  "nodeColorField": "RemoteIPLatitude",
+                  "colorAggregation": "Sum",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed"
+                }
+              }
+            },
+            "name": "query - 3"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview-By-Map"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Running in Cloud Providers\r\n#### Note: This will only list Online ARC Servers found in other Cloud Providers."
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.hybridcompute/machines'\r\n| extend CloudProvider = properties.cloudMetadata.provider\r\n| where CloudProvider !~ \"N/A\" and CloudProvider !~ ''\r\n| extend datacenter = iif(isnull(tags.Datacenter), '', tags.Datacenter)\r\n| extend state = properties.status\r\n| extend status = case(\r\nstate =~ 'Connected', 'Connected',\r\nstate =~ 'Disconnected', 'Offline',\r\nstate =~ 'Error', 'Error',\r\nstate =~ 'Expired', 'Expired',\r\n'')\r\n| extend os = properties.osName\r\n| extend operatingSystem = case(\r\nos =~ 'windows', 'Windows',\r\nos =~ 'linux', 'Linux',\r\n'')\r\n| project name, status, CloudProvider, resourceGroup, subscriptionId, datacenter, operatingSystem, id, type, location, kind, tags\r\n| join kind=inner (\r\n    resourcecontainers\r\n    | where type == 'microsoft.resources/subscriptions'\r\n    | project subscriptionId, subscriptionName = name)\r\n    on subscriptionId\r\n| extend locationDisplayName=case(location =~ 'eastus','East US',location =~ 'eastus2','East US 2',location =~ 'southcentralus','South Central US',location =~ 'westus2','West US 2',location =~ 'westus3','West US 3',location =~ 'australiaeast','Australia East',location =~ 'southeastasia','Southeast Asia',location =~ 'northeurope','North Europe',location =~ 'swedencentral','Sweden Central',location =~ 'uksouth','UK South',location =~ 'westeurope','West Europe',location =~ 'centralus','Central US',location =~ 'northcentralus','North Central US',location =~ 'westus','West US',location =~ 'southafricanorth','South Africa North',location =~ 'centralindia','Central India',location =~ 'eastasia','East Asia',location =~ 'japaneast','Japan East',location =~ 'jioindiawest','Jio India West',location =~ 'koreacentral','Korea Central',location =~ 'canadacentral','Canada Central',location =~ 'francecentral','France Central',location =~ 'germanywestcentral','Germany West Central',location =~ 'norwayeast','Norway East',location =~ 'switzerlandnorth','Switzerland North',location =~ 'uaenorth','UAE North',location =~ 'brazilsouth','Brazil South',location =~ 'centralusstage','Central US (Stage)',location =~ 'eastusstage','East US (Stage)',location =~ 'eastus2stage','East US 2 (Stage)',location =~ 'northcentralusstage','North Central US (Stage)',location =~ 'southcentralusstage','South Central US (Stage)',location =~ 'westusstage','West US (Stage)',location =~ 'westus2stage','West US 2 (Stage)',location =~ 'asia','Asia',location =~ 'asiapacific','Asia Pacific',location =~ 'australia','Australia',location =~ 'brazil','Brazil',location =~ 'canada','Canada',location =~ 'europe','Europe',location =~ 'france','France',location =~ 'germany','Germany',location =~ 'global','Global',location =~ 'india','India',location =~ 'japan','Japan',location =~ 'korea','Korea',location =~ 'norway','Norway',location =~ 'southafrica','South Africa',location =~ 'switzerland','Switzerland',location =~ 'uae','United Arab Emirates',location =~ 'uk','United Kingdom',location =~ 'unitedstates','United States',location =~ 'eastasiastage','East Asia (Stage)',location =~ 'southeastasiastage','Southeast Asia (Stage)',location =~ 'westcentralus','West Central US',location =~ 'southafricawest','South Africa West',location =~ 'australiacentral','Australia Central',location =~ 'australiacentral2','Australia Central 2',location =~ 'australiasoutheast','Australia Southeast',location =~ 'japanwest','Japan West',location =~ 'jioindiacentral','Jio India Central',location =~ 'koreasouth','Korea South',location =~ 'southindia','South India',location =~ 'westindia','West India',location =~ 'canadaeast','Canada East',location =~ 'francesouth','France South',location =~ 'germanynorth','Germany North',location =~ 'norwaywest','Norway West',location =~ 'switzerlandwest','Switzerland West',location =~ 'ukwest','UK West',location =~ 'uaecentral','UAE Central',location =~ 'brazilsoutheast','Brazil Southeast',location)\r\n| where (type !~ ('dynatrace.observability/monitors'))\r\n| where (type !~ ('nginx.nginxplus/nginxdeployments'))\r\n| where (type !~ ('microsoft.agfoodplatform/farmbeats'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints'))\r\n| where (type !~ ('microsoft.cdn/profiles/customdomains'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets'))\r\n| where (type !~ ('microsoft.cdn/profiles/secrets'))\r\n| where (type !~ ('microsoft.cdn/profiles/securitypolicies'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints/routes'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups/origins'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets/rules'))\r\n| where (type !~ ('microsoft.kubernetes/connectedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.containerservice/managedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.portal/extensions/deployments'))\r\n| where (type !~ ('microsoft.portal/extensions'))\r\n| where (type !~ ('microsoft.portal/extensions/slots'))\r\n| where (type !~ ('microsoft.portal/extensions/versions'))\r\n| where (type !~ ('microsoft.datacollaboration/workspaces'))\r\n| where (type !~ ('microsoft.network/dnsforwardingrulesets'))\r\n| where (type !~ ('microsoft.network/dnsresolvers'))\r\n| where (type !~ ('microsoft.azurestack/registrations'))\r\n| where (type !~ ('microsoft.communication/emailservices'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters/sessionclusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools'))\r\n| where (type !~ ('microsoft.hpcworkbench/instances'))\r\n| where (type !~ ('microsoft.scvmm/vmmservers'))\r\n| where (type !~ ('microsoft.connectedvmwarevsphere/vcenters'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/assets'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/tests'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/executionplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/testplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins'))\r\n| where not((type =~ ('microsoft.network/serviceendpointpolicies')) and ((kind =~ ('internal'))))\r\n| where (type !~ ('microsoft.openlogisticsplatform/workspaces'))\r\n| where (type !~ ('microsoft.scom/managedinstances'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts/contacts'))\r\n| where (type !~ ('microsoft.orbital/contactprofiles'))\r\n| where (type !~ ('microsoft.orbital/edgesites'))\r\n| where (type !~ ('microsoft.orbital/groundstations'))\r\n| where (type !~ ('microsoft.orbital/l2connections'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts'))\r\n| where (type !~ ('microsoft.azurepercept/accounts'))\r\n| where (type !~ ('microsoft.workloads/phpworkloads'))\r\n| where (type !~ ('microsoft.playfab/playeraccountpools'))\r\n| where (type !~ ('microsoft.playfab/playfabresources'))\r\n| where (type !~ ('microsoft.playfab/titles'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/modeling'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/serviceendpoints'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd2/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd2/vaults'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/applicationinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/centralinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/databaseinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances'))\r\n| where (type !~ ('microsoft.datareplication/replicationvaults'))\r\n| where (type !~ ('microsoft.storagecache/amlfilesystems'))\r\n| where not((type =~ ('microsoft.synapse/workspaces/sqlpools')) and ((kind =~ ('v3'))))\r\n| where (type !~ ('microsoft.testbase/testbaseaccounts/packages'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/sites'))\r\n| where (type !~ ('microsoft.mobilenetwork/packetcorecontrolplanes'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/services'))\r\n| where (type !~ ('microsoft.mobilenetwork/sims'))\r\n| where (type !~ ('microsoft.workloads/monitors'))\r\n| where (type !~ ('sendgrid.email/accounts'))\r\n| where not((type =~ ('microsoft.sql/servers/databases')) and ((kind in~ ('system','v2.0,system','v12.0,system','v12.0,user,datawarehouse,gen2,analytics'))))\r\n| where not((type =~ ('microsoft.sql/servers')) and ((kind =~ ('v12.0,analytics'))))\r\n| project id,status,CloudProvider,subscriptionName,resourceGroup,datacenter,operatingSystem,locationDisplayName,type,kind,location,subscriptionId,tags\r\n| sort by (tolower(tostring(id))) asc",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Connected",
+                          "representation": "success"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Expired",
+                          "representation": "3",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "columnId": "subscriptionName",
+                    "label": "SubscriptionName"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "ResourceGroup"
+                  },
+                  {
+                    "columnId": "datacenter",
+                    "label": "Datacenter"
+                  },
+                  {
+                    "columnId": "operatingSystem",
+                    "label": "OperatingSystem"
+                  },
+                  {
+                    "columnId": "locationDisplayName",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "type",
+                    "label": "Type"
+                  },
+                  {
+                    "columnId": "kind",
+                    "label": "Kind"
+                  },
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "SubscriptionID"
+                  },
+                  {
+                    "columnId": "tags",
+                    "label": "Tags"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "query - 7"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview-By-Cloud-Providers"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers Installed Extensions"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "6048dd13-fb0d-45f9-883f-7ebf731be305",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "extension",
+                  "label": "Extension",
+                  "type": 2,
+                  "value": null,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    \r\n    { \"value\":\"WindowsAgent.AzureSecurityCenter\", \"group\":\"Windows\"},\r\n    { \"value\":\"IaaSAntimalware\", \"group\":\"Windows\" },\r\n    { \"value\":\"CustomScriptExtension\", \"group\":\"Windows\" },\r\n    { \"value\":\"MicrosoftMonitoringAgent\", \"group\":\"Windows\" },\r\n    { \"value\":\"KeyVaultForWindows\", \"group\":\"Windows\" },\r\n    { \"value\":\"AzureMonitorWindowsAgent\", \"group\":\"Windows\" },\r\n    { \"value\":\"HybridWorkerForWindows\", \"group\":\"Windows\" },\r\n    { \"value\":\"LinuxAgent.AzureSecurityCenter\", \"group\":\"Linux\" },\r\n    { \"value\":\"CustomScript\", \"group\":\"Linux\" },\r\n    { \"value\":\"OmsAgentForLinux\", \"group\":\"Linux\" },\r\n    { \"value\":\"DependencyAgentLinux\", \"group\":\"Linux\" },\r\n    { \"value\":\"KeyVaultForLinux\", \"group\":\"Linux\" },\r\n    { \"value\":\"AzureMonitorLinuxAgent\", \"group\":\"Linux\" },\r\n    { \"value\":\"HybridWorkerForLinux\", \"group\":\"Linux\" }\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where type == 'microsoft.hybridcompute/machines'\r\n| project\r\n\tid,\r\n\tJoinID = toupper(id),\r\n\tComputerName = tostring(properties.osProfile.computerName),\r\n\tOSName = tostring(properties.osName)\r\n| join kind=leftouter(\r\n\tResources\r\n\t| where type == 'microsoft.hybridcompute/machines/extensions'\r\n\t| project\r\n\t\tMachineId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n\t\tExtensionName = name\r\n) on $left.JoinID == $right.MachineId\r\n| summarize Extensions = make_list(ExtensionName) by id, ComputerName, OSName\r\n| where Extensions contains '{extension}'\r\n| order by tolower(OSName) asc\r\n",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "ComputerName",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "OSName",
+                    "label": "OperatingSystem"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "query - 7"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview-By-Extensions"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Unhealthy Servers"
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Run query to see results.\r\nresources\r\n| where type =~ 'microsoft.hybridcompute/machines'\r\n| extend datacenter = iif(isnull(tags.Datacenter), '', tags.Datacenter)\r\n| extend state = properties.status\r\n| extend status = case(\r\nstate =~ 'Connected', 'Connected',\r\nstate =~ 'Disconnected', 'Offline',\r\nstate =~ 'Error', 'Error',\r\nstate =~ 'Expired', 'Expired',\r\n'')\r\n| extend os = properties.osName\r\n| extend operatingSystem = case(\r\nos =~ 'windows', 'Windows',\r\nos =~ 'linux', 'Linux',\r\n'')\r\n| project name, status, resourceGroup, subscriptionId, datacenter, operatingSystem, id, type, location, kind, tags\r\n| extend subscriptionDisplayName=case(subscriptionId =~ '1df8be2d-eb4d-4adb-a467-91690972635d','Microsoft Azure Sponsorship 2',subscriptionId =~ '959b5d63-3786-4191-ae93-d834739215d8','Microsoft Partner Network',subscriptionId =~ '4b63ab6f-c52d-46a5-8d5c-378fc6df46a9','Visual Studio Enterprise Subscription',subscriptionId =~ 'f58333fa-8ebf-4a59-8da2-578b3fb2e987','Visual Studio Premium with MSDN',subscriptionId)\r\n| extend locationDisplayName=case(location =~ 'eastus','East US',location =~ 'eastus2','East US 2',location =~ 'southcentralus','South Central US',location =~ 'westus2','West US 2',location =~ 'westus3','West US 3',location =~ 'australiaeast','Australia East',location =~ 'southeastasia','Southeast Asia',location =~ 'northeurope','North Europe',location =~ 'swedencentral','Sweden Central',location =~ 'uksouth','UK South',location =~ 'westeurope','West Europe',location =~ 'centralus','Central US',location =~ 'northcentralus','North Central US',location =~ 'westus','West US',location =~ 'southafricanorth','South Africa North',location =~ 'centralindia','Central India',location =~ 'eastasia','East Asia',location =~ 'japaneast','Japan East',location =~ 'jioindiawest','Jio India West',location =~ 'koreacentral','Korea Central',location =~ 'canadacentral','Canada Central',location =~ 'francecentral','France Central',location =~ 'germanywestcentral','Germany West Central',location =~ 'norwayeast','Norway East',location =~ 'switzerlandnorth','Switzerland North',location =~ 'uaenorth','UAE North',location =~ 'brazilsouth','Brazil South',location =~ 'centralusstage','Central US (Stage)',location =~ 'eastusstage','East US (Stage)',location =~ 'eastus2stage','East US 2 (Stage)',location =~ 'northcentralusstage','North Central US (Stage)',location =~ 'southcentralusstage','South Central US (Stage)',location =~ 'westusstage','West US (Stage)',location =~ 'westus2stage','West US 2 (Stage)',location =~ 'asia','Asia',location =~ 'asiapacific','Asia Pacific',location =~ 'australia','Australia',location =~ 'brazil','Brazil',location =~ 'canada','Canada',location =~ 'europe','Europe',location =~ 'france','France',location =~ 'germany','Germany',location =~ 'global','Global',location =~ 'india','India',location =~ 'japan','Japan',location =~ 'korea','Korea',location =~ 'norway','Norway',location =~ 'southafrica','South Africa',location =~ 'switzerland','Switzerland',location =~ 'uae','United Arab Emirates',location =~ 'uk','United Kingdom',location =~ 'unitedstates','United States',location =~ 'eastasiastage','East Asia (Stage)',location =~ 'southeastasiastage','Southeast Asia (Stage)',location =~ 'westcentralus','West Central US',location =~ 'southafricawest','South Africa West',location =~ 'australiacentral','Australia Central',location =~ 'australiacentral2','Australia Central 2',location =~ 'australiasoutheast','Australia Southeast',location =~ 'japanwest','Japan West',location =~ 'jioindiacentral','Jio India Central',location =~ 'koreasouth','Korea South',location =~ 'southindia','South India',location =~ 'westindia','West India',location =~ 'canadaeast','Canada East',location =~ 'francesouth','France South',location =~ 'germanynorth','Germany North',location =~ 'norwaywest','Norway West',location =~ 'switzerlandwest','Switzerland West',location =~ 'ukwest','UK West',location =~ 'uaecentral','UAE Central',location =~ 'brazilsoutheast','Brazil Southeast',location)\r\n| where (type !~ ('dynatrace.observability/monitors'))\r\n| where (type !~ ('nginx.nginxplus/nginxdeployments'))\r\n| where (type !~ ('microsoft.agfoodplatform/farmbeats'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints'))\r\n| where (type !~ ('microsoft.cdn/profiles/customdomains'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets'))\r\n| where (type !~ ('microsoft.cdn/profiles/secrets'))\r\n| where (type !~ ('microsoft.cdn/profiles/securitypolicies'))\r\n| where (type !~ ('microsoft.cdn/profiles/afdendpoints/routes'))\r\n| where (type !~ ('microsoft.cdn/profiles/origingroups/origins'))\r\n| where (type !~ ('microsoft.cdn/profiles/rulesets/rules'))\r\n| where (type !~ ('microsoft.kubernetes/connectedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.containerservice/managedclusters/microsoft.kubernetesconfiguration/fluxconfigurations'))\r\n| where (type !~ ('microsoft.portal/extensions/deployments'))\r\n| where (type !~ ('microsoft.portal/extensions'))\r\n| where (type !~ ('microsoft.portal/extensions/slots'))\r\n| where (type !~ ('microsoft.portal/extensions/versions'))\r\n| where (type !~ ('microsoft.datacollaboration/workspaces'))\r\n| where (type !~ ('microsoft.network/dnsforwardingrulesets'))\r\n| where (type !~ ('microsoft.network/dnsresolvers'))\r\n| where (type !~ ('microsoft.azurestack/registrations'))\r\n| where (type !~ ('microsoft.communication/emailservices'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools/clusters/sessionclusters'))\r\n| where (type !~ ('microsoft.hdinsight/clusterpools'))\r\n| where (type !~ ('microsoft.hpcworkbench/instances'))\r\n| where (type !~ ('microsoft.scvmm/vmmservers'))\r\n| where (type !~ ('microsoft.connectedvmwarevsphere/vcenters'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/assets'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/tests'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/executionplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins/testplans'))\r\n| where (type !~ ('microsoft.intelligentitdigitaltwin/digitaltwins'))\r\n| where not((type =~ ('microsoft.network/serviceendpointpolicies')) and ((kind =~ ('internal'))))\r\n| where (type !~ ('microsoft.openlogisticsplatform/workspaces'))\r\n| where (type !~ ('microsoft.scom/managedinstances'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts/contacts'))\r\n| where (type !~ ('microsoft.orbital/contactprofiles'))\r\n| where (type !~ ('microsoft.orbital/edgesites'))\r\n| where (type !~ ('microsoft.orbital/groundstations'))\r\n| where (type !~ ('microsoft.orbital/l2connections'))\r\n| where (type !~ ('microsoft.orbital/spacecrafts'))\r\n| where (type !~ ('microsoft.azurepercept/accounts'))\r\n| where (type !~ ('microsoft.workloads/phpworkloads'))\r\n| where (type !~ ('microsoft.playfab/playeraccountpools'))\r\n| where (type !~ ('microsoft.playfab/playfabresources'))\r\n| where (type !~ ('microsoft.playfab/titles'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/modeling'))\r\n| where (type !~ ('microsoft.recommendationsservice/accounts/serviceendpoints'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd2/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesbvtd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd/vaults'))\r\n| where (type !~ ('microsoft.recoveryservicesintd2/vaults'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/applicationinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/centralinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances/databaseinstances'))\r\n| where (type !~ ('microsoft.workloads/sapvirtualinstances'))\r\n| where (type !~ ('microsoft.datareplication/replicationvaults'))\r\n| where (type !~ ('microsoft.storagecache/amlfilesystems'))\r\n| where not((type =~ ('microsoft.synapse/workspaces/sqlpools')) and ((kind =~ ('v3'))))\r\n| where (type !~ ('microsoft.testbase/testbaseaccounts/packages'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/sites'))\r\n| where (type !~ ('microsoft.mobilenetwork/packetcorecontrolplanes'))\r\n| where (type !~ ('microsoft.mobilenetwork/mobilenetworks/services'))\r\n| where (type !~ ('microsoft.mobilenetwork/sims'))\r\n| where (type !~ ('microsoft.workloads/monitors'))\r\n| where (type !~ ('sendgrid.email/accounts'))\r\n| where not((type =~ ('microsoft.sql/servers/databases')) and ((kind in~ ('system','v2.0,system','v12.0,system','v12.0,user,datawarehouse,gen2,analytics'))))\r\n| where not((type =~ ('microsoft.sql/servers')) and ((kind =~ ('v12.0,analytics'))))\r\n| where (status !~ \"Connected\")\r\n| project id,status,resourceGroup,subscriptionDisplayName,datacenter,operatingSystem,locationDisplayName,type,kind,location,subscriptionId,tags\r\n| sort by (tolower(tostring(id))) asc",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Expired",
+                          "representation": "3",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "name",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "ResourceGroup"
+                  },
+                  {
+                    "columnId": "subscriptionDisplayName",
+                    "label": "SubscriptionName"
+                  },
+                  {
+                    "columnId": "datacenter",
+                    "label": "Datacenter"
+                  },
+                  {
+                    "columnId": "operatingSystem",
+                    "label": "OperatingSystem"
+                  },
+                  {
+                    "columnId": "locationDisplayName",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "type",
+                    "label": "Type"
+                  },
+                  {
+                    "columnId": "kind",
+                    "label": "Kind"
+                  },
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "SubscriptionID"
+                  },
+                  {
+                    "columnId": "tags",
+                    "label": "Tags"
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false
+              }
+            },
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Health"
+      },
+      "name": "Overview-By-Servers-Offline"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Servers with SQL not using Arc-enabled SQL"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| where properties.mssqlDiscovered == true\r\n| extend lowerid = tolower(id)\r\n| join kind=leftouter (resources\r\n    | where type == \"microsoft.azurearcdata/sqlserverinstances\"\r\n    | where properties.provisioningState == \"Succeeded\"\r\n    | extend ArcServerResourceId = tolower(strcat(\"/\", properties.containerResourceId))\r\n    | distinct ArcServerResourceId) on $left.lowerid == $right.ArcServerResourceId\r\n| where isempty(ArcServerResourceId)\r\n| project-away ArcServerResourceId",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Connected",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Expired",
+                          "representation": "3",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "type",
+                    "label": "Type"
+                  },
+                  {
+                    "columnId": "kind",
+                    "label": "Kind"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "ResourceGroup"
+                  },
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "SubscriptionID"
+                  },
+                  {
+                    "columnId": "tags",
+                    "label": "Tags"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Health"
+      },
+      "name": "Overview-By-Missing-ARC-SQL"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - ADDS Domain / Workgroup"
+            },
+            "name": "text - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where type == 'microsoft.hybridcompute/machines'\r\n| project \r\n    domain=tostring(properties.domainName)\r\n| summarize Domains=make_list(domain), TotalMachineCount=sum(1)\r\n| mvexpand EachDomain = Domains\r\n| summarize PerDomainMachineCount = count() by tostring(EachDomain), TotalMachineCount\r\n| where EachDomain !~ \"unknown\"\r\n| extend Pct = 100 * bin(todouble(PerDomainMachineCount) / todouble(TotalMachineCount), 0.001)",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "labelSettings": [
+                  {
+                    "columnId": "Pct",
+                    "label": "Percent"
+                  }
+                ]
+              }
+            },
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview-By-Domain"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - 50 Volumes with Lowest Disk Space in the {TimeRange}\r\n#### Note: Requires ARC-Enabled Server to be connected to Log Analytics and collecting Disk Performance Counters "
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Perf\r\n| where CounterName == \"% Free Space\" and InstanceName != \"_Total\" and InstanceName !contains \"HarddiskVolume\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName\r\n| extend FreeSpace = CounterValue\r\n| top 50 by FreeSpace asc\r\n| project _ResourceId, InstanceName, toint(FreeSpace)\r\n| sort by FreeSpace asc",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalytics}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "FreeSpace",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "min": 1,
+                      "max": 100,
+                      "palette": "redGreen"
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "CounterValue",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  }
+                ],
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_bar_FreeSpace_2",
+                    "sortOrder": 1
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "_ResourceId",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "InstanceName",
+                    "label": "Volume"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_bar_FreeSpace_2",
+                  "sortOrder": 1
+                }
+              ],
+              "tileSettings": {
+                "showBorder": false
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "Computer",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "FreeSpace",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "Hide",
+              "comparison": "isEqualTo",
+              "value": "True"
+            },
+            "name": "Low-Disk-Space-Query-LA"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type =~ 'microsoft.hybridcompute/machines'",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "Hide",
+              "comparison": "isEqualTo",
+              "value": "True"
+            },
+            "name": "Low-Disk-Space-Query-RG"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"4a3008e9-3980-4b88-9025-36dac7255068\",\"mergeType\":\"innerunique\",\"leftTable\":\"Low-Disk-Space-Query-LA\",\"rightTable\":\"Low-Disk-Space-Query-RG\",\"leftColumn\":\"_ResourceId\",\"rightColumn\":\"id\"}],\"projectRename\":[{\"originalName\":\"[Low-Disk-Space-Query-LA]._ResourceId\",\"mergedName\":\"Computer\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-LA].InstanceName\",\"mergedName\":\"Volume\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-LA].FreeSpace\",\"mergedName\":\"FreeSpace\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].id\",\"mergedName\":\"id\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].name\",\"mergedName\":\"name\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].type\",\"mergedName\":\"type\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].tenantId\",\"mergedName\":\"tenantId\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].kind\",\"mergedName\":\"kind\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].location\",\"mergedName\":\"location\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].resourceGroup\",\"mergedName\":\"resourceGroup\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].subscriptionId\",\"mergedName\":\"subscriptionId\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].managedBy\",\"mergedName\":\"managedBy\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].sku\",\"mergedName\":\"sku\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].plan\",\"mergedName\":\"plan\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].properties\",\"mergedName\":\"properties\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].tags\",\"mergedName\":\"tags\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].identity\",\"mergedName\":\"identity\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].zones\",\"mergedName\":\"zones\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"},{\"originalName\":\"[Low-Disk-Space-Query-RG].extendedLocation\",\"mergedName\":\"extendedLocation\",\"fromId\":\"4a3008e9-3980-4b88-9025-36dac7255068\"}]}",
+              "size": 0,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "FreeSpace",
+                    "formatter": 3,
+                    "formatOptions": {
+                      "min": 1,
+                      "max": 100,
+                      "palette": "redGreen"
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "type",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "tenantId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "managedBy",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "sku",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "plan",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "properties",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "tags",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "identity",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "zones",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "extendedLocation",
+                    "formatter": 5
+                  }
+                ],
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_bar_FreeSpace_2",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_bar_FreeSpace_2",
+                  "sortOrder": 1
+                }
+              ],
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Computer",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "FreeSpace",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 0,
+                "topContent": {
+                  "columnMatch": "Computer",
+                  "formatter": 1
+                },
+                "centerContent": {
+                  "columnMatch": "FreeSpace",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "mapSettings": {
+                "locInfo": "AzureLoc",
+                "sizeSettings": "FreeSpace",
+                "sizeAggregation": "Sum",
+                "legendMetric": "FreeSpace",
+                "legendAggregation": "Sum",
+                "itemColorSettings": {
+                  "type": "heatmap",
+                  "colorAggregation": "Sum",
+                  "nodeColorField": "FreeSpace",
+                  "heatmapPalette": "greenRed"
+                },
+                "labelSettings": "location",
+                "locInfoColumn": "location"
+              }
+            },
+            "name": "query - 3"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Health"
+      },
+      "name": "Overview-By-Low-Disk-Space"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Newer Agent Version Available"
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AdvisorResources\r\n| where type == 'microsoft.advisor/recommendations'\r\n| where properties.category == 'HighAvailability'\r\n| where properties.shortDescription.solution == 'Upgrade to the latest version of the Azure Connected Machine agent'\r\n| project\r\n\t\tid,\r\n\t\tJoinId = toupper(properties.resourceMetadata.resourceId),\r\n\t\tmachineName = tostring(properties.impactedValue),\r\n\t\tagentVersion = tostring(properties.extendedProperties.installedVersion),\r\n\t\texpectedVersion = tostring(properties.extendedProperties.latestVersion)\r\n| join kind=leftouter(\r\n\tResources\r\n\t| where type == 'microsoft.hybridcompute/machines'\r\n\t| project\r\n\t\tmachineId = toupper(id),\r\n\t\tstatus = tostring (properties.status)\r\n\t) on $left.JoinId == $right.machineId\r\n| where status != 'Expired'\r\n| where machineId !~ ''\r\n| summarize by id,machineId, agentVersion, expectedVersion\r\n| order by tolower(machineId) asc",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "AzureAdvisor"
+                  },
+                  {
+                    "columnId": "machineId",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "agentVersion",
+                    "label": "AgentVersion"
+                  },
+                  {
+                    "columnId": "expectedVersion",
+                    "label": "LatestAgentVersion"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Health"
+      },
+      "name": "Overview-By-Agent-Version"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Advisor Security Recommendations"
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "a3874779-6829-4a8e-ac2f-18a757ec9d55",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "securityimpact",
+                  "label": "Security Impact",
+                  "type": 2,
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    { \"value\":\"high\", \"label\":\"High\", \"selected\":true },\r\n    { \"value\":\"medium\", \"label\":\"Medium\" },\r\n    { \"value\":\"low\", \"label\":\"Low\" }\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.advisor/configurations"
+            },
+            "name": "parameters - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AdvisorResources\r\n| where type == 'microsoft.advisor/recommendations'\r\n| where properties.category == 'Security'\r\n| where properties.impact has '{securityimpact}'\r\n| where tolower(properties.resourceMetadata.resourceId) contains 'microsoft.hybridcompute/machines'\r\n| project\r\n\t\tid,\r\n\t\tJoinId = toupper(properties.resourceMetadata.resourceId),\r\n\t\tmachineName = tostring(properties.impactedValue),\r\n        recommendation = tostring(properties.shortDescription.problem)\r\n| join kind=leftouter(\r\n\tresourcecontainers\r\n\t| where id == 'microsoft.hybridcompute/machines'\r\n\t| project\r\n\t\tmachineId = toupper(id),\r\n\t\tstatus = tostring (properties.status)\r\n\t) on $left.JoinId == $right.machineId\r\n| summarize by id, [\"machineName\"]=strcat('🖥️ ', machineName), recommendation\r\n| order by tolower(machineName) asc\r\n",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "AdvisorRecommendation"
+                  },
+                  {
+                    "columnId": "machineName",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "recommendation",
+                    "label": "Recommendation"
+                  }
+                ]
+              }
+            },
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Security"
+      },
+      "name": "Overview-By-Avdisor-Security-Recommendations"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Failed Extensions"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where type == 'microsoft.hybridcompute/machines'\r\n| project\r\n\tid,\r\n\tJoinID = toupper(id),\r\n\tComputerName = tostring(properties.osProfile.computerName),\r\n\tOSName = tostring(properties.osName)\r\n| join kind=leftouter(\r\n\tResources\r\n\t| where type == 'microsoft.hybridcompute/machines/extensions'\r\n\t| project\r\n\t\tMachineId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n\t\tExtensionName = name,\r\n        ExtensionStatus = tostring(properties.provisioningState)\r\n) on $left.JoinID == $right.MachineId\r\n| where ExtensionStatus == \"Failed\"\r\n| order by tolower(OSName) asc",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "JoinID",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ComputerName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "MachineId",
+                    "formatter": 5
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Computer"
+                  },
+                  {
+                    "columnId": "OSName",
+                    "label": "OperatingSystem"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "query - 7"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "ExtensionHealth"
+      },
+      "name": "Arc-Failed-Extensions"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Extensions automatically upgraded in the {TimeRange}\r\n#### Note: Requires ARC-Enabled Server to be connected to Log Analytics\r\n"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureActivity\r\n| where OperationNameValue == \"MICROSOFT.HYBRIDCOMPUTE/MACHINES/EXTENSIONS/WRITE\"\r\n| where Authorization_d.evidence.roleDefinitionId == \"ffcd6e5b8772457dbb1789703c03428f\"\r\n| extend ResourceId = _ResourceId\r\n| summarize arg_max(TimeGenerated, ResourceId, TimeGenerated, ActivityStatusValue) by CorrelationId\r\n| project-away CorrelationId, TimeGenerated1\r\n| order by TimeGenerated desc",
+              "size": 0,
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{LogAnalytics}"
+              ]
+            },
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "ExtensionHealth"
+      },
+      "name": "Arc-Automatic-Upgrade-Extensions-Last-X-Days"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Arc-Enabled Servers - Extensions with Automatic Upgrades Disabled\r\n\r\n"
+            },
+            "name": "text - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines/extensions\"\r\n| extend AutomaticUpgradeStatus = iff(tobool(properties.enableAutomaticUpgrade), \"Enabled\", \"Disabled\")\r\n| where AutomaticUpgradeStatus == \"Disabled\"\r\n| parse id with \"/\" Server \"/extensions/\" *\r\n| extend Server = strcat(\"/\", Server)\r\n| project Server, ExtensionName = name, Publisher = tostring(properties.publisher), Type = tostring(properties.type), AutomaticUpgradeStatus, id\r\n| order by Server, ExtensionName",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ]
+            },
+            "name": "query - 1"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "ExtensionHealth"
+      },
+      "name": "Arc-Automatic-Upgrade-Extensions-Last-X-Days - Copy"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "fromTemplateId": "community-Workbooks/Storage/Overview",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
