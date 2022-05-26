@@ -1,0 +1,628 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Network Communication flow #"
+      },
+      "name": "workbookTitle"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::1",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/270601b0-93f6-432f-814f-7189c4d44fb3"
+            ]
+          },
+          {
+            "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, custId= properties.customerId",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::1",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/270601b0-93f6-432f-814f-7189c4d44fb3/resourceGroups/POSTE-COMMONS-PRODUZIONE-MONITORING-RG/providers/Microsoft.OperationalInsights/workspaces/POSTE-COMMONS-PRODUZIONE-MONITORING-LA"
+            ]
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 3600000
+            }
+          },
+          {
+            "id": "532307b9-c0d0-4d90-b817-04bbbf8b0b09",
+            "version": "KqlParameterItem/1.0",
+            "name": "Servers",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "VMConnection\r\n| distinct Computer\r\n| sort by Computer asc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "value": [
+              "miretedc002.rete.poste"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "d4354e02-6b2e-41be-b23d-16d8e6292b67",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]\r\n",
+            "timeContext": {
+              "durationMs": 5184000000
+            },
+            "timeContextFromParameter": "TimeRange"
+          },
+          {
+            "id": "37d231da-6295-41ff-b959-0c385eb749f0",
+            "version": "KqlParameterItem/1.0",
+            "name": "isServiceMapEnabled",
+            "type": 2,
+            "isRequired": true,
+            "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| top 10 by TimeGenerated\r\n| summarize count()",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::1",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.1 **\r\n>2022-05-16\r\n>- Added tab to present aggregated data with after filtering\r\n> \r\n>** Version 1.0 **\r\n>2022-05-10\r\n>- Initial version."
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "50",
+      "name": "changeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\n## Network Communication flow ##\r\n\r\nWelcome to the ***Network Communication flow*** workbook. This workbook is designed to provide you with an basic set of info about inbound and outbound communication for server based filters available at the server, process (aka Service), protocol and port level.\r\n\r\n## Prerequistes ##\r\n\r\n* A [Log Analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n\r\n* [Azure Monitor for VM](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview) enabled\r\n\r\n\r\n\r\nIn order to work, the workbook needs:\r\n\r\n* The enablement of ***Azure Monitor for VMs***. If you are unfamiliar with how to enable it, see [Enable VM insights overview.](https://docs.microsoft.com/en-us/azure/azure-monitor/vm/vminsights-enable-overview)\r\n"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "<br>\r\n### Azure Monitor for VMs doesn't seem to have been configured or is not reporting to the selected workspace(s).\r\n---\r\n\r\nAzure Monitor for VMs has not been configured or is configured to store data in a different workspace.\r\n\r\nPlease select another workspace or check out the detailed documentation on how to [Enable VM insights overview.](https://docs.microsoft.com/en-us/azure/azure-monitor/vm/vminsights-enable-overview?WT.mc_id=Portal-fx)",
+        "style": "warning"
+      },
+      "conditionalVisibility": {
+        "parameterName": "isServiceMapEnabled",
+        "comparison": "isEqualTo",
+        "value": "0"
+      },
+      "name": "ServiceMapNotEnabled"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "db85928c-9adb-475a-abfe-5ca5efea1531",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "All communications",
+                  "subTarget": "All",
+                  "preText": "All communications",
+                  "style": "link"
+                },
+                {
+                  "id": "586b7748-956a-42b8-b2d2-6d9f7b9ee1c3",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Filtered list (Aggregated data)",
+                  "subTarget": "Aggreagated",
+                  "style": "link"
+                },
+                {
+                  "id": "82707dd1-dcd9-4ddf-b718-03e3a72cf471",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Filtered list (Detailed data)",
+                  "subTarget": "Filtered",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "tabs"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "loadType": "always",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where DestinationIp !has \"169.254\"\r\n| where DestinationIp !has \"127.0.0.1\"\r\n| where SourceIp != DestinationIp\r\n| where Direction == \"inbound\"\r\n| distinct Computer, SourceIp, DestinationIp, Protocol, DestinationPort, Direction, RemoteDnsCanonicalNames, ProcessName\r\n| project Computer, [\"IP Address\"]= DestinationIp, Protocol, Port = DestinationPort, Direction, [\"Process name\"]=ProcessName, [\"Caller FQDN\"] = RemoteDnsCanonicalNames, [\"Caller Ip\"] = SourceIp",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "All inbound communication by server(s)",
+                    "noDataMessage": "No data or no comunications based on the applied filters.",
+                    "timeContextFromParameter": "TimeRange",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "rowLimit": 10000,
+                      "filter": true
+                    }
+                  },
+                  "showPin": true,
+                  "name": "allInboundCommunicationByServer",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where DestinationIp !has \"169.254\"\r\n| where DestinationIp !has \"127.0.0.1\"\r\n| where SourceIp != DestinationIp\r\n| where Direction == \"outbound\"\r\n| distinct Computer, SourceIp, DestinationIp, Protocol, DestinationPort, Direction, RemoteDnsCanonicalNames, ProcessName\r\n| project Computer, [\"IP Address\"]= SourceIp, Protocol, Port = DestinationPort, Direction, [\"Process name\"]=ProcessName, [\"Destination FQDN\"] = RemoteDnsCanonicalNames, [\"Destination Ip\"]=DestinationIp",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "All outbound communication by server(s)",
+                    "noDataMessage": "No data or no comunications based on the applied filters.",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "rowLimit": 10000,
+                      "filter": true
+                    }
+                  },
+                  "showPin": true,
+                  "name": "allOutboundCommunicationByServer",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "All"
+            },
+            "name": "grp_AllCommunications"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "parameters": [
+                {
+                  "id": "211af11d-47be-40ed-af9d-f754d390f2ca",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ProcessName",
+                  "label": "Process name",
+                  "type": 2,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| distinct ProcessName\r\n| sort by ProcessName asc",
+                  "crossComponentResources": [
+                    "{Workspaces}"
+                  ],
+                  "value": [
+                    "lsass"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "defaultValue": "value::all",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                {
+                  "id": "ce7bc1af-150e-43c2-a3ee-2e31c86ed5c1",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Protocol",
+                  "type": 2,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where ProcessName in ({ProcessName})\r\n| distinct Protocol\r\n| sort by Protocol asc",
+                  "crossComponentResources": [
+                    "{Workspaces}"
+                  ],
+                  "value": [
+                    "tcp"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "defaultValue": "value::all",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                {
+                  "id": "22d670cc-45f3-4b07-97d8-28d1a6a6e209",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "DestinationPort",
+                  "label": "Destination Port",
+                  "type": 2,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where ProcessName in ({ProcessName})\r\n| where Protocol in ({Protocol})\r\n| distinct DestinationPort\r\n| sort by DestinationPort asc",
+                  "crossComponentResources": [
+                    "{Workspaces}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "defaultValue": "value::all",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "value": [
+                    "389"
+                  ]
+                }
+              ],
+              "style": "pills",
+              "doNotRunWhenHidden": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isNotEqualTo",
+              "value": "All"
+            },
+            "name": "paramFilteredCommunications"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "loadType": "always",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where DestinationIp !has \"169.254\"\r\n| where DestinationIp !has \"127.0.0.1\"\r\n| where SourceIp != DestinationIp\r\n| where Direction == \"inbound\"\r\n| where ProcessName in ({ProcessName})\r\n| where Protocol in ({Protocol})\r\n| where DestinationPort in ({DestinationPort})\r\n| distinct Computer, SourceIp, DestinationIp, Protocol, DestinationPort, Direction, ProcessName\r\n| project Computer, [\"IP Address\"]= DestinationIp, Protocol, Port = DestinationPort, Direction, [\"Process name\"]=ProcessName, [\"Caller Ip\"] = SourceIp",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Filtered Inbound communications (Aggregated data)",
+                    "noDataMessage": "No data or no comunications based on the applied filters.",
+                    "timeContextFromParameter": "TimeRange",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "rowLimit": 10000,
+                      "filter": true
+                    }
+                  },
+                  "showPin": true,
+                  "name": "inboundFilteredAggredated",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where DestinationIp !has \"169.254\"\r\n| where DestinationIp !has \"127.0.0.1\"\r\n| where SourceIp != DestinationIp\r\n| where Direction == \"outbound\"\r\n| where ProcessName in ({ProcessName})\r\n| where Protocol in ({Protocol})\r\n| where DestinationPort in ({DestinationPort})\r\n| distinct Computer, SourceIp, DestinationIp, Protocol, DestinationPort, Direction, ProcessName\r\n| project Computer, [\"IP Address\"]= DestinationIp, Protocol, Port = DestinationPort, Direction, [\"Process name\"]=ProcessName, [\"Caller Ip\"] = SourceIp",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Filtered outbound communications (Aggregated data)",
+                    "noDataMessage": "No data or no comunications based on the applied filters.",
+                    "timeContextFromParameter": "TimeRange",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "rowLimit": 10000,
+                      "filter": true
+                    }
+                  },
+                  "showPin": true,
+                  "name": "outboundFilteredAggregated",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "Aggreagated"
+            },
+            "name": "grp_FilteredAggregated"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "loadType": "always",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where DestinationIp !has \"169.254\"\r\n| where DestinationIp !has \"127.0.0.1\"\r\n| where SourceIp != DestinationIp\r\n| where Direction == \"inbound\"\r\n| where ProcessName in ({ProcessName})\r\n| where Protocol in ({Protocol})\r\n| where DestinationPort in ({DestinationPort})\r\n| sort by TimeGenerated desc, Computer asc\r\n| project TimeGenerated, Computer, [\"IP Address\"] = DestinationIp, Protocol, Port = DestinationPort, Direction, [\"Process name\"] = ProcessName, [\"Caller FQDN\"] = RemoteDnsCanonicalNames, [\"Caller Ip\"] = SourceIp",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Filtered Inbound communications (Detailed data)",
+                    "noDataMessage": "No data or no comunications based on the applied filters.",
+                    "timeContextFromParameter": "TimeRange",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "rowLimit": 10000,
+                      "filter": true
+                    }
+                  },
+                  "showPin": true,
+                  "name": "filteredInboundCommunications",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "VMConnection\r\n| where Computer in ({Servers})\r\n| where DestinationIp !has \"169.254\"\r\n| where DestinationIp !has \"127.0.0.1\"\r\n| where SourceIp != DestinationIp\r\n| where Direction == \"outbound\"\r\n| where ProcessName in ({ProcessName})\r\n| where Protocol in ({Protocol})\r\n| where DestinationPort in ({DestinationPort})\r\n| sort by TimeGenerated desc, Computer asc\r\n| project TimeGenerated, Computer, [\"IP Address\"] = SourceIp, Protocol, Port = DestinationPort, Direction, [\"Process name\"] = ProcessName, [\"Destination FQDN\"] = RemoteDnsCanonicalNames, [\"Destination Ip\"] = DestinationIp",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Filtered Outbound communications (Detailed data)",
+                    "noDataMessage": "No data or no comunications based on the applied filters.",
+                    "timeContextFromParameter": "TimeRange",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "rowLimit": 10000,
+                      "filter": true
+                    }
+                  },
+                  "showPin": true,
+                  "name": "filteredOutboundCommunications",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "Filtered"
+            },
+            "name": "grp_FilteredCommunications"
+          }
+        ]
+      },
+      "name": "workbookContent"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
