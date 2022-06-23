@@ -1,0 +1,143 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "alertName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Azure Monitor alert"
+        }
+      },
+      "alertDescription": {
+        "type": "string",
+        "metadata": {
+          "description": "Description of the Azure Monitor alert"
+        }
+      },
+      "query": {
+        "type": "string",
+        "metadata": {
+          "description": "Log Analytics Kusto query that is used for the alert"
+        }
+      },
+      "evaluationFrequency": {
+        "type": "int",
+        "minValue": 5,
+        "maxValue": 1440,
+        "metadata": {
+          "description": "The frequency (in minutes) at which rule condition should be evaluated."
+        }
+      },
+      "timeWindow": {
+        "type": "int",
+        "minValue": 5,
+        "maxValue": 1440,
+        "metadata": {
+          "description": "Time window (in minutes) for which data needs to be fetched for query (should be greater than or equal to evaluationFrequency value)."
+        }
+      },
+      "threshold": {
+        "type": "int",
+        "defaultValue": 0,
+        "metadata": {
+          "description": "Result or count threshold based on which rule should be triggered."
+        }
+      },
+      "operator": {
+        "type": "string",
+        "defaultValue": "GreaterThan",
+        "allowedValues": [
+          "Equal",
+          "GreaterThan",
+          "LessThan"
+        ],
+        "metadata": {
+          "description": "Result Condition Evaluation criteria"
+        }
+      },
+      "throttling": {
+        "type": "int",
+        "minValue": 0,
+        "maxValue": 10000,
+        "metadata": {
+          "description": "Time (in minutes) for which Alerts should be throttled or suppressed. To disable set it 0"
+        }
+      },
+      "severity": {
+        "type": "int",
+        "minValue": 0,
+        "maxValue": 4,
+        "metadata": {
+          "description": "Severity Level of Alert. 0 - Critical, 1 - Error, 2 - Warning, 3 - Informational, 4 - Verbose"
+        }
+      },
+      "actionGroupResourceIds": {
+        "type": "array",
+        "metadata": {
+          "description": "The list of resource Id of the action groups that receive notifiction when the alert is generated"
+        }
+      },
+      "logAnalyticsWorkspaceResourceId": {
+        "type": "string",
+        "metadata": {
+          "description": "The resource Id of the Log Analytics workspace the log search query is to be run."
+        }
+      },
+      "logAnalyticsWorkspaceLocation": {
+        "type": "string",
+        "metadata": {
+          "description": "The location of the log analytics workspace"
+        }
+      },
+      "isEnabled": {
+        "type": "bool",
+        "metadata": {
+          "description": "The flag to whether enable this alert."
+        }
+      }
+    },
+    "variables": {
+      "alertName": "[concat('azure', '-', parameters('alertName'), '-alert')]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "name": "[variables('alertName')]",
+        "location": "[parameters('logAnalyticsWorkspaceLocation')]",
+        "properties": {
+          "description": "[parameters('alertDescription')]",
+          "enabled": "[parameters('isEnabled')]",
+          "source": {
+            "query": "[parameters('query')]",
+            "dataSourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+            "queryType": "ResultCount"
+          },
+          "schedule": {
+            "frequencyInMinutes": "[parameters('evaluationFrequency')]",
+            "timeWindowInMinutes": "[parameters('timeWindow')]"
+          },
+          "action": {
+            "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+            "severity": "[parameters('severity')]",
+            "aznsAction": {
+              "actionGroup": "[parameters('actionGroupResourceIds')]",
+              "emailSubject": "[concat(' Alert:', concat(' [', subscription().displayName ,'] '),parameters('alertName'))]"
+  
+            },
+            "throttlingInMin": "[parameters('throttling')]",
+            "trigger": {
+              "thresholdOperator": "[parameters('operator')]",
+              "threshold": "[parameters('threshold')]"
+            }
+          }
+        }
+      }
+    ],
+    "outputs": {
+      "resourceId": {
+        "type": "string",
+        "value": "[resourceId('Microsoft.Insights/scheduledQueryRules', variables('alertName'))]"
+      }
+    }
+  }
