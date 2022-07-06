@@ -1,0 +1,114 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "parameters": [
+            {
+              "id": "a5b22190-2d22-414d-bb30-bb8147bbed0d",
+              "version": "KqlParameterItem/1.0",
+              "name": "TimeRange",
+              "type": 4,
+              "value": {
+                "durationMs": 43200000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  }
+                ]
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            }
+          ],
+          "style": "pills",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces"
+        },
+        "name": "parameters - 1"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let ConnectionMonitor = 'Name_of_connection_monitor';\nlet Status = NWConnectionMonitorTestResult\n  | where ConnectionMonitorResourceId contains ConnectionMonitor\n  | summarize TestTime=max(TimeGenerated) by TestGroupName, TestResult\n  | extend Status=replace_regex(TestResult, @'Fail', @'failed')\n  | extend Status=replace_regex(Status, @'Pass', @'Available')\n  | project TestGroupName, Status, TestTime;\nlet AvgRoundTripTimeMs = NWConnectionMonitorTestResult\n  | where TimeGenerated {TimeRange}\n  | where ConnectionMonitorResourceId contains ConnectionMonitor\n  | summarize AvgRoundTripMs=round(avg(AvgRoundTripTimeMs),2) by TestGroupName;\nlet SerieRoundTripTimeMs = NWConnectionMonitorTestResult\n  | where TimeGenerated {TimeRange}\n  | where ConnectionMonitorResourceId contains ConnectionMonitor\n  | make-series round(avg(AvgRoundTripTimeMs),2) on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by TestGroupName\n  | project TestGroupName, RoundTripMsSerie=avg_AvgRoundTripTimeMs;\nlet MinRoundTripTimeMs = NWConnectionMonitorTestResult\n  | where TimeGenerated {TimeRange}\n  | where ConnectionMonitorResourceId contains ConnectionMonitor\n  | summarize arg_min(AvgRoundTripTimeMs, *) by TestGroupName\n  | project TestGroupName, MinRoundTripMs=round(AvgRoundTripTimeMs, 2);\nlet MaxRoundTripTimeMs = NWConnectionMonitorTestResult\n  | where TimeGenerated {TimeRange}\n  | where ConnectionMonitorResourceId contains ConnectionMonitor\n  | summarize arg_max(AvgRoundTripTimeMs, *) by TestGroupName\n  | project TestGroupName, MaxRoundTripMs=round(AvgRoundTripTimeMs, 2);\nlet History = NWConnectionMonitorTestResult\n  | where TimeGenerated {TimeRange}\n  | where ConnectionMonitorResourceId contains ConnectionMonitor\n  | extend Status=replace_regex(TestResult, @'Fail', @'0')\n  | extend Status=replace_regex(Status, @'Pass', @'1')\n  | extend Status=todouble(Status)\n  | make-series History=avg(Status) on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by TestGroupName\n  | project TestGroupName, History;\nNWConnectionMonitorTestResult\n| where TimeGenerated {TimeRange}\n| where ConnectionMonitorResourceId contains ConnectionMonitor\n| distinct TestGroupName\n| join kind=inner ( Status ) on TestGroupName\n| join kind=inner ( AvgRoundTripTimeMs ) on TestGroupName\n| join kind=inner ( SerieRoundTripTimeMs ) on TestGroupName\n| join kind=inner ( MinRoundTripTimeMs ) on TestGroupName\n| join kind=inner ( MaxRoundTripTimeMs ) on TestGroupName\n| join kind=inner ( History ) on TestGroupName\n| sort by TestGroupName asc\n| project ConnectivityTest=TestGroupName, Status, TestTime, AvgRoundTripMs, MinRoundTripMs, MaxRoundTripMs,RoundTripMsSerie, History\n",
+          "size": 0,
+          "timeContextFromParameter": "TimeRange",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "crossComponentResources": [
+            "<log analytics workspace id>"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "Status",
+                "formatter": 11
+              },
+              {
+                "columnMatch": "RoundTripMsSerie",
+                "formatter": 10,
+                "formatOptions": {
+                  "palette": "greenRed"
+                }
+              },
+              {
+                "columnMatch": "History",
+                "formatter": 10,
+                "formatOptions": {
+                  "palette": "redGreen"
+                }
+              }
+            ]
+          },
+          "sortBy": []
+        },
+        "name": "query - 0"
+      }
+    ],
+    "fallbackResourceIds": [
+      "azure monitor"
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
