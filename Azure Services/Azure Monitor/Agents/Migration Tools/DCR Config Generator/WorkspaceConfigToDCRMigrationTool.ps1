@@ -1,4 +1,4 @@
-﻿# Migration Tooling Script
+# Migration Tooling Script
 
 Param(
     [Parameter(Mandatory=$True)]
@@ -51,7 +51,7 @@ function Get-UserWorkspace
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
 
-    $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $rgNameWorkspace -Name $workspaceName
+    $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName
     return $workspace
 }
 
@@ -63,20 +63,6 @@ function Get-WorkspaceDataSources
         [ValidateSet("WindowsPerformanceCounter", "WindowsEvent", "LinuxSyslog", "LinuxPerformanceObject")]
         [Parameter(Mandatory=$true)][string] $DataSourceType
     )
-
-    <#
-    Current Supported List:
-    WindowsPerformanceCounter
-    WindowsEvent
-    LinuxSyslog
-    LinuxPerformanceObject
-
-    Additional Values Supported by Get-AzOperationalInsightsDataSource:
-    AzureAuditLog
-    AzureActivityLog
-    CustomLog
-    ApplicationInsights
-    #>
 
     $dataSources = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $DataSourceType
     return $dataSources
@@ -92,10 +78,10 @@ function Get-DCRFromWorkspace
         [Parameter(Mandatory=$true)][string] $FolderPath
     )
 
-    $windowsDCRTemplateParams = Get-DCRArmTemplateParams -DCRName "$($DCRName)-windows"
+    $windowsDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-windows"
     $windowsDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Windows" -FolderPath $FolderPath
     
-    $linuxDCRTemplateParams = Get-DCRArmTemplateParams -DCRName "$($DCRName)-linux"
+    $linuxDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-linux"
     $linuxDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Linux" -FolderPath $FolderPath
 
     $currentDateTime = Get-Date -Format "MM-dd-yyyy-HH-mm-ss"
@@ -123,7 +109,7 @@ function Get-DCRArmTemplate
         [Parameter(Mandatory=$true)][string] $FolderPath
     )
 
-    $dcrJson = Get-DCRJson -ResourceGroupName $rgNameWorkspace -WorkspaceName $workspaceName -PlatformType $PlatformType
+    $dcrJson = Get-DCRBaseJson -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
     
     #ARM Template File
     $schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
@@ -159,22 +145,14 @@ function Get-DCRArmTemplate
             "variables" = $variables;
             "resources" = $resources
         }
-
-        # Regex handles replacing of escape characters that show up as hex codes in json output
+        
         $result = ConvertTo-Json -InputObject $dcrTemplate -Depth 20
-        <#
-        $result = $result | %{
-            [Regex]::Replace($_, 
-            "\\u(?<Value>[a-zA-Z0-9]{4})", {
-                param($m) ([char]([int]::Parse($m.Groups['Value'].Value,
-                    [System.Globalization.NumberStyles]::HexNumber))).ToString() } )}
-        #>
     }
 
     return $result
 }
 
-function Get-DCRArmTemplateParams
+function Get-DCRBaseArmTemplateParams
 {
     param (
         [Parameter(Mandatory=$true)][string] $DCRName
@@ -200,7 +178,7 @@ function Get-DCRArmTemplateParams
     return ConvertTo-Json -Depth 5 $dcrTemplateParams
 }
 
-function Get-DCRJson
+function Get-DCRBaseJson
 {
     param (
         [Parameter(Mandatory=$true)][string] $ResourceGroupName,
@@ -211,13 +189,9 @@ function Get-DCRJson
     
     $dcrJson = @{}
 
-    $dataSources = @{}
-    $destinations = @{}
-    $dataFlows = @{}
-
     $dataSources = Get-DataSources -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
     $destinations = Get-Destinations -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
-    $dataFlows = Get-DataFlows -WorkspaceName $WorkspaceName -PlatformType $PlatformType
+    $dataFlows = [System.Collections.ArrayList]@(Get-DataFlows -WorkspaceName $WorkspaceName -PlatformType $PlatformType)
 
     if(-not (Get-DataSourceIsEmpty -DataSource $dataSources))
     {
@@ -257,7 +231,21 @@ function Get-DataSources
         $perfCounterDataSources = Get-WindowsPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $windowsEventDataSources = Get-WindowsEventsInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
     }
-    
+
+    if($perfCounterDataSources.GetType().Name -eq "DCRPerformanceCounter")
+    {
+        $perfCounterDataSources = [System.Collections.ArrayList]@($perfCounterDataSources)
+    }
+
+    if($windowsEventDataSources.GetType().Name -eq "DCRWindowsEvent")
+    {
+        $windowsEventDataSources = [System.Collections.ArrayList]@($windowsEventDataSources)
+    }
+
+    if($linuxSyslogDataSources.GetType().Name -eq "DCRLinuxSyslog")
+    {
+        $linuxSyslogDataSources = [System.Collections.ArrayList]@($linuxSyslogDataSources)
+    }
 
     $dcrDataSources = 
     [ordered]@{
@@ -310,7 +298,7 @@ function Get-WindowsPerformanceCountersInDCRFormat
         else
         {
             $newPerfCounter = New-Object DCRPerformanceCounter
-            $newPerfCounter.name = "DataSource_$($dataSourceType)_$($count)"
+            $newPerfCounter.name = "DS_$($dataSourceType)_$($count)"
             $newPerfCounter.counterSpecifiers = @("\$($properties.objectName)($($properties.instanceName))\$($properties.counterName)")
             $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
             $newPerfCounter.streams = $dcrPerfCounterStream
@@ -320,10 +308,10 @@ function Get-WindowsPerformanceCountersInDCRFormat
         }
     }
 
-    $dcrDataSourceList = @()
+    $dcrDataSourceList = [System.Collections.ArrayList]::new()
     foreach($key in $dcrWindowsPerfCounterTable.Keys)
     {
-        $dcrDataSourceList += $dcrWindowsPerfCounterTable[$key]
+        $dcrDataSourceList.Add($dcrWindowsPerfCounterTable[$key]) | Out-Null
     }
 
     return $dcrDataSourceList
@@ -347,7 +335,7 @@ function Get-LinuxPerformanceCountersInDCRFormat
         $properties = $dataSource.Properties
         $currentKey = "$($properties.objectName)-$($properties.intervalSeconds)"
         $newPerfCounter = New-Object DCRPerformanceCounter
-        $newPerfCounter.name = "DataSource_$($dataSourceType)_$($count)"
+        $newPerfCounter.name = "DS_$($dataSourceType)_$($count)"
         $newPerfCounter.counterSpecifiers = @()
         $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
         $newPerfCounter.streams = $dcrPerfCounterStream
@@ -362,10 +350,10 @@ function Get-LinuxPerformanceCountersInDCRFormat
         $count += 1
     }
 
-    $dcrDataSourceList = @()
+    $dcrDataSourceList = [System.Collections.ArrayList]::new()
     foreach($key in $dcrLinuxPerfCounterTable.Keys)
     {
-        $dcrDataSourceList += $dcrLinuxPerfCounterTable[$key]
+        $dcrDataSourceList.Add($dcrLinuxPerfCounterTable[$key]) | Out-Null
     }
 
     return $dcrDataSourceList
@@ -398,7 +386,7 @@ function Get-WindowsEventsInDCRFormat
             else
             {
                 $newWindowsEvent = New-Object DCRWindowsEvent
-                $newWindowsEvent.name = "DataSource_$($dataSourceType)_$($count)"
+                $newWindowsEvent.name = "DS_$($dataSourceType)_$($count)"
                 $newWindowsEvent.xPathQueries = @("$($properties.eventLogName)!*$($xPathQueryKey)")
                 $newWindowsEvent.streams = $dcrWindowsEventStream
                 $dcrWindowsEventTable.Add($xPathQueryKey, $newWindowsEvent)
@@ -407,10 +395,10 @@ function Get-WindowsEventsInDCRFormat
         }
     }
 
-    $dcrDataSourceList = @()
+    $dcrDataSourceList = [System.Collections.ArrayList]::new()
     foreach($key in $dcrWindowsEventTable.Keys)
     {
-        $dcrDataSourceList += $dcrWindowsEventTable[$key]
+        $dcrDataSourceList.Add($dcrWindowsEventTable[$key]) | Out-Null
     }
 
     return $dcrDataSourceList
@@ -475,7 +463,7 @@ function Get-LinuxSyslogInDCRFormat
             else
             {
                 $newLinuxSyslog = New-Object DCRLinuxSyslog
-                $newLinuxSyslog.name = "DataSource_$($dataSourceType)_$($count)"
+                $newLinuxSyslog.name = "DS_$($dataSourceType)_$($count)"
                 $newLinuxSyslog.facilityNames = @($properties.syslogName)
                 $newLinuxSyslog.logLevels = $syslogLevels
                 $newLinuxSyslog.streams = $dcrLinuxSyslogStream
@@ -485,10 +473,10 @@ function Get-LinuxSyslogInDCRFormat
         }
     }
 
-    $dcrDataSourceList = @()
+    $dcrDataSourceList = [System.Collections.ArrayList]::new()
     foreach($key in $dcrLinuxSyslogTable.Keys)
     {
-        $dcrDataSourceList += $dcrLinuxSyslogTable[$key]
+        $dcrDataSourceList.Add($dcrLinuxSyslogTable[$key]) | Out-Null
     }
 
     return $dcrDataSourceList
@@ -595,16 +583,14 @@ function Get-DataFlows
     return $dataFlows
 }
 
-
-Connect-AzAccount
-Select-AzSubscription -Subscription $subId
-
-$rgNameWorkspace = 'rg-jamui-workspace'
-$workspaceName = 'workspace-jamui-1'
+<# ====================================== #>
 
 Write-Output "Subscription Id: $($SubscriptionId)"
 Write-Output "Resource Group: $($ResourceGroupName)"
 Write-Output "Workspace Name: $($WorkspaceName)"
+
+Connect-AzAccount
+Select-AzSubscription -Subscription $SubscriptionId
 
 if(-not ($PSBoundParameters.ContainsKey('FolderPath')))
 {
@@ -615,5 +601,5 @@ if($FolderPath.LastIndexOf("/") -eq $FolderPath.Length-1)
 {
     $FolderPath = $FolderPath.Substring(0, $FolderPath.Length-1)
 }
-Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath
 
+Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath
