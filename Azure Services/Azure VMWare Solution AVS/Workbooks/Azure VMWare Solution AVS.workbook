@@ -1,0 +1,1014 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "0e322c64-be41-4f52-ba5b-df55cf94e41d",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 86400000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ]
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          },
+          {
+            "id": "69be2f0e-ec9f-4cb2-bef0-e437c0b01789",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.avs/privateclouds'\r\n| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "569baca3-cd50-4a2c-a701-423682ee14fb",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "85d960b8-e89c-42ee-bf8c-fa95ce925c5d",
+            "version": "KqlParameterItem/1.0",
+            "name": "ChangeLog",
+            "label": "Change Log",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n { \"value\": \"No\", \"label\": \"No\", \"selected\":true }\r\n]",
+            "timeContext": {
+              "durationMs": 86400000
+            }
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 0"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# This workbook shows information relevant to deployed Azure VMWare Solutions"
+      },
+      "name": "text - 4"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "Change Log\r\n\r\nVersion 1\r\nThis is the origional version of the AVS workbooks and features:\r\n1. A summary of the AVS soltuons deployed\r\n2. Metrics performance view\r\n3. Activity section related to AVS\r\n\r\nVersion 2\r\nAdded VMWare resource view\r\n\r\nVersion 3 \r\nAdded VM Information \r\n\r\nVersion 4\r\nAdded Alert information"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ChangeLog",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "text - 5"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "ce43bd96-a673-4b26-a580-023b0ff3ba86",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Summary",
+            "subTarget": "Summary",
+            "style": "link"
+          },
+          {
+            "id": "22d35b15-a48c-4b5f-b450-af89b26ae824",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Resources",
+            "subTarget": "Resources",
+            "style": "link"
+          },
+          {
+            "id": "1ee7d9cd-7d81-4425-baf5-c5d41492b2b7",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Virtual Machines",
+            "subTarget": "VM",
+            "style": "link"
+          },
+          {
+            "id": "0a60794e-c6ef-4cbc-91db-cb2dca983938",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Alerts",
+            "subTarget": "Alerts",
+            "style": "link"
+          },
+          {
+            "id": "a33b5afe-5513-447e-98a5-3f67a3704ee1",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Activity",
+            "subTarget": "Activity",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 3"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources \r\n| where type contains 'microsoft.avs/privatecloud'\r\n| extend SKU1 = tostring(sku.name)\r\n| extend endpoints = properties.endpoints\r\n| extend availability = tostring(properties.availability.strategy)\r\n| extend clustersize = tostring(properties.managementCluster.clusterSize)\r\n| extend hosts = properties.managementCluster.hosts\r\n//| mv-expand hosts\r\n| extend expressRouteID = tostring(properties.circuit.expressRouteID)\r\n| project id, hosts,location, SKU1, clustersize, availability, expressRouteID,name //endpoints",
+              "size": 1,
+              "title": "AVS Summary",
+              "exportedParameters": [
+                {
+                  "fieldName": "name",
+                  "parameterName": "Name"
+                },
+                {
+                  "fieldName": "rg",
+                  "parameterName": "rg",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "sub",
+                  "parameterName": "sub",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "id",
+                  "parameterName": "RID",
+                  "parameterType": 1
+                }
+              ],
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "hosts",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "42ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "Sev4",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "name",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "18ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "rg",
+                    "formatter": 5
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Name"
+                  },
+                  {
+                    "columnId": "hosts",
+                    "label": "Hosts"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "SKU1",
+                    "label": "SKU"
+                  },
+                  {
+                    "columnId": "clustersize",
+                    "label": "Size"
+                  },
+                  {
+                    "columnId": "availability",
+                    "label": "Availability Strategy"
+                  },
+                  {
+                    "columnId": "expressRouteID",
+                    "label": "ExpressRoute"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Summary"
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Select an AVS instance to show performance information"
+            },
+            "name": "text - 6"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Performance",
+              "items": [
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "cdc934ef-754d-450e-8f48-df06ba1fc457",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "Microsoft.AVS/privateClouds",
+                    "metricScope": 0,
+                    "resourceParameter": "RID",
+                    "resourceIds": [
+                      "{RID}"
+                    ],
+                    "timeContextFromParameter": "TimeRange",
+                    "timeContext": {
+                      "durationMs": 172800000
+                    },
+                    "metrics": [
+                      {
+                        "namespace": "microsoft.avs/privateclouds",
+                        "metric": "microsoft.avs/privateclouds--EffectiveCpuAverage",
+                        "aggregation": 4
+                      }
+                    ],
+                    "title": "Average CPU Percentage",
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "metric - 0"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "5c45ea12-c13b-4aa7-b4fc-5c49b883120c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "Microsoft.AVS/privateClouds",
+                    "metricScope": 0,
+                    "resourceParameter": "RID",
+                    "resourceIds": [
+                      "{RID}"
+                    ],
+                    "timeContextFromParameter": "TimeRange",
+                    "timeContext": {
+                      "durationMs": 172800000
+                    },
+                    "metrics": [
+                      {
+                        "namespace": "microsoft.avs/privateclouds",
+                        "metric": "microsoft.avs/privateclouds--DiskUsedPercentage",
+                        "aggregation": 4
+                      }
+                    ],
+                    "title": "Percentage Datastore Disk Used",
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "metric - 1"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "6071b852-d848-44a7-baa2-71667cdcac3b",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "Microsoft.AVS/privateClouds",
+                    "metricScope": 0,
+                    "resourceParameter": "RID",
+                    "resourceIds": [
+                      "{RID}"
+                    ],
+                    "timeContextFromParameter": "TimeRange",
+                    "timeContext": {
+                      "durationMs": 172800000
+                    },
+                    "metrics": [
+                      {
+                        "namespace": "microsoft.avs/privateclouds",
+                        "metric": "microsoft.avs/privateclouds--UsageAverage",
+                        "aggregation": 4
+                      }
+                    ],
+                    "title": "Average Memory Used",
+                    "showRefreshButton": true,
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "metric - 2"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "Name",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "Performance"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Summary"
+      },
+      "name": "Summary"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type contains \"microsoft.connectedvmwarevsphere\" and type !contains \"virtualmachines\" and type !contains \"microsoft.connectedvmwarevsphere/virtualnetworks\" and type !contains \"microsoft.connectedvmwarevsphere/virtualmachinetemplates\"\r\n| extend resource = tolower(tostring(split(type, \"/\")[1]))\r\n| summarize count(resource) by resource",
+              "size": 4,
+              "exportFieldName": "resource",
+              "exportParameterName": "R",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "resource",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "count_resource",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "name": "query - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type contains \"microsoft.connectedvmwarevsphere\" and type !contains \"virtualmachines\" and type !contains \"microsoft.connectedvmwarevsphere/virtualnetworks\" and type !contains \"microsoft.connectedvmwarevsphere/virtualmachinetemplates\"\r\n| extend resource = tolower(tostring(split(type, \"/\")[1]))\r\n| extend Tag = iff(notempty(tags),tags,\"No Tags\")\r\n//| extend RGID = strcat({Subscription},\"/resourceGroups/\",resourceGroup)\r\n| project id,resource,  resourceGroup, Tag//, RGID\r\n| order by resource",
+              "size": 0,
+              "title": "All Resources",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "resourceGroup",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "RGID",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Name"
+                  },
+                  {
+                    "columnId": "resource",
+                    "label": "Resource"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "Resource Group"
+                  },
+                  {
+                    "columnId": "Tag",
+                    "label": "Tags"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "R",
+              "comparison": "isEqualTo"
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type contains \"microsoft.connectedvmwarevsphere\" and type !contains \"virtualmachines\" and type !contains \"microsoft.connectedvmwarevsphere/virtualnetworks\" and type !contains \"microsoft.connectedvmwarevsphere/virtualmachinetemplates\"\r\n| extend resource = tolower(tostring(split(type, \"/\")[1]))\r\n| extend Tag = iff(notempty(tags),tags,\"No Tags\")\r\n| where resource == \"{R}\"\r\n| project id,resource,  resourceGroup, Tag\r\n| order by resource",
+              "size": 0,
+              "title": "{R}",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "filter": true
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "R",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "query - 2"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Resources"
+      },
+      "name": "AVS Resources"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type ==  \"microsoft.connectedvmwarevsphere/virtualmachines\" \r\n| extend VSID = tolower(tostring(split(properties.vCenterId, \"/\")[8]))\r\n| extend OS = properties.osProfile\r\n| extend computerName = properties.osProfile.computerName\r\n| extend osType = properties.osProfile.osType\r\n| extend osName = properties.osProfile.osName\r\n| extend toolsRunningStatus = properties.osProfile.toolsRunningStatus\r\n| extend toolsVersion = properties.osProfile.toolsVersion\r\n//| extend HDD = properties.storageProfile.disks\r\n| extend cores = properties.hardwareProfile.numCoresPerSocket\r\n| extend mem = properties.hardwareProfile.memorySizeMB\r\n| extend CPUs = properties.hardwareProfile.numCPUs\r\n| extend Power =  properties.powerState\r\n| project id, VSID, osType, osName,CPUs, cores, mem, Power,toolsRunningStatus, toolsVersion",
+              "size": 0,
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "VSID",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "20.2857ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "osType",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Windows",
+                          "representation": "lightBlue",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Linux",
+                          "representation": "green",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "gray",
+                          "text": "Unknown"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "osName",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "29.1429ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "CPUs",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "cores",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "mem",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Power",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "poweredOn",
+                          "representation": "success",
+                          "text": ""
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "Unavailable",
+                          "text": ""
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "toolsRunningStatus",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "guestToolsRunning",
+                          "representation": "success",
+                          "text": ""
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "4",
+                          "text": ""
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "toolsVersion",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Powered On",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "poweredOn",
+                          "representation": "success",
+                          "text": ""
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "info",
+                          "text": ""
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "VM"
+                  },
+                  {
+                    "columnId": "VSID",
+                    "label": "vCenter"
+                  },
+                  {
+                    "columnId": "osType",
+                    "label": "OS"
+                  },
+                  {
+                    "columnId": "osName",
+                    "label": "OS Version"
+                  },
+                  {
+                    "columnId": "CPUs",
+                    "label": "CPUs"
+                  },
+                  {
+                    "columnId": "cores",
+                    "label": "Cores"
+                  },
+                  {
+                    "columnId": "mem",
+                    "label": "Memory"
+                  },
+                  {
+                    "columnId": "Power",
+                    "label": "Powered On"
+                  },
+                  {
+                    "columnId": "toolsRunningStatus",
+                    "label": "Guest Managed"
+                  },
+                  {
+                    "columnId": "toolsVersion",
+                    "label": "Tools Version"
+                  }
+                ]
+              }
+            },
+            "name": "query - 0"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "VM"
+      },
+      "name": "AVS Virtual Machines"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "alertsmanagementresources\r\n| extend FireTime = todatetime(properties.essentials.startDateTime), \r\n         Severity = tostring(properties.essentials.severity), \r\n         MonitorCondition = tostring(properties.essentials.monitorCondition), \r\n         AlertTarget = tostring(properties.essentials.targetResourceType), \r\n         MonitorService = tostring(properties.essentials.monitorService)\r\n//| where FireTime {TimeRange}\r\n| extend AlertTarget = case(\r\n        MonitorService == 'ActivityLog Administrative', 'ActivityLog',\r\n        AlertTarget == 'microsoft.insights/components', 'App Insights',\r\n        AlertTarget == 'microsoft.operationalinsights/workspaces', 'Log Analytics', \r\n        AlertTarget)\r\n| extend Total = \"TotalAlerts\"\r\n| where (id contains \"microsoft.connectedvmwarevsphere\") or (id contains \"microsoft.avs/privatecloud\")\r\n| summarize TotalAlerts= count(MonitorCondition) by Total",
+              "size": 4,
+              "title": "Alert Summary",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Total",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "TotalAlerts",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "25",
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "alertsmanagementresources\r\n| where (id contains \"microsoft.connectedvmwarevsphere\") or (id contains \"microsoft.avs/privatecloud\")\r\n| extend FireTime = todatetime(properties.essentials.startDateTime), \r\n         Severity = tostring(properties.essentials.severity), \r\n         MonitorCondition = tostring(properties.essentials.monitorCondition), \r\n         AlertTarget = tostring(properties.essentials.targetResourceType), \r\n         MonitorService = tostring(properties.essentials.monitorService)\r\n| where FireTime {TimeRange}\r\n| extend AlertTarget = case(\r\n        MonitorService == 'ActivityLog Administrative', 'ActivityLog',\r\n        AlertTarget == 'microsoft.insights/components', 'App Insights',\r\n        AlertTarget == 'microsoft.operationalinsights/workspaces', 'Log Analytics', \r\n        AlertTarget)\r\n| summarize count() by Severity",
+              "size": 4,
+              "title": "Severity Summary",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Severity",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "count_",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "75",
+            "name": "query - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "alertsmanagementresources\r\n| where (id contains \"microsoft.connectedvmwarevsphere\") or (id contains \"microsoft.avs/privatecloud\")\r\n| extend FireTime = todatetime(properties.essentials.startDateTime), \r\n         LastModifiedTime = todatetime(properties.essentials.lastModifiedDateTime),\r\n         Severity = tostring(properties.essentials.severity), \r\n         MonitorCondition = tostring(properties.essentials.monitorCondition), \r\n         AlertTarget = tostring(properties.essentials.targetResourceType), \r\n         MonitorService = tostring(properties.essentials.monitorService),\r\n         ResolvedTime = todatetime(properties.essentials.monitorConditionResolvedDateTime)\r\n| where FireTime {TimeRange}\r\n| extend AlertTarget = case(\r\n                MonitorService == 'ActivityLog Administrative', 'ActivityLog',\r\n                AlertTarget == 'microsoft.insights/components', 'App Insights',\r\n                AlertTarget == 'microsoft.operationalinsights/workspaces', 'Log Analytics', \r\n                AlertTarget)          \r\n| mv-expand Condition = properties.context.context.condition.allOf\r\n| extend SignalLogic = case(\r\n                MonitorService == \"VM Insights - Health\", strcat(\"VM Health for \", properties.essentials.targetResourceName, \" Changed from \", properties.context.monitorStateBeforeAlertCreated, \" to \", properties.context.monitorStateWhenAlertCreated),\r\n                AlertTarget == \"ActivityLog\", strcat(\"When the Activity Log has Category = \", properties.context.context.activityLog.properties.eventCategory, \" and Signal name = \", properties.context.context.activityLog.properties.message),\r\n                MonitorService == \"Smart Detector\", strcat(properties.SmartDetectorName, \" Detected failure rate of \", properties.DetectedFailureRate, \" above normal failure rate of \", properties.context.NormalFailureRate),\r\n                MonitorService == \"Log Analytics\", strcat(\"Alert when \", properties.context.AlertType, \" is \", properties.context.AlertThresholdOperator, \" threshold \", properties.context.AlertThresholdValue),\r\n                MonitorService == \"ActivityLog Autoscale\", strcat(properties.context.context.activityLog.operationName, \" from \", properties.context.context.activityLog.properties.oldInstancesCount, \" to \", properties.context.context.activityLog.properties.newInstancesCount),\r\n                strcat(\"Alert when metric \", Condition.metricName, Condition.timeAggregation, \" is \", Condition.operator, \" threshold \", Condition.threshold)),\r\n         Query = case(\r\n                 MonitorService == \"Log Alerts V2\", tostring(Condition.searchQuery),\r\n                 MonitorService == \"Log Analytics\", tostring(properties.context.SearchQuery), \"N/A\"),\r\n         MetricValue = iff(MonitorService == \"Log Analytics\", toint(properties.context.ResultCount), toint(Condition.metricValue)),\r\n         ResourceName = iff(AlertTarget == \"ActivityLog\", properties.context.context.activityLog.subscriptionId, tostring(properties.essentials.targetResourceName))\r\n| extend OpenTime = iff(MonitorCondition == \"Resolved\", datetime_diff('minute', ResolvedTime, FireTime), datetime_diff('minute', now(), FireTime)),\r\n         Details = pack_all()\r\n| project name, AlertTarget, id, subscriptionId, MonitorCondition, FireTime, LastModifiedTime, OpenTime, SignalLogic, Query, MetricValue, ResourceName, Details",
+              "size": 0,
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": "OpenBlade",
+                      "linkIsContextBlade": true,
+                      "showIcon": true,
+                      "bladeOpenContext": {
+                        "bladeName": "AlertDetailsTemplateBlade",
+                        "extensionName": "Microsoft_Azure_Monitoring",
+                        "bladeParameters": [
+                          {
+                            "name": "alertId",
+                            "source": "column",
+                            "value": "id"
+                          },
+                          {
+                            "name": "alertName",
+                            "source": "column",
+                            "value": "name"
+                          },
+                          {
+                            "name": "invokedFrom",
+                            "source": "static",
+                            "value": "Workbooks"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "MonitorCondition",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Fired",
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Resolved",
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "FireTime",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "LastModifiedTime",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "OpenTime",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    }
+                  }
+                ],
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subscriptionId"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "name"
+                }
+              }
+            },
+            "name": "query - 0"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Alerts"
+      },
+      "name": "Alerts"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AzureActivity \r\n| where ResourceProviderValue ==\"MICROSOFT.AVS\"\r\n| extend prop = parse_json(Properties)\r\n| evaluate bag_unpack(prop)\r\n| project TimeGenerated, message, Level, ActivityStatusValue, Caller",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "AVS Activity",
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "filter": true
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Activity"
+      },
+      "name": "query - 4"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
