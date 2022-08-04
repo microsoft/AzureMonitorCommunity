@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "CoreDNS Response Count"
+    },
+    "alertDescription": {
+      "value": "CodeDNS Response Count"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'coredns_dns_responses_total' | extend json = parse_json(Tags) | extend rcode = tostring(json.rcode) | extend podip = tostring(json.address) | extend podname = tostring(json.pod_name) | extend podnamespace = tostring(json.namespace) | sort by podname, rcode, TimeGenerated asc | extend preval =  iif(podnamespace == prev(podnamespace) and podname == prev(podname) and rcode == prev(rcode), prev(Val), real(null)) | where isnotnull(preval) | extend corednsrescount = Val - preval | extend servfailcount = iif(rcode == 'SERVFAIL', corednsrescount, real(0)) | summarize servfailcounttotal=sum(servfailcount), corednsrescounttotal=sum(corednsrescount) by Computer, Origin, AgentId, Type, _ResourceId, podnamespace | extend percentage = servfailcounttotal / corednsrescounttotal"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": ".03"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "metricMeasureColumn": {
+      "value": "percentage"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    }
+  }
+}

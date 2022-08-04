@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Pod container restart"
+    },
+    "alertDescription": {
+      "value": "the number of pod restarts"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_container_status_restarts_total' | extend Json = parse_json(Tags) | extend container = tostring(Json.container) | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | extend uid = tostring(Json.uid) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Val, container, pod, namespace, uid | summarize restarts = max(Val) - min(Val) by _ResourceId, container, pod, namespace, uid"
+    },
+    "metricMeasureColumn": {
+      "value": "restarts"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "50"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT24H"
+    },
+    "evaluationFrequency": {
+      "value": "PT30M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "container",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

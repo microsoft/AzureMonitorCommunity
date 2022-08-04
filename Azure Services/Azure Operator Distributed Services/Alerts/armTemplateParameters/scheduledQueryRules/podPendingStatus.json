@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Pod pending status"
+    },
+    "alertDescription": {
+      "value": "pod status is pending for more than 5 mins usually due to an attached Persistent Volume (PV)"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_container_status_waiting' | extend Json = parse_json(Tags) | extend container = tostring(Json.container) | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Val, container, pod, namespace"
+    },
+    "metricMeasureColumn": {
+      "value": "Val"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0"
+    },
+    "timeAggregation": {
+      "value": "Average"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "container",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

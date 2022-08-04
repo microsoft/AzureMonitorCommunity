@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "etcd failed grpc requests"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('grpc_server_handled_total') | extend grpcService = tostring(Labels.grpc_service) | where grpcService has_any ('etcdserverpb', 'grpc.health.v1') | extend hostName = tostring(Labels.hostName) | extend grpcCode = tostring(Labels.grpc_code) | extend grpcMethod = tostring(Labels.grpc_method) | extend grpcType = tostring(Labels.grpc_type) | summarize TotalComplete = sum(DeltaVal), TotalSuccess = sumif(DeltaVal, grpcCode in ('OK', 'Canceled')) by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostName, grpcService, grpcMethod | where TotalComplete > 0 | extend SuccessRate = percentage(TotalSuccess, TotalComplete) | extend FailRate = 100 - SuccessRate"
+    },
+    "metricMeasureColumn": {
+      "value": "FailRate"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "5"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    }
+  }
+}

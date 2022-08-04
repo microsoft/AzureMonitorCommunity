@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Memory vmstat paging rate"
+    },
+    "alertDescription": {
+      "value": "memory paging rate of change %"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'node_vmstat_pswpout' | extend Json = parse_json(Tags) | extend hostname = tostring(Json.hostName) | sort by hostname, TimeGenerated asc | extend PrevTimeGenerated = iif(prev(hostname) != hostname, datetime(null), prev(TimeGenerated)) | extend PrevVal = prev(Val) | where isnotnull(PrevTimeGenerated) | extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated) | extend pswpout_irate = iif(PrevVal > Val, Val / DeltaTime, (Val - PrevVal) / DeltaTime) | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'node_vmstat_pswpin' | extend Json = parse_json(Tags) | extend hostname = tostring(Json.hostName) | sort by hostname, TimeGenerated asc | extend PrevTimeGenerated = iif(prev(hostname) != hostname, datetime(null), prev(TimeGenerated)) | extend PrevVal = prev(Val) | where isnotnull(PrevTimeGenerated) | extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated) | extend pswpin_irate = iif(PrevVal > Val, Val / DeltaTime, (Val - PrevVal) / DeltaTime)) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, hostname | extend PagingRate = pswpout_irate + pswpin_irate"
+    },
+    "metricMeasureColumn": {
+      "value": "PagingRate"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

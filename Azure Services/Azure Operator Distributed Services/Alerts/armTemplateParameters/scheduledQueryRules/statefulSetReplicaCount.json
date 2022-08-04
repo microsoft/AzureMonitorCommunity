@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Statefulset replica count"
+    },
+    "alertDescription": {
+      "value": "the number of replicas is less than desired"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_statefulset_status_replicas' | extend Json = parse_json(Tags) | extend statefulset = tostring(Json.statefulset) | extend namespace = tostring(Json.namespace) | extend StatusReplicas=Val | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_statefulset_replicas' | extend Json = parse_json(Tags) | extend statefulset = tostring(Json.statefulset) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Replicas=Val, statefulset, namespace) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, statefulset, namespace | where StatusReplicas < Replicas | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, StatusReplicas, Replicas, statefulset, namespace"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0"
+    },
+    "timeAggregation": {
+      "value": "Count"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "statefulset",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Zombie process count"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'node_processes_state' | extend Json = parse_json(Tags) | where Json.state == 'Z' | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Tags, Val, hostname = tostring(Json.hostName)"
+    },
+    "metricMeasureColumn": {
+      "value": "Val"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "300"
+    },
+    "timeAggregation": {
+      "value": "Average"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

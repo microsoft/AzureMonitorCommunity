@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Replicaset missing replicas"
+    },
+    "alertDescription": {
+      "value": "replicas"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_replicaset_spec_replicas' | extend Json = parse_json(Tags) | extend replicaset = tostring(Json.replicaset) | extend namespace = tostring(Json.namespace) | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_replicaset_status_ready_replicas' | extend Json = parse_json(Tags) | extend replicaset = tostring(Json.replicaset) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, ReadyReplicas=Val, replicaset, namespace) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, replicaset, namespace | where Val - ReadyReplicas > 0 | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Replicas=Val, ReadyReplicas, replicaset, namespace"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0"
+    },
+    "timeAggregation": {
+      "value": "Count"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "replicaset",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

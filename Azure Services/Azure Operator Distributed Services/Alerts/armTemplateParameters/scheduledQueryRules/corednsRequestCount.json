@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "CoreDNS Request Count"
+    },
+    "alertDescription": {
+      "value": "CodeDNS Request Count"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'coredns_dns_requests_total' | extend json = parse_json(Tags) | extend dnstype = tostring(json.type) | extend podname = tostring(json.pod_name) | extend podnamespace = tostring(json.namespace) | sort by podnamespace, podname, dnstype, TimeGenerated asc | extend preval =  iif(podnamespace == prev(podnamespace) and podname == prev(podname) and dnstype == prev(dnstype), prev(Val), real(null)) | where isnotnull(preval) | extend corednsreqcount = Val - preval"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": "10"
+    },
+    "timeAggregation": {
+      "value": "Total"
+    },
+    "metricMeasureColumn": {
+      "value": "corednsreqcount"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    }
+  }
+}

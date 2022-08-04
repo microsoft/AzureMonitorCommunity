@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Pod terminating status"
+    },
+    "alertDescription": {
+      "value": "pod status is terminating for more than 5 mins usually dues to there not being enough resources"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_status_reason' | extend Json = parse_json(Tags) | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | extend uid = tostring(Json.uid) | extend reason = tostring(Json.reason) | where reason == 'NodeLost' and Val == 0 | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_deletion_timestamp' | extend Json = parse_json(Tags) | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | extend uid = tostring(Json.uid) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, DeleteTimestamp = unixtime_seconds_todatetime(Val), pod, namespace, uid) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, pod, namespace, uid | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, DeleteTimestamp, pod, namespace"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0"
+    },
+    "timeAggregation": {
+      "value": "Count"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "numberOfEvaluationPeriods": {
+      "value": 2
+    },
+    "minFailingPeriodsToAlert": {
+      "value": 2
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}
