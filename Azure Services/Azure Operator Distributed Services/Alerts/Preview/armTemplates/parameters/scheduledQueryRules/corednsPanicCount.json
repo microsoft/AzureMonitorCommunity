@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'coredns_panics_total'"
+      "value": "InsightsMetrics | invoke pquery_counter('coredns_panics_total')"
     },
     "resourceIdColumn": {
       "value": "_ResourceId"

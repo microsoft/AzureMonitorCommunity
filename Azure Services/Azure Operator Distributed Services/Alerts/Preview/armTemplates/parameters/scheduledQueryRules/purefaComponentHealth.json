@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_hardware_component_health' | extend Json = parse_json(Tags) | extend Chassis = tostring(Json.chassis) | extend Controller = tostring(Json.controller) | extend Component = tostring(Json.component) | extend Index = tostring(Json.index) | extend Health = Val | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Chassis, Controller, Component, Index, Health"
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_hardware_component_health') | extend Chassis = tostring(Labels.chassis) | extend Controller = tostring(Labels.controller) | extend Component = tostring(Labels.component) | extend Index = tostring(Labels.index) | extend Health = Val"
     },
     "metricMeasureColumn": {
       "value": "Health"

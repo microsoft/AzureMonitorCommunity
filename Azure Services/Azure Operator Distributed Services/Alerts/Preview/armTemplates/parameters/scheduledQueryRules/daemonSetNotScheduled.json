@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_daemonset_status_desired_number_scheduled' | extend Json = parse_json(Tags) | extend daemonset = tostring(Json.daemonset) | extend namespace = tostring(Json.namespace) | extend Desired = Val | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_daemonset_status_current_number_scheduled' | extend Json = parse_json(Tags) | extend daemonset = tostring(Json.daemonset) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Current=Val, daemonset, namespace) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, daemonset, namespace | where Desired > Current | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Desired, Current, daemonset, namespace"
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_daemonset_status_desired_number_scheduled') | extend daemonset = tostring(Labels.daemonset) | extend namespace = tostring(Labels.namespace) | extend Desired = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('kube_daemonset_status_current_number_scheduled') | extend daemonset = tostring(Labels.daemonset) | extend namespace = tostring(Labels.namespace)) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, daemonset, namespace | extend Current = Val | where Desired > Current | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Desired, Current, daemonset, namespace"
     },
     "resourceIdColumn": {
       "value": "_ResourceId"

@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_container_status_waiting' | extend Json = parse_json(Tags) | extend container = tostring(Json.container) | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Val, container, pod, namespace"
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_pod_container_status_waiting') | extend container = tostring(Labels.container) | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid)"
     },
     "metricMeasureColumn": {
       "value": "Val"

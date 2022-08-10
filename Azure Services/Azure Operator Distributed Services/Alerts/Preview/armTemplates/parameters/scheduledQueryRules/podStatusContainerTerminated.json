@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_container_status_terminated_reason' | extend Json = parse_json(Tags) | extend reason = tostring(Json.reason) | where reason in ('OOMKilled', 'Error', 'ContainerCannotRun') | extend container = tostring(Json.container) | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Val, container, pod, namespace, reason"
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_pod_container_status_terminated_reason') | extend reason = tostring(Labels.reason) | where reason in ('OOMKilled', 'Error', 'ContainerCannotRun') | extend container = tostring(Labels.container) | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid)"
     },
     "resourceIdColumn": {
       "value": "_ResourceId"

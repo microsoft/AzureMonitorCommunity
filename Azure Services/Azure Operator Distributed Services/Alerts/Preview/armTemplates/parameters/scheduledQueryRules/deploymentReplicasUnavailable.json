@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_deployment_status_replicas_available' | extend Json = parse_json(Tags) | extend deployment = tostring(Json.deployment) | extend namespace = tostring(Json.namespace) | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_deployment_status_replicas' | extend Json = parse_json(Tags) | extend deployment = tostring(Json.deployment) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Total=Val, deployment, namespace) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, deployment, namespace | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Available=Val, Total, Pct = (Val / Total) * 100, deployment, namespace"
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_deployment_status_replicas_available') | extend deployment = tostring(Labels.deployment) | extend namespace = tostring(Labels.namespace) | extend Available = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('kube_deployment_status_replicas') | extend deployment = tostring(Labels.deployment) | extend namespace = tostring(Labels.namespace) | extend Total = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, deployment, namespace | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Available, Total, Pct = percentage(Available, Total), deployment, namespace"
     },
     "metricMeasureColumn": {
       "value": "Pct"

@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_status_phase' | extend Json = parse_json(Tags) | extend phase = tostring(Json.phase) | where phase == 'Running' and Val > 0 | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'kube_pod_status_ready' | extend Json = parse_json(Tags) | extend condition = tostring(Json.condition) | where condition == 'false' and Val > 0 | extend pod = tostring(Json.pod) | extend namespace = tostring(Json.namespace) | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Val, pod, namespace, condition) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, pod, namespace | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Val, pod, namespace, phase, condition"
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_pod_status_phase') | extend phase = tostring(Labels.phase) | where phase == 'Running' and Val > 0 | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid) | join kind=inner ( InsightsMetrics | invoke pquery_gauge('kube_pod_status_ready') | extend condition = tostring(Labels.condition) | where condition == 'false' and Val > 0 | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid)) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, uid | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Val, pod, namespace, uid, phase, condition"
     },
     "resourceIdColumn": {
       "value": "_ResourceId"

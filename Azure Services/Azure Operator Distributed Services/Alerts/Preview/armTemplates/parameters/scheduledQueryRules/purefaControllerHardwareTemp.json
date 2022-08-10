@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_hardware_temperature_celsius' | extend Json = parse_json(Tags) | extend Sensor = tostring(Json.sensor) | extend Chassis = tostring(Json.chassis) | extend Controller = tostring(Json.controller) | where isempty(Chassis) | project TimeGenerated, _ResourceId, Name, Controller, Sensor, Val, Tags"
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_hardware_temperature_celsius') | extend Sensor = tostring(Labels.sensor) | extend Chassis = tostring(Labels.chassis) | extend Controller = tostring(Labels.controller) | where isempty(Chassis)"
     },
     "metricMeasureColumn": {
       "value": "Val"

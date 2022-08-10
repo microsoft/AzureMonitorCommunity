@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_volume_space_bytes' | extend Json = parse_json(Tags) | where Json.dimension == 'total' | extend Volume = tostring(Json.volume) | extend UsedVolumeBytes = Val | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_volume_space_size_bytes' | extend Json = parse_json(Tags) | extend Volume = tostring(Json.volume) | extend VolumeTotalBytes = Val) on _ResourceId, Volume | extend VolumePctUsed = UsedVolumeBytes / VolumeTotalBytes * 100 | project Computer, Origin, AgentId, Type, _ResourceId, Volume, VolumePctUsed | order by Volume | summarize DiffOverTime = max(VolumePctUsed) - min(VolumePctUsed) by Volume, Computer, Origin, AgentId, Type, _ResourceId"
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_volume_space_bytes') | where Labels.dimension == 'total' | extend Volume = tostring(Labels.volume) | extend UsedVolumeBytes = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('purefa_volume_space_size_bytes') | extend Volume = tostring(Labels.volume) | extend VolumeTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Volume | extend VolumePctUsed = percentage(UsedVolumeBytes, VolumeTotalBytes) | summarize DiffOverTime = max(VolumePctUsed) - min(VolumePctUsed) by Volume, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId"
     },
     "metricMeasureColumn": {
       "value": "DiffOverTime"

@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_host_space_bytes' | extend Json = parse_json(Tags) | where Json.dimension == 'total' | extend host = tostring(Json.host) | extend TotalUsedBytes = Val | join kind=inner ( InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_host_space_size_bytes' | extend Json = parse_json(Tags) | extend host = tostring(Json.host) | extend TotalofTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, host | extend PctUsed = TotalUsedBytes / TotalofTotalBytes * 100 | project TimeGenerated, host, TotalUsedBytes, TotalofTotalBytes, PctUsed, Computer, Origin, AgentId, Type, _ResourceId"
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_host_space_bytes') | where Labels.dimension == 'total' | extend host = tostring(Labels.host) | extend TotalUsedBytes = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('purefa_host_space_size_bytes') | extend host = tostring(Labels.host) | extend TotalofTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, host | extend PctUsed = percentage(TotalUsedBytes, TotalofTotalBytes) | project TimeGenerated, host, TotalUsedBytes, TotalofTotalBytes, PctUsed, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId"
     },
     "metricMeasureColumn": {
       "value": "PctUsed"

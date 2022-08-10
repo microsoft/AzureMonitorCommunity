@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_hardware_chassis_health' | extend Health = Val | project TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, Health"
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_hardware_chassis_health') | extend Health = Val"
     },
     "metricMeasureColumn": {
       "value": "Health"

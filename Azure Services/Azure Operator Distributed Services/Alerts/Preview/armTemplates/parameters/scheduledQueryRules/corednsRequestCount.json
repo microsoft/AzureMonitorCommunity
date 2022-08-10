@@ -6,13 +6,13 @@
       "value": "CoreDNS Request Count"
     },
     "alertDescription": {
-      "value": "CodeDNS Request Count"
+      "value": "CoreDNS Request Count"
     },
     "alertSeverity": {
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'coredns_dns_requests_total' | extend json = parse_json(Tags) | extend dnstype = tostring(json.type) | extend podname = tostring(json.pod_name) | extend podnamespace = tostring(json.namespace) | sort by podnamespace, podname, dnstype, TimeGenerated asc | extend preval =  iif(podnamespace == prev(podnamespace) and podname == prev(podname) and dnstype == prev(dnstype), prev(Val), real(null)) | where isnotnull(preval) | extend corednsreqcount = Val - preval"
+      "value": "InsightsMetrics | invoke pquery_counter('coredns_dns_requests_total') | extend dnstype = tostring(Labels.type) | extend podname = tostring(Labels.pod_name) | extend podnamespace = tostring(Labels.namespace) | extend corednsreqcount = DeltaVal"
     },
     "resourceIdColumn": {
       "value": "_ResourceId"

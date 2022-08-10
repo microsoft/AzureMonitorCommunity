@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'purefa_array_performance_latency_usec' | extend Json = parse_json(Tags) | extend dimension = tostring(Json.dimension) | extend IO_Latency = Val | where IO_Latency > 0 | project TimeGenerated, dimension, IO_Latency, Computer, Origin, AgentId, Type, _ResourceId"
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_array_performance_latency_usec') | extend dimension = tostring(Labels.dimension) | extend IO_Latency = Val | where IO_Latency > 0 | project TimeGenerated, dimension, IO_Latency, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId"
     },
     "metricMeasureColumn": {
       "value": "IO_Latency"

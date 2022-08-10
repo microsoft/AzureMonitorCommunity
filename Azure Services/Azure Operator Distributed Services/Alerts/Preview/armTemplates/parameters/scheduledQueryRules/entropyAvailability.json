@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | where Namespace == 'prometheus' and Name == 'node_entropy_available_bits' | extend hostname = tostring(parse_json(Tags).hostName)"
+      "value": "InsightsMetrics | invoke pquery_gauge('node_entropy_available_bits') | extend hostname = tostring(Labels.hostName)"
     },
     "metricMeasureColumn": {
       "value": "Val"
