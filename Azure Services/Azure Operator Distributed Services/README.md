@@ -14,8 +14,8 @@ It provides a variety of ARM templates for use by customers to deploy selected r
 
 ### Prerequisites
 
-One or more AODS instances connected with a Log Analytics workspace. An AODS instance will deploy all of the
-necessary Prometheus exporters which will provide the metrics supporting these workbooks and alert rules.
+The samples require one or more AODS instances connected with a Log Analytics workspace. An AODS instance will deploy
+all of the necessary Prometheus exporters which will provide the metrics supporting these workbooks and alert rules.
 
 ## Azure Workbooks
 
@@ -34,7 +34,7 @@ To use the Azure CLI to deploy a workbook ARM template, login to the Azure CLI a
 where 
 - **<SUBSCRIPTION_NAME_OR_ID>** = name or ID of subscription where deployment will be created
 
-Deploy the workbook in your resource group using the following command:
+Deploy a single workbook in your resource group using the following command:
 
 ```sh
     az deployment group create \
@@ -47,9 +47,23 @@ Deploy the workbook in your resource group using the following command:
 where
 - **<DEPLOYMENT_NAME>** = name for the deployment
 - **<RESOURCE_GROUP>** = resource group name
-- **<PATH_TO_TEMPLATE_FILE>** = path to selected workbook ARM template in `Workbooks/instances/`
+- **<PATH_TO_TEMPLATE_FILE>** = path to selected workbook ARM template in `templates/`
 - **<WORKSPACE_LAW>** = Log Analytics workspace name 
 - **<AZ_LOCATION>** = Region in which to create the workbook
+
+### Scripting
+A sample shell script (`deployWorkbooks.sh`) can be used to deploy all of the sample workbooks.
+The script may be invoked with the following environment variables set or passed as arguments.  If a value is not set
+the script will prompt for it.
+
+- `RESOURCE_GROUP` - The resource group in which the Log Analytics workspace is located
+- `WORKSPACE_LAW` - The name of the Log Analytics workspace within the resource group
+- `AZ_LOCATION` - *Optional* - The region in which the workbooks should be created.  Defaults to same region as Log
+Analytics workspace.
+
+```sh
+  ./deployWorkbooks.sh $RESOURCE_GROUP $WORKSPACE_LAW $AZ_LOCATION
+```
 
 ### Built With
 
@@ -57,7 +71,8 @@ where
 
 ## Alert Rules
 
-The `Alerts` subfolder contains ARM templates and associated parameter files which can be run to create alert rules.
+The `Alerts` ARM templates subfolder contains ARM templates and associated parameter files which can be run to create
+alert rules.
 
 **templates** - Contains ARM templates for use in deploying 
 [alert rule types](https://docs.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-types).  
@@ -87,9 +102,11 @@ where
 
 #### **Log Alert Rules**
 
+![AODS Logging](AODSLogs.png)
+
 Log query alert rules are applied to a Log Analytics workspace where logs from one or more AODS clusters are collected.
-These alert rules rely on log query results to trigger and attach to the appropriate resource emitting the metric. 
-Deploy a sample metric alert rule using the following command:
+These alert rules rely on log query results to trigger and attach to the appropriate resource producing the log.
+Deploy a sample log query alert rule using the following command:
 
 ```sh
   az deployment group create \
@@ -97,18 +114,32 @@ Deploy a sample metric alert rule using the following command:
     --resource-group "<RESOURCE_GROUP>" \
     --template-file "<PATH_TO_TEMPLATE_FILE>" \
     --parameters @"<PATH_TO_PARAMETER_FILE>" \
-      resourceId="<CLUSTER_RESOURCE_ID>" location="<AZ_LOCATION>" \
+      resourceId="<LAW_RESOURCE_ID>" location="<AZ_LOCATION>" \
       <PARAM_NAME>="<PARAM_VALUE>"...
 ```
 
 where
 - **<DEPLOYMENT_NAME>** = name for the deployment
 - **<RESOURCE_GROUP>** = resource group where the alert rule will be created
-- **<PATH_TO_TEMPLATE_FILE>** = path to `Alerts/templates/scheduledQueryRules.bicep`
-- **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `Alerts/scheduledQueryRules/` for alert rule to be created
-- **<CLUSTER_RESOURCE_ID>** = Full Resource ID of the AODS Log Analytics workspace 
+- **<PATH_TO_TEMPLATE_FILE>** = path to `templates/scheduledQueryRules.bicep`
+- **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `scheduledQueryRules/` for alert rule to be created
+- **<LAW_RESOURCE_ID>** = Full Resource ID of the AODS Log Analytics workspace
 - **<AZ_LOCATION>** = Region in which to create the log alert rule
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs which can override other parameter file values 
+
+### Scripting
+A sample shell script (`deployScheduledQueryRules.sh`) can be used to deploy all of the sample log query alert rules.
+The script may be invoked with the following environment variables set or passed as arguments.  If a value is not set
+the script will prompt for it.
+
+- `RESOURCE_GROUP` - The resource group in which the Log Analytics workspace is located
+- `WORKSPACE_LAW` - The name of the Log Analytics workspace within the resource group
+- `AZ_LOCATION` - *Optional* - The region in which the alerts should be created.  Defaults to same region as Log
+Analytics workspace.
+
+```sh
+  ./deployScheduledQueryRules.sh $RESOURCE_GROUP $WORKSPACE_LAW $LOCATION
+```
 
 #### **Metric Alert Rules**
 
@@ -128,10 +159,22 @@ metric alert rule using the following command:
 where
 - **<DEPLOYMENT_NAME>** = name for the deployment
 - **<RESOURCE_GROUP>** = resource group where the alert rule will be created
-- **<PATH_TO_TEMPLATE_FILE>** = path to `Alerts/templates/metricAlerts.bicep`
-- **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `Alerts/metricAlerts/` for alert rule to be created
+- **<PATH_TO_TEMPLATE_FILE>** = path to `templates/metricAlerts.bicep`
+- **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `metricAlerts/` for alert rule to be created
 - **<CLUSTER_RESOURCE_ID>** = Full Resource ID of the AODS cluster emitting the metric
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs which can override other parameter file values 
+
+### Scripting
+A sample shell script (`deployMetricAlerts.sh`) can be used to deploy all of the sample metric alert rules.
+The script may be invoked with the following environment variables set or passed as arguments.  If a value is not set
+the script will prompt for it.
+
+- `RESOURCE_GROUP` - The resource group in which the Log Analytics workspace is located
+- `CLUSTER_NAME` - The name of the AODS cluster in the resource group that will emit the metrics
+
+```sh
+  ./deployMetricAlerts.sh $RESOURCE_GROUP $CLUSTER_NAME
+```
 
 ## Testing
 
