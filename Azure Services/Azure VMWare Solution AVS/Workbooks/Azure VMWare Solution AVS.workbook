@@ -13,7 +13,7 @@
             "type": 4,
             "isRequired": true,
             "value": {
-              "durationMs": 86400000
+              "durationMs": 2592000000
             },
             "typeSettings": {
               "selectableValues": [
@@ -37,8 +37,21 @@
                 },
                 {
                   "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
                 }
-              ]
+              ],
+              "allowCustom": true
             },
             "timeContext": {
               "durationMs": 86400000
@@ -121,7 +134,7 @@
         ],
         "style": "pills",
         "queryType": 0,
-        "resourceType": "microsoft.resourcegraph/resources"
+        "resourceType": "microsoft.operationalinsights/workspaces"
       },
       "name": "parameters - 0"
     },
@@ -135,7 +148,7 @@
     {
       "type": 1,
       "content": {
-        "json": "Change Log\r\n\r\nVersion 1\r\nThis is the origional version of the AVS workbooks and features:\r\n1. A summary of the AVS soltuons deployed\r\n2. Metrics performance view\r\n3. Activity section related to AVS\r\n\r\nVersion 2\r\nAdded VMWare resource view\r\n\r\nVersion 3 \r\nAdded VM Information \r\n\r\nVersion 4\r\nAdded Alert information"
+        "json": "# Change Log\r\n\r\n### Version 1\r\nThis is the origional version of the AVS workbooks and features:\r\n1. A summary of the AVS soltuons deployed\r\n2. Metrics performance view\r\n3. Activity section related to AVS\r\n\r\nVersion 2\r\nAdded VMWare resource view\r\n\r\n### Version 3 \r\nAdded VM Information \r\n\r\n### Version 4\r\nAdded Alert information\r\n\r\n### Version 5\r\nAdded help for configuring Alerts"
       },
       "conditionalVisibility": {
         "parameterName": "ChangeLog",
@@ -340,7 +353,7 @@
                     ],
                     "timeContextFromParameter": "TimeRange",
                     "timeContext": {
-                      "durationMs": 172800000
+                      "durationMs": 86400000
                     },
                     "metrics": [
                       {
@@ -373,7 +386,7 @@
                     ],
                     "timeContextFromParameter": "TimeRange",
                     "timeContext": {
-                      "durationMs": 172800000
+                      "durationMs": 86400000
                     },
                     "metrics": [
                       {
@@ -406,7 +419,7 @@
                     ],
                     "timeContextFromParameter": "TimeRange",
                     "timeContext": {
-                      "durationMs": 172800000
+                      "durationMs": 86400000
                     },
                     "metrics": [
                       {
@@ -784,6 +797,69 @@
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
         "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "9db8b056-5686-409d-a589-9ae87eed9cee",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ShowHelp",
+                  "label": "Show Alert Help",
+                  "type": 10,
+                  "isRequired": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": []
+                  },
+                  "jsonData": "[\r\n { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n { \"value\": \"No\", \"label\": \"No\", \"selected\":true }\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 5"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "In order to deploy alerts you will need the resource ID for the AVS instance you want to be alerted on. Alerts will also need to be deployed for each seperate AVS instance.\r\n\r\nTo get the resource ID, navigate to the Overview blade of the required AVS instance and click on **\"JSON View\"** in the top right corner. The ID will be at the top of the fly out menu and looks as follow:\r\n\r\n**Example:** /subscriptions/\"subscription ID\"/resourceGroups/\"Resource Group\"/providers/Microsoft.AVS/privateClouds/\"AVS instance name\""
+            },
+            "conditionalVisibility": {
+              "parameterName": "ShowHelp",
+              "comparison": "isEqualTo",
+              "value": "Yes"
+            },
+            "name": "text - 4"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "nav",
+              "links": [
+                {
+                  "id": "7c78275e-a657-4501-a90c-26107427336b",
+                  "cellValue": "https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FEnterprise-Scale-for-AVS%2Fmain%2FBrownField%2FMonitoring%2FAVS-Utilization-Alerts%2FARM%2FAVSMonitor.deploy.json",
+                  "linkTarget": "Url",
+                  "linkLabel": "Deploy Metric Alerts",
+                  "style": "link"
+                },
+                {
+                  "id": "15af649e-1348-45dc-a822-ef3d0ce3fae5",
+                  "cellValue": "https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FEnterprise-Scale-for-AVS%2Fmain%2FBrownField%2FMonitoring%2FAVS-Service-Health%2FARM%2FAVSServiceHealth.deploy.json",
+                  "linkTarget": "Url",
+                  "linkLabel": "Deploy Service Health Alerts",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 3"
+          },
           {
             "type": 3,
             "content": {
