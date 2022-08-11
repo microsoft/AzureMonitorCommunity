@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Average working set memory - K8s Container"
+    },
+    "alertDescription": {
+      "value": "average working set memory (physical + virtual) % used for Kubernetes container"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "Insights.Container/containers"
+    },
+    "metricName": {
+      "value": "memoryWorkingSetExceededPercentage"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "95"
+    },
+    "timeAggregation": {
+      "value": "Average"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "containerName",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

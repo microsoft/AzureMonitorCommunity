@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "etcd member slow communication"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "let basename = 'etcd_network_peer_round_trip_time_seconds'; InsightsMetrics | invoke pquery_histogram_buckets(basename) | extend peer = tostring(Labels.To) | extend hostname = tostring(Labels.hostName) | join kind=inner (InsightsMetrics | invoke pquery_histogram_counts(basename) | extend peer = tostring(Labels.To) | extend hostname = tostring(Labels.hostName)) on AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, hostname, peer | summarize buckettotal=sum(bucketdiff), total=sum(totaldiff) by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostname, peer, le | sort by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostname, peer, le asc | invoke pquery_histogram_quantile(0.99)"
+    },
+    "metricMeasureColumn": {
+      "value": "quantile"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0.15"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    }
+  }
+}
