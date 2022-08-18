@@ -21,23 +21,26 @@ These instructions will help you get started with running the Migration Tool scr
 
 ## Running the application
 
-- Inputs for the Migration Tool Script
-	- There are 6 parameters for the script with 5 being required
-	- SubscriptionId: Subscription Id that contains the target workspace
-	- ResourceGroupName: Resource Group that contains the target workspace 
-	- WorkspaceName: Name of the target workspace
-	- DCRName: Name of the new DCR to create
-	- Location: Region location for the new DCR
-	- FolderPath (Optional): Local path to store the output.  Current directory will be used if nothing is provided. 
+**Parameters**  
+	@@ -73,9 +73,10 @@ To install DCR Config Generator:
+	| `WorkspaceName` | Yes | Name of the target workspace. |
+	| `DCRName` | Yes | Name of the new DCR. |
+	| `Location` | Yes | Region location for the new DCR. |
+	| `GetDcrPayload` | No | When set, it generates additional DCR JSON files 
+	| `FolderPath` | No | Path in which to save the ARM template files and JSON files (optional). By default, Azure Monitor uses the current directory. |  
 	
 - Instructions to Run the Script
 	- Running the script is straightforward.  Use the script location along with at least the 5 required parameters.
-	- Option #1:
-		- Example: .\WorkspaceConfigToDCRMigrationTool.ps1 -SubscriptionId $subId -ResourceGroupName $rgName -WorkspaceName $workspaceName -DCRName $dcrName -Location $location -FolderPath $folderPath
-	- Option #2 (if you are just looking for the DCR payload json):
-		- Example:
-			$dcrJson = Get-DCRJson -ResourceGroupName $rgName -WorkspaceName $workspaceName -PlatformType $platformType
-			$dcrJson | ConvertTo-Json -Depth 10 | Out-File "C:\One\OutputFiles\dcr_output.json"
+	- Option #1:Outputs **ready-to-deploy ARM template files** only that will create the generated DCR in the specified subscription and resource group, when deployed.
+
+	```powershell
+	.\WorkspaceConfigToDCRMigrationTool.ps1 -SubscriptionId $subId -ResourceGroupName $rgName -WorkspaceName $workspaceName -DCRName $dcrName -Location $location -FolderPath $folderPath
+	```
+	- Option #2: Outputs **ready-to-deploy ARM template files** only that will create the generated DCR in the specified subscription and resource group, when deployed.
+
+	```powershell
+	.\WorkspaceConfigToDCRMigrationTool.ps1 -SubscriptionId $subId -ResourceGroupName $rgName -WorkspaceName $workspaceName -DCRName $dcrName -Location $location -FolderPath $folderPath
+	```
 
 - Output for the Script
 	- There are two separate ARM templates that can be produced (based on agent configuration of the target workspace):
