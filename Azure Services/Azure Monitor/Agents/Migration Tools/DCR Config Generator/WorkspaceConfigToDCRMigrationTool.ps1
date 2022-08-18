@@ -17,7 +17,10 @@ Param(
     [string]$Location,
 
     [Parameter(Mandatory=$False)]
-    [string]$FolderPath = "."
+    [string]$FolderPath = ".",
+    
+    [Parameter(Mandatory=$False)]
+    [switch]$GetDcrPayload
 )
 
 class DCRPerformanceCounter
@@ -203,6 +206,12 @@ function Get-DCRBaseJson
         }
 
         $dcrJson.Add('properties', $properties)
+    }
+    
+    # If the GetDcrPayloadJson parameter was set, output it to a file
+    if ($GetDcrPayload)
+    {
+        $dcrJson | ConvertTo-Json -Depth 10 | Out-File "$($FolderPath)/dcr-payload-$($PlatformType).json"
     }
 
     return $dcrJson
@@ -585,12 +594,7 @@ function Get-DataFlows
 
 <# ====================================== #>
 
-Write-Output "Subscription Id: $($SubscriptionId)"
-Write-Output "Resource Group: $($ResourceGroupName)"
-Write-Output "Workspace Name: $($WorkspaceName)"
-
-Connect-AzAccount
-Select-AzSubscription -Subscription $SubscriptionId
+# Output Folder
 
 if(-not ($PSBoundParameters.ContainsKey('FolderPath')))
 {
@@ -602,4 +606,18 @@ if($FolderPath.LastIndexOf("/") -eq $FolderPath.Length-1)
     $FolderPath = $FolderPath.Substring(0, $FolderPath.Length-1)
 }
 
+# User parameters selections
+Write-Output "Subscription Id     $($SubscriptionId)"
+Write-Output "ResourceGroupName   $($ResourceGroupName)"
+Write-Output "Workspace Name      $($WorkspaceName)"
+
+# User authentication
+Connect-AzAccount -Subscription $SubscriptionId
+
+# Entry point of the script
 Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath
+
+# End of the script
+Write-Output ""
+Write-Output "Success!"
+Write-Output "Check your output folder!"
