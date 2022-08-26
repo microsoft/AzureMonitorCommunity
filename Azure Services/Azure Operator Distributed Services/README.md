@@ -25,7 +25,7 @@ see the data for a particular cluster. The timerange can also be selected to see
 
 ### Workbooks Folder Structure
 
-**`Workbooks/Preview/armTemplates`**
+AzureMonitorCommunity repository path:  **`Workbooks/Preview/armTemplates`**
 
 - `deployWorkbooks.sh` - Shell script utility for deploying all workbooks to a log analytics workspace
 - `/templates` - Folder contains workbook templates
@@ -87,7 +87,7 @@ run to create alert rules.
 
 ### Alert Rules Folder Structure
 
-**`Alerts/Preview/armTemplates`**
+AzureMonitorCommunity repository path:  **`Alerts/Preview/armTemplates`**
 
 - `deployScheduledQueryRules.sh` - Shell script utility for creating log alert rules on a log analytics workspace
 - `deployMetricAlerts.sh` - Shell script utility for creating metric alert rules on an AODS cluster
