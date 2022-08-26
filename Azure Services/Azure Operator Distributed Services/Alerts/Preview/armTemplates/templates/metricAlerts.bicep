@@ -82,6 +82,9 @@ param evaluationFrequency string = 'PT1M'
 @description('Array of dimension conditions objects:  { name, operator, values }')
 param dimensions array = []
 
+@description('Comma-separated list of resource IDs for action groups to be added as actions on the alert rule')
+param actionGroupIds string = ''
+
 resource alertName_resource 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   name: alertName
   location: 'global'
@@ -111,5 +114,8 @@ resource alertName_resource 'Microsoft.Insights/metricAlerts@2018-03-01' = {
         }
       ]
     }
+    actions: [for item in empty(actionGroupIds) ? [] : split(replace(actionGroupIds, ' ', ''), ','): {
+      actionGroupId: item
+    }]
   }
 }

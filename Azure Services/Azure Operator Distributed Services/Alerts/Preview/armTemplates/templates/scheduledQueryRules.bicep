@@ -1,7 +1,7 @@
 // Defines user-defined function definitions that are pre-pended to query parameter passed to the template so that they 
 // are available for use by the query.
 var udf = '''
-// pquery_gauge queries InsightsMetrics for a prometheus gauge metric.
+// pquery_gauge queries metrics table for a prometheus gauge metric.
 let pquery_gauge=(metrics_tbl:(*), metric_name:string, namespace_col:string='Namespace', name_col:string='Name', tags_col:string='Tags')
 {
     metrics_tbl
@@ -10,7 +10,7 @@ let pquery_gauge=(metrics_tbl:(*), metric_name:string, namespace_col:string='Nam
     | extend Labels = parse_json(Tags)
 }
 ;
-// pquery_counter queries InsightsMetrics for a prometheus counter metric and exposes the counter value change (DeltaVal) and time change
+// pquery_counter queries metrics table for a prometheus counter metric and exposes the counter value change (DeltaVal) and time change
 // in seconds (DeltaTimeSeconds) for each counter sample in the result.
 let pquery_counter=(metrics_tbl:(*), metric_name:string, timegenerated_col:string='TimeGenerated', val_col:string='Val', tags_col:string='Tags')
 {
@@ -165,6 +165,9 @@ param evaluationFrequency string = 'PT1M'
 @description('Array of dimension conditions objects:  { name, operator, values }')
 param dimensions array = []
 
+@description('Comma-separated list of resource IDs for action groups to be added as actions on the alert rule')
+param actionGroupIds string = ''
+
 // Pre-pend user-defined functions to query
 var fullquery = '${udf}${query}'
 
@@ -200,5 +203,8 @@ resource alertName_resource 'Microsoft.Insights/scheduledQueryRules@2021-08-01' 
     }
     autoMitigate: autoMitigate
     checkWorkspaceAlertsStorageConfigured: checkWorkspaceAlertsStorageConfigured
+    actions: {
+      actionGroups: empty(actionGroupIds) ? [] : split(replace(actionGroupIds, ' ', ''), ',')
+    }
   }
 }

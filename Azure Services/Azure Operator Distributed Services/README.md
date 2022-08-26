@@ -89,6 +89,17 @@ scraped by Azure Container Insights.
 
 **metricAlerts** - Parameter files each containing settings for sample metric alert rule
 
+### Create Action Groups
+
+When Azure Monitor data indicates that there might be a problem with your infrastructure or application, an alert is
+triggered. Azure Monitor then use action groups to notify users about the alert and take an action. An action group is
+a collection of notification preferences that are defined by the owner of an Azure subscription.
+
+Operators can create an Action Group that they deem suitable for their alert rules. They can then provide that during
+deployment to the alert rules in the next steps.
+
+Documentation to create Action Group: https://docs.microsoft.com/en-us/azure/azure-monitor/alerts/action-groups
+
 ### Deployment
 
 To use the Azure CLI to deploy an alert rule ARM template, login to the Azure CLI and set your subscription.
@@ -115,6 +126,7 @@ Deploy a sample log query alert rule using the following command:
     --template-file "<PATH_TO_TEMPLATE_FILE>" \
     --parameters @"<PATH_TO_PARAMETER_FILE>" \
       resourceId="<LAW_RESOURCE_ID>" location="<AZ_LOCATION>" \
+      actionGroupIds="<ACTION_GROUP_IDS>" \
       <PARAM_NAME>="<PARAM_VALUE>"...
 ```
 
@@ -125,6 +137,8 @@ where
 - **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `scheduledQueryRules/` for alert rule to be created
 - **<LAW_RESOURCE_ID>** = Full Resource ID of the AODS Log Analytics workspace
 - **<AZ_LOCATION>** = Region in which to create the log alert rule
+- **<ACTION_GROUP_IDS>** = Optional comma-separated list of action group resource IDs to be associated to the alert
+rule.
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs which can override other parameter file values 
 
 ### Scripting
@@ -136,9 +150,10 @@ the script will prompt for it.
 - `WORKSPACE_LAW` - The name of the Log Analytics workspace within the resource group
 - `AZ_LOCATION` - *Optional* - The region in which the alerts should be created.  Defaults to same region as Log
 Analytics workspace.
+- `ACTION_GROUP_IDS` - *Optional* - Comma-separated list of action group resource IDs
 
 ```sh
-  ./deployScheduledQueryRules.sh $RESOURCE_GROUP $WORKSPACE_LAW $LOCATION
+  ./deployScheduledQueryRules.sh $RESOURCE_GROUP $WORKSPACE_LAW $LOCATION $ACTION_GROUP_IDS
 ```
 
 #### **Metric Alert Rules**
@@ -153,6 +168,7 @@ metric alert rule using the following command:
     --template-file "<PATH_TO_TEMPLATE_FILE>" \
     --parameters @"<PATH_TO_PARAMETER_FILE>" \
       resourceId="<CLUSTER_RESOURCE_ID" \
+      actionGroupIds="<ACTION_GROUP_IDS>" \
       <PARAM_NAME>="<PARAM_VALUE>"...
 ```
 
@@ -162,6 +178,8 @@ where
 - **<PATH_TO_TEMPLATE_FILE>** = path to `templates/metricAlerts.bicep`
 - **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `metricAlerts/` for alert rule to be created
 - **<CLUSTER_RESOURCE_ID>** = Full Resource ID of the AODS cluster emitting the metric
+- **<ACTION_GROUP_IDS>** = Optional comma-separated list of action group resource IDs to be associated to the alert
+rule.
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs which can override other parameter file values 
 
 ### Scripting
@@ -171,9 +189,10 @@ the script will prompt for it.
 
 - `RESOURCE_GROUP` - The resource group in which the Log Analytics workspace is located
 - `CLUSTER_NAME` - The name of the AODS cluster in the resource group that will emit the metrics
+- `ACTION_GROUP_IDS` - *Optional* - Comma-separated list of action group resource IDs
 
 ```sh
-  ./deployMetricAlerts.sh $RESOURCE_GROUP $CLUSTER_NAME
+  ./deployMetricAlerts.sh $RESOURCE_GROUP $CLUSTER_NAME $ACTION_GROUP_IDS
 ```
 
 ## Testing

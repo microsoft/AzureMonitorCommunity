@@ -24,6 +24,8 @@ if [ -z "$AZ_LOCATION" ]; then
   fi
 fi
 
+ACTION_GROUP_IDS=${4-$ACTION_GROUP_IDS}
+
 law_resource_id="$(az monitor log-analytics workspace show -g "$RESOURCE_GROUP" -n "$WORKSPACE_LAW" -o tsv --query id)"
 for alert in "$script_dir"/scheduledQueryRules/*.json; do
   echo "Creating log query alert from: ${alert}"
@@ -31,7 +33,7 @@ for alert in "$script_dir"/scheduledQueryRules/*.json; do
     --name "$(basename "${alert}" .json)_alert" \
     --resource-group "$RESOURCE_GROUP" \
     --template-file "$script_dir/templates/scheduledQueryRules.bicep" \
-    --parameters @"$alert" resourceId="$law_resource_id" location="$AZ_LOCATION"
+    --parameters @"$alert" resourceId="$law_resource_id" location="$AZ_LOCATION" actionGroupIds="$ACTION_GROUP_IDS"
 done
 for alert in "$script_dir"/scheduledQueryRules/*.json; do
   az deployment group wait --created \
