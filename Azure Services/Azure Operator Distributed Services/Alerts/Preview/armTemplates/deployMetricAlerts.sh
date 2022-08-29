@@ -15,6 +15,8 @@ if [ -z "$CLUSTER_NAME" ]; then
   read -r -p "Enter Azure Connected Cluster: " CLUSTER_NAME
 fi
 
+ACTION_GROUP_IDS=${3-$ACTION_GROUP_IDS}
+
 connectedk8s_id="$(az connectedk8s show -g "$RESOURCE_GROUP" -n "$CLUSTER_NAME" -o tsv --query id)"
 for alert in "$script_dir"/metricAlerts/*.json; do
   echo "Creating metric alert from: ${alert}"
@@ -22,7 +24,7 @@ for alert in "$script_dir"/metricAlerts/*.json; do
     --name "$(basename "${alert}" .json)_alert" \
     --resource-group "$RESOURCE_GROUP" \
     --template-file "$script_dir/templates/metricAlerts.bicep" \
-    --parameters @"$alert" resourceId="$connectedk8s_id"
+    --parameters @"$alert" resourceId="$connectedk8s_id" actionGroupIds="$ACTION_GROUP_IDS"
 done
 for alert in "$script_dir"/metricAlerts/*.json; do
   az deployment group wait --created \
