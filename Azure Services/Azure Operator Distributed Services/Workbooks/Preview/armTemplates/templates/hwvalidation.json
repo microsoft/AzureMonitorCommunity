@@ -1,0 +1,3037 @@
+{
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workbookDisplayName": {
+      "type": "string",
+      "defaultValue": "Hardware Validation",
+      "metadata": {
+        "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "workbookType": {
+      "type": "string",
+      "defaultValue": "workbook",
+      "metadata": {
+        "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+      }
+    },
+    "workspaceLAW": {
+      "type": "string",
+      "defaultValue": "afoinc-aods-law",
+      "metadata": {
+        "description": "The friendly name for the workspace that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "connectedCluster": {
+      "type": "string",
+      "defaultValue": "aods-target-cluster",
+      "metadata": {
+        "description": "The friendly name for the connected cluster.  This name must be unique within a resource group."
+      }
+    },
+    "workbookSourceId": {
+      "type": "string",
+      "defaultValue": "[concat(resourceGroup().id, '/providers/microsoft.operationalinsights/workspaces/', parameters('workspaceLAW'))]",
+      "metadata": {
+        "description": "The id of resource instance to which the workbook will be associated"
+      }
+    },
+    "workbookId": {
+      "type": "string",
+      "defaultValue": "[newGuid()]",
+      "metadata": {
+        "description": "The unique guid for this workbook instance"
+      }
+    },
+    "workbookConnectedCluster": {
+      "type": "string",
+      "defaultValue": "[concat(resourceGroup().id, '/providers/Microsoft.Kubernetes/connectedClusters/', parameters('connectedCluster'))]",
+      "metadata": {
+        "description": "The id of resource instance to which the workbook will be associated"
+      }
+    },
+    "workbookLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The Azure region with which the workbook will be associated"
+      }
+    }
+  },
+  "variables": {
+    "workbookContent": {
+      "version": "Notebook/1.0",
+      "items": [
+        {
+          "type": 1,
+          "content": {
+            "json": "# Hardware Validation\n---\n"
+          },
+          "name": "text - 2"
+        },
+        {
+          "type": 9,
+          "content": {
+            "version": "KqlParameterItem/1.0",
+            "parameters": [
+              {
+                "id": "f4412724-9e78-4ae8-b728-f86cae31410e",
+                "version": "KqlParameterItem/1.0",
+                "name": "Timeframe",
+                "type": 4,
+                "isRequired": true,
+                "value": {
+                  "durationMs": 5184000000
+                },
+                "typeSettings": {
+                  "selectableValues": [
+                    {
+                      "durationMs": 300000
+                    },
+                    {
+                      "durationMs": 900000
+                    },
+                    {
+                      "durationMs": 1800000
+                    },
+                    {
+                      "durationMs": 3600000
+                    },
+                    {
+                      "durationMs": 14400000
+                    },
+                    {
+                      "durationMs": 43200000
+                    },
+                    {
+                      "durationMs": 86400000
+                    },
+                    {
+                      "durationMs": 172800000
+                    },
+                    {
+                      "durationMs": 259200000
+                    },
+                    {
+                      "durationMs": 604800000
+                    },
+                    {
+                      "durationMs": 1209600000
+                    },
+                    {
+                      "durationMs": 2419200000
+                    },
+                    {
+                      "durationMs": 2592000000
+                    },
+                    {
+                      "durationMs": 5184000000
+                    },
+                    {
+                      "durationMs": 7776000000
+                    }
+                  ],
+                  "allowCustom": true
+                },
+                "timeContext": {
+                  "durationMs": 86400000
+                }
+              },
+              {
+                "id": "12e116f1-49d5-4887-8458-03c929f6ab0f",
+                "version": "KqlParameterItem/1.0",
+                "name": "Zone",
+                "type": 2,
+                "isRequired": true,
+                "query": "m16Demo_CL\r\n| distinct cluster_s",
+                "value": "m16",
+                "typeSettings": {
+                  "additionalResourceOptions": [],
+                  "showDefault": false
+                },
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "Timeframe",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "label": "Cluster"
+              },
+              {
+                "id": "ada6c4c7-0de9-4afd-a209-b63bba3b35a8",
+                "version": "KqlParameterItem/1.0",
+                "name": "Computer",
+                "type": 2,
+                "isRequired": true,
+                "query": "m16Demo_CL\r\n| distinct devices_name_s",
+                "value": "m16r750wkr7",
+                "typeSettings": {
+                  "additionalResourceOptions": [],
+                  "showDefault": false
+                },
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "Timeframe",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "label": "HostName"
+              },
+              {
+                "version": "KqlParameterItem/1.0",
+                "name": "TriggerAction",
+                "type": 2,
+                "query": "m16Demo_CL\r\n| distinct test_trigger_s",
+                "value": "deploy",
+                "typeSettings": {
+                  "additionalResourceOptions": [],
+                  "showDefault": false
+                },
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "Timeframe",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "id": "e667334f-4278-4d27-85e3-778406db8b82"
+              }
+            ],
+            "style": "above",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          "name": "parameters - 2"
+        },
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": [
+              {
+                "type": 1,
+                "content": {
+                  "json": "# Device Info"
+                },
+                "name": "text - 2 - Copy"
+              },
+              {
+                "type": 12,
+                "content": {
+                  "version": "NotebookGroup/1.0",
+                  "groupType": "editable",
+                  "items": [
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where TimeGenerated > ago(90d)\r\n| distinct cluster_s, devices_name_s, devices_ipaddress_s, devices_sku_s, devices_vendor_s",
+                        "size": 3,
+                        "title": "Device Name",
+                        "exportParameterName": "Row",
+                        "exportDefaultValue": "{}",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "tiles",
+                        "gridSettings": {
+                          "sortBy": [
+                            {
+                              "itemKey": "devices_name_s",
+                              "sortOrder": 1
+                            }
+                          ]
+                        },
+                        "sortBy": [
+                          {
+                            "itemKey": "devices_name_s",
+                            "sortOrder": 1
+                          }
+                        ],
+                        "tileSettings": {
+                          "titleContent": {},
+                          "leftContent": {
+                            "columnMatch": "devices_name_s",
+                            "formatter": 12,
+                            "formatOptions": {
+                              "palette": "auto"
+                            }
+                          },
+                          "showBorder": false,
+                          "size": "auto"
+                        }
+                      },
+                      "customWidth": "25",
+                      "name": "query - 0 - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where TimeGenerated > ago(90d)\r\n| distinct cluster_s, devices_name_s, devices_ipaddress_s, devices_sku_s, devices_vendor_s",
+                        "size": 3,
+                        "title": "Device SKU",
+                        "timeContextFromParameter": "Timeframe",
+                        "exportParameterName": "Row",
+                        "exportDefaultValue": "{}",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "tiles",
+                        "gridSettings": {
+                          "sortBy": [
+                            {
+                              "itemKey": "devices_name_s",
+                              "sortOrder": 1
+                            }
+                          ]
+                        },
+                        "sortBy": [
+                          {
+                            "itemKey": "devices_name_s",
+                            "sortOrder": 1
+                          }
+                        ],
+                        "tileSettings": {
+                          "titleContent": {},
+                          "leftContent": {
+                            "columnMatch": "devices_sku_s",
+                            "formatter": 12,
+                            "formatOptions": {
+                              "palette": "auto"
+                            }
+                          },
+                          "showBorder": false,
+                          "size": "auto"
+                        }
+                      },
+                      "customWidth": "45",
+                      "name": "query - 0 - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where TimeGenerated > ago(90d)\r\n| distinct cluster_s, devices_name_s, devices_ipaddress_s, devices_sku_s, devices_vendor_s",
+                        "size": 3,
+                        "title": "Device Vendor",
+                        "timeContextFromParameter": "Timeframe",
+                        "exportParameterName": "Row",
+                        "exportDefaultValue": "{}",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "tiles",
+                        "gridSettings": {
+                          "sortBy": [
+                            {
+                              "itemKey": "devices_name_s",
+                              "sortOrder": 1
+                            }
+                          ]
+                        },
+                        "sortBy": [
+                          {
+                            "itemKey": "devices_name_s",
+                            "sortOrder": 1
+                          }
+                        ],
+                        "tileSettings": {
+                          "titleContent": {},
+                          "leftContent": {
+                            "columnMatch": "devices_vendor_s",
+                            "formatter": 12,
+                            "formatOptions": {
+                              "palette": "auto"
+                            }
+                          },
+                          "showBorder": false,
+                          "size": "auto"
+                        }
+                      },
+                      "customWidth": "15",
+                      "name": "query - 0 - Copy - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where TimeGenerated > ago(90d)\r\n| distinct cluster_s, devices_name_s, devices_ipaddress_s, devices_sku_s, devices_vendor_s",
+                        "size": 3,
+                        "title": "IP address",
+                        "timeContextFromParameter": "Timeframe",
+                        "exportParameterName": "Row",
+                        "exportDefaultValue": "{}",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "tiles",
+                        "gridSettings": {
+                          "sortBy": [
+                            {
+                              "itemKey": "devices_name_s",
+                              "sortOrder": 1
+                            }
+                          ]
+                        },
+                        "sortBy": [
+                          {
+                            "itemKey": "devices_name_s",
+                            "sortOrder": 1
+                          }
+                        ],
+                        "tileSettings": {
+                          "titleContent": {},
+                          "leftContent": {
+                            "columnMatch": "devices_ipaddress_s",
+                            "formatter": 12,
+                            "formatOptions": {
+                              "palette": "auto"
+                            }
+                          },
+                          "showBorder": false,
+                          "size": "auto"
+                        }
+                      },
+                      "customWidth": "15",
+                      "name": "query - 0 - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where TimeGenerated > ago(90d)\r\n| where '{Row}' == '{}' or (devices_name_s == row.devices_name_s)\r\n| project devices_name_s, cluster_result_s, devices_boot_info_boot_info_result_s, devices_device_result_s, devices_device_login_s, devices_system_info_system_info_result_s, devices_health_info_health_info_result_s, devices_network_info_network_info_result_s, devices_drive_info_drive_info_result_s\r\n| summarize arg_max(cluster_result_s, devices_boot_info_boot_info_result_s, devices_device_result_s, devices_device_login_s, devices_system_info_system_info_result_s, devices_health_info_health_info_result_s, devices_network_info_network_info_result_s, devices_drive_info_drive_info_result_s) by tostring(devices_name_s)\r\n| extend ClusterResult = cluster_result_s, DeviceBootResult = devices_boot_info_boot_info_result_s, DeviceResult = devices_device_result_s, DeviceLogin = devices_device_login_s, SystemResult = devices_system_info_system_info_result_s, HealthResult = devices_health_info_health_info_result_s, NetworkResult = devices_network_info_network_info_result_s, DriveResult = devices_drive_info_drive_info_result_s",
+                        "size": 3,
+                        "title": "Device Result",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "devices_name_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "cluster_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_boot_info_boot_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_device_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_device_login_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_system_info_system_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_health_info_health_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_network_info_network_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_drive_info_drive_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "ClusterResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "DeviceBootResult",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "DeviceResult",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "DeviceLogin",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "SystemResult",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "HealthResult",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "NetworkResult",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "DriveResult",
+                              "formatter": 5
+                            }
+                          ]
+                        },
+                        "sortBy": [],
+                        "tileSettings": {
+                          "showBorder": false
+                        }
+                      },
+                      "customWidth": "20",
+                      "name": "query - 3",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where TimeGenerated > ago(90d)\r\n| where '{Row}' == '{}' or (devices_name_s == row.devices_name_s)\r\n| project devices_name_s, cluster_result_s, devices_boot_info_boot_info_result_s, devices_device_result_s, devices_device_login_s, devices_system_info_system_info_result_s, devices_health_info_health_info_result_s, devices_network_info_network_info_result_s, devices_drive_info_drive_info_result_s\r\n| summarize arg_max(cluster_result_s, devices_boot_info_boot_info_result_s, devices_device_result_s, devices_device_login_s, devices_system_info_system_info_result_s, devices_health_info_health_info_result_s, devices_network_info_network_info_result_s, devices_drive_info_drive_info_result_s) by tostring(devices_name_s)\r\n| extend ClusterResult = cluster_result_s, DeviceBootResult = devices_boot_info_boot_info_result_s, DeviceResult = devices_device_result_s, DeviceLogin = devices_device_login_s, SystemResult = devices_system_info_system_info_result_s, HealthResult = devices_health_info_health_info_result_s, NetworkResult = devices_network_info_network_info_result_s, DriveResult = devices_drive_info_drive_info_result_s",
+                        "size": 3,
+                        "title": "Device Result",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "devices_name_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "cluster_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_boot_info_boot_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_device_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_device_login_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_system_info_system_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_health_info_health_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_network_info_network_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "devices_drive_info_drive_info_result_s",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "ClusterResult",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "DeviceBootResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "DeviceResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "DeviceLogin",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "SystemResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "HealthResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "NetworkResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "DriveResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "sortBy": []
+                      },
+                      "customWidth": "80",
+                      "name": "query - 3 - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    }
+                  ]
+                },
+                "name": "group - 11",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 1,
+                "content": {
+                  "json": "# Metric Info"
+                },
+                "name": "text - 7"
+              },
+              {
+                "type": 11,
+                "content": {
+                  "version": "LinkItem/1.0",
+                  "style": "tabs",
+                  "links": [
+                    {
+                      "id": "d1ce8794-a15e-4d2a-9408-d11ccfd6a6d9",
+                      "cellValue": "setTab",
+                      "linkTarget": "parameter",
+                      "linkLabel": "System",
+                      "subTarget": "System",
+                      "preText": "System",
+                      "style": "link"
+                    },
+                    {
+                      "id": "f0c0bfdd-e8d4-4960-884f-a7c0473f86df",
+                      "cellValue": "setTab",
+                      "linkTarget": "parameter",
+                      "linkLabel": "Network",
+                      "subTarget": "Network",
+                      "preText": "Network",
+                      "style": "link"
+                    },
+                    {
+                      "id": "ed04fa95-ac97-4935-b569-aae799f6a0f7",
+                      "cellValue": "setTab",
+                      "linkTarget": "parameter",
+                      "linkLabel": "Health",
+                      "subTarget": "Health",
+                      "style": "link"
+                    },
+                    {
+                      "id": "9f492400-3517-48ae-bf9c-33847e9a68ed",
+                      "cellValue": "setTab",
+                      "linkTarget": "parameter",
+                      "linkLabel": "Disk",
+                      "subTarget": "Disk",
+                      "style": "link"
+                    }
+                  ]
+                },
+                "name": "links - 3"
+              },
+              {
+                "type": 12,
+                "content": {
+                  "version": "NotebookGroup/1.0",
+                  "groupType": "editable",
+                  "items": [
+                    {
+                      "type": 12,
+                      "content": {
+                        "version": "NotebookGroup/1.0",
+                        "groupType": "editable",
+                        "items": [
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| extend systemInfo=parse_json(devices_system_info_result_detail_s)\n| project TimeGenerated, devices_name_s, systemInfo\n| mv-expand systemInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (systemInfo.['field_name']), Expected = (systemInfo.['expected']), Fetched = (systemInfo.['fetched']), Result = (systemInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Cpu = iff(FieldName == \"cpu_sockets\", Fetched, \"\"), Mem = iff(FieldName == \"memory_capacity_GB\", Fetched, \"\"), Mod = iff(FieldName == \"Model\", Fetched, \"\"), CpuResult = iff(FieldName == \"cpu_sockets\", Result, \"\"), MemR = iff(FieldName == \"memory_capacity_GB\", Result, \"\"), ModR = iff(FieldName == \"Model\", Result, \"\")\n| serialize\n| extend Model1 = iff(next(Mod)!='',next(Mod),''), Model1R = iff(next(ModR)!='',next(ModR),''), Memory = iff(next(Mem)!='',next(Mem),''), MemoryResult = iff(next(MemR)!='',next(MemR),'')\n| extend Model = iff(next(Model1)!='',next(Model1),''),  ModelResult = iff(next(Model1R)!='',next(Model1R),'')\n| where Cpu!= '' and CpuResult != ''\n| project Cpu, CpuResult, Memory, MemoryResult, Model, ModelResult\n",
+                              "size": 3,
+                              "title": "Last reported system results",
+                              "timeContextFromParameter": "Timeframe",
+                              "exportParameterName": "Row",
+                              "exportDefaultValue": "{}",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "CpuResult",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "MemoryResult",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "ModelResult",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "name": "query - 2",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| extend systemInfo=parse_json(devices_system_info_result_detail_s)\n| project TimeGenerated, devices_name_s, systemInfo\n| mv-expand systemInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (systemInfo.['field_name']), Expected = (systemInfo.['expected']), Fetched = (systemInfo.['fetched']), Result = (systemInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Cpu = iff(FieldName == \"cpu_sockets\", Fetched, \"\"), Mem = iff(FieldName == \"memory_capacity_GB\", Fetched, \"\"), Mod = iff(FieldName == \"Model\", Fetched, \"\"), CpuResult = iff(FieldName == \"cpu_sockets\", Result, \"\"), MemR = iff(FieldName == \"memory_capacity_GB\", Result, \"\"), ModR = iff(FieldName == \"Model\", Result, \"\")\n| serialize\n| extend Model1 = iff(next(Mod)!='',next(Mod),''), Model1R = iff(next(ModR)!='',next(ModR),''), Memory = iff(next(Mem)!='',next(Mem),''), MemoryResult = iff(next(MemR)!='',next(MemR),'')\n| extend Model = iff(next(Model1)!='',next(Model1),''),  ModelResult = iff(next(Model1R)!='',next(Model1R),'')\n| where Cpu!= '' and CpuResult != ''\n| extend CpuPass=iff(CpuResult == 'Pass', 1, 0), MemoryPass=iff(MemoryResult == 'Pass', 1, 0), ModelPass=iff(ModelResult == 'Pass', 1, 0), CpuFail=iff(CpuResult == 'Fail', 1, 0), MemoryFail=iff(MemoryResult == 'Fail', 1, 0), ModelFail=iff(ModelResult == 'Fail', 1, 0)\n| summarize CpuPass = todecimal(sum(CpuPass)), MemoryPass = todecimal(sum(MemoryPass)), ModelPass = todecimal(sum(ModelPass)), CpuFail = todecimal(sum(CpuFail)), MemoryFail = todecimal(sum(MemoryFail)), ModelFail = todecimal(sum(ModelFail)) by DeviceName\n| extend CpuPass_Percentage = todecimal(CpuPass/(CpuPass + CpuFail))*100, MemoryPass_Percentage = todecimal(MemoryPass/(MemoryPass + MemoryFail))*100, ModelPass_Percentage = todecimal(ModelPass/(ModelPass + ModelFail))*100\n| project-reorder CpuPass, CpuFail, CpuPass_Percentage, MemoryPass, MemoryFail, MemoryPass_Percentage, ModelPass, ModelFail, ModelPass_Percentage",
+                              "size": 3,
+                              "aggregation": 3,
+                              "title": "System Details",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "table",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "CpuPass",
+                                    "formatter": 22,
+                                    "formatOptions": {
+                                      "compositeBarSettings": {
+                                        "labelText": "",
+                                        "columnSettings": [
+                                          {
+                                            "columnName": "CpuPass",
+                                            "color": "green"
+                                          },
+                                          {
+                                            "columnName": "CpuFail",
+                                            "color": "redBright"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "CpuFail",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "CpuPass_Percentage",
+                                    "formatter": 0,
+                                    "numberFormat": {
+                                      "unit": 1,
+                                      "options": {
+                                        "style": "decimal"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "MemoryPass",
+                                    "formatter": 22,
+                                    "formatOptions": {
+                                      "compositeBarSettings": {
+                                        "labelText": "",
+                                        "columnSettings": [
+                                          {
+                                            "columnName": "MemoryPass",
+                                            "color": "green"
+                                          },
+                                          {
+                                            "columnName": "MemoryFail",
+                                            "color": "redBright"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "MemoryFail",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "MemoryPass_Percentage",
+                                    "formatter": 0,
+                                    "numberFormat": {
+                                      "unit": 1,
+                                      "options": {
+                                        "style": "decimal"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "ModelPass",
+                                    "formatter": 22,
+                                    "formatOptions": {
+                                      "compositeBarSettings": {
+                                        "labelText": "",
+                                        "columnSettings": [
+                                          {
+                                            "columnName": "ModelPass",
+                                            "color": "green"
+                                          },
+                                          {
+                                            "columnName": "ModelFail",
+                                            "color": "redBright"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "ModelFail",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "ModelPass_Percentage",
+                                    "formatter": 0,
+                                    "numberFormat": {
+                                      "unit": 1,
+                                      "options": {
+                                        "style": "decimal"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  }
+                                ]
+                              },
+                              "graphSettings": {
+                                "type": 0
+                              },
+                              "chartSettings": {
+                                "xAxis": "TimeGenerated",
+                                "yAxis": ["Expected", "Fetched"],
+                                "ySettings": {
+                                  "min": 0,
+                                  "max": 4
+                                }
+                              },
+                              "mapSettings": {
+                                "locInfo": "LatLong"
+                              }
+                            },
+                            "name": "query - 2 - Copy - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          }
+                        ]
+                      },
+                      "customWidth": "55",
+                      "name": "group - 3"
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| extend systemInfo=parse_json(devices_system_info_result_detail_s)\n| project TimeGenerated, devices_name_s, systemInfo\n| mv-expand systemInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (systemInfo.['field_name']), Expected = (systemInfo.['expected']), Fetched = (systemInfo.['fetched']), Result = (systemInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Cpu = iff(FieldName == \"cpu_sockets\", Fetched, \"\"), Mem = iff(FieldName == \"memory_capacity_GB\", Fetched, \"\"), Mod = iff(FieldName == \"Model\", Fetched, \"\"), CpuResult = iff(FieldName == \"cpu_sockets\", Result, \"\"), MemR = iff(FieldName == \"memory_capacity_GB\", Result, \"\"), ModR = iff(FieldName == \"Model\", Result, \"\")\n| serialize\n| extend Model1 = iff(next(Mod)!='',next(Mod),''), Model1R = iff(next(ModR)!='',next(ModR),''), Memory = iff(next(Mem)!='',next(Mem),''), MemoryResult = iff(next(MemR)!='',next(MemR),'')\n| extend Model = iff(next(Model1)!='',next(Model1),''),  ModelResult = iff(next(Model1R)!='',next(Model1R),'')\n| where Cpu!= '' and CpuResult != ''",
+                        "size": 3,
+                        "aggregation": 3,
+                        "title": "System Details",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "DeviceName",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "FieldName",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Expected",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Fetched",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Result",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Mem",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Mod",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "CpuResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "MemR",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "ModR",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Model1",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Model1R",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "MemoryResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "ModelResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "xAxis": "TimeGenerated",
+                          "yAxis": ["Expected", "Fetched"],
+                          "ySettings": {
+                            "min": 0,
+                            "max": 4
+                          }
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "45",
+                      "name": "query - 2 - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    }
+                  ]
+                },
+                "conditionalVisibility": {
+                  "parameterName": "setTab",
+                  "comparison": "isEqualTo",
+                  "value": "System"
+                },
+                "name": "System Tab"
+              },
+              {
+                "type": 12,
+                "content": {
+                  "version": "NotebookGroup/1.0",
+                  "groupType": "editable",
+                  "items": [
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend NetworkInfo=parse_json(devices_network_info_result_detail_s)\n| project TimeGenerated, devices_name_s, NetworkInfo\n| mv-expand NetworkInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (NetworkInfo.['field_name']), Expected = (NetworkInfo.['expected']), Fetched = (NetworkInfo.['fetched']), Result = (NetworkInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Port = s[0], Type = s[1]\n| extend Port = tostring(Port)\n| extend LinkS = iff(Type == \"LinkStatus\", Fetched, \"\"), Model = iff(Type == \"Model\", Fetched, \"\"), LinkResult = iff(Type == \"LinkStatus\", Result, \"\"), ModelResult = iff(Type == \"Model\", Result, \"\")\n| serialize\n| extend LinkStatus = iff(isempty(LinkS),prev(LinkS),\"\"), LinkResult = iff(isempty(LinkS),prev(LinkResult),\"\")\n| project-away DeviceName, s, FieldName, LinkS, Type, Expected, Fetched, Result\n| where Model!= \"\"\n| project-reorder Port, LinkStatus, LinkResult, Model, ModelResult",
+                        "size": 0,
+                        "title": "Last reported Network results",
+                        "timeContextFromParameter": "Timeframe",
+                        "exportParameterName": "Row",
+                        "exportDefaultValue": "{}",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "TimeGenerated",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Result",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend NetworkInfo=parse_json(devices_network_info_result_detail_s)\n| project TimeGenerated, devices_name_s, NetworkInfo\n| mv-expand NetworkInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (NetworkInfo.['field_name']), Expected = (NetworkInfo.['expected']), Fetched = (NetworkInfo.['fetched']), Result = (NetworkInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Port = s[0], Type = s[1]\n| extend Port = tostring(Port)\n| where '{Row}' == '{}' or (Port == row.Port)\n| extend LinkS = iff(Type == \"LinkStatus\", Fetched, \"\"), Model = iff(Type == \"Model\", Fetched, \"\"), LinkResult = iff(Type == \"LinkStatus\", Result, \"\"), ModelResult = iff(Type == \"Model\", Result, \"\")\n| serialize\n| extend LinkStatus = iff(isempty(LinkS),prev(LinkS),\"\"), LinkResult = iff(isempty(LinkS),prev(LinkResult),\"\")\n| project-away DeviceName, s, FieldName, LinkS, Type, Expected, Fetched, Result\n| where Model!= \"\"\n| extend LinkPass=iff(LinkResult == 'Pass', 1, 0), ModelPass=iff(ModelResult == 'Pass', 1, 0), LinkFail=iff(LinkResult == 'Fail', 1, 0), ModelFail=iff(ModelResult == 'Fail', 1, 0)\n| summarize LinkPass = todecimal(sum(LinkPass)), ModelPass = todecimal(sum(ModelPass)), LinkFail = todecimal(sum(LinkFail)), ModelFail = todecimal(sum(ModelFail)) by Port\n| extend LinkPass_Percentage = todecimal(LinkPass/(LinkPass + LinkFail))*100,  ModelPass_Percentage = todecimal(ModelPass/(ModelPass + ModelFail))*100\n| project-reorder Port, LinkPass, LinkPass_Percentage, ModelPass, ModelPass_Percentage",
+                        "size": 0,
+                        "aggregation": 3,
+                        "title": "Network results over timeframe selected",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "LinkPass",
+                              "formatter": 22,
+                              "formatOptions": {
+                                "compositeBarSettings": {
+                                  "labelText": "",
+                                  "columnSettings": [
+                                    {
+                                      "columnName": "LinkPass",
+                                      "color": "green"
+                                    },
+                                    {
+                                      "columnName": "LinkFail",
+                                      "color": "red"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "LinkPass_Percentage",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 1,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "ModelPass",
+                              "formatter": 22,
+                              "formatOptions": {
+                                "compositeBarSettings": {
+                                  "labelText": "",
+                                  "columnSettings": [
+                                    {
+                                      "columnName": "ModelPass",
+                                      "color": "green"
+                                    },
+                                    {
+                                      "columnName": "ModelFail",
+                                      "color": "redBright"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "ModelPass_Percentage",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 1,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "LinkFail",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "ModelFail",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Total",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "PassPercent",
+                              "formatter": 22,
+                              "formatOptions": {
+                                "compositeBarSettings": {
+                                  "labelText": "",
+                                  "columnSettings": [
+                                    {
+                                      "columnName": "Pass",
+                                      "color": "green"
+                                    },
+                                    {
+                                      "columnName": "Fail",
+                                      "color": "red"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "group": "FieldName",
+                          "createOtherGroup": 10,
+                          "ySettings": {
+                            "numberFormatSettings": {
+                              "unit": 0,
+                              "options": {
+                                "style": "decimal",
+                                "useGrouping": true
+                              }
+                            }
+                          }
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2 - Copy - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 1,
+                      "content": {
+                        "json": "### 💡 _Click on a metric name above to see expeted vs actual result over entire timerange selected in below chart._"
+                      },
+                      "name": "text - 2 - Copy - Copy"
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend NetworkInfo=parse_json(devices_network_info_result_detail_s)\n| project TimeGenerated, devices_name_s, NetworkInfo\n| mv-expand NetworkInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (NetworkInfo.['field_name']), Expected = (NetworkInfo.['expected']), Fetched = (NetworkInfo.['fetched']), Result = (NetworkInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Port = s[0], Type = s[1]\n| extend Port = tostring(Port)\n| where '{Row}' == '{}' or (Port == row.Port)\n| extend LinkS = iff(Type == \"LinkStatus\", Fetched, \"\"), Model = iff(Type == \"Model\", Fetched, \"\"), LinkResult = iff(Type == \"LinkStatus\", Result, \"\"), ModelResult = iff(Type == \"Model\", Result, \"\")\n| serialize\n| extend LinkStatus = iff(isempty(LinkS),prev(LinkS),\"\"), LinkResult = iff(isempty(LinkS),prev(LinkResult),\"\")\n| project-away DeviceName, s, FieldName, LinkS, Type, Expected, Fetched, Result\n| where Model!= \"\"\n| project-reorder TimeGenerated, Port, LinkStatus, LinkResult, Model, ModelResult",
+                        "size": 3,
+                        "aggregation": 3,
+                        "title": "Network Details",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "Result",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "xAxis": "TimeGenerated",
+                          "yAxis": ["Expected", "Fetched"],
+                          "ySettings": {
+                            "min": 0,
+                            "max": 4
+                          }
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2 - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend NetworkInfo=parse_json(devices_network_info_result_detail_s)\n| project TimeGenerated, devices_name_s, NetworkInfo\n| mv-expand NetworkInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (NetworkInfo.['field_name']), Expected = (NetworkInfo.['expected']), Fetched = (NetworkInfo.['fetched']), Result = (NetworkInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Port = s[0], Type = s[1]\n| extend Port = tostring(Port)\n| where '{Row}' == '{}' or (Port == row.Port)\n| extend LinkS = iff(Type == \"LinkStatus\", Fetched, \"\"), Model = iff(Type == \"Model\", Fetched, \"\"), LinkResult = iff(Type == \"LinkStatus\", Result, \"\"), ModelResult = iff(Type == \"Model\", Result, \"\")\n| serialize\n| extend LinkStatus = iff(isempty(LinkS),prev(LinkS),\"\"), LinkResult = iff(isempty(LinkS),prev(LinkResult),\"\")\n| project-away DeviceName, s, FieldName, LinkS, Type, Expected, Fetched, Result\n| where Model!= \"\"\n| project-reorder TimeGenerated, Port, LinkStatus, LinkResult, Model, ModelResult\n| extend LinkPass=iff(LinkResult == 'Pass', 1, 0), ModelPass=iff(ModelResult == 'Pass', 1, 0), LinkFail=iff(LinkResult == 'Fail', 1, 0), ModelFail=iff(ModelResult == 'Fail', 1, 0)\n| summarize LinkPass = todecimal(sum(LinkPass)), ModelPass = todecimal(sum(ModelPass)), LinkFail = todecimal(sum(LinkFail)), ModelFail = todecimal(sum(ModelFail)) by Port\n| project-reorder Port, LinkPass, LinkFail, ModelPass, ModelFail",
+                        "size": 0,
+                        "aggregation": 3,
+                        "title": "Total number of PASS per NIC",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "unstackedbar",
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "xAxis": "Port",
+                          "yAxis": [
+                            "ModelFail",
+                            "ModelPass",
+                            "LinkFail",
+                            "LinkPass"
+                          ],
+                          "seriesLabelSettings": [
+                            {
+                              "seriesName": "ModelPass",
+                              "color": "green"
+                            },
+                            {
+                              "seriesName": "ModelFail",
+                              "color": "red"
+                            },
+                            {
+                              "seriesName": "LinkPass",
+                              "color": "blue"
+                            },
+                            {
+                              "seriesName": "LinkFail",
+                              "color": "redBright"
+                            }
+                          ]
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2 - Copy - Copy - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend NetworkInfo=parse_json(devices_network_info_result_detail_s)\n| project TimeGenerated, devices_name_s, NetworkInfo\n| mv-expand NetworkInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (NetworkInfo.['field_name']), Expected = (NetworkInfo.['expected']), Fetched = (NetworkInfo.['fetched']), Result = (NetworkInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Port = s[0], Type = s[1]\n| extend Port = tostring(Port)\n| extend LinkS = iff(Type == \"LinkStatus\", Fetched, \"\"), Model = iff(Type == \"Model\", Fetched, \"\"), LinkResult = iff(Type == \"LinkStatus\", Result, \"\"), ModelResult = iff(Type == \"Model\", Result, \"\")\n| serialize\n| extend LinkStatus = iff(isempty(LinkS),prev(LinkS),\"\"), LinkResult = iff(isempty(LinkS),prev(LinkResult),\"\")\n| project-away DeviceName, s, FieldName, LinkS, Type, Expected, Fetched, Result\n| where Model!= \"\"\n| project-reorder TimeGenerated, Port, LinkStatus, LinkResult, Model, ModelResult\n| where '{Row}' == '{}' or (Port == row.Port)\n| extend Result_binary = iff(ModelResult == 'Pass' and LinkResult == 'Pass', 1, 0)\n| summarize count(Result_binary) by TimeGenerated, Port",
+                        "size": 0,
+                        "aggregation": 3,
+                        "title": "Metric result over time",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "timechart",
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "name": "query - 2 - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    }
+                  ]
+                },
+                "conditionalVisibility": {
+                  "parameterName": "setTab",
+                  "comparison": "isEqualTo",
+                  "value": "Network"
+                },
+                "name": "Network Tab"
+              },
+              {
+                "type": 12,
+                "content": {
+                  "version": "NotebookGroup/1.0",
+                  "groupType": "editable",
+                  "items": [
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend DriveInfo=parse_json(devices_drive_info_result_detail_s)\n| project TimeGenerated, devices_name_s, DriveInfo\n| mv-expand DriveInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (DriveInfo.['field_name']), Expected = (DriveInfo.['expected']), Fetched = (DriveInfo.['fetched']), Result = (DriveInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Disk = strcat(s[0],'_',s[1]), Type = iff(s[3]=='',s[2],strcat(s[2],'_',s[3]))\n| extend Disk = tostring(Disk)\n| extend DriveType = iff(Type == \"Type\", Fetched, \"\"), CapacityVal = iff(Type == \"Capacity_GB\", Fetched, \"\"), TypeResult = iff(Type == \"Type\", Result, \"\"),CapacityResult = iff(Type == \"Capacity_GB\", Result, \"\")\n| serialize\n| extend Capacity = iff(isempty(CapacityVal),prev(CapacityVal),\"\"), CapacityResult = iff(isempty(CapacityVal),prev(CapacityResult),\"\")\n| where DriveType!= \"\"\n| project-away DeviceName, s, FieldName, Type, Expected, Fetched, Result, CapacityVal\n| project-reorder Disk, DriveType, TypeResult, Capacity, CapacityResult",
+                        "size": 0,
+                        "title": "Last reported Disk results",
+                        "timeContextFromParameter": "Timeframe",
+                        "exportParameterName": "Row",
+                        "exportDefaultValue": "{}",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "TimeGenerated",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Result",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend DriveInfo=parse_json(devices_drive_info_result_detail_s)\n| project TimeGenerated, devices_name_s, DriveInfo\n| mv-expand DriveInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (DriveInfo.['field_name']), Expected = (DriveInfo.['expected']), Fetched = (DriveInfo.['fetched']), Result = (DriveInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Disk = strcat(s[0],'_',s[1]), Type = iff(s[3]=='',s[2],strcat(s[2],'_',s[3]))\n| extend Disk = tostring(Disk)\n| where '{Row}' == '{}' or (Disk == row.Disk)\n| extend DriveType = iff(Type == \"Type\", Fetched, \"\"), CapacityVal = iff(Type == \"Capacity_GB\", Fetched, \"\"), TypeResult = iff(Type == \"Type\", Result, \"\"),CapacityResult = iff(Type == \"Capacity_GB\", Result, \"\")\n| serialize\n| extend Capacity = iff(isempty(CapacityVal),prev(CapacityVal),\"\"), CapacityResult = iff(isempty(CapacityVal),prev(CapacityResult),\"\")\n| where DriveType!= \"\"\n| extend TypePass=iff(TypeResult == 'Pass', 1, 0), CapacityPass=iff(CapacityResult == 'Pass', 1, 0), TypeFail=iff(TypeResult == 'Fail', 1, 0), CapacityFail=iff(CapacityResult == 'Fail', 1, 0)\n| summarize TypePass = todecimal(sum(TypePass)), CapacityPass = todecimal(sum(CapacityPass)), TypeFail = todecimal(sum(TypeFail)), CapacityFail = todecimal(sum(CapacityFail)) by Disk\n| extend TypePass_Percentage = todecimal(TypePass/(TypePass + TypeFail))*100, CapacityPass_Percentage = todecimal(CapacityPass/(CapacityPass + CapacityFail))*100\n| project-reorder Disk, TypePass, TypePass_Percentage, CapacityPass, CapacityPass_Percentage",
+                        "size": 0,
+                        "aggregation": 3,
+                        "title": "Disk results over timeframe selected",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "TypePass",
+                              "formatter": 22,
+                              "formatOptions": {
+                                "compositeBarSettings": {
+                                  "labelText": "",
+                                  "columnSettings": [
+                                    {
+                                      "columnName": "TypePass",
+                                      "color": "green"
+                                    },
+                                    {
+                                      "columnName": "TypeFail",
+                                      "color": "redBright"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "TypePass_Percentage",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 1,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "CapacityPass",
+                              "formatter": 22,
+                              "formatOptions": {
+                                "compositeBarSettings": {
+                                  "labelText": "",
+                                  "columnSettings": [
+                                    {
+                                      "columnName": "CapacityPass",
+                                      "color": "green"
+                                    },
+                                    {
+                                      "columnName": "CapacityFail",
+                                      "color": "redBright"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "CapacityPass_Percentage",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 1,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "TypeFail",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "CapacityFail",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "Total",
+                              "formatter": 5
+                            },
+                            {
+                              "columnMatch": "PassPercent",
+                              "formatter": 22,
+                              "formatOptions": {
+                                "compositeBarSettings": {
+                                  "labelText": "",
+                                  "columnSettings": [
+                                    {
+                                      "columnName": "Pass",
+                                      "color": "green"
+                                    },
+                                    {
+                                      "columnName": "Fail",
+                                      "color": "red"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "group": "FieldName",
+                          "createOtherGroup": 10,
+                          "ySettings": {
+                            "numberFormatSettings": {
+                              "unit": 0,
+                              "options": {
+                                "style": "decimal",
+                                "useGrouping": true
+                              }
+                            }
+                          }
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2 - Copy - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 1,
+                      "content": {
+                        "json": "### 💡 _Click on a metric name above to see expeted vs actual result over entire timerange selected in below charts._"
+                      },
+                      "name": "text - 2 - Copy - Copy"
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend DriveInfo=parse_json(devices_drive_info_result_detail_s)\n| project TimeGenerated, devices_name_s, DriveInfo\n| mv-expand DriveInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (DriveInfo.['field_name']), Expected = (DriveInfo.['expected']), Fetched = (DriveInfo.['fetched']), Result = (DriveInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Disk = strcat(s[0],'_',s[1]), Type = iff(s[3]=='',s[2],strcat(s[2],'_',s[3]))\n| extend Disk = tostring(Disk)\n| where '{Row}' == '{}' or (Disk == row.Disk)\n| extend DriveType = iff(Type == \"Type\", Fetched, \"\"), CapacityVal = iff(Type == \"Capacity_GB\", Fetched, \"\"), TypeResult = iff(Type == \"Type\", Result, \"\"),CapacityResult = iff(Type == \"Capacity_GB\", Result, \"\")\n| serialize\n| extend Capacity = iff(isempty(CapacityVal),prev(CapacityVal),\"\"), CapacityResult = iff(isempty(CapacityVal),prev(CapacityResult),\"\")\n| where DriveType!= \"\"\n| project-away s, FieldName, CapacityVal, DeviceName, Result, Expected, Fetched, Type\n| project-reorder TimeGenerated, Disk, DriveType, TypeResult, Capacity, CapacityResult",
+                        "size": 3,
+                        "aggregation": 3,
+                        "title": "Disk Details",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "TypeResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "columnMatch": "CapacityResult",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pass",
+                                    "representation": "success",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Fail",
+                                    "representation": "failed",
+                                    "text": "{0}{1}"
+                                  },
+                                  {
+                                    "operator": "Default",
+                                    "thresholdValue": null,
+                                    "representation": "more",
+                                    "text": "{0}{1}"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "labelSettings": [
+                            {
+                              "columnId": "CapacityResult",
+                              "label": "CapacityResult"
+                            }
+                          ]
+                        },
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "xAxis": "TimeGenerated",
+                          "yAxis": ["Expected", "Fetched"],
+                          "ySettings": {
+                            "min": 0,
+                            "max": 4
+                          }
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2 - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend DriveInfo=parse_json(devices_drive_info_result_detail_s)\n| project TimeGenerated, devices_name_s, DriveInfo\n| mv-expand DriveInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (DriveInfo.['field_name']), Expected = (DriveInfo.['expected']), Fetched = (DriveInfo.['fetched']), Result = (DriveInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Disk = strcat(s[0],'_',s[1]), Type = iff(s[3]=='',s[2],strcat(s[2],'_',s[3]))\n| extend Disk = tostring(Disk)\n| where '{Row}' == '{}' or (Disk == row.Disk)\n| extend DriveType = iff(Type == \"Type\", Fetched, \"\"), CapacityVal = iff(Type == \"Capacity_GB\", Fetched, \"\"), TypeResult = iff(Type == \"Type\", Result, \"\"),CapacityResult = iff(Type == \"Capacity_GB\", Result, \"\")\n| serialize\n| extend Capacity = iff(isempty(CapacityVal),prev(CapacityVal),\"\"), CapacityResult = iff(isempty(CapacityVal),prev(CapacityResult),\"\")\n| where DriveType!= \"\"\n| project-away s, FieldName, CapacityVal, DeviceName, Result, Expected, Fetched, Type\n| project-reorder TimeGenerated, Disk, DriveType, TypeResult, Capacity, CapacityResult\n| extend TypePass=iff(TypeResult == 'Pass', 1, 0), CapacityPass=iff(CapacityResult == 'Pass', 1, 0), TypeFail=iff(TypeResult == 'Fail', 1, 0), CapacityFail=iff(CapacityResult == 'Fail', 1, 0)\n| summarize TypePass = todecimal(sum(TypePass)), CapacityPass = todecimal(sum(CapacityPass)), TypeFail = todecimal(sum(TypeFail)), CapacityFail = todecimal(sum(CapacityFail)) by Disk",
+                        "size": 3,
+                        "aggregation": 3,
+                        "title": "Total number of PASS per metric",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "unstackedbar",
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "chartSettings": {
+                          "xAxis": "Disk",
+                          "yAxis": [
+                            "CapacityPass",
+                            "TypePass",
+                            "CapacityFail",
+                            "TypeFail"
+                          ],
+                          "seriesLabelSettings": [
+                            {
+                              "seriesName": "CapacityPass",
+                              "color": "green"
+                            },
+                            {
+                              "seriesName": "TypePass",
+                              "color": "blue"
+                            },
+                            {
+                              "seriesName": "CapacityFail",
+                              "color": "redBright"
+                            },
+                            {
+                              "seriesName": "TypeFail",
+                              "color": "red"
+                            }
+                          ]
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "customWidth": "50",
+                      "name": "query - 2 - Copy - Copy - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "let row = dynamic({Row});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend DriveInfo=parse_json(devices_drive_info_result_detail_s)\n| project TimeGenerated, devices_name_s, DriveInfo\n| mv-expand DriveInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (DriveInfo.['field_name']), Expected = (DriveInfo.['expected']), Fetched = (DriveInfo.['fetched']), Result = (DriveInfo.['comparison_result'])\n| extend  FieldName = tostring(FieldName)\n| extend s = split(FieldName,\"_\")\n| extend Disk = strcat(s[0],'_',s[1]), Type = iff(s[3]=='',s[2],strcat(s[2],'_',s[3]))\n| extend Disk = tostring(Disk)\n| where '{Row}' == '{}' or (Disk == row.Disk)\n| extend DriveType = iff(Type == \"Type\", Fetched, \"\"), CapacityVal = iff(Type == \"Capacity_GB\", Fetched, \"\"), TypeResult = iff(Type == \"Type\", Result, \"\"),CapacityResult = iff(Type == \"Capacity_GB\", Result, \"\")\n| serialize\n| extend Capacity = iff(isempty(CapacityVal),prev(CapacityVal),\"\"), CapacityResult = iff(isempty(CapacityVal),prev(CapacityResult),\"\")\n| where DriveType!= \"\"\n| extend Result_binary = iff(CapacityResult == 'Pass' and TypeResult == 'Pass', 1, 0)\n| summarize count(Result_binary) by TimeGenerated, Disk",
+                        "size": 3,
+                        "aggregation": 3,
+                        "title": "Metric result over time",
+                        "timeContextFromParameter": "Timeframe",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "visualization": "timechart",
+                        "graphSettings": {
+                          "type": 0
+                        },
+                        "mapSettings": {
+                          "locInfo": "LatLong"
+                        }
+                      },
+                      "name": "query - 2 - Copy - Copy",
+                      "styleSettings": {
+                        "showBorder": true
+                      }
+                    }
+                  ]
+                },
+                "conditionalVisibility": {
+                  "parameterName": "setTab",
+                  "comparison": "isEqualTo",
+                  "value": "Disk"
+                },
+                "name": "Disk Tab"
+              },
+              {
+                "type": 12,
+                "content": {
+                  "version": "NotebookGroup/1.0",
+                  "groupType": "editable",
+                  "items": [
+                    {
+                      "type": 1,
+                      "content": {
+                        "json": "### 💡 _Select a Health Category to see more about the metrics under CPU/System Board/SSD/Misc._"
+                      },
+                      "name": "text - 2 - Copy - Copy - Copy"
+                    },
+                    {
+                      "type": 9,
+                      "content": {
+                        "version": "KqlParameterItem/1.0",
+                        "parameters": [
+                          {
+                            "id": "0f1ffdd7-65b5-4f4d-9824-b42379beb057",
+                            "version": "KqlParameterItem/1.0",
+                            "name": "HealthCategory",
+                            "type": 2,
+                            "isRequired": true,
+                            "query": "m16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State Disk\", \"SSD\", \"Misc\"))))\r\n| distinct Category\r\n| sort by Category asc",
+                            "typeSettings": {
+                              "additionalResourceOptions": [],
+                              "showDefault": false
+                            },
+                            "timeContext": {
+                              "durationMs": 0
+                            },
+                            "timeContextFromParameter": "Timeframe",
+                            "queryType": 0,
+                            "resourceType": "microsoft.operationalinsights/workspaces",
+                            "value": "CPU"
+                          }
+                        ],
+                        "style": "above",
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces"
+                      },
+                      "name": "parameters - 8"
+                    },
+                    {
+                      "type": 12,
+                      "content": {
+                        "version": "NotebookGroup/1.0",
+                        "groupType": "editable",
+                        "items": [
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName), Result=tostring(Result)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\n| where Category == 'CPU'\n//| extend CPU = iff (FieldName contains \"CPU1\", \"CPU1\", iff(FieldName contains \"CPU2\", \"CPU2\", \"Misc\"))\n//| order by CPU asc\n| project-reorder Category, FieldName, Expected, Fetched, Result",
+                              "size": 0,
+                              "title": "Last reported CPU Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "exportParameterName": "CPURow",
+                              "exportDefaultValue": "{}",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "TimeGenerated",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\n| where Category == 'CPU'\n| extend ResultBin = iff(Result=='Pass',1,0)\n| summarize sumif(ResultBin,Result=='Pass'), sumif(ResultBin,Result=='Fail') by tostring(Result)",
+                              "size": 3,
+                              "title": "Last reported CPU Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "piechart",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "TimeGenerated",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  }
+                                ]
+                              },
+                              "chartSettings": {
+                                "seriesLabelSettings": [
+                                  {
+                                    "seriesName": "Pass",
+                                    "color": "green"
+                                  },
+                                  {
+                                    "seriesName": "Fail",
+                                    "color": "red"
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2 - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 1,
+                            "content": {
+                              "json": "### 💡 _Click on a metric name above to see expeted vs actual result over entire timerange selected in below charts._"
+                            },
+                            "name": "text - 2 - Copy - Copy"
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({CPURow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{CPURow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\r\n| where Category == \"CPU\"\r\n//| extend CPU = iff (FieldName contains \"CPU1\", \"CPU1\", iff(FieldName contains \"CPU2\", \"CPU2\", \"Misc\"))\r\n//| order by CPU asc\r\n| project-reorder Category, TimeGenerated, FieldName, Expected, Fetched, Result",
+                              "size": 0,
+                              "title": "CPU Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({CPURow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{CPURow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\r\n| where Category == \"CPU\"\r\n| extend CPU = iff (FieldName contains \"CPU1\", \"CPU1\", iff(FieldName contains \"CPU2\", \"CPU2\", \"Misc\"))\r\n| order by CPU asc\r\n| extend Result_binary = iff(Result == 'Pass', 1, 0)\r\n| summarize count(Result_binary) by TimeGenerated, FieldName",
+                              "size": 0,
+                              "aggregation": 3,
+                              "title": "CPU Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "timechart"
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          }
+                        ]
+                      },
+                      "conditionalVisibility": {
+                        "parameterName": "HealthCategory",
+                        "comparison": "isEqualTo",
+                        "value": "CPU"
+                      },
+                      "name": "CPU"
+                    },
+                    {
+                      "type": 12,
+                      "content": {
+                        "version": "NotebookGroup/1.0",
+                        "groupType": "editable",
+                        "items": [
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State\", \"SSD\", \"Misc\"))))\n| where Category == 'Misc'\n| project-reorder Category, FieldName, Expected, Fetched, Result",
+                              "size": 3,
+                              "title": "Last reported Misc Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "exportParameterName": "MiscRow",
+                              "exportDefaultValue": "{}",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "TimeGenerated",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State\", \"SSD\", \"Misc\"))))\n| where Category == 'Misc'\n| extend ResultBin = iff(Result=='Pass',1,0)\n| summarize sumif(ResultBin,Result=='Pass'), sumif(ResultBin,Result=='Fail') by tostring(Result)\n\n\n\n\n\n\n",
+                              "size": 3,
+                              "aggregation": 3,
+                              "title": "Last reported Misc Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "piechart",
+                              "chartSettings": {
+                                "seriesLabelSettings": [
+                                  {
+                                    "seriesName": "Pass",
+                                    "color": "green"
+                                  },
+                                  {
+                                    "seriesName": "Fail",
+                                    "color": "redBright"
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2 - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 1,
+                            "content": {
+                              "json": "### 💡 _Click on a metric name above to see expeted vs actual result over entire timerange selected in below charts._"
+                            },
+                            "name": "text - 2 - Copy - Copy"
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({MiscRow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{MiscRow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State Disk\", \"SSD\", \"Misc\"))))\r\n| where Category == \"Misc\"",
+                              "size": 0,
+                              "title": "Misc Health over time",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy - Copy - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({MiscRow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{MiscRow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State Disk\", \"SSD\", \"Misc\"))))\r\n| where Category == \"Misc\"\r\n| extend Result_binary = iff(Result == 'Pass', 1, 0)\r\n| summarize count(Result_binary) by TimeGenerated, FieldName",
+                              "size": 0,
+                              "aggregation": 3,
+                              "title": "Misc Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "timechart",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy - Copy - Copy - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          }
+                        ]
+                      },
+                      "conditionalVisibility": {
+                        "parameterName": "HealthCategory",
+                        "comparison": "isEqualTo",
+                        "value": "Misc"
+                      },
+                      "name": "Misc"
+                    },
+                    {
+                      "type": 12,
+                      "content": {
+                        "version": "NotebookGroup/1.0",
+                        "groupType": "editable",
+                        "items": [
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\n| where Category == 'System Board'\n| extend SB = split(FieldName,\"System Board \")\n| extend SystemBoardCategory = SB[1]\n| project-reorder Category, SystemBoardCategory, FieldName, Expected, Fetched, Result",
+                              "size": 3,
+                              "title": "Last reported System Board Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "exportParameterName": "SystemRow",
+                              "exportDefaultValue": "{}",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "FieldName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "TimeGenerated",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "SB",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({SystemRow});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| where '{SystemRow}' == '{}' or (FieldName == row.FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\n| where Category == 'System Board'\n| extend Result_binary = iff(Result == 'Pass', 1, 0)\n| extend SB = split(FieldName,\"System Board \")\n| extend ResultBin = iff(Result=='Pass',1,0)\n| summarize sumif(ResultBin,Result=='Pass'), sumif(ResultBin,Result=='Fail') by tostring(Result)",
+                              "size": 3,
+                              "aggregation": 3,
+                              "title": "Last reported System Board Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "piechart",
+                              "chartSettings": {
+                                "xAxis": "SystemBoardCategory",
+                                "seriesLabelSettings": [
+                                  {
+                                    "seriesName": "Fail",
+                                    "color": "redBright"
+                                  },
+                                  {
+                                    "seriesName": "Pass",
+                                    "color": "green"
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2 - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 1,
+                            "content": {
+                              "json": "### 💡 _Click on a metric name above to see expeted vs actual result over entire timerange selected in below charts._"
+                            },
+                            "name": "text - 2 - Copy - Copy"
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({SystemRow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{SystemRow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\r\n| where Category == \"System Board\"\r\n| extend SB = split(FieldName,\"System Board \")\r\n| extend SystemBoardCategory = SB[1]\r\n| project-reorder Category, SystemBoardCategory, TimeGenerated, Expected, Fetched, Result",
+                              "size": 0,
+                              "title": "System Board Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "FieldName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "SB",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({SystemRow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{SystemRow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", \"Misc\")))\r\n| where Category == \"System Board\"\r\n| extend SB = split(FieldName,\"System Board \")\r\n| extend SystemBoardCategory = tostring(SB[1])\r\n| extend Result_binary = iff(Result == 'Pass', 1, 0)\r\n| summarize count(Result_binary) by TimeGenerated, SystemBoardCategory",
+                              "size": 0,
+                              "aggregation": 3,
+                              "title": "System Board Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "timechart",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "FieldName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "SB",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          }
+                        ]
+                      },
+                      "conditionalVisibility": {
+                        "parameterName": "HealthCategory",
+                        "comparison": "isEqualTo",
+                        "value": "System Board"
+                      },
+                      "name": "System Board"
+                    },
+                    {
+                      "type": 12,
+                      "content": {
+                        "version": "NotebookGroup/1.0",
+                        "groupType": "editable",
+                        "items": [
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "m16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State\", \"SSD\", \"Misc\"))))\n| where Category == 'SSD'\n| project-reorder Category, FieldName, Expected, Fetched, Result",
+                              "size": 3,
+                              "title": "Last reported SSD Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "exportParameterName": "SSDRow",
+                              "exportDefaultValue": "{}",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "TimeGenerated",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({SSDRow});\nm16Demo_CL\n| where cluster_s == '{Zone}'\n| where devices_name_s == '{Computer}'\n| where test_trigger_s == '{TriggerAction}'\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\n| project TimeGenerated, devices_name_s, HealthInfo\n| mv-expand HealthInfo\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\n| extend  FieldName = tostring(FieldName)\n| where '{SSDRow}' == '{}' or (FieldName == row.FieldName)\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State\", \"SSD\", \"Misc\"))))\n| where Category == 'SSD'\n| extend ResultBin = iff(Result=='Pass',1,0)\n| summarize sumif(ResultBin,Result=='Pass'), sumif(ResultBin,Result=='Fail') by tostring(Result)",
+                              "size": 3,
+                              "aggregation": 3,
+                              "title": "Last reported SSD Health results",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "piechart",
+                              "chartSettings": {
+                                "xAxis": "FieldName",
+                                "seriesLabelSettings": [
+                                  {
+                                    "seriesName": "Fail",
+                                    "color": "redBright"
+                                  },
+                                  {
+                                    "seriesName": "Pass",
+                                    "color": "green"
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 2 - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 1,
+                            "content": {
+                              "json": "### 💡 _Click on a metric name above to see expeted vs actual result over entire timerange selected in below charts._"
+                            },
+                            "name": "text - 2 - Copy - Copy"
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({SSDRow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{SSDRow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State Disk\", \"SSD\", \"Misc\"))))\r\n| where Category == \"SSD\"\r\n| extend SB = todynamic(iff(FieldName contains \"Solid State\",split(FieldName,\"Solid State \"), iff(FieldName contains \"SSD\", split(FieldName,\"PCIe SSD in \"), \"\")))\r\n| extend SSDInfo = SB[1]\r\n| project-reorder Category, SSDInfo, TimeGenerated, Expected, Fetched, Result",
+                              "size": 0,
+                              "title": "SSD Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "FieldName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "SB",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          },
+                          {
+                            "type": 3,
+                            "content": {
+                              "version": "KqlItem/1.0",
+                              "query": "let row = dynamic({SSDRow});\r\nm16Demo_CL\r\n| where cluster_s == '{Zone}'\r\n| where devices_name_s == '{Computer}'\r\n| where test_trigger_s == '{TriggerAction}'\r\n| extend HealthInfo=parse_json(devices_health_info_result_detail_s)\r\n| project TimeGenerated, devices_name_s, HealthInfo\r\n| mv-expand HealthInfo\r\n| project TimeGenerated, DeviceName = devices_name_s, FieldName = (HealthInfo.['field_name']), Expected = (HealthInfo.['expected']), Fetched = (HealthInfo.['fetched']), Result = (HealthInfo.['comparison_result'])\r\n| summarize arg_max(TimeGenerated,DeviceName, Expected, Fetched,Result) by tostring(FieldName)\r\n| extend  FieldName = tostring(FieldName)\r\n| where '{SSDRow}' == '{}' or (FieldName == row.FieldName)\r\n| extend Category = iff(FieldName contains \"CPU\", \"CPU\", iff(FieldName contains \"System Board\", \"System Board\", iff(FieldName contains \"SSD\", \"SSD\", iff(FieldName contains \"Solid State Disk\", \"SSD\", \"Misc\"))))\r\n| where Category == \"SSD\"\r\n| extend SB = todynamic(iff(FieldName contains \"Solid State\",split(FieldName,\"Solid State \"), iff(FieldName contains \"SSD\", split(FieldName,\"PCIe SSD in \"), \"\")))\r\n| extend SSDInfo = SB[1]\r\n| extend Result_binary = iff(Result == 'Pass', 1, 0)\r\n| summarize count(Result_binary) by TimeGenerated, FieldName",
+                              "size": 0,
+                              "aggregation": 3,
+                              "title": "SSD Health over time",
+                              "timeContextFromParameter": "Timeframe",
+                              "queryType": 0,
+                              "resourceType": "microsoft.operationalinsights/workspaces",
+                              "visualization": "timechart",
+                              "gridSettings": {
+                                "formatters": [
+                                  {
+                                    "columnMatch": "Category",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "Result",
+                                    "formatter": 18,
+                                    "formatOptions": {
+                                      "thresholdsOptions": "icons",
+                                      "thresholdsGrid": [
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Pass",
+                                          "representation": "success",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "==",
+                                          "thresholdValue": "Fail",
+                                          "representation": "failed",
+                                          "text": "{0}{1}"
+                                        },
+                                        {
+                                          "operator": "Default",
+                                          "thresholdValue": null,
+                                          "representation": "more",
+                                          "text": "{0}{1}"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "columnMatch": "FieldName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "DeviceName",
+                                    "formatter": 5
+                                  },
+                                  {
+                                    "columnMatch": "SB",
+                                    "formatter": 5
+                                  }
+                                ]
+                              }
+                            },
+                            "customWidth": "50",
+                            "name": "query - 0 - Copy - Copy - Copy",
+                            "styleSettings": {
+                              "showBorder": true
+                            }
+                          }
+                        ]
+                      },
+                      "conditionalVisibility": {
+                        "parameterName": "HealthCategory",
+                        "comparison": "isEqualTo",
+                        "value": "SSD"
+                      },
+                      "name": "SSD"
+                    }
+                  ]
+                },
+                "conditionalVisibility": {
+                  "parameterName": "setTab",
+                  "comparison": "isEqualTo",
+                  "value": "Health"
+                },
+                "name": "Health Tab"
+              }
+            ]
+          },
+          "name": "group - 5",
+          "styleSettings": {
+            "showBorder": true
+          }
+        }
+      ],
+      "isLocked": false,
+      "fallbackResourceIds": ["[parameters('workbookSourceId')]"],
+      "fromTemplateId": "community-Workbooks/LogAnalytics Workspace/Overview"
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('workbookId')]",
+      "type": "microsoft.insights/workbooks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2021-03-08",
+      "dependsOn": [],
+      "kind": "shared",
+      "properties": {
+        "displayName": "[parameters('workbookDisplayName')]",
+        "serializedData": "[string(variables('workbookContent'))]",
+        "version": "1.0",
+        "sourceId": "[parameters('workbookSourceId')]",
+        "category": "[parameters('workbookType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "workbookId": {
+      "type": "string",
+      "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]"
+    }
+  },
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+}

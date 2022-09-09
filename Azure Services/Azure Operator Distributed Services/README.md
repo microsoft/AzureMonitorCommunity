@@ -23,6 +23,10 @@ These instructions will let you deploy an Azure Workbook within your Log Analyti
 parameter. You will have the ability to select the Arc-enabled Cluster associated to that Log Analytics workspace and
 see the data for a particular cluster. The timerange can also be selected to see data for a particular timeframe.
 
+In the workbooks/templates folder, there is a workbook for Hardware Validation. This workbook should be deployed on 
+Log Analytics Workspace related to Cluster Manager (and not Cluster). One Hardware validation workbook per Cluster Manager. 
+This workbook allows you to view data collected from executions of Hardware validation from among all the clusters 
+associated to this Cluster Manager instance.
 ### Workbooks Folder Structure
 
 AzureMonitorCommunity repository path:  **`Workbooks/Preview/armTemplates`**
