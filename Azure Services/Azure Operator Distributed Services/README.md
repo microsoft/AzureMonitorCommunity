@@ -27,6 +27,7 @@ In the workbooks/templates folder, there is a workbook for Hardware Validation. 
 Log Analytics Workspace related to Cluster Manager (and not Cluster). One Hardware validation workbook per Cluster Manager. 
 This workbook allows you to view data collected from executions of Hardware validation from among all the clusters 
 associated to this Cluster Manager instance.
+
 ### Workbooks Folder Structure
 
 AzureMonitorCommunity repository path:  **`Workbooks/Preview/armTemplates`**
@@ -34,9 +35,10 @@ AzureMonitorCommunity repository path:  **`Workbooks/Preview/armTemplates`**
 - `deployWorkbooks.sh` - Shell script utility for deploying all workbooks to a log analytics workspace
 - `/templates` - Folder contains workbook templates
 
-The following sections describe these resources in greater detail.
+The following sections describe these resources in greater detail.  The sample workbooks can be deployed one at a time
+or scripting can be used to deploy multiple workbooks.
 
-### Deployment
+### Individual Workbook Deployment
 
 To use the Azure CLI to deploy a workbook ARM template, login to the Azure CLI and set your subscription.
 
@@ -46,6 +48,11 @@ To use the Azure CLI to deploy a workbook ARM template, login to the Azure CLI a
 ```
 where 
 - **<SUBSCRIPTION_NAME_OR_ID>** = name or ID of subscription where deployment will be created
+
+Based on the <RG_FLAG> set by the user, the workbooks will be deployed in the correct Resource Group.
+where
+- **Y** = Cluster Manager Resource Group
+- **N** = On-Prem Resource Group
 
 Deploy a single workbook in your resource group using the following command:
 
@@ -64,20 +71,21 @@ where
 - **<WORKSPACE_LAW>** = Log Analytics workspace name 
 - **<AZ_LOCATION>** = Region in which to create the workbook
 
-### Scripting
+### Workbook Deployment Scripting
 A sample shell script (`deployWorkbooks.sh`) can be used to deploy all of the sample workbooks.
 The script may be invoked with the following environment variables set or passed as arguments.  If a value is not set
 the script will prompt for it.
 
 - `RESOURCE_GROUP` - The resource group in which the Log Analytics workspace is located
 - `WORKSPACE_LAW` - The name of the Log Analytics workspace within the resource group
+- `RG_FLAG` - The resource group type, whether it is a Cluster Manager resource group [Y/N]
 - `AZ_LOCATION` - *Optional* - The region in which the workbooks should be created.  Defaults to same region as Log
 Analytics workspace.
 
 The script can be run from the workbooks folder directory:
 
 ```sh
-  ./deployWorkbooks.sh $RESOURCE_GROUP $WORKSPACE_LAW $AZ_LOCATION
+  ./deployWorkbooks.sh $RESOURCE_GROUP $WORKSPACE_LAW $RG_FLAG $AZ_LOCATION
 ```
 
 ### Built With
@@ -108,7 +116,8 @@ scraped by Azure Container Insights.
 - `/scheduledQueryRules` - Folder contains parameter files each containing settings for sample log alert rule
 - `/metricAlerts` - Folder contains parameter files each containing settings for sample metric alert rule
 
-The following sections describe these resources in greater detail.
+The following sections describe these resources in greater detail.  The sample alert rules can be deployed one at a
+time or scripting can be used to deploy multiple alert rules.
 
 ### Create Action Groups
 
@@ -138,7 +147,7 @@ where
 
 Log query alert rules are applied to a Log Analytics workspace where logs from one or more AODS clusters are collected.
 These alert rules rely on log query results to trigger and attach to the appropriate resource producing the log.
-Deploy a sample log query alert rule using the following command:
+Deploy a single sample log query alert rule using the following command:
 
 ```sh
   az deployment group create \
@@ -162,7 +171,7 @@ where
 rule.
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs which can override other parameter file values 
 
-### Scripting
+### Log Alert Rule Deployment Scripting
 A sample shell script (`deployScheduledQueryRules.sh`) can be used to deploy all of the sample log query alert rules.
 The script may be invoked with the following environment variables set or passed as arguments.  If a value is not set
 the script will prompt for it.
@@ -181,8 +190,8 @@ The script can be run from the alert rules folder directory:
 
 #### **Metric Alert Rules**
 
-Metric alert rules are applied to an AODS cluster which emits metrics that the alert rules monitor. Deploy a sample 
-metric alert rule using the following command:
+Metric alert rules are applied to an AODS cluster which emits metrics that the alert rules monitor. Deploy a single
+sample metric alert rule using the following command:
 
 ```sh
   az deployment group create \
@@ -205,12 +214,12 @@ where
 rule.
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs which can override other parameter file values 
 
-### Scripting
+### Metric Alert Rule Deployment Scripting
 A sample shell script (`deployMetricAlerts.sh`) can be used to deploy all of the sample metric alert rules.
 The script may be invoked with the following environment variables set or passed as arguments.  If a value is not set
 the script will prompt for it.
 
-- `RESOURCE_GROUP` - The resource group in which the Log Analytics workspace is located
+- `RESOURCE_GROUP` - The resource group in which the AODS cluster is located
 - `CLUSTER_NAME` - The name of the AODS cluster in the resource group that will emit the metrics
 - `ACTION_GROUP_IDS` - *Optional* - Comma-separated list of action group resource IDs
 

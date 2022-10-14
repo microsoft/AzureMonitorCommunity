@@ -135,7 +135,7 @@
                 "type": 5,
                 "isRequired": true,
                 "query": "InsightsMetrics \r\n| where Namespace == \"prometheus\" and Name contains \"node_\"\r\n| distinct _ResourceId",
-                "value": "/subscriptions/a3eeb848-665a-4dbf-80a4-eb460930fb23/resourcegroups/lborgmeyer-rg/providers/microsoft.kubernetes/connectedclusters/lborgmeyer-arc-target-cluster",
+                "value": "value::1",
                 "typeSettings": {
                   "resourceTypeFilter": {
                     "microsoft.kubernetes/connectedclusters": true
@@ -144,7 +144,7 @@
                   "showDefault": false
                 },
                 "timeContext": {
-                  "durationMs": 1800000
+                  "durationMs": 0
                 },
                 "timeContextFromParameter": "Timeframe",
                 "queryType": 0,
