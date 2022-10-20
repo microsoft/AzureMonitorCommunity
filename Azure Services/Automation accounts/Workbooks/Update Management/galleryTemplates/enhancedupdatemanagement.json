@@ -894,9 +894,9 @@
           {
             "type": 1,
             "content": {
-              "json": "# Update Schedules that have been executed"
+              "json": "## Update Schedules that have been executed"
             },
-            "name": "text - 6"
+            "name": "text - 5"
           },
           {
             "type": 3,
@@ -911,7 +911,6 @@
               "crossComponentResources": [
                 "{Workspace}"
               ],
-              "visualization": "table",
               "gridSettings": {
                 "formatters": [
                   {
@@ -923,32 +922,11 @@
                     "formatter": 5
                   },
                   {
-                    "columnMatch": "Resource",
-                    "formatter": 18,
-                    "formatOptions": {
-                      "thresholdsOptions": "icons",
-                      "thresholdsGrid": [
-                        {
-                          "operator": "Default",
-                          "thresholdValue": null,
-                          "representation": "Initial_Access",
-                          "text": "{0}{1}"
-                        }
-                      ]
-                    }
-                  },
-                  {
                     "columnMatch": "InstallationStatus",
                     "formatter": 18,
                     "formatOptions": {
                       "thresholdsOptions": "icons",
                       "thresholdsGrid": [
-                        {
-                          "operator": "==",
-                          "thresholdValue": "NotStarted",
-                          "representation": "1",
-                          "text": "{0}{1}"
-                        },
                         {
                           "operator": "==",
                           "thresholdValue": "Succeeded",
@@ -958,96 +936,34 @@
                         {
                           "operator": "==",
                           "thresholdValue": "Install Failed",
-                          "representation": "3",
+                          "representation": "4",
                           "text": "{0}{1}"
                         },
                         {
                           "operator": "Default",
                           "thresholdValue": null,
-                          "representation": "pending",
+                          "representation": "1",
                           "text": "{0}{1}"
                         }
                       ]
                     }
                   }
                 ],
-                "rowLimit": 2500,
                 "hierarchySettings": {
                   "treeType": 1,
                   "groupBy": [
                     "UpdateRunName"
                   ],
-                  "expandTopLevel": true,
                   "finalBy": "TimeGenerated"
                 }
-              },
-              "sortBy": [],
-              "tileSettings": {
-                "showBorder": false,
-                "titleContent": {
-                  "columnMatch": "TenantId",
-                  "formatter": 1
-                },
-                "leftContent": {
-                  "columnMatch": "ResultCode",
-                  "formatter": 12,
-                  "formatOptions": {
-                    "palette": "auto"
-                  },
-                  "numberFormat": {
-                    "unit": 17,
-                    "options": {
-                      "maximumSignificantDigits": 3,
-                      "maximumFractionDigits": 2
-                    }
-                  }
-                }
-              },
-              "graphSettings": {
-                "type": 0,
-                "topContent": {
-                  "columnMatch": "TenantId",
-                  "formatter": 1
-                },
-                "centerContent": {
-                  "columnMatch": "ResultCode",
-                  "formatter": 1,
-                  "numberFormat": {
-                    "unit": 17,
-                    "options": {
-                      "maximumSignificantDigits": 3,
-                      "maximumFractionDigits": 2
-                    }
-                  }
-                }
-              },
-              "chartSettings": {
-                "xAxis": "TimeGenerated",
-                "yAxis": [
-                  "Resource"
-                ]
-              },
-              "mapSettings": {
-                "locInfo": "AzureResource",
-                "sizeSettings": "ResultCode",
-                "sizeAggregation": "Sum",
-                "legendMetric": "ResultCode",
-                "legendAggregation": "Sum",
-                "itemColorSettings": {
-                  "type": "heatmap",
-                  "colorAggregation": "Sum",
-                  "nodeColorField": "ResultCode",
-                  "heatmapPalette": "greenRed"
-                },
-                "locInfoColumn": "ResourceId"
               }
             },
-            "name": "query - 7"
+            "name": "query - 1"
           }
         ]
       },
       "conditionalVisibility": {
-        "parameterName": "SelectedTab",
+        "parameterName": "selectedTab",
         "comparison": "isEqualTo",
         "value": "PatchSchedules"
       },
