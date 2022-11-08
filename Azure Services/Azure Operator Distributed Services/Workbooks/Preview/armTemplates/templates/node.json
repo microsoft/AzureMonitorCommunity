@@ -179,34 +179,6 @@
           "name": "Parameters"
         },
         {
-          "type": 9,
-          "content": {
-            "version": "KqlParameterItem/1.0",
-            "crossComponentResources": ["{Resource}"],
-            "parameters": [
-              {
-                "id": "5216631f-ed36-4502-bea3-bcd4b3570d27",
-                "version": "KqlParameterItem/1.0",
-                "name": "data",
-                "type": 1,
-                "query": "let hasNonEmptyTable = (T:string) \r\n{ \r\n   toscalar( union isfuzzy=true ( table(T) | count as Count ), (print Count=0) | summarize sum(Count) ) > 0\r\n};\r\nlet TableName = 'Syslog';\r\nprint IsPresent=iif(hasNonEmptyTable(TableName), \"Present\", \"Not Present\")\r\n",
-                "crossComponentResources": ["{Resource}"],
-                "isHiddenWhenLocked": true,
-                "timeContext": {
-                  "durationMs": 0
-                },
-                "timeContextFromParameter": "Timeframe",
-                "queryType": 0,
-                "resourceType": "microsoft.kubernetes/connectedclusters"
-              }
-            ],
-            "style": "pills",
-            "queryType": 0,
-            "resourceType": "microsoft.kubernetes/connectedclusters"
-          },
-          "name": "parameters - 6"
-        },
-        {
           "type": 11,
           "content": {
             "version": "LinkItem/1.0",
@@ -714,6 +686,13 @@
                 "styleSettings": {
                   "showBorder": true
                 }
+              },
+              {
+                "type": 1,
+                "content": {
+                  "json": "### 💡 _Above heatmaps shows an average over the timeframe selected._ "
+                },
+                "name": "text - 13 - Copy"
               },
               {
                 "type": 3,
@@ -3120,11 +3099,6 @@
             "groupType": "editable",
             "items": []
           },
-          "conditionalVisibility": {
-            "parameterName": "setTab",
-            "comparison": "isEqualTo",
-            "value": "Syslog"
-          },
           "name": "group - 11"
         },
         {
@@ -3528,25 +3502,7 @@
                     }
                   ]
                 },
-                "conditionalVisibility": {
-                  "parameterName": "data",
-                  "comparison": "isEqualTo",
-                  "value": "Present"
-                },
                 "name": "group - 7"
-              },
-              {
-                "type": 1,
-                "content": {
-                  "json": "##  Syslog Table *missing* in the `{Resource}` selected. Syslog data not collected for the Timeframe selected",
-                  "style": "error"
-                },
-                "conditionalVisibility": {
-                  "parameterName": "data",
-                  "comparison": "isEqualTo",
-                  "value": "Not Present"
-                },
-                "name": "Sslog not present"
               }
             ]
           },
