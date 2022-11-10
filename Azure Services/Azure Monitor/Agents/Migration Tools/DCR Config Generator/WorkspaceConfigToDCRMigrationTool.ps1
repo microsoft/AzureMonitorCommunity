@@ -640,7 +640,7 @@ if($FolderPath.LastIndexOf("/") -eq $FolderPath.Length-1)
 }
 
 # User parameters selections
-Write-Output "You entered:"
+Write-Output "You entered: "
 Write-Output ""
 Write-Output "Subscription Id     $($SubscriptionId)"
 Write-Output "ResourceGroupName   $($ResourceGroupName)"
