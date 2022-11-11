@@ -18,7 +18,7 @@ Param(
 
     [Parameter(Mandatory=$False)]
     [string]$FolderPath = ".",
-    
+
     [Parameter(Mandatory=$False)]
     [switch]$GetDcrPayload
 )
@@ -128,6 +128,7 @@ function Get-DCRArmTemplate
     $variables = @{}
 
     $result = @{}
+
     if($dcrJson.Count -gt 0)
     {
         $resources = @(
@@ -213,7 +214,7 @@ function Get-DCRBaseJson
     {
         $dcrJson | ConvertTo-Json -Depth 10 | Out-File "$($FolderPath)/dcr-payload-$($PlatformType).json"
     }
-
+    
     return $dcrJson
 }
 
@@ -226,41 +227,39 @@ function Get-DataSources
         [Parameter(Mandatory=$true)][string] $PlatformType
     )
 
-    $perfCounterDataSources = @()
-    $windowsEventDataSources = @()
-    $linuxSyslogDataSources = @()
+    # Data sources are platform dependent
+    # For Windows: perfCounters (WindowsPerfCounters), windowsEventLogs
+    # For Linux: perfCounters (LinuxPerformanceObject), sysLog (LinuxSysLogs)
+    $dcrDataSources = [ordered]@{}
 
     if($PlatformType -eq "Linux")
     {
         $perfCounterDataSources = Get-LinuxPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $linuxSyslogDataSources = Get-LinuxSyslogInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+
+        if(($linuxSyslogDataSources -ne $null) -and ($linuxSyslogDataSources.GetType().Name -eq "DCRLinuxSyslog"))
+        {
+            $linuxSyslogDataSources = [System.Collections.ArrayList]@($linuxSyslogDataSources)
+            $dcrDataSources["syslog"] = $linuxSyslogDataSources
+        }
     }
     else
     {
         $perfCounterDataSources = Get-WindowsPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $windowsEventDataSources = Get-WindowsEventsInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+
+        if(($windowsEventDataSources -ne $null) -and ($windowsEventDataSources.GetType().Name -eq "DCRWindowsEvent"))
+        {
+            $windowsEventDataSources = [System.Collections.ArrayList]@($windowsEventDataSources)
+            $dcrDataSources["windowsEventLogs"] = $windowsEventDataSources
+        }
     }
 
-    if($perfCounterDataSources.GetType().Name -eq "DCRPerformanceCounter")
+    if(($perfCounterDataSources -ne $null) -and ($perfCounterDataSources[0].GetType().Name -eq "DCRPerformanceCounter"))
     {
+        
         $perfCounterDataSources = [System.Collections.ArrayList]@($perfCounterDataSources)
-    }
-
-    if($windowsEventDataSources.GetType().Name -eq "DCRWindowsEvent")
-    {
-        $windowsEventDataSources = [System.Collections.ArrayList]@($windowsEventDataSources)
-    }
-
-    if($linuxSyslogDataSources.GetType().Name -eq "DCRLinuxSyslog")
-    {
-        $linuxSyslogDataSources = [System.Collections.ArrayList]@($linuxSyslogDataSources)
-    }
-
-    $dcrDataSources = 
-    [ordered]@{
-        "performanceCounters" = $perfCounterDataSources;
-        "windowsEventLogs" = $windowsEventDataSources;
-        "syslog" = $linuxSyslogDataSources
+        $dcrDataSources["performanceCounters"] = $perfCounterDataSources
     }
 
     return $dcrDataSources
@@ -272,8 +271,7 @@ function Get-DataSourceIsEmpty
         [Parameter(Mandatory=$true)][hashtable] $DataSource
     )
 
-    if($DataSource.Count -eq 0 -or ($DataSource["performanceCounters"].Count -eq 0 -and 
-        $DataSource["windowsEventLogs"].Count -eq 0 -and $DataSource["syslog"].Count -eq 0))
+    if($DataSource.Count -eq 0)   
     {
         return $true
     } 
@@ -345,7 +343,7 @@ function Get-LinuxPerformanceCountersInDCRFormat
         $currentKey = "$($properties.objectName)-$($properties.intervalSeconds)"
         $newPerfCounter = New-Object DCRPerformanceCounter
         $newPerfCounter.name = "DS_$($dataSourceType)_$($count)"
-        $newPerfCounter.counterSpecifiers = @()
+        $newPerfCounter.counterSpecifiers = @("")
         $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
         $newPerfCounter.streams = $dcrPerfCounterStream
         $newPerfCounter.platformType = "Linux"
@@ -592,10 +590,45 @@ function Get-DataFlows
     return $dataFlows
 }
 
+function ConnectToAz {
+    param (
+        # This helps tie the AzContext to a specific Subscription 
+        [Parameter(Mandatory=$true)][string] $SubscriptionId
+    )
+
+    $azContext = Get-AzContext
+
+    if ($azContext -ne $null)
+    {
+        Write-Output "You are already logged into Azure"
+
+        $currentAzContextSubId = $azContext.Subscription.Id
+
+        if($currentAzContextSubId -ne $SubscriptionId)
+        {
+            #Switching to a different Subscription
+            Set-AzContext -Subscription $SubscriptionId
+        }
+    }
+    else 
+    {
+        try 
+        {
+            Write-Output "Connecting to Azure..."
+            Connect-AzAccount | Out-Null
+            Set-AzContext -Subscription $SubscriptionId | Select-Object -Property Name, Account, Environment, Subscription | Format-List
+            Write-Output "Successfully connected to Azure"
+        }
+        catch 
+        {
+            Write-Output "Error connection to Azure. Please try again!"
+            Exit
+        }
+    }
+}
+
 <# ====================================== #>
-
 # Output Folder
-
 if(-not ($PSBoundParameters.ContainsKey('FolderPath')))
 {
     $FolderPath = "."
@@ -607,17 +640,21 @@ if($FolderPath.LastIndexOf("/") -eq $FolderPath.Length-1)
 }
 
 # User parameters selections
+Write-Output "You entered: "
+Write-Output ""
 Write-Output "Subscription Id     $($SubscriptionId)"
 Write-Output "ResourceGroupName   $($ResourceGroupName)"
 Write-Output "Workspace Name      $($WorkspaceName)"
+Write-Output ""
 
 # User authentication
-Connect-AzAccount -Subscription $SubscriptionId
+$WarningPreference = 'SilentlyContinue'
+ConnectToAz -SubscriptionId $SubscriptionId
 
 # Entry point of the script
 Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath
 
-# End of the script
+# End of script
 Write-Output ""
 Write-Output "Success!"
-Write-Output "Check your output folder!"
+Write-Output "Check your output folder! (Relative path:  $($FolderPath))"
