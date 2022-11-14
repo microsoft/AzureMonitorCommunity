@@ -6,7 +6,7 @@
       "value": "Pod ready status"
     },
     "alertDescription": {
-      "value": "pod in namespace in PODInitializing status for more than 5 mins"
+      "value": "pod in namespace in waiting status for more than 5 mins"
     },
     "alertSeverity": {
       "value": 3
@@ -30,10 +30,16 @@
       "value": "Average"
     },
     "windowSize": {
-      "value": "PT5M"
+      "value": "PT1M"
     },
     "evaluationFrequency": {
       "value": "PT1M"
+    },
+    "numberOfEvaluationPeriods": {
+      "value": 5
+    },
+    "minFailingPeriodsToAlert": {
+      "value": 5
     },
     "dimensions": {
       "value": [
