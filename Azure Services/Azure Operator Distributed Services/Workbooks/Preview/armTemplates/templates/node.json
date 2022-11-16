@@ -66,6 +66,7 @@
           "type": 9,
           "content": {
             "version": "KqlParameterItem/1.0",
+            "crossComponentResources": ["{Resource}"],
             "parameters": [
               {
                 "id": "ae41fa0f-4d3c-4e2b-b1b4-0a178a567c03",
@@ -159,22 +160,24 @@
                 "multiSelect": true,
                 "quote": "'",
                 "delimiter": ",",
-                "query": "Perf \r\n| summarize by Computer",
-                "value": ["value::all"],
+                "query": "InsightsMetrics\r\n| summarize by Computer\r\n| sort by Computer asc",
+                "crossComponentResources": ["{Resource}"],
                 "typeSettings": {
-                  "additionalResourceOptions": ["value::all"]
+                  "additionalResourceOptions": ["value::all"],
+                  "showDefault": false
                 },
                 "timeContext": {
                   "durationMs": 0
                 },
                 "timeContextFromParameter": "Timeframe",
                 "queryType": 0,
-                "resourceType": "microsoft.operationalinsights/workspaces"
+                "resourceType": "microsoft.kubernetes/connectedclusters",
+                "value": ["value::all"]
               }
             ],
             "style": "above",
             "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
+            "resourceType": "microsoft.kubernetes/connectedclusters"
           },
           "name": "Parameters"
         },
@@ -245,7 +248,7 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name has_cs 'node_cpu_seconds_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend HostName = tostring(Tags.hostName)\r\n| summarize dcount(HostName)",
+                        "query": "InsightsMetrics\r\n| where Name startswith \"node_\"\r\n| summarize dcount(Computer)",
                         "size": 3,
                         "title": "Servers Connected",
                         "timeContextFromParameter": "Timeframe",
@@ -256,7 +259,7 @@
                         "tileSettings": {
                           "titleContent": {},
                           "leftContent": {
-                            "columnMatch": "dcount_HostName",
+                            "columnMatch": "dcount_Computer",
                             "formatter": 12,
                             "formatOptions": {
                               "palette": "auto"
@@ -449,7 +452,7 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "let totalcount =  Heartbeat\r\n| where TimeGenerated {Timeframe:query}\r\n| where Computer in ({Computer})\r\n| summarize dcount(Computer);\r\n Heartbeat\r\n| where TimeGenerated {Timeframe:query}\r\n| where Computer in ({Computer})\r\n| summarize LastHeartbeat = max(TimeGenerated) by Computer\r\n| where LastHeartbeat < ago(1h)\r\n| summarize inactive=count()\r\n| project value=iff(inactive==0, strcat(\"All \", toscalar(totalcount) , \" nodes are active\") , strcat(tostring(inactive),\" out of \", tostring(toscalar(totalcount)), \" are inactive\" ))\r\n//| project value=strcat(\"3 out of 3 nodes are active\")",
+                        "query": "let totalcount =  Heartbeat\r\n| where Computer in ({Computer})\r\n| summarize dcount(Computer);\r\n Heartbeat\r\n| where Computer in ({Computer})\r\n| summarize LastHeartbeat = max(TimeGenerated) by Computer\r\n| where LastHeartbeat < ago(1h)\r\n| summarize inactive=count()\r\n| project value=iff(inactive==0, strcat(\"All \", toscalar(totalcount) , \" nodes are active\") , strcat(tostring(inactive),\" out of \", tostring(toscalar(totalcount)), \" are inactive\" ))\r\n//| project value=strcat(\"3 out of 3 nodes are active\")",
                         "size": 3,
                         "title": "Inactive Agents (missing heartbeats)",
                         "noDataMessage": "No inactive agents found",
@@ -526,12 +529,13 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_cpu_seconds_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend HostName = tostring(Tags.hostName), Cpu = Tags.cpu, Mode = Tags.mode\r\n| where Mode == \"idle\"\r\n| extend NodeDisk = strcat(Mode, \"/\", Cpu, \"/\", HostName, \"/\", _ResourceId)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n//| where isnotnull(Rate)\r\n| project TimeGenerated, NodeDisk, Rate, HostName\r\n| summarize CpuUsage = 100 - (100 * avg(Rate)) by HostName\r\n//Perf\r\n//| where ObjectName == \"K8SNode\"  and CounterName contains \"cpuUsage\" \r\n//| summarize CounterValue = avg(CounterValue/1000000000) by Computer, _ResourceId\r\n//| extend ResourceGroup = extract(@'/subscriptions/.+/resourcegroups/(.+)/providers/microsoft.compute/virtualmachines/.+', 1, _ResourceId)\r\n//| extend ResourceGroup = iff(ResourceGroup == '', 'On-premise computers', ResourceGroup), Id = strcat(_ResourceId, '::', Computer)",
+                  "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_cpu_seconds_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend HostName = tostring(Tags.hostName), Cpu = Tags.cpu, Mode = Tags.mode\r\n| where Mode == \"idle\"\r\n| extend NodeDisk = strcat(Mode, \"/\", Cpu, \"/\", HostName, \"/\", _ResourceId)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n//| where isnotnull(Rate)\r\n| project TimeGenerated, NodeDisk, Rate, HostName\r\n| summarize CpuUsage = 100 - (100 * avg(Rate)) by HostName",
                   "size": 0,
                   "title": "Heatmap for the CPU Process time of the nodes",
                   "timeContextFromParameter": "Timeframe",
                   "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
                   "visualization": "graph",
                   "graphSettings": {
                     "type": 2,
@@ -586,7 +590,8 @@
                   "title": "Heatmap for the Disk usage of the nodes",
                   "timeContextFromParameter": "Timeframe",
                   "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
                   "visualization": "graph",
                   "graphSettings": {
                     "type": 2,
@@ -641,7 +646,8 @@
                   "title": "Heatmap for the Memory usage of the nodes",
                   "timeContextFromParameter": "Timeframe",
                   "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
                   "visualization": "graph",
                   "graphSettings": {
                     "type": 2,
@@ -690,7 +696,7 @@
               {
                 "type": 1,
                 "content": {
-                  "json": "### 💡 _Above heatmaps shows an average over the timeframe selected._ "
+                  "json": "### 💡 _Above heatmaps show an average over the timeframe selected._ "
                 },
                 "name": "text - 13 - Copy"
               },
@@ -815,18 +821,20 @@
                 "content": {
                   "version": "NotebookGroup/1.0",
                   "groupType": "editable",
-                  "title": "Disk Status",
+                  "title": "FileSystem Status",
                   "items": [
                     {
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "let usedDiskUnhealthyThreshold = 90;\r\nlet usedDiskCriticalThreshold = 99;\r\nlet diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Free=min(Val) by NodeDisk;\r\nlet data = materialize(InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Total = avg(Val) by  NodeDisk\r\n| join diskfree on  NodeDisk\r\n| extend Disk_Used = 100 - (100 * (Disk_Free / Disk_Total ))\r\n//| project-away hostname1, device1\r\n| extend State = iff(Disk_Used >= usedDiskCriticalThreshold, 'Critical disks', iif((Disk_Used >= usedDiskUnhealthyThreshold and Disk_Used < usedDiskCriticalThreshold), 'Unhealthy disks', 'Healthy disks'))\r\n);\r\ndata\r\n| summarize Count = count(), Disks = makeset(NodeDisk) by State\r\n| union (\r\n    data\r\n    | summarize Count = count(), Disks = dynamic([\"*\"])\r\n    | extend State = 'All disks'\r\n)\r\n| join kind = fullouter (datatable (State: string) ['All disks', 'Critical disks', 'Unhealthy disks', 'Healthy disks']) on State\r\n| extend Count = iff(State == '', 0, Count), Disks = iff(State == '', dynamic([]), Disks)\r\n| order by Count desc",
+                        "query": "let usedDiskUnhealthyThreshold = 90;\r\nlet usedDiskCriticalThreshold = 99;\r\nlet diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Free=min(Val) by NodeDisk;\r\nlet data = materialize(InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Total = avg(Val) by  NodeDisk\r\n| join diskfree on  NodeDisk\r\n| extend Disk_Used = 100 - (100 * (Disk_Free / Disk_Total ))\r\n//| project-away hostname1, device1\r\n| extend State = iff(Disk_Used >= usedDiskCriticalThreshold, 'Critical FileSystems', iif((Disk_Used >= usedDiskUnhealthyThreshold and Disk_Used < usedDiskCriticalThreshold), 'Unhealthy FileSystems', 'Healthy FileSystems'))\r\n);\r\ndata\r\n| summarize Count = count(), Disks = makeset(NodeDisk) by State\r\n| union (\r\n    data\r\n    | summarize Count = count(), Disks = dynamic([\"*\"])\r\n    | extend State = 'All FileSystems'\r\n)\r\n| join kind = fullouter (datatable (State: string) ['All FileSystems', 'Critical FileSystems', 'Unhealthy FileSystems', 'Healthy FileSystems']) on State\r\n| extend Count = iff(State == '', 0, Count), Disks = iff(State == '', dynamic([]), Disks)\r\n| order by Count desc",
                         "size": 4,
                         "aggregation": 2,
+                        "timeContextFromParameter": "Timeframe",
                         "timeBrushParameterName": "filteredTimeRange",
                         "queryType": 0,
-                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "resourceType": "microsoft.kubernetes/connectedclusters",
+                        "crossComponentResources": ["{Resource}"],
                         "visualization": "tiles",
                         "tileSettings": {
                           "titleContent": {
@@ -841,19 +849,19 @@
                               "thresholdsGrid": [
                                 {
                                   "operator": "==",
-                                  "thresholdValue": "Critical disks",
+                                  "thresholdValue": "Critical FileSystems",
                                   "representation": "4",
                                   "text": ""
                                 },
                                 {
                                   "operator": "==",
-                                  "thresholdValue": "Unhealthy disks",
+                                  "thresholdValue": "Unhealthy FileSystems",
                                   "representation": "2",
                                   "text": ""
                                 },
                                 {
                                   "operator": "==",
-                                  "thresholdValue": "Healthy disks",
+                                  "thresholdValue": "Healthy FileSystems",
                                   "representation": "success",
                                   "text": ""
                                 },
@@ -896,7 +904,7 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "let usedDiskUnhealthyThreshold = 90;\r\nlet usedDiskCriticalThreshold = 99;\r\nlet diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Free=min(Val) by hostname,device;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Total = avg(Val) by  hostname,device\r\n| join diskfree on  hostname,device\r\n| extend Disk_Used = 100 - (100 * (Disk_Free / Disk_Total ))\r\n| project-away hostname1, device1\r\n| extend  hostname = strcat('🖥️ ',  hostname)\r\n| extend State = iff(Disk_Used >= usedDiskCriticalThreshold, 'Critical disks', iif((Disk_Used >= usedDiskUnhealthyThreshold and Disk_Used < usedDiskCriticalThreshold), 'Unhealthy disks', 'Healthy disks'))\r\n",
+                        "query": "let usedFileSystemUnhealthyThreshold = 90;\r\nlet usedFileSystemCriticalThreshold = 99;\r\nlet FileSystemfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize FileSystem_Free=min(Val) by hostname,device;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize FileSystem_Total = avg(Val) by  hostname,device\r\n| join FileSystemfree on  hostname,device\r\n| extend FileSystem_Used = 100 - (100 * (FileSystem_Free / FileSystem_Total ))\r\n| project-away hostname1, device1\r\n| extend  hostname = strcat('🖥️ ',  hostname)\r\n| extend State = iff(FileSystem_Used >= usedFileSystemCriticalThreshold, 'Critical FileSystems', iif((FileSystem_Used >= usedFileSystemUnhealthyThreshold and FileSystem_Used < usedFileSystemCriticalThreshold), 'Unhealthy FileSystems', 'Healthy FileSystems'))\r\n",
                         "size": 3,
                         "timeContextFromParameter": "Timeframe",
                         "queryType": 0,
@@ -1165,7 +1173,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 86400000
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1212,7 +1220,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 86400000
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1259,7 +1267,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 86400000
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1306,7 +1314,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 86400000
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1373,7 +1381,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 0
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1429,7 +1437,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 0
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1463,7 +1471,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 86400000
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
@@ -1497,7 +1505,7 @@
                         "resourceIds": ["{Resource}"],
                         "timeContextFromParameter": "Timeframe",
                         "timeContext": {
-                          "durationMs": 86400000
+                          "durationMs": 1800000
                         },
                         "metrics": [
                           {
