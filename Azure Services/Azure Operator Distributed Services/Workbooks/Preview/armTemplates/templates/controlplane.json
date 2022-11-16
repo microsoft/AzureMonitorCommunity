@@ -73,6 +73,7 @@
                 "name": "Timeframe",
                 "type": 4,
                 "isRequired": true,
+                "isGlobal": true,
                 "value": {
                   "durationMs": 2419200000
                 },
@@ -151,6 +152,7 @@
                 "version": "KqlParameterItem/1.0",
                 "name": "DailyCap",
                 "type": 1,
+                "isGlobal": true,
                 "query": "resources\r\n| where type =~ 'microsoft.operationalinsights/workspaces' \r\n| where '{Resource:name}' has name\r\n| project DailyQuotaGB  = trim(' ', tostring(properties.workspaceCapping.dailyQuotaGb))\r\n| project DailyQuotaGB = iff(DailyQuotaGB==\"-1.0\", \"Not set\", DailyQuotaGB)",
                 "crossComponentResources": ["{Resource}"],
                 "isHiddenWhenLocked": true,
@@ -260,7 +262,7 @@
                       "multiSelect": true,
                       "quote": "'",
                       "delimiter": ",",
-                      "query": "Usage\r\n| where TimeGenerated > ago(30d)\r\n| summarize IngestionVolume=sum(Quantity) by DataType\r\n| top 5 by IngestionVolume\r\n| project DataType, label=DataType, selected=1",
+                      "query": "Usage\r\n| summarize IngestionVolume=sum(Quantity) by DataType\r\n| top 5 by IngestionVolume\r\n| project DataType, label=DataType, selected=1",
                       "typeSettings": {
                         "additionalResourceOptions": ["value::5"],
                         "showDefault": false
@@ -1365,7 +1367,7 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, ContainerStatus, ContainerID",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| extend PodName = Name\r\n| distinct Computer, Namespace, PodName, ContainerName, _ResourceId, ContainerStatus, ContainerStatusReason, ContainerID",
                   "size": 0,
                   "aggregation": 3,
                   "title": "Container Status",
@@ -1393,18 +1395,41 @@
                               "text": "{0}{1}"
                             },
                             {
-                              "operator": "==",
+                              "thresholdValue": "waiting",
+                              "representation": "pending",
                               "text": "{0}{1}"
                             },
                             {
-                              "thresholdValue": "waiting",
-                              "representation": "pending",
+                              "operator": "==",
+                              "thresholdValue": "terminated",
+                              "representation": "disabled",
                               "text": "{0}{1}"
                             },
                             {
                               "operator": "Default",
                               "thresholdValue": null,
                               "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "columnMatch": "ContainerStatusReason",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Completed",
+                              "representation": "success",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "Blank",
                               "text": "{0}{1}"
                             }
                           ]
@@ -1470,7 +1495,7 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\", \"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n//| where TimeGenerated >= ago(startDateTime)\r\n| where Namespace in('default', 'kube-system', 'nc-system') // and ControllerKind == 'ReplicaSet' // the system namespace filter goes here\r\n| distinct\r\n    ClusterName,\r\n    Computer,\r\n    PodUid,\r\n    TimeGenerated,\r\n    PodStatus,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    ContainerStatus,\r\n    Name,\r\n    ControllerKind\r\n| summarize\r\n    arg_max(TimeGenerated, *),\r\n    TotalPODCount = count(),\r\n    podCount = sumif(1, PodStatus == 'Running' or PodStatus != 'Running'),\r\n    containerNotrunning = sumif(1, ContainerStatus != 'running')\r\n    by\r\n    ClusterName,\r\n    TimeGenerated,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    Name,\r\n    ControllerKind\r\n| project\r\n    ClusterName,\r\n    ServiceName,\r\n    podCount,\r\n    containerNotrunning,\r\n    containerNotrunningPercent = (containerNotrunning * 100 / podCount),\r\n    TimeGenerated,\r\n    PodStatus,\r\n    PodLabel,\r\n    Namespace,\r\n    Environment = tostring(split(ClusterName, '-')[3]),\r\n    Location = tostring(split(ClusterName, '-')[4]),\r\n    ContainerStatus,\r\n    ControllerKind,\r\n    Name,\r\n    Computer\r\n//Uncomment the below line to set for automated alert\r\n| where PodStatus == \"Running\" //and containerNotrunningPercent > _minalertThreshold and containerNotrunningPercent < _maxalertThreshold\r\n| summarize arg_max(TimeGenerated, *), c_entry=count() by PodLabel, ServiceName, ClusterName, ControllerKind, Name, Computer\r\n//Below lines are to parse the labels to identify the impacted service/component name\r\n| extend parseLabel = replace(@'k8s-app', @'k8sapp', PodLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/component', @'appkubernetesiocomponent', parseLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/instance', @'appkubernetesioinstance', parseLabel)\r\n| extend tags = todynamic(parseLabel)\r\n| extend tag01 = todynamic(tags[0].app)\r\n| extend tag02 = todynamic(tags[0].k8sapp)\r\n| extend tag03 = todynamic(tags[0].appkubernetesiocomponent)\r\n| extend tag04 = todynamic(tags[0].aadpodidbinding)\r\n| extend tag05 = todynamic(tags[0].appkubernetesioinstance)\r\n| extend tag06 = todynamic(tags[0].component)\r\n| extend ContainerRunning = 100 - containerNotrunningPercent\r\n| project ClusterName, TimeGenerated, ControllerKind, Name, Computer,\r\n    ServiceName = strcat(ServiceName, tag01, tag02, tag03, tag04, tag05, tag06),\r\n    ContainerUnavailable = strcat(\"Unavailable Percentage: \", containerNotrunningPercent),\r\n    ContainerRunning,\r\n    containerNotrunningPercent,\r\n    PodStatus = PodStatus, \r\n    ContainerStatus = ContainerStatus",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\", \"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n//| where TimeGenerated >= ago(startDateTime)\r\n| where Namespace in('default', 'kube-system', 'nc-system', 'calico-system') // and ControllerKind == 'ReplicaSet' // the system namespace filter goes here\r\n| distinct\r\n    ClusterName,\r\n    Computer,\r\n    PodUid,\r\n    TimeGenerated,\r\n    PodStatus,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    ContainerStatus,\r\n    Name,\r\n    ControllerKind\r\n| summarize\r\n    arg_max(TimeGenerated, *),\r\n    TotalPODCount = count(),\r\n    podCount = sumif(1, PodStatus == 'Running' or PodStatus != 'Running'),\r\n    containerNotrunning = sumif(1, ContainerStatus != 'running')\r\n    by\r\n    ClusterName,\r\n    TimeGenerated,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    Name,\r\n    ControllerKind\r\n| project\r\n    ClusterName,\r\n    ServiceName,\r\n    podCount,\r\n    containerNotrunning,\r\n    containerNotrunningPercent = (containerNotrunning * 100 / podCount),\r\n    TimeGenerated,\r\n    PodStatus,\r\n    PodLabel,\r\n    Namespace,\r\n    Environment = tostring(split(ClusterName, '-')[3]),\r\n    Location = tostring(split(ClusterName, '-')[4]),\r\n    ContainerStatus,\r\n    ControllerKind,\r\n    Name,\r\n    Computer\r\n//Uncomment the below line to set for automated alert\r\n| where PodStatus == \"Running\" //and containerNotrunningPercent > _minalertThreshold and containerNotrunningPercent < _maxalertThreshold\r\n| summarize arg_max(TimeGenerated, *), c_entry=count() by PodLabel, ServiceName, ClusterName, ControllerKind, Name, Computer\r\n//Below lines are to parse the labels to identify the impacted service/component name\r\n| extend parseLabel = replace(@'k8s-app', @'k8sapp', PodLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/component', @'appkubernetesiocomponent', parseLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/instance', @'appkubernetesioinstance', parseLabel)\r\n| extend tags = todynamic(parseLabel)\r\n| extend tag01 = todynamic(tags[0].app)\r\n| extend tag02 = todynamic(tags[0].k8sapp)\r\n| extend tag03 = todynamic(tags[0].appkubernetesiocomponent)\r\n| extend tag04 = todynamic(tags[0].aadpodidbinding)\r\n| extend tag05 = todynamic(tags[0].appkubernetesioinstance)\r\n| extend tag06 = todynamic(tags[0].component)\r\n| extend ContainerRunning = 100 - containerNotrunningPercent\r\n| project ClusterName, TimeGenerated, ControllerKind, Name, Computer,\r\n    ServiceName = strcat(ServiceName, tag01, tag02, tag03, tag04, tag05, tag06),\r\n    ContainerUnavailable = strcat(\"Unavailable Percentage: \", containerNotrunningPercent),\r\n    ContainerRunning,\r\n    containerNotrunningPercent,\r\n    PodStatus = PodStatus, \r\n    ContainerStatus = ContainerStatus",
                   "size": 0,
                   "title": "Pod/Container Availability",
                   "timeContextFromParameter": "Timeframe",
