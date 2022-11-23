@@ -1,0 +1,1246 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# SQL Server Audit #"
+      },
+      "name": "WorkbookTitle"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "1e2b3246-fe4e-4d39-b265-7a42a4ae46c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "DefaultSubscription_Internal",
+            "type": 1,
+            "isRequired": true,
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ '{DefaultSubscription_Internal}', true, false)",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+						]
+          },
+          {
+            "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, selected = iff(id =~ todynamic('{DefaultSubscription_Internal}').ws, true, false), custId= properties.customerId",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "value": [
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 3600000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "18662d91-db8b-4c93-a600-665f96adab2f",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">**Author(s):**\r\n>- [Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>**Version 1.0**\r\n>2021-12-16\r\n>- SQL workbook extracted from the parent Security & Privacy"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "66",
+      "name": "WorkbookInfo",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Windows Operating System",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "parameters": [
+                {
+                  "id": "a681cedc-6584-46b1-ac16-82b776897e36",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Servers",
+                  "type": 2,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "SecurityEvent\r\n| distinct SourceComputerId, Computer\r\n| project Computer\r\n| sort by Computer asc",
+                  "crossComponentResources": [
+                    "{Workspace}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 0
+                  },
+                  "timeContextFromParameter": "TimeRange",
+                  "defaultValue": "value::all",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "value": [
+                  ]
+                }
+              ],
+              "style": "pills",
+              "doNotRunWhenHidden": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "params_Windows"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "# Get Started \r\n\r\nWelcome to the *SQL Security Audit* tab of the **Security & Privacy** workbook. This workbook is designed to ease the reporting of account and activity management as well as the activities about both failed and successful logons on your SQL Server instances. The audits configured at the SQL Server level will generate the Event ID 33205 which this tab is focused on. \r\n\r\n## Requirements:\r\n\r\n- Collection of Security events through either [Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-partner-integration#manage-integrated-azure-security-solutions-and-other-data-sources) or [Azure Sentinel](https://docs.microsoft.com/en-us/azure/sentinel/connect-windows-security-events) connector.\r\n- [SQL Server Audit](https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-database-engine?view=sql-server-ver15) configured according to the security requirements for your company.\r\n- [Write SQL Server Audit Events to the Security Log](https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/write-sql-server-audit-events-to-the-security-log?view=sql-server-ver15) right granted to the service account configured for SQL Server.\r\n- Audit Policies configured according to the security requirements for your company with at least the following categories and subcategories enabled for **Failure** and **Success**:\r\n\t\r\n>| Category | Subcategory | Event(s) generated |\r\n>| -------- | ----------- | ------------------ |\r\n>| Object Access | Audit Application Generated | 33205 |\r\n\r\nInformation about the audit record structure can be found on the page [SQL Server Audit Records](https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-records?view=sql-server-ver15)\r\n\r\nThe full list of SQL Server Audit action_id codes can be found using the following query directly on your SQL Server:\r\n\r\n\tSelect DISTINCT action_id,name,class_desc,parent_class_desc from sys.dm_audit_actions\r\n"
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "Help",
+                    "comparison": "isEqualTo",
+                    "value": "Yes"
+                  },
+                  "name": "SqlGetStarted",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "SQL Server Audit",
+                    "expandable": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"AL\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"ALTER SERVER AUDIT [\"\r\n| parse kind=relaxed SqlStatement with * \"WITH (STATE = \" auditSpecificationState \")\" *\r\n| extend auditSpecificationState = iif(auditSpecificationState==\"OFF\", \"Disabled\", \"Enabled\")\r\n| project TimeGenerated, TimeCollected, Computer, SqlStatement, DatabaseName, SqlServer_Or_Instance, Object, auditSpecificationState, UserName",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Server Audit activities",
+                          "timeContext": {
+                            "durationMs": 0
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "DatabaseName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Object",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              }
+                            ],
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "TimeCollected",
+                                "label": "Time Collected"
+                              },
+                              {
+                                "columnId": "SqlStatement",
+                                "label": "Sql Statement"
+                              },
+                              {
+                                "columnId": "DatabaseName",
+                                "label": "Database Name"
+                              },
+                              {
+                                "columnId": "SqlServer_Or_Instance",
+                                "label": "SQL Server / Instance"
+                              },
+                              {
+                                "columnId": "Object",
+                                "label": "Audit Object Name"
+                              },
+                              {
+                                "columnId": "auditSpecificationState",
+                                "label": "Audit Object State"
+                              },
+                              {
+                                "columnId": "UserName",
+                                "label": "Altered by"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "serverAuditActivities"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"AL\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"ALTER SERVER AUDIT SPECIFICATION\"\r\n| parse kind=relaxed SqlStatement with * \"WITH (STATE = \" auditSpecificationState \")\" *\r\n| extend auditSpecificationState = iif(auditSpecificationState==\"OFF\", \"Disabled\", \"Enabled\")\r\n| project TimeGenerated, TimeCollected, Computer, SqlStatement, DatabaseName, SqlServer_Or_Instance, Object, auditSpecificationState, UserName",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Server Audit Specification activities",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "DatabaseName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Object",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              }
+                            ],
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "TimeCollected",
+                                "label": "Time Collected"
+                              },
+                              {
+                                "columnId": "SqlStatement",
+                                "label": "Sql Statement"
+                              },
+                              {
+                                "columnId": "DatabaseName",
+                                "label": "Database Name"
+                              },
+                              {
+                                "columnId": "SqlServer_Or_Instance",
+                                "label": "SQL Server / Instance"
+                              },
+                              {
+                                "columnId": "Object",
+                                "label": "Audit Object Name"
+                              },
+                              {
+                                "columnId": "auditSpecificationState",
+                                "label": "Audit Object State"
+                              },
+                              {
+                                "columnId": "UserName",
+                                "label": "Altered by"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "serverAuditSpecificationActivities"
+                      }
+                    ]
+                  },
+                  "name": "grp_SQL_AuditSettings"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Logins",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"CR\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"CREATE LOGIN\"\r\n| parse kind=relaxed SqlStatement with * \"LOGIN [\" loginName \"]\" *\r\n| parse kind=relaxed SqlStatement with * \"] FROM \" loginType \" WITH \" *\r\n| extend loginType = iif(isempty(loginType), \"SQL\", loginType)\r\n| project TimeGenerated, TimeCollected, Computer, SqlStatement, DatabaseName, loginName, loginType, UserName, SqlServer_Or_Instance",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "New created logins",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "Computer",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "DatabaseName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "UserName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SqlServer_Or_Instance",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Channel",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Level",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventData",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "OriginalEventTime",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "ActionSucceeded",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionId",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TransactionID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionEstablishedBy",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SchemaName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Object",
+                                "formatter": 5
+                              }
+                            ],
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "SqlStatement",
+                                "label": "Sql Statement"
+                              },
+                              {
+                                "columnId": "DatabaseName",
+                                "label": "Database Name"
+                              },
+                              {
+                                "columnId": "loginName",
+                                "label": "Login Name"
+                              },
+                              {
+                                "columnId": "loginType",
+                                "label": "Login Type"
+                              },
+                              {
+                                "columnId": "UserName",
+                                "label": "Created By"
+                              },
+                              {
+                                "columnId": "SqlServer_Or_Instance",
+                                "label": "SQL Server /Instance"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "loginsCreated",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"DR\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"DROP LOGIN\"\r\n| parse kind=relaxed SqlStatement with * \"LOGIN [\" loginName \"]\" *\r\n| project TimeGenerated, TimeCollected, Computer, SqlStatement, DatabaseName, loginName, UserName, SqlServer_Or_Instance",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Dropped existing logins",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "DatabaseName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "loginName",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "UserName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SqlServer_Or_Instance",
+                                "formatter": 5
+                              }
+                            ],
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "SqlStatement",
+                                "label": "Sql Statement"
+                              },
+                              {
+                                "columnId": "DatabaseName",
+                                "label": "Database Name"
+                              },
+                              {
+                                "columnId": "loginName",
+                                "label": "Login Name"
+                              },
+                              {
+                                "columnId": "UserName",
+                                "label": "Dropped By"
+                              },
+                              {
+                                "columnId": "SqlServer_Or_Instance",
+                                "label": "Sql Server /Instance"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "loginsDropped",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"LGIF\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| where SessionEstablishedBy !endswith \"$\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"Login failed\"\r\n| project [\"Time Generated\"]=TimeGenerated, [\"Time Collected\"]=TimeCollected, [\"SQL Event Time [UTC only]\"]=OriginalEventTime, [\"User Name\"]=UserName, [\"On SqlServer / Instance\"]=SqlServer_Or_Instance, [\"From computer\"]=Computer, [\"Event Source\"]=EventSourceName, [\"Event Log Name\"]=Channel, EventID, [\"Audit Description\"]=iff(Level==16, \"Failure Audit\", \"Success Audit\"), [\"Event Level\"]=Level, [\"Sql Statement\"]=SqlStatement\r\n| sort by [\"Time Generated\"] desc",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Failed Logon",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "On SqlServer / Instance",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "From computer",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Event Source",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Event Log Name",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Audit Description",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Event Level",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Sql Statement",
+                                "formatter": 5
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "sqlFailedLogonTotal",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"LGIF\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| where SessionEstablishedBy !endswith \"$\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"Login failed\"\r\n| summarize accesscount = count(SqlStatement) by SqlServer_Or_Instance",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Failed logon by SQL Server or Instance",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "visualization": "piechart"
+                        },
+                        "showPin": true,
+                        "name": "sqlFailedLogonByServerOrInstance",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"LGIS\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| where SessionEstablishedBy !endswith \"$\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| where UserName !startswith \"NT \"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n//| where SqlStatement contains \"login successful\"\r\n| summarize accesscount = count(SqlStatement) by SqlServer_Or_Instance",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Successful logon by SQL Server or Instance",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "visualization": "piechart"
+                        },
+                        "showPin": true,
+                        "name": "sqlSuccesfullLoginsByServerOrInstance",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"LGIS\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| where SessionEstablishedBy !endswith \"$\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| where UserName !startswith \"NT \"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n//| where SqlStatement has \"Login failed\"\r\n| summarize accesscount = count() by SqlServer_Or_Instance, UserName",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Successful logon count by user name",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "SqlServer_Or_Instance",
+                                "formatter": 5
+                              }
+                            ],
+                            "hierarchySettings": {
+                              "treeType": 1,
+                              "groupBy": [
+                                "SqlServer_Or_Instance"
+                              ],
+                              "expandTopLevel": true
+                            },
+                            "labelSettings": [
+                              {
+                                "columnId": "accesscount",
+                                "label": "Count"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "sqlSuccesfullLogonCountByName",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      }
+                    ]
+                  },
+                  "name": "grp_SQL_Logins"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "title": "Database Activities (top 10 databases)",
+                    "expandable": true,
+                    "expanded": true,
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where UserName !contains \"$\"\r\n| where isnotempty(DatabaseName) and isnotnull(DatabaseName)\r\n| summarize activityCount = count() by DatabaseName\r\n| top 10 by activityCount\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Activities by database",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "visualization": "piechart"
+                        },
+                        "customWidth": "50",
+                        "showPin": true,
+                        "name": "activitiesByDatabase",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where UserName !contains \"$\"\r\n| where isnotempty(DatabaseName) and isnotnull(DatabaseName)\r\n| summarize activityCount = count() by DatabaseName, bin(TimeGenerated,10m)\r\n| top 10 by activityCount\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Activities by database (trend)",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "visualization": "timechart"
+                        },
+                        "customWidth": "50",
+                        "showPin": true,
+                        "name": "activitiesByDatabaseTrend"
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"CR\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"CREATE DATABASE\"\r\n| parse kind=relaxed SqlStatement with * \"CREATE DATABASE [\" DatabaseName \"] \" *\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData, OriginalEventTime, ActionSucceeded, SessionId, TransactionID, SessionEstablishedBy, UserName, SqlServer_Or_Instance, DatabaseName, SchemaName, SqlStatement",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "New databases",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "TimeCollected",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventSourceName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Channel",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Level",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventData",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "ActionSucceeded",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionId",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TransactionID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionEstablishedBy",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "UserName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "DatabaseName",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "SchemaName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              }
+                            ],
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "EventSourceName",
+                                "label": "Event Source"
+                              },
+                              {
+                                "columnId": "Channel",
+                                "label": "Event Log"
+                              },
+                              {
+                                "columnId": "EventID",
+                                "label": "Event Id"
+                              },
+                              {
+                                "columnId": "OriginalEventTime",
+                                "label": "Original Event Time"
+                              },
+                              {
+                                "columnId": "UserName",
+                                "label": "Operated By"
+                              },
+                              {
+                                "columnId": "SqlServer_Or_Instance",
+                                "label": "SQL Server / Instance"
+                              },
+                              {
+                                "columnId": "DatabaseName",
+                                "label": "Database Name"
+                              },
+                              {
+                                "columnId": "SqlStatement",
+                                "label": "Sql Statement"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "newDatabases",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"DR\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"DROP DATABASE\"\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData, OriginalEventTime, ActionSucceeded, SessionId, TransactionID, SessionEstablishedBy, UserName, SqlServer_Or_Instance, DatabaseName, SchemaName, SqlStatement",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Drop databases",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "TimeCollected",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventSourceName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Channel",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Level",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventData",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "ActionSucceeded",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionId",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TransactionID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionEstablishedBy",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "UserName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "DatabaseName",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "SchemaName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              }
+                            ],
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "OriginalEventTime",
+                                "label": "Original Event Time"
+                              },
+                              {
+                                "columnId": "SqlServer_Or_Instance",
+                                "label": "SQL Server / Instance"
+                              },
+                              {
+                                "columnId": "DatabaseName",
+                                "label": "Database Name"
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "dropDatabases",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"AL\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"CREATE TABLE \"\r\n| parse kind=relaxed SqlStatement with * \"CREATE TABLE \" TableName \"(\" *\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData, OriginalEventTime, ActionSucceeded, SessionId, TransactionID, SessionEstablishedBy, UserName, SqlServer_Or_Instance, TableName, DatabaseName, SchemaName, SqlStatement",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "New tables",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "TimeCollected",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventSourceName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Channel",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Level",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventData",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "ActionSucceeded",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionId",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TransactionID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionEstablishedBy",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "UserName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TableName",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "SchemaName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "newTables",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "SecurityEvent\r\n| where Computer in ({Servers})\r\n| where EventID == 33205\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData\r\n| parse kind=regex EventData with * \"event_time:\" OriginalEventTime \" sequence_number:\"\r\n| parse kind=regex EventData with * \"action_id:\" Action_Id \" succeeded:\"\r\n| where Action_Id has \"AL\"\r\n| parse kind=regex EventData with * \"succeeded:\" ActionSucceeded \" is_column_permission:\"\r\n| parse kind=regex EventData with * \"session_id:\" SessionId \" server_principal_id:\"\r\n| parse kind=regex EventData with * \"transaction_id:\" TransactionID \" class_type:\"\r\n| parse kind=regex EventData with * \"session_server_principal_name:\" SessionEstablishedBy \" server_principal_name:\"\r\n| parse kind=regex EventData with * \" server_principal_name:\" UserName \" server_principal_sid:\"\r\n| parse kind=regex EventData with * \"server_instance_name:\" SqlServer_Or_Instance \" database_name:\"\r\n| parse kind=regex EventData with * \"database_name:\" DatabaseName \" schema_name:\"\r\n| parse kind=regex EventData with * \"schema_name:\" SchemaName \" object_name:\"\r\n| parse kind=regex EventData with * \"object_name:\" Object \" statement:\"\r\n| parse kind=regex EventData with * \" statement:\" SqlStatement \" additional_information:\"\r\n| where SqlStatement has \"DROP TABLE \"\r\n| parse kind=relaxed SqlStatement with * \"CREATE TABLE \" TableName \"(\" *\r\n| project TimeGenerated, TimeCollected, Computer, EventSourceName, Channel, Level, EventID, EventData, OriginalEventTime, ActionSucceeded, SessionId, TransactionID, SessionEstablishedBy, UserName, SqlServer_Or_Instance, TableName, DatabaseName, SchemaName, SqlStatement",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "Dropped tables",
+                          "timeContext": {
+                            "durationMs": 14400000
+                          },
+                          "timeContextFromParameter": "TimeRange",
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{Workspace}"
+                          ],
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "TimeCollected",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventSourceName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Channel",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "Level",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "EventData",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "ActionSucceeded",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionId",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TransactionID",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SessionEstablishedBy",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "UserName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "TableName",
+                                "formatter": 7,
+                                "formatOptions": {
+                                  "linkTarget": "GenericDetails",
+                                  "linkIsContextBlade": true
+                                }
+                              },
+                              {
+                                "columnMatch": "SchemaName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "SqlStatement",
+                                "formatter": 5
+                              }
+                            ]
+                          }
+                        },
+                        "showPin": true,
+                        "name": "droppedTables",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      }
+                    ]
+                  },
+                  "name": "grp_SQL_DatabaseActivities"
+                }
+              ]
+            },
+            "name": "grp_SqlAudit"
+          }
+        ]
+      },
+      "name": "grp_WindowsOs",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
