@@ -30,10 +30,10 @@
       "value": "Maximum"
     },
     "windowSize": {
-      "value": "PT1M"
+      "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT1M"
+      "value": "PT5M"
     }
   }
 }

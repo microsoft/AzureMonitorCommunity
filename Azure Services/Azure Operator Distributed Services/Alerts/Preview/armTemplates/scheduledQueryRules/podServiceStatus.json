@@ -6,7 +6,7 @@
       "value": "Pod service status"
     },
     "alertDescription": {
-      "value": "pod service is not ready for more than 5 mins"
+      "value": "pod service is not ready"
     },
     "alertSeverity": {
       "value": 3
@@ -30,7 +30,7 @@
       "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT1M"
+      "value": "PT5M"
     },
     "dimensions": {
       "value": [
