@@ -32,6 +32,12 @@
     "evaluationFrequency": {
       "value": "PT1M"
     },
+    "numberOfEvaluationPeriods": {
+      "value": 5
+    },
+    "minFailingPeriodsToAlert": {
+      "value": 5
+    },
     "dimensions": {
       "value": [
         {

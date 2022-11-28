@@ -6,7 +6,7 @@
       "value": "Heartbeat - Server"
     },
     "alertDescription": {
-      "value": "Generate an alert if heartbeats are missing from a server."
+      "value": "Generate an alert if heartbeats are missing from a server for more than 2 minutes."
     },
     "alertSeverity": {
       "value": 1

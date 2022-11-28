@@ -6,7 +6,7 @@
       "value": "Heartbeat - Container Insights"
     },
     "alertDescription": {
-      "value": "Generate an alert if heartbeats are missing from Undercloud K8s Cluster"
+      "value": "Generate an alert if heartbeats are missing from Undercloud K8s Cluster for more than 2 minutes."
     },
     "alertSeverity": {
       "value": 1
