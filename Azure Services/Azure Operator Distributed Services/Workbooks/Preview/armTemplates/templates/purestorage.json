@@ -178,6 +178,7 @@
                       "quote": "'",
                       "delimiter": ",",
                       "query": "InsightsMetrics\r\n| summarize by Computer",
+                      "crossComponentResources": ["{Resource}"],
                       "typeSettings": {
                         "additionalResourceOptions": ["value::all"],
                         "showDefault": false
@@ -188,12 +189,12 @@
                       "timeContextFromParameter": "Timeframe",
                       "defaultValue": "value::all",
                       "queryType": 0,
-                      "resourceType": "microsoft.resources/resourcegroups"
+                      "resourceType": "microsoft.kubernetes/connectedclusters"
                     }
                   ],
                   "style": "above",
                   "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces"
+                  "resourceType": "microsoft.kubernetes/connectedclusters"
                 },
                 "name": "parameters - 0"
               }
@@ -342,7 +343,8 @@
                               "size": 3,
                               "title": "Free Space",
                               "queryType": 0,
-                              "resourceType": "microsoft.resources/resourcegroups",
+                              "resourceType": "microsoft.kubernetes/connectedclusters",
+                              "crossComponentResources": ["{Resource}"],
                               "visualization": "tiles",
                               "tileSettings": {
                                 "titleContent": {},
@@ -2071,7 +2073,8 @@
                               "title": "Datareduction ratio",
                               "timeContextFromParameter": "Timeframe",
                               "queryType": 0,
-                              "resourceType": "microsoft.resources/resourcegroups",
+                              "resourceType": "microsoft.kubernetes/connectedclusters",
+                              "crossComponentResources": ["{Resource}"],
                               "visualization": "tiles",
                               "tileSettings": {
                                 "titleContent": {},
@@ -2111,7 +2114,8 @@
                               "title": "Metrics collected from Pure Storage",
                               "timeContextFromParameter": "Timeframe",
                               "queryType": 0,
-                              "resourceType": "microsoft.resources/resourcegroups",
+                              "resourceType": "microsoft.kubernetes/connectedclusters",
+                              "crossComponentResources": ["{Resource}"],
                               "visualization": "table",
                               "gridSettings": {
                                 "formatters": [
