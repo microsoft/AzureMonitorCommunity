@@ -30,16 +30,16 @@
       "value": "Average"
     },
     "windowSize": {
-      "value": "PT1M"
+      "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT1M"
+      "value": "PT5M"
     },
     "numberOfEvaluationPeriods": {
-      "value": 5
+      "value": 2
     },
     "minFailingPeriodsToAlert": {
-      "value": 5
+      "value": 2
     },
     "dimensions": {
       "value": [

@@ -30,7 +30,7 @@
       "value": "Average"
     },
     "windowSize": {
-      "value": "PT5M"
+      "value": "PT15M"
     },
     "evaluationFrequency": {
       "value": "PT5M"
