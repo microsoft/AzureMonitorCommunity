@@ -12,7 +12,7 @@
       "value": 3
     },
     "query": {
-      "value": "InsightsMetrics | invoke pquery_gauge('kube_pod_container_status_waiting_reason') | extend container = tostring(Labels.container) | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid) | extend reason = tostring(Labels.reason)"
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_pod_container_status_waiting') | extend container = tostring(Labels.container) | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid) | join kind=leftouter (InsightsMetrics | invoke pquery_gauge('kube_pod_container_status_waiting_reason') | extend container = tostring(Labels.container) | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid) | extend reason = tostring(Labels.reason)) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, uid | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Val, pod, namespace, uid, reason"
     },
     "metricMeasureColumn": {
       "value": "Val"
@@ -30,16 +30,16 @@
       "value": "Average"
     },
     "windowSize": {
-      "value": "PT1M"
+      "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT1M"
+      "value": "PT5M"
     },
     "numberOfEvaluationPeriods": {
-      "value": 5
+      "value": 2
     },
     "minFailingPeriodsToAlert": {
-      "value": 5
+      "value": 2
     },
     "dimensions": {
       "value": [
