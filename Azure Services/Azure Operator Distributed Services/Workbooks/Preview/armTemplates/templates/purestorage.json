@@ -704,7 +704,7 @@
                                 "size": "auto"
                               }
                             },
-                            "customWidth": "33",
+                            "customWidth": "50",
                             "name": "query - 0"
                           },
                           {
@@ -765,69 +765,8 @@
                                 "size": "auto"
                               }
                             },
-                            "customWidth": "33",
+                            "customWidth": "50",
                             "name": "query - 1"
-                          },
-                          {
-                            "type": 3,
-                            "content": {
-                              "version": "KqlItem/1.0",
-                              "query": "InsightsMetrics\r\n| where Computer in ({Computer})\r\n| where Namespace == \"prometheus\" and Name contains \"purefa_array_performance_throughput_bytes\"\r\n//| extend json=parse_json(todynamic(Tags))\r\n//| extend dimension=tostring(json.dimension)\r\n//| summarize avg=sum(Val)/1000 by dimension\r\n//| where avg > 0\r\n//| extend json=parse_json(todynamic(Tags))\r\n//| extend dimension=tostring(json.dimension)\r\n//| summarize avg=avg(Val)/1000 by dimension\r\n//| where avg > 0\r\n//| order by avg desc\r\n//| limit 3",
-                              "size": 3,
-                              "title": "Average Throughput",
-                              "timeContextFromParameter": "Timeframe",
-                              "queryType": 0,
-                              "resourceType": "microsoft.kubernetes/connectedclusters",
-                              "crossComponentResources": ["{Resource}"],
-                              "visualization": "table",
-                              "tileSettings": {
-                                "titleContent": {
-                                  "columnMatch": "dimension",
-                                  "formatter": 1
-                                },
-                                "leftContent": {
-                                  "columnMatch": "avg",
-                                  "formatter": 18,
-                                  "formatOptions": {
-                                    "thresholdsOptions": "colors",
-                                    "thresholdsGrid": [
-                                      {
-                                        "operator": ">=",
-                                        "thresholdValue": "1.5",
-                                        "representation": "redBright",
-                                        "text": "{0}{1}"
-                                      },
-                                      {
-                                        "operator": ">=",
-                                        "thresholdValue": "0.8",
-                                        "representation": "yellow",
-                                        "text": "{0}{1}"
-                                      },
-                                      {
-                                        "operator": "Default",
-                                        "thresholdValue": null,
-                                        "representation": "green",
-                                        "text": "{0}{1}"
-                                      }
-                                    ]
-                                  },
-                                  "numberFormat": {
-                                    "unit": 0,
-                                    "options": {
-                                      "style": "decimal",
-                                      "maximumFractionDigits": 2,
-                                      "maximumSignificantDigits": 3
-                                    }
-                                  }
-                                },
-                                "showBorder": true,
-                                "sortCriteriaField": "avg",
-                                "sortOrderField": 2,
-                                "size": "auto"
-                              }
-                            },
-                            "customWidth": "33",
-                            "name": "query - 1 - Copy"
                           }
                         ]
                       },
@@ -3104,35 +3043,6 @@
                                         },
                                         "customWidth": "50",
                                         "name": "query - 4",
-                                        "styleSettings": {
-                                          "showBorder": true
-                                        }
-                                      },
-                                      {
-                                        "type": 3,
-                                        "content": {
-                                          "version": "KqlItem/1.0",
-                                          "query": "InsightsMetrics \r\n| where Computer in ({Computer})\r\n| where Namespace == \"prometheus\"and Name contains \"purefa_array_performance_throughput_bytes\"\r\n| summarize avg_throughput=sum(Val)",
-                                          "size": 3,
-                                          "title": "Average Throughput",
-                                          "timeContextFromParameter": "Timeframe",
-                                          "queryType": 0,
-                                          "resourceType": "microsoft.resources/resourcegroups",
-                                          "visualization": "tiles",
-                                          "tileSettings": {
-                                            "titleContent": {},
-                                            "leftContent": {
-                                              "columnMatch": "avg_throughput",
-                                              "formatter": 12,
-                                              "formatOptions": {
-                                                "palette": "blue"
-                                              }
-                                            },
-                                            "showBorder": false
-                                          }
-                                        },
-                                        "customWidth": "50",
-                                        "name": "query - 5",
                                         "styleSettings": {
                                           "showBorder": true
                                         }
