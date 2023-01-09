@@ -827,7 +827,7 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "let usedDiskUnhealthyThreshold = 90;\r\nlet usedDiskCriticalThreshold = 99;\r\nlet diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Free=min(Val) by NodeDisk;\r\nlet data = materialize(InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Total = avg(Val) by  NodeDisk\r\n| join diskfree on  NodeDisk\r\n| extend Disk_Used = 100 - (100 * (Disk_Free / Disk_Total ))\r\n//| project-away hostname1, device1\r\n| extend State = iff(Disk_Used >= usedDiskCriticalThreshold, 'Critical FileSystems', iif((Disk_Used >= usedDiskUnhealthyThreshold and Disk_Used < usedDiskCriticalThreshold), 'Unhealthy FileSystems', 'Healthy FileSystems'))\r\n);\r\ndata\r\n| summarize Count = count(), Disks = makeset(NodeDisk) by State\r\n| union (\r\n    data\r\n    | summarize Count = count(), Disks = dynamic([\"*\"])\r\n    | extend State = 'All FileSystems'\r\n)\r\n| join kind = fullouter (datatable (State: string) ['All FileSystems', 'Critical FileSystems', 'Unhealthy FileSystems', 'Healthy FileSystems']) on State\r\n| extend Count = iff(State == '', 0, Count), Disks = iff(State == '', dynamic([]), Disks)\r\n| order by Count desc",
+                        "query": "let usedDiskUnhealthyThreshold = 90;\r\nlet usedDiskCriticalThreshold = 99;\r\nlet diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Free=max(Val) by NodeDisk;\r\nlet data = materialize(InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize Disk_Total = max(Val) by  NodeDisk\r\n| join diskfree on  NodeDisk\r\n//| extend Disk_Used = 100 - (100 * (Disk_Free / Disk_Total ))\r\n| extend Disk_Used = ((Disk_Total - Disk_Free) / Disk_Total) * 100\r\n| extend State = iff(Disk_Used >= usedDiskCriticalThreshold, 'Critical FileSystems', iif((Disk_Used >= usedDiskUnhealthyThreshold and Disk_Used < usedDiskCriticalThreshold), 'Unhealthy FileSystems', 'Healthy FileSystems'))\r\n);\r\ndata\r\n| summarize Count = count(), Disks = makeset(NodeDisk) by State\r\n| union (\r\n    data\r\n    | summarize Count = count(), Disks = dynamic([\"*\"])\r\n    | extend State = 'All FileSystems'\r\n)\r\n| join kind = fullouter (datatable (State: string) ['All FileSystems', 'Critical FileSystems', 'Unhealthy FileSystems', 'Healthy FileSystems']) on State\r\n| extend Count = iff(State == '', 0, Count), Disks = iff(State == '', dynamic([]), Disks)\r\n| order by Count desc",
                         "size": 4,
                         "aggregation": 2,
                         "timeContextFromParameter": "Timeframe",
@@ -904,7 +904,7 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "let usedFileSystemUnhealthyThreshold = 90;\r\nlet usedFileSystemCriticalThreshold = 99;\r\nlet FileSystemfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize FileSystem_Free=min(Val) by hostname,device;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize FileSystem_Total = avg(Val) by  hostname,device\r\n| join FileSystemfree on  hostname,device\r\n| extend FileSystem_Used = 100 - (100 * (FileSystem_Free / FileSystem_Total ))\r\n| project-away hostname1, device1\r\n| extend  hostname = strcat('🖥️ ',  hostname)\r\n| extend State = iff(FileSystem_Used >= usedFileSystemCriticalThreshold, 'Critical FileSystems', iif((FileSystem_Used >= usedFileSystemUnhealthyThreshold and FileSystem_Used < usedFileSystemCriticalThreshold), 'Unhealthy FileSystems', 'Healthy FileSystems'))\r\n",
+                        "query": "let usedFileSystemUnhealthyThreshold = 90;\r\nlet usedFileSystemCriticalThreshold = 99;\r\nlet FileSystemfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| summarize FileSystem_Free=max(Val) by hostname,device;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name contains 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName), device = tostring(Json.device)\r\n| extend NodeDisk = strcat(hostname, \"/\", device)\r\n| where hostname in ({Computer})\r\n| summarize FileSystem_Total = max(Val) by  hostname,device\r\n| join FileSystemfree on  hostname,device\r\n| extend FileSystem_Used = (FileSystem_Total - FileSystem_Free)\r\n| project-away hostname1, device1\r\n| extend  hostname = strcat('🖥️ ',  hostname)\r\n| extend FileSystem_Used_pct = (FileSystem_Used / FileSystem_Total ) * 100\r\n| extend State = iff(FileSystem_Used_pct >= usedFileSystemCriticalThreshold, 'Critical FileSystems', iif((FileSystem_Used_pct >= usedFileSystemUnhealthyThreshold and FileSystem_Used_pct < usedFileSystemCriticalThreshold), 'Unhealthy FileSystems', 'Healthy FileSystems'))\r\n| order by hostname asc\r\n",
                         "size": 3,
                         "timeContextFromParameter": "Timeframe",
                         "queryType": 0,
@@ -914,6 +914,46 @@
                             {
                               "columnMatch": "hostname",
                               "formatter": 5
+                            },
+                            {
+                              "columnMatch": "FileSystem_Total",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 2,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "FileSystem_Free",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 2,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "FileSystem_Used",
+                              "formatter": 0,
+                              "numberFormat": {
+                                "unit": 2,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
+                            },
+                            {
+                              "columnMatch": "FileSystem_Used_pct",
+                              "formatter": 5,
+                              "numberFormat": {
+                                "unit": 1,
+                                "options": {
+                                  "style": "decimal"
+                                }
+                              }
                             },
                             {
                               "columnMatch": "Disk_Total",
@@ -953,7 +993,7 @@
                           }
                         }
                       },
-                      "name": "query - 4",
+                      "name": "query - 4 - Copy",
                       "styleSettings": {
                         "showBorder": true
                       }
@@ -961,7 +1001,7 @@
                   ]
                 },
                 "customWidth": "50",
-                "name": "group - 13",
+                "name": "group - 13 - Copy",
                 "styleSettings": {
                   "showBorder": true
                 }
