@@ -538,6 +538,7 @@ function Get-SyslogFacilityName
         "local4"   { $amaFacilityName = "LOG_LOCAL4"; Break }
         "local5"   { $amaFacilityName = "LOG_LOCAL5"; Break }
         "local6"   { $amaFacilityName = "LOG_LOCAL6"; Break }
+        "local7"   { $amaFacilityName = "LOG_LOCAL7"; Break }
         "lpr"      { $amaFacilityName = "LOG_LPR"; Break  }
         "mail"     { $amaFacilityName = "LOG_MAIL"; Break }
         "news"     { $amaFacilityName = "LOG_NEWS"; Break }
