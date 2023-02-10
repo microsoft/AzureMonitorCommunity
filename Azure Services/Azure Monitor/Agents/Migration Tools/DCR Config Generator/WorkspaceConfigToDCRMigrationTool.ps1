@@ -343,7 +343,7 @@ function Get-LinuxPerformanceCountersInDCRFormat
         $currentKey = "$($properties.objectName)-$($properties.intervalSeconds)"
         $newPerfCounter = New-Object DCRPerformanceCounter
         $newPerfCounter.name = "DS_$($dataSourceType)_$($count)"
-        $newPerfCounter.counterSpecifiers = @("")
+        $newPerfCounter.counterSpecifiers = @()
         $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
         $newPerfCounter.streams = $dcrPerfCounterStream
         $newPerfCounter.platformType = "Linux"
@@ -465,13 +465,14 @@ function Get-LinuxSyslogInDCRFormat
             $logLevelsKey = $syslogLevels -join "-"
             if($dcrLinuxSyslogTable.Contains($logLevelsKey))
             {
-                $dcrLinuxSyslogTable[$logLevelsKey].facilityNames += $properties.syslogName
+                $dcrLinuxSyslogTable[$logLevelsKey].facilityNames += Get-SyslogFacilityName  -mmaFacilityName $properties.syslogName
             }
             else
             {
                 $newLinuxSyslog = New-Object DCRLinuxSyslog
                 $newLinuxSyslog.name = "DS_$($dataSourceType)_$($count)"
-                $newLinuxSyslog.facilityNames = @($properties.syslogName)
+                $facilityName = Get-SyslogFacilityName  -mmaFacilityName $properties.syslogName
+                $newLinuxSyslog.facilityNames = @($facilityName)
                 $newLinuxSyslog.logLevels = $syslogLevels
                 $newLinuxSyslog.streams = $dcrLinuxSyslogStream
                 $dcrLinuxSyslogTable.Add($logLevelsKey, $newLinuxSyslog)
@@ -500,18 +501,53 @@ function Get-SyslogLevels
     {
         switch($severity.Severity.value__)
         {
-            0 { $syslogLevels += "Emergency"; Break }
-            1 { $syslogLevels += "Alert"; Break }
-            2 { $syslogLevels += "Critical"; Break }
-            3 { $syslogLevels += "Error"; Break }
-            4 { $syslogLevels += "Warning"; Break }
-            5 { $syslogLevels += "Notice"; Break }
-            6 { $syslogLevels += "Info"; Break }
-            7 { $syslogLevels += "Debug" }
+            0 { $syslogLevels += "LOG_EMERG"; Break }
+            1 { $syslogLevels += "LOG_ALERT"; Break }
+            2 { $syslogLevels += "LOG_CRIT"; Break }
+            3 { $syslogLevels += "LOG_ERR"; Break }
+            4 { $syslogLevels += "LOG_WARNING"; Break }
+            5 { $syslogLevels += "LOG_NOTICE"; Break }
+            6 { $syslogLevels += "LOG_INFO"; Break }
+            7 { $syslogLevels += "LOG_DEBUG" }
         }
     }
 
     return $syslogLevels
+}
+
+function Get-SyslogFacilityName
+{
+    param (
+        [Parameter(Mandatory=$true)][string] $MmaFacilityName
+    )
+
+    $amaFacilityName = ""
+   
+    switch($MmaFacilityName)
+    {
+        "auth"     { $amaFacilityName = "LOG_AUTH"; Break }
+        "authpriv" { $amaFacilityName = "LOG_AUTHPRIV"; Break }
+        "cron"     { $amaFacilityName = "LOG_CRON"; Break }
+        "daemon"   { $amaFacilityName = "LOG_DAEMON"; Break }
+        "ftp"      { $amaFacilityName = "LOG_MARK"; Break }
+        "kern"     { $amaFacilityName = "LOG_KERN"; Break }
+        "local0"   { $amaFacilityName = "LOG_LOCAL0"; Break }
+        "local1"   { $amaFacilityName = "LOG_LOCAL1"; Break }
+        "local2"   { $amaFacilityName = "LOG_LOCAL2"; Break }
+        "local3"   { $amaFacilityName = "LOG_LOCAL3"; Break }
+        "local4"   { $amaFacilityName = "LOG_LOCAL4"; Break }
+        "local5"   { $amaFacilityName = "LOG_LOCAL5"; Break }
+        "local6"   { $amaFacilityName = "LOG_LOCAL6"; Break }
+        "lpr"      { $amaFacilityName = "LOG_LPR"; Break  }
+        "mail"     { $amaFacilityName = "LOG_MAIL"; Break }
+        "news"     { $amaFacilityName = "LOG_NEWS"; Break }
+        "syslog"   { $amaFacilityName = "LOG_SYSLOG"; Break }
+        "user"     { $amaFacilityName = "LOG_USER"; Break }
+        "uucp"     { $amaFacilityName = "LOG_UUCP"; Break }
+        default    { throw "Couldn't parse the facility name $($MmaFacilityName)"; }
+    }
+
+    return $amaFacilityName
 }
 
 function Get-Destinations
@@ -578,7 +614,15 @@ function Get-DataFlows
     $windowsEventsStream = Get-DCRStream -DataSourceType WindowsEvent
     $linuxSyslogStream = Get-DCRStream -DataSourceType LinuxSyslog
 
-    $streams = @($perfCountersStream, $windowsEventsStream, $linuxSyslogStream)
+    if($PlatformType -eq "Linux")
+    {
+        $streams = @($perfCountersStream, $linuxSyslogStream)
+    }
+    else
+    {
+        $streams = @($perfCountersStream, $windowsEventsStream)
+    }
+
     $destinations = @($WorkspaceName)
     $workspaceDataFlow = 
     [ordered]@{
@@ -640,7 +684,7 @@ if($FolderPath.LastIndexOf("/") -eq $FolderPath.Length-1)
 }
 
 # User parameters selections
-Write-Output "You entered: "
+Write-Output "You entered:"
 Write-Output ""
 Write-Output "Subscription Id     $($SubscriptionId)"
 Write-Output "ResourceGroupName   $($ResourceGroupName)"
