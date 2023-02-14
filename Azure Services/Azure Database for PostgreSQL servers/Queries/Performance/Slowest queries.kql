@@ -9,5 +9,5 @@ AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 | where Category == "QueryStoreRuntimeStatistics"
 | where user_id_s != "10" //exclude azure system user
-| summarize avg(todouble(mean_time_s)) by event_class_s , db_id_s ,query_id_d
+| summarize avg(todouble(mean_time_s)) by db_id_s ,query_id_d
 | top 5 by avg_mean_time_s desc

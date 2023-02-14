@@ -9,5 +9,5 @@ AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.DBFORPOSTGRESQL"
 | where Category == "QueryStoreRuntimeStatistics"
 | where user_id_s != "10" //exclude azure system user
-| project TimeGenerated, LogicalServerName_s, event_class_s , mean_time_s , db_id_s , start_time_t , query_id_d
+| project TimeGenerated, LogicalServerName_s , mean_time_s , db_id_s , start_time_t , query_id_d
 | where todouble(mean_time_s) > 10000 // You may change the time threshold
