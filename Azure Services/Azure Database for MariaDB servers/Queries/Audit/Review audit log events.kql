@@ -1,6 +1,6 @@
 // Author: Microsoft Azure
-// Display name: Review audit log events in GENERAL class
-// Description: Identify general class events for your server.
+// Display name: Review audit log events
+// Description: Identify audit events for your server.
 // Categories: Workloads,Audit
 // Resource types: Azure Database for MariaDB servers
 // Topic: Audit
