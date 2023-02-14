@@ -6,7 +6,7 @@
       "value": "Heartbeat - Server"
     },
     "alertDescription": {
-      "value": "Generate an alert if heartbeats are missing from a server for more than 2 minutes."
+      "value": "Generate an alert if heartbeats are missing from a server for more than 3 minutes."
     },
     "alertSeverity": {
       "value": 1
@@ -21,7 +21,7 @@
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": "120"
+      "value": "180"
     },
     "timeAggregation": {
       "value": "Maximum"
