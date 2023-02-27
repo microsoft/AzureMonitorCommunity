@@ -24,7 +24,7 @@
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": "10"
+      "value": "10000"
     },
     "timeAggregation": {
       "value": "Maximum"
