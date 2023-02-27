@@ -24,7 +24,7 @@
       "value": "LessThan"
     },
     "threshold": {
-      "value": "300"
+      "value": "160"
     },
     "timeAggregation": {
       "value": "Minimum"
