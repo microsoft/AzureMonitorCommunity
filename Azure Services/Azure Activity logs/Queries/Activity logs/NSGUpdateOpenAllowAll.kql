@@ -1,0 +1,23 @@
+// This Query returns NSGs with rules that have been updated
+AzureActivity 
+| where OperationNameValue =~ "Microsoft.Network/networkSecurityGroups/securityRules/write"
+| where ActivityStatusValue == "Accept"
+| extend SourceAddressPrefix_ = tostring(parse_json(tostring(parse_json(tostring(Properties_d.responseBody)).properties)).sourceAddressPrefix) 
+| extend SourceAddressPrefixes_ = tostring(parse_json(tostring(parse_json(tostring(Properties_d.requestbody)).properties)).sourceAddressPrefixes)
+| extend Access = tostring(parse_json(tostring(parse_json(tostring(parse_json(Properties).responseBody)).properties)).access)
+| extend Port = tostring(parse_json(tostring(parse_json(tostring(parse_json(Properties).responseBody)).properties)).destinationPortRange) 
+| where SourceAddressPrefix_ == '*'
+    or SourceAddressPrefixes_ == ''
+    or SourceAddressPrefixes_ == '0.0.0.0/0' 
+| where Access == "Allow"
+| extend NsgName = split(_ResourceId, '/')[8] 
+| extend NsgRule = split(_ResourceId, '/')[10] 
+| project TimeGenerated, 
+    NsgName, 
+    NsgRule, 
+    ResourceGroup, 
+    SourceAddressPrefix_, 
+    SourceAddressPrefixes_,
+    Port,
+    Caller,
+    CallerIpAddress

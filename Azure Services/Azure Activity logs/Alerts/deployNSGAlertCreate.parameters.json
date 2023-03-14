@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "alertName": {
+        "value": "nsg-inbound-rule-create-to-allow-all"
+      },
+      "alertDescription": {
+        "value": "This alert is used to monitor and alert if someone updates NSG inbound rule to allow All (*)."
+      },
+      "query": {
+        "value": "AzureActivity \n| where OperationNameValue =~ \"Microsoft.Network/networkSecurityGroups/write\"\n| where ActivityStatusValue == \"Accept\"\n| extend Test_ = todynamic(parse_json(tostring(parse_json(tostring(Properties_d.responseBody)).properties)).securityRules) \n| mv-expand Test_ \n| extend SourceAddressPrefix_ = tostring(parse_json(tostring(parse_json(tostring(Test_)).properties)).sourceAddressPrefix) \n| extend SourceAddressPrefixes_ = tostring(parse_json(tostring(parse_json(tostring(Test_)).properties)).sourceAddressPrefixes) \n| extend Access = tostring(parse_json(tostring(parse_json(tostring(Test_)).properties)).access) \n | extend Port = tostring(parse_json(tostring(parse_json(tostring(Test_)).properties)).destinationPortRange) \n| where SourceAddressPrefix_ == '*' or SourceAddressPrefixes_ == '' or SourceAddressPrefixes_ == '0.0.0.0/0' \n| where Access == \"Allow\"\n| extend NsgName = split(_ResourceId, '/')[8] \n| extend NsgRule = split(_ResourceId, '/')[10] \n| project TimeGenerated, \n          NsgName, \n          NsgRule, \n          ResourceGroup, \n          SourceAddressPrefix_, \n          SourceAddressPrefixes_,\n         Port,\n         Caller,\n          CallerIpAddress"
+      },
+      "evaluationFrequency": {
+        "value": 5
+      },
+      "timeWindow": {
+        "value": 15
+      },
+      "threshold": {
+        "value": 0
+      },
+      "operator": {
+        "value": "GreaterThan"
+      },
+      "throttling": {
+        "value": 0
+      },
+      "severity": {
+        "value": 0
+      },
+      "actionGroupResourceIds": {
+        "value": [
+          "<insert action groups>"
+        ]
+      },
+      "logAnalyticsWorkspaceResourceId": {
+        "value": "<insert workspace ID"
+      },
+      "logAnalyticsWorkspaceLocation": {
+        "value": "<insert location>"
+      },
+      "isEnabled": {
+        "value": true
+      }
+    }
+  }

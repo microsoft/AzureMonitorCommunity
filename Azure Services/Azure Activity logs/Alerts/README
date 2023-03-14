@@ -1,1 +1,4 @@
 Put alerts in this folder
+
+## deployNSGAlert.json
+Since json doesn't have comments, I'll put them here. This ARM would deploy the alert to go with the two parameters files that start with the deployNSGAlert.
