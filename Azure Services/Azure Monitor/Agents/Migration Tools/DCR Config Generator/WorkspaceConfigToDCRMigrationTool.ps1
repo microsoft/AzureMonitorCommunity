@@ -54,7 +54,9 @@ function Get-UserWorkspace
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
 
+    # The $Workspace Name in this context in case insensitive
     $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName
+
     return $workspace
 }
 
@@ -237,7 +239,7 @@ function Get-DataSources
         $perfCounterDataSources = Get-LinuxPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $linuxSyslogDataSources = Get-LinuxSyslogInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
 
-        if(($linuxSyslogDataSources -ne $null) -and ($linuxSyslogDataSources.GetType().Name -eq "DCRLinuxSyslog"))
+        if(($linuxSyslogDataSources -ne $null))
         {
             $linuxSyslogDataSources = [System.Collections.ArrayList]@($linuxSyslogDataSources)
             $dcrDataSources["syslog"] = $linuxSyslogDataSources
@@ -248,7 +250,7 @@ function Get-DataSources
         $perfCounterDataSources = Get-WindowsPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $windowsEventDataSources = Get-WindowsEventsInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
 
-        if(($windowsEventDataSources -ne $null) -and ($windowsEventDataSources.GetType().Name -eq "DCRWindowsEvent"))
+        if(($windowsEventDataSources -ne $null))
         {
             $windowsEventDataSources = [System.Collections.ArrayList]@($windowsEventDataSources)
             $dcrDataSources["windowsEventLogs"] = $windowsEventDataSources
@@ -374,41 +376,32 @@ function Get-WindowsEventsInDCRFormat
     )
 
     $dataSourceType = "WindowsEvent"
-    $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
-    $dcrWindowsEventStream = Get-DCRStream -DataSourceType $dataSourceType
+    $workspaceWindowsEvents = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
+    $dcrWindowsEventLogsStream = Get-DCRStream -DataSourceType $dataSourceType
 
-    $dcrWindowsEventTable = @{}
-    $count = 1
-    foreach($dataSource in $workspaceDataSourceList)
+    $dcrWindowsEventLogs = [System.Collections.ArrayList]::new()
+
+    # Compressing all the workspace events into a single dcr event log
+    $dcrWindowsEvent = New-Object DCRWindowsEvent
+    $dcrWindowsEvent.name = "DS_WindowsEventLogs"
+    $dcrWindowsEvent.streams = $dcrWindowsEventLogsStream
+    $dcrWindowsEvent.xPathQueries = @()
+
+    $iter_count = 0
+
+    foreach($windowsEvent in $workspaceWindowsEvents)
     {
-        $properties = $dataSource.Properties
-        if($properties.EventTypes.Length -gt 0)
-        {
-            $xPathQueryKey = Get-XPathQueryKey -WindowsEventProperties $properties
-
-            if($dcrWindowsEventTable.Contains($xPathQueryKey))
-            {
-                $dcrWindowsEventTable[$xPathQueryKey].xPathQueries += "$($properties.eventLogName)!*$($xPathQueryKey)"
-            }
-            else
-            {
-                $newWindowsEvent = New-Object DCRWindowsEvent
-                $newWindowsEvent.name = "DS_$($dataSourceType)_$($count)"
-                $newWindowsEvent.xPathQueries = @("$($properties.eventLogName)!*$($xPathQueryKey)")
-                $newWindowsEvent.streams = $dcrWindowsEventStream
-                $dcrWindowsEventTable.Add($xPathQueryKey, $newWindowsEvent)
-                $count += 1
-            }
-        }
+        $xPathQuery = Get-XPathQueryKey -WindowsEventProperties $windowsEvent.Properties
+        $dcrWindowsEvent.xPathQueries += "$($windowsEvent.Properties.eventLogName)!*$($xpathQuery)"
+        $iter_count += 1
     }
 
-    $dcrDataSourceList = [System.Collections.ArrayList]::new()
-    foreach($key in $dcrWindowsEventTable.Keys)
+    if ($iter_count -ne 0)
     {
-        $dcrDataSourceList.Add($dcrWindowsEventTable[$key]) | Out-Null
+        $dcrWindowsEventLogs.Add($dcrWindowsEvent) | Out-Null
     }
-
-    return $dcrDataSourceList
+    
+    return $dcrWindowsEventLogs
 }
 
 function Get-XPathQueryKey
@@ -417,8 +410,13 @@ function Get-XPathQueryKey
         [Parameter(Mandatory=$true)][Microsoft.Azure.Commands.OperationalInsights.Models.PSWindowsEventDataSourceProperties] $WindowsEventProperties
     )
 
-    #[System[(Level = 1 or Level = 2 or Level = 3)]]
+    # AMA defines five log levels 
+    # Critical (1), Error (2), Verbose(3), Warning(4), Information(5) and Undefined/Anything else (0)
+    # whereas MMA seems to only have three
+    # Error (0), Warning(1) and Information
+
     $eventTypeStr = ""
+
     foreach($type in $WindowsEventProperties.eventTypes)
     {   
         if($eventTypeStr.Length -gt 0)
@@ -426,20 +424,21 @@ function Get-XPathQueryKey
             $eventTypeStr += " or "
         }
 
-        if($type.eventType.value__ -eq 0)
-        {
-            $eventTypeStr += "Level 1"
-        }
-        elseif($type.eventType.value__ -eq 1)
+        if($type.eventType.ToString() -eq "Error")
         {
             $eventTypeStr += "Level 2"
         }
-        elseif($type.eventType.value__ -eq 2)
+        elseif($type.eventType.ToString() -eq "Warning")
         {
-            $eventTypeStr += "Level 3"
+            $eventTypeStr += "Level 4"
+        }
+        elseif($type.eventType.ToString() -eq "Information")
+        {
+            $eventTypeStr += "Level 5"
         }
     }
 
+    #Example: [System[(Level = 1 or Level = 2 or Level = 3)]]
     return "[System[($($eventTypeStr))]]"
 }
 
@@ -501,17 +500,18 @@ function Get-SyslogLevels
     {
         switch($severity.Severity.value__)
         {
-            0 { $syslogLevels += "LOG_EMERG"; Break }
-            1 { $syslogLevels += "LOG_ALERT"; Break }
-            2 { $syslogLevels += "LOG_CRIT"; Break }
-            3 { $syslogLevels += "LOG_ERR"; Break }
-            4 { $syslogLevels += "LOG_WARNING"; Break }
-            5 { $syslogLevels += "LOG_NOTICE"; Break }
-            6 { $syslogLevels += "LOG_INFO"; Break }
-            7 { $syslogLevels += "LOG_DEBUG" }
+            0 { $syslogLevels += "Emergency"; Break }
+            1 { $syslogLevels += "Alert"; Break }
+            2 { $syslogLevels += "Critical"; Break }
+            3 { $syslogLevels += "Error"; Break }
+            4 { $syslogLevels += "Warning"; Break }
+            5 { $syslogLevels += "Notice"; Break }
+            6 { $syslogLevels += "Info"; Break }
+            7 { $syslogLevels += "Debug" }
         }
     }
 
+    [array]::Reverse($syslogLevels)
     return $syslogLevels
 }
 
@@ -525,27 +525,27 @@ function Get-SyslogFacilityName
    
     switch($MmaFacilityName)
     {
-        "auth"     { $amaFacilityName = "LOG_AUTH"; Break }
-        "authpriv" { $amaFacilityName = "LOG_AUTHPRIV"; Break }
-        "cron"     { $amaFacilityName = "LOG_CRON"; Break }
-        "daemon"   { $amaFacilityName = "LOG_DAEMON"; Break }
-        "ftp"      { $amaFacilityName = "LOG_MARK"; Break }
-        "kern"     { $amaFacilityName = "LOG_KERN"; Break }
-        "local0"   { $amaFacilityName = "LOG_LOCAL0"; Break }
-        "local1"   { $amaFacilityName = "LOG_LOCAL1"; Break }
-        "local2"   { $amaFacilityName = "LOG_LOCAL2"; Break }
-        "local3"   { $amaFacilityName = "LOG_LOCAL3"; Break }
-        "local4"   { $amaFacilityName = "LOG_LOCAL4"; Break }
-        "local5"   { $amaFacilityName = "LOG_LOCAL5"; Break }
-        "local6"   { $amaFacilityName = "LOG_LOCAL6"; Break }
-        "local7"   { $amaFacilityName = "LOG_LOCAL7"; Break }
-        "lpr"      { $amaFacilityName = "LOG_LPR"; Break  }
-        "mail"     { $amaFacilityName = "LOG_MAIL"; Break }
-        "news"     { $amaFacilityName = "LOG_NEWS"; Break }
-        "syslog"   { $amaFacilityName = "LOG_SYSLOG"; Break }
-        "user"     { $amaFacilityName = "LOG_USER"; Break }
-        "uucp"     { $amaFacilityName = "LOG_UUCP"; Break }
-        default    { throw "Couldn't parse the facility name $($MmaFacilityName)"; }
+        "auth"     { $amaFacilityName = "auth"; Break }
+        "authpriv" { $amaFacilityName = "authpriv"; Break }
+        "cron"     { $amaFacilityName = "cron"; Break }
+        "daemon"   { $amaFacilityName = "daemon"; Break }
+        "ftp"      { $amaFacilityName = "mark"; Break } # ftp resolves to mark going from MMA to AMA
+        "kern"     { $amaFacilityName = "kern"; Break }
+        "local0"   { $amaFacilityName = "local0"; Break }
+        "local1"   { $amaFacilityName = "local1"; Break }
+        "local2"   { $amaFacilityName = "local2"; Break }
+        "local3"   { $amaFacilityName = "local3"; Break }
+        "local4"   { $amaFacilityName = "local4"; Break }
+        "local5"   { $amaFacilityName = "local5"; Break }
+        "local6"   { $amaFacilityName = "local6"; Break }
+        "local7"   { $amaFacilityName = "local7"; Break }
+        "lpr"      { $amaFacilityName = "lpr"; Break  }
+        "mail"     { $amaFacilityName = "mail"; Break }
+        "news"     { $amaFacilityName = "news"; Break }
+        "syslog"   { $amaFacilityName = "syslog"; Break }
+        "user"     { $amaFacilityName = "user"; Break }
+        "uucp"     { $amaFacilityName = "uucp"; Break }
+        default    { $amaFacilityName = "*"; Break } # Is this safe to assume wildcad whenever there is no match?
     }
 
     return $amaFacilityName
@@ -564,7 +564,7 @@ function Get-Destinations
     [ordered]@{
         "workspaceResourceId" = $workspace.ResourceId;
         "workspaceId" = $workspace.CustomerId;
-        "name" = $workspace.Name;
+        "name" = $WorkspaceName;
     }
 
     $logAnalytics = @($laDest)
@@ -572,6 +572,7 @@ function Get-Destinations
     @{
         "logAnalytics" = $logAnalytics;
     }
+    
     return $destinations
 
 }
@@ -588,7 +589,7 @@ function Get-DCRStream
     {
         "WindowsPerformanceCounter" { $stream += "Microsoft-Perf"; Break }
         "LinuxPerformanceObject" { $stream += "Microsoft-Perf"; Break }
-        "WindowsEvent" { $stream += "Microsoft-WindowsEvent"; Break }
+        "WindowsEvent" { $stream += "Microsoft-Event"; Break }
         "LinuxSyslog" { $stream += "Microsoft-Syslog" }
     }
 
