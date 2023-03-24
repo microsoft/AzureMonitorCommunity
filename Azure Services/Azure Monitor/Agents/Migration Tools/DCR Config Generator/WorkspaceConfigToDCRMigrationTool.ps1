@@ -283,6 +283,21 @@ function Get-DataSourceIsEmpty
     }
 }
 
+function Get-ValidatedWindowsCounterSpecifier
+{
+    param(
+        [Parameter(Mandatory=$true)][string] $counterSpecifier
+    )
+
+    # This function applies Modifications if necessary to the counterSpecifier
+
+    # Case 0
+    # \Memory(*)\Counter Name is an invalid perfCounter
+    # Whenever we encounter it, transform it to \Memory\CounterName (with no instance specified)
+    $counterSpecifier = $counterSpecifier.replace("Memory(*)", "Memory")
+    return $counterSpecifier
+}
+
 function Get-WindowsPerformanceCountersInDCRFormat
 {
     param (
@@ -300,15 +315,18 @@ function Get-WindowsPerformanceCountersInDCRFormat
     {
         $properties = $dataSource.Properties
         $currentKey = [string]$properties.intervalSeconds
+
         if($dcrWindowsPerfCounterTable.Contains($currentKey))
         {
-            $dcrWindowsPerfCounterTable[$currentKey].counterSpecifiers += "\$($properties.objectName)($($properties.instanceName))\$($properties.counterName)"
+            $counterSpecifierValidated = Get-ValidatedWindowsCounterSpecifier -counterSpecifier "\$($properties.objectName)($($properties.instanceName))\$($properties.counterName)"
+            $dcrWindowsPerfCounterTable[$currentKey].counterSpecifiers += $counterSpecifierValidated
         }
         else
         {
             $newPerfCounter = New-Object DCRPerformanceCounter
             $newPerfCounter.name = "DS_$($dataSourceType)_$($count)"
-            $newPerfCounter.counterSpecifiers = @("\$($properties.objectName)($($properties.instanceName))\$($properties.counterName)")
+            $counterSpecifierValidated = Get-ValidatedWindowsCounterSpecifier -counterSpecifier "\$($properties.objectName)($($properties.instanceName))\$($properties.counterName)"
+            $newPerfCounter.counterSpecifiers = @($counterSpecifierValidated)
             $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
             $newPerfCounter.streams = $dcrPerfCounterStream
             $newPerfCounter.platformType = "Windows"
@@ -411,9 +429,10 @@ function Get-XPathQueryKey
     )
 
     # AMA defines five log levels 
-    # Critical (1), Error (2), Verbose(3), Warning(4), Information(5) and Undefined/Anything else (0)
+    # Critical (1), Error (2), Warning(3), Information(4) Verbose(5) and Undefined/Anything else (0)
     # whereas MMA seems to only have three
-    # Error (0), Warning(1) and Information
+    # Error (2), Warning(3) and Information(4) 
+    # but if set to collect Error event at MMA, both Error and Critical will be collected as Errro event.
 
     $eventTypeStr = ""
 
@@ -426,19 +445,19 @@ function Get-XPathQueryKey
 
         if($type.eventType.ToString() -eq "Error")
         {
-            $eventTypeStr += "Level 2"
+            $eventTypeStr += "Level=1 or Level=2"
         }
         elseif($type.eventType.ToString() -eq "Warning")
         {
-            $eventTypeStr += "Level 4"
+            $eventTypeStr += "Level=3"
         }
         elseif($type.eventType.ToString() -eq "Information")
         {
-            $eventTypeStr += "Level 5"
+            $eventTypeStr += "Level=4"
         }
     }
 
-    #Example: [System[(Level = 1 or Level = 2 or Level = 3)]]
+    #Example: [System[(Level=1 or Level=2 or Level=3)]]
     return "[System[($($eventTypeStr))]]"
 }
 
