@@ -3574,9 +3574,9 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "let maxtime = \r\n    InsightsMetrics\r\n    | where Computer in ({Computer})\r\n    | where Namespace == 'prometheus' and Name == 'node_network_up'\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | extend device = tostring(Json.device)\r\n    | where hostname in ({Computer})\r\n    | summarize TimeGenerated = max(TimeGenerated) by hostname, device\r\n    | order by TimeGenerated desc;\r\nlet status = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_up'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | extend device = tostring(Json.device)\r\n    | summarize status=avg(Val) by TimeGenerated, hostname, device\r\n    | join maxtime on hostname, device, TimeGenerated\r\n    | project-away hostname1, device1, TimeGenerated1;\r\nlet join1 = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_receive_bytes_total'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | serialize\r\n    | extend\r\n        PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n        PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n    | where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n    | extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n    | project TimeGenerated, NodeDisk, Rate, hostname, device\r\n    | summarize RX_bytes = avg(Rate) by TimeGenerated, tostring(hostname), tostring(device)\r\n    | order by RX_bytes desc\r\n    | join status on TimeGenerated, device, hostname\r\n    | project-away device1, hostname1, TimeGenerated1;\r\nlet join2 = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_transmit_bytes_total'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | serialize\r\n    | extend\r\n        PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n        PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n    | where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n    | extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n    | project TimeGenerated, NodeDisk, Rate, hostname, device\r\n    | summarize TX_bytes = avg(Rate) by TimeGenerated, tostring(hostname), tostring(device)\r\n    | order by TX_bytes desc\r\n    | join join1 on TimeGenerated, device, hostname\r\n    | project-away device1, hostname1, TimeGenerated1;\r\nlet join3 = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_receive_errs_total'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | serialize\r\n    | extend\r\n        PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n        PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n    | where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n    | extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n    | project TimeGenerated, NodeDisk, Rate, hostname, device\r\n    | summarize RX_err_bytes = avg(Rate) by TimeGenerated, tostring(hostname), tostring(device)\r\n    | join join2 on TimeGenerated, device, hostname\r\n    | project-away device1, hostname1, TimeGenerated1;\r\n//let join4 = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_errs_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend\r\n    PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n    PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize TX_err_bytes = avg(Rate) by TimeGenerated, tostring(hostname), tostring(device)\r\n| join join3 on TimeGenerated, device, hostname\r\n| project-away device1, hostname1, TimeGenerated1\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_mtu_bytes'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | summarize MTU_bytes = avg(Val) by TimeGenerated, hostname, tostring(device)\r\n    )\r\n    on TimeGenerated, device, hostname\r\n| join kind=leftouter (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_hwmon_temp_celsius'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize temp=avg(Val) by TimeGenerated, hostname\r\n    )\r\n    on hostname, TimeGenerated\r\n| project-away TimeGenerated1, TimeGenerated2, device1\r\n| extend temp=round(temp,2)\r\n| extend status=iff(status==1, \"Up\", \"Down\") \r\n| extend  hostname = strcat('🖥️ ',  hostname)\r\n//| project-reorder TimeGenerated, hostname, device, status, RX_bytes, TX_bytes, RX_err_bytes, TX_err_bytes, MTU_bytes;",
+                  "query": "let maxtime = \r\n    InsightsMetrics\r\n    | where Computer in ({Computer})\r\n    | where Namespace == 'prometheus' and Name == 'node_network_up'\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | extend device = tostring(Json.device)\r\n    | where hostname in ({Computer})\r\n    | summarize TimeGenerated = max(TimeGenerated) by hostname, device\r\n    | order by TimeGenerated desc;\r\nlet status = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_up'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | extend device = tostring(Json.device)\r\n    | summarize status=avg(Val) by TimeGenerated, hostname, device\r\n    | join maxtime on hostname, device, TimeGenerated\r\n    | project-away hostname1, device1, TimeGenerated1;\r\nlet join1 = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_receive_packets_total'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | serialize\r\n    | extend\r\n        PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n        PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n    | where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n    | extend Value = iif(PrevVal > Val, Val, iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n    | project TimeGenerated, NodeDisk, Value, hostname, device\r\n    | summarize RX_packets = avg(Value) by TimeGenerated, tostring(hostname), tostring(device)\r\n    | order by RX_packets desc\r\n    | join status on TimeGenerated, device, hostname\r\n    | project-away device1, hostname1, TimeGenerated1;\r\nlet join2 = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_transmit_packets_total'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | serialize\r\n    | extend\r\n        PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n        PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n    | where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n    | extend Value = iif(PrevVal > Val, Val , iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n    | project TimeGenerated, NodeDisk, Value, hostname, device\r\n    | summarize TX_packets = avg(Value) by TimeGenerated, tostring(hostname), tostring(device)\r\n    | order by TX_packets desc\r\n    | join join1 on TimeGenerated, device, hostname\r\n    | project-away device1, hostname1, TimeGenerated1;\r\nlet join3 = \r\n    InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_receive_errs_total'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | serialize\r\n    | extend\r\n        PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n        PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n    | where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n    | extend Value = iif(PrevVal > Val, Val, iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n    | project TimeGenerated, NodeDisk, Value, hostname, device\r\n    | summarize RX_err_packets = avg(Value) by TimeGenerated, tostring(hostname), tostring(device)\r\n    | join join2 on TimeGenerated, device, hostname\r\n    | project-away device1, hostname1, TimeGenerated1;\r\n//let join4 = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_errs_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend\r\n    PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)),\r\n    PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Value = iif(PrevVal > Val, Val , iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Value, hostname, device\r\n| summarize TX_err_packets = avg(Value) by TimeGenerated, tostring(hostname), tostring(device)\r\n| join join3 on TimeGenerated, device, hostname\r\n| project-away device1, hostname1, TimeGenerated1\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_network_mtu_bytes'\r\n    | extend Tags = todynamic(Tags)\r\n    | extend hostname = tostring(Tags.hostName), device = Tags.device\r\n    | where hostname in ({Computer})\r\n    | extend NodeDisk = strcat(device, \"/\", hostname)\r\n    | order by NodeDisk asc, TimeGenerated asc\r\n    | summarize MTU_bytes = avg(Val) by TimeGenerated, hostname, tostring(device)\r\n    )\r\n    on TimeGenerated, device, hostname\r\n| join kind=leftouter (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_hwmon_temp_celsius'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize temp=avg(Val) by TimeGenerated, hostname\r\n    )\r\n    on hostname, TimeGenerated\r\n| project-away TimeGenerated1, TimeGenerated2, device1\r\n| extend temp=round(temp,2)\r\n| extend status=iff(status==1, \"Up\", \"Down\") \r\n| extend  hostname = strcat('🖥️ ',  hostname)\r\n| project-away hostname1, hostname2",
                   "size": 0,
-                  "title": "Network Bytes Transferred (with last reported timestamp)",
+                  "title": "Network Packets Transferred (with last reported timestamp)",
                   "timeContextFromParameter": "Timeframe",
                   "queryType": 0,
                   "resourceType": "microsoft.kubernetes/connectedclusters",
@@ -3584,58 +3584,8 @@
                   "gridSettings": {
                     "formatters": [
                       {
-                        "columnMatch": "TimeGenerated",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 0,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "hostname",
-                        "formatter": 5
-                      },
-                      {
-                        "columnMatch": "TX_err_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 2,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "RX_err_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 2,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "TX_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 2,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "RX_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 2,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
+                        "columnMatch": "Group",
+                        "formatter": 1
                       },
                       {
                         "columnMatch": "status",
@@ -3646,13 +3596,13 @@
                             {
                               "operator": "==",
                               "thresholdValue": "Up",
-                              "representation": "Available",
+                              "representation": "up",
                               "text": "{0}{1}"
                             },
                             {
                               "operator": "==",
                               "thresholdValue": "Down",
-                              "representation": "Unavailable",
+                              "representation": "down",
                               "text": "{0}{1}"
                             },
                             {
@@ -3662,42 +3612,6 @@
                               "text": "{0}{1}"
                             }
                           ]
-                        },
-                        "numberFormat": {
-                          "unit": 0,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "MTU_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 0,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "transmit_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 2,
-                          "options": {
-                            "style": "decimal"
-                          }
-                        }
-                      },
-                      {
-                        "columnMatch": "rcv_bytes",
-                        "formatter": 0,
-                        "numberFormat": {
-                          "unit": 2,
-                          "options": {
-                            "style": "decimal"
-                          }
                         }
                       }
                     ],
@@ -3719,9 +3633,9 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "let maxtime = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| extend device = tostring(Json.device)\r\n| where hostname in ({Computer})\r\n| summarize TimeGenerated = max(TimeGenerated) by hostname, device\r\n| order by TimeGenerated desc;\r\nlet status = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| project TimeGenerated, Computer, Val, Tags\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| where hostname in ({Computer})\r\n| extend device = tostring(Json.device)\r\n| summarize status=avg(Val) by TimeGenerated, hostname, device\r\n| join maxtime on hostname, device, TimeGenerated\r\n| project-away hostname1, device1, TimeGenerated1;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_receive_bytes_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize RX_bytes = avg(Rate) by TimeGenerated, tostring(hostname), tostring(device)\r\n| join status on TimeGenerated, device, hostname\r\n| project-away device1, hostname1, TimeGenerated1\r\n| summarize max(RX_bytes) by hostname\r\n| order by max_RX_bytes desc\r\n//| project-reorder TimeGenerated, hostname, device, RX_bytes, TX_bytes, RX_err_bytes, TX_err_bytes, MTU_bytes;",
+                  "query": "let maxtime = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| extend device = tostring(Json.device)\r\n| where hostname in ({Computer})\r\n| summarize TimeGenerated = max(TimeGenerated) by hostname, device\r\n| order by TimeGenerated desc;\r\nlet status = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| project TimeGenerated, Computer, Val, Tags\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| where hostname in ({Computer})\r\n| extend device = tostring(Json.device)\r\n| summarize status=avg(Val) by TimeGenerated, hostname, device\r\n| join maxtime on hostname, device, TimeGenerated\r\n| project-away hostname1, device1, TimeGenerated1;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_receive_packets_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Value = iif(PrevVal > Val, Val, iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Value, hostname, device\r\n| summarize RX_packets = avg(Value) by TimeGenerated, tostring(hostname), tostring(device)\r\n| join status on TimeGenerated, device, hostname\r\n| project-away device1, hostname1, TimeGenerated1\r\n| summarize avg(RX_packets) by hostname\r\n| order by avg_RX_packets desc",
                   "size": 0,
-                  "title": "Network Bytes Received per node",
+                  "title": "Network Packets Received per node",
                   "timeContextFromParameter": "Timeframe",
                   "queryType": 0,
                   "resourceType": "microsoft.kubernetes/connectedclusters",
@@ -3825,7 +3739,7 @@
                       "formatter": 1
                     },
                     "leftContent": {
-                      "columnMatch": "max_RX_bytes",
+                      "columnMatch": "avg_RX_packets",
                       "formatter": 12,
                       "formatOptions": {
                         "palette": "greenRed"
@@ -3853,9 +3767,9 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "let maxtime = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| extend device = tostring(Json.device)\r\n| where hostname in ({Computer})\r\n| summarize TimeGenerated = max(TimeGenerated) by hostname, device\r\n| order by TimeGenerated desc;\r\nlet status = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| project TimeGenerated, Computer, Val, Tags\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| where hostname in ({Computer})\r\n| extend device = tostring(Json.device)\r\n| summarize status=avg(Val) by TimeGenerated, hostname, device\r\n| join maxtime on hostname, device, TimeGenerated\r\n| project-away hostname1, device1, TimeGenerated1;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_bytes_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize RX_bytes = avg(Rate) by TimeGenerated, tostring(hostname), tostring(device)\r\n| join status on TimeGenerated, device, hostname\r\n| project-away device1, hostname1, TimeGenerated1\r\n| summarize max(RX_bytes) by hostname\r\n| order by max_RX_bytes desc\r\n//| project-reorder TimeGenerated, hostname, device, RX_bytes, TX_bytes, RX_err_bytes, TX_err_bytes, MTU_bytes;",
+                  "query": "let maxtime = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| extend device = tostring(Json.device)\r\n| where hostname in ({Computer})\r\n| summarize TimeGenerated = max(TimeGenerated) by hostname, device\r\n| order by TimeGenerated desc;\r\nlet status = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_up'\r\n| project TimeGenerated, Computer, Val, Tags\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| where hostname in ({Computer})\r\n| extend device = tostring(Json.device)\r\n| summarize status=avg(Val) by TimeGenerated, hostname, device\r\n| join maxtime on hostname, device, TimeGenerated\r\n| project-away hostname1, device1, TimeGenerated1;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_packets_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Value = iif(PrevVal > Val, Val, iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Value, hostname, device\r\n| summarize RX_packets = avg(Value) by TimeGenerated, tostring(hostname), tostring(device)\r\n| join status on TimeGenerated, device, hostname\r\n| project-away device1, hostname1, TimeGenerated1\r\n| summarize avg(RX_packets) by hostname\r\n| order by avg_RX_packets desc",
                   "size": 0,
-                  "title": "Network Bytes Transferred per node",
+                  "title": "Network Packets Transferred per node",
                   "timeContextFromParameter": "Timeframe",
                   "queryType": 0,
                   "resourceType": "microsoft.operationalinsights/workspaces",
@@ -3948,7 +3862,7 @@
                       "formatter": 1
                     },
                     "leftContent": {
-                      "columnMatch": "max_RX_bytes",
+                      "columnMatch": "avg_RX_packets",
                       "formatter": 12,
                       "formatOptions": {
                         "palette": "greenRed"
@@ -3982,10 +3896,10 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_receive_bytes_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize rcv_bytes = avg(Rate) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
+                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_receive_packets_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Value = iif(PrevVal > Val, Val , iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Value, hostname, device\r\n| summarize rcv_bytes = avg(Value) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
                         "size": 0,
                         "aggregation": 3,
-                        "title": "Bytes received per node over time",
+                        "title": "Packets received per node over time",
                         "timeContextFromParameter": "Timeframe",
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
@@ -4013,10 +3927,10 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_bytes_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize rcv_bytes = avg(Rate) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
+                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_packets_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Value = iif(PrevVal > Val, Val, iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Value, hostname, device\r\n| summarize rcv_bytes = avg(Value) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
                         "size": 0,
                         "aggregation": 3,
-                        "title": "Bytes transmitted per node over time",
+                        "title": "Packets transmitted per node over time",
                         "timeContextFromParameter": "Timeframe",
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
@@ -4054,10 +3968,10 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_receive_errs_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize rcv_bytes = max(Rate) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
+                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_receive_errs_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val, iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize rcv_bytes = max(Rate) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
                         "size": 0,
                         "aggregation": 3,
-                        "title": "Errored Bytes received per node over time",
+                        "title": "Errored Packets received per node over time",
                         "timeContextFromParameter": "Timeframe",
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
@@ -4074,10 +3988,10 @@
                       "type": 3,
                       "content": {
                         "version": "KqlItem/1.0",
-                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_errs_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize rcv_bytes = avg(Rate) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
+                        "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_network_transmit_errs_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend hostname = tostring(Tags.hostName), device = Tags.device\r\n| where hostname in ({Computer})\r\n| extend NodeDisk = strcat(device, \"/\", hostname)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val , iif(PrevVal == Val, 0.0, (Val - PrevVal)))\r\n| project TimeGenerated, NodeDisk, Rate, hostname, device\r\n| summarize rcv_bytes = avg(Rate) by bin(TimeGenerated,10m), tostring(hostname), tostring(device)",
                         "size": 0,
                         "aggregation": 3,
-                        "title": "Errored Bytes transmitted per node over time",
+                        "title": "Errored Packets transmitted per node over time",
                         "timeContextFromParameter": "Timeframe",
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
@@ -4098,7 +4012,7 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_HugePages_Total'\r\n| project TimeGenerated, Computer, Val, Tags\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| where hostname in ({Computer})\r\n| summarize hugepages_total=avg(Val) by hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_HugePages_Rsvd'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_rsvd=avg(Val) by hostname)\r\n    on hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_HugePages_Free'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_free=avg(Val) by hostname)\r\n    on hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Total'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_total=avg(Val) by hostname)\r\n    on hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Surp'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_surp=avg(Val) by hostname)\r\n    on hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Free'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_free=avg(Val) by hostname)\r\n    on hostname\r\n    | project-away hostname3, hostname4, hostname5",
+                  "query": "InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Total'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_total=avg(Val) by hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Free'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_free=avg(Val) by hostname)\r\n    on hostname",
                   "size": 0,
                   "title": "HugePages Details",
                   "timeContextFromParameter": "Timeframe",
@@ -4128,7 +4042,7 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_HugePages_Total'\r\n| project TimeGenerated, Computer, Val, Tags\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| where hostname in ({Computer})\r\n| summarize hugepages_total=avg(Val) by TimeGenerated, hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_HugePages_Rsvd'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_rsvd=avg(Val) by TimeGenerated, hostname)\r\n    on TimeGenerated, hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_HugePages_Free'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_free=avg(Val) by TimeGenerated, hostname)\r\n    on TimeGenerated, hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Total'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_total=avg(Val) by TimeGenerated, hostname)\r\n    on TimeGenerated, hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Surp'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_surp=avg(Val) by TimeGenerated, hostname)\r\n    on TimeGenerated, hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Free'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_free=avg(Val) by TimeGenerated, hostname)\r\n    on TimeGenerated, hostname\r\n    | project-away hostname3, hostname4, hostname5, TimeGenerated1, TimeGenerated2, TimeGenerated3, TimeGenerated4, TimeGenerated5",
+                  "query": "InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Total'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_total=avg(Val) by TimeGenerated, hostname\r\n| join (InsightsMetrics\r\n    | where Namespace == 'prometheus' and Name == 'node_memory_numa_HugePages_Free'\r\n    | project TimeGenerated, Computer, Val, Tags\r\n    | extend Json = parse_json(Tags)\r\n    | extend hostname = tostring(Json.hostName)\r\n    | where hostname in ({Computer})\r\n    | summarize hugepages_numa_free=avg(Val) by TimeGenerated, hostname)\r\n    on TimeGenerated, hostname",
                   "size": 0,
                   "aggregation": 2,
                   "title": "HugePages Details",
@@ -4454,7 +4368,7 @@
                 "type": 3,
                 "content": {
                   "version": "KqlItem/1.0",
-                  "query": "let diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Disk_Free=avg(Val) by hostname;\r\nlet disk_capacity = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Disk_Total = avg(Val) by hostname\r\n| join diskfree on hostname\r\n| extend Disk_Used = (Disk_Total - Disk_Free );\r\nlet memfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_MemFree_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Mem_Free=avg(Val) by hostname;\r\nlet memcache = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_Cached_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Mem_Cache=avg(Val) by hostname\r\n| join memfree on hostname;\r\nlet membuffer = \r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_Buffers_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Mem_Buffer=avg(Val) by hostname\r\n| join memcache on hostname;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_MemTotal_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Mem_Total=avg(Val) by hostname\r\n| join membuffer on hostname\r\n| extend Mem_Used =  (Mem_Total-(Mem_Free + Mem_Cache + Mem_Buffer))\r\n| join disk_capacity on hostname\r\n| project-away hostname1, hostname2, hostname3, hostname4, hostname11\r\n| extend Disk_Allocation = strcat(round((Disk_Used/Disk_Total)*100,2), \" %\"), Memory_Allocation = strcat(round((Mem_Used/Mem_Total)*100,2), \" %\")\r\n| extend hostname = strcat('🖥️ ', hostname)\r\n| project-reorder hostname, Disk_Total, Disk_Used, Disk_Free, Disk_Allocation, Mem_Total, Mem_Used, Mem_Free, Mem_Cache, Mem_Buffer, Memory_Allocation",
+                  "query": "let diskfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_filesystem_avail_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Disk_Free=avg(Val) by hostname;\r\nlet disk_capacity = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_filesystem_size_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Disk_Total = avg(Val) by hostname\r\n| join diskfree on hostname\r\n| extend Disk_Used = (Disk_Total - Disk_Free );\r\nlet memfree = InsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_MemFree_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Mem_Free=avg(Val) by hostname;\r\nInsightsMetrics\r\n| where Namespace == 'prometheus' and Name == 'node_memory_MemTotal_bytes'\r\n| extend Json = parse_json(Tags)\r\n| extend hostname = tostring(Json.hostName)\r\n| summarize Mem_Total=avg(Val) by hostname\r\n| join memfree on hostname\r\n| extend Mem_Used =  (Mem_Total-Mem_Free)\r\n| join disk_capacity on hostname\r\n| project-away hostname1, hostname2, hostname11\r\n| extend Disk_Allocation = strcat(round((Disk_Used/Disk_Total)*100,2), \" %\"), Memory_Allocation = strcat(round((Mem_Used/Mem_Total)*100,2), \" %\")\r\n| extend hostname = strcat('🖥️ ', hostname)\r\n| project-reorder hostname, Disk_Total, Disk_Used, Disk_Free, Disk_Allocation, Mem_Total, Mem_Used, Mem_Free, Memory_Allocation",
                   "size": 3,
                   "title": "Memory & Disk Capacity & Usage",
                   "timeContextFromParameter": "Timeframe",
@@ -4646,8 +4560,10 @@
                         "version": "KqlItem/1.0",
                         "query": "InsightsMetrics\r\n| where Computer in ({Computer})\r\n| where Namespace == 'prometheus' and Name contains 'node_cpu_seconds_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend HostName = tostring(Tags.hostName), Cpu = Tags.cpu, Mode = Tags.mode\r\n| where Mode == \"idle\"\r\n| extend NodeDisk = strcat(Mode, \"/\", Cpu, \"/\", HostName)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, HostName\r\n| summarize CpuUsage = 100 - (100 * avg(Rate)) by bin(TimeGenerated, 1d), HostName\r\n| summarize Timestamp=make_list(TimeGenerated), CpuUsage=make_list(CpuUsage) by HostName\r\n| extend series_decompose_anomalies(CpuUsage)\r\n| mv-expand Timestamp, CpuUsage, series_decompose_anomalies_CpuUsage_ad_flag, series_decompose_anomalies_CpuUsage_ad_score, series_decompose_anomalies_CpuUsage_baseline\r\n| project-away series_decompose_anomalies_CpuUsage_ad_flag, series_decompose_anomalies_CpuUsage_ad_score\r\n| project-rename ExpectedCpuUsage=series_decompose_anomalies_CpuUsage_baseline\r\n| extend Gap = todecimal(CpuUsage)-todecimal(ExpectedCpuUsage)\r\n| where Gap != 0\r\n| extend Trend=iff(Gap>0, \"Up\", \"Down\")\r\n| extend ActualVsExpectedAsPercent = round(todecimal(CpuUsage)*100/todecimal(ExpectedCpuUsage), 3)\r\n| sort by todatetime(Timestamp) asc\r\n| extend Avg_CPU_Usage = round(todecimal(CpuUsage),3), Expected_Avg_CPU_Usage = round(todecimal(ExpectedCpuUsage),3)\r\n| extend  HostName = strcat('🖥️ ',  HostName)\r\n| project HostName, Timestamp=format_datetime(todatetime(Timestamp), 'yyyy-MM-dd'), Trend, Avg_CPU_Usage, Expected_Avg_CPU_Usage, ActualVsExpectedAsPercent",
                         "size": 0,
-                        "title": "Daily CPU Usage Trend Analysis",
-                        "timeContextFromParameter": "Timeframe",
+                        "title": "Daily CPU Usage Trend Analysis(past 7 days)",
+                        "timeContext": {
+                          "durationMs": 604800000
+                        },
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
                         "crossComponentResources": ["{Resource}"],
@@ -4735,8 +4651,10 @@
                         "query": "InsightsMetrics\r\n| where Computer in ({Computer})\r\n| where Namespace == 'prometheus' and Name contains 'node_cpu_seconds_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend HostName = tostring(Tags.hostName), Cpu = Tags.cpu, Mode = Tags.mode\r\n| where Mode == \"idle\"\r\n| extend NodeDisk = strcat(Mode, \"/\", Cpu, \"/\", HostName)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, HostName\r\n| summarize CpuUsage = 100 - (100 * avg(Rate)) by bin(TimeGenerated, 30m), HostName\r\n| order by TimeGenerated asc\r\n| summarize Timestamp=make_list(TimeGenerated), CpuUsage=make_list(CpuUsage) by HostName\r\n| extend series_decompose_anomalies(CpuUsage, 1.5, -1, 'linefit')\r\n| mv-expand Timestamp, CpuUsage, series_decompose_anomalies_CpuUsage_ad_flag, series_decompose_anomalies_CpuUsage_ad_score, series_decompose_anomalies_CpuUsage_baseline\r\n| project-away series_decompose_anomalies_CpuUsage_ad_score\r\n| project-rename ExpectedCpuUsage=series_decompose_anomalies_CpuUsage_baseline\r\n| project-rename anomalies=series_decompose_anomalies_CpuUsage_ad_flag\r\n| project Timestamp, toint(CpuUsage), toint(ExpectedCpuUsage), toint(anomalies)\r\n| render anomalychart with(anomalycolumns=anomalies)",
                         "size": 0,
                         "aggregation": 2,
-                        "title": "CPU Usage Actual vs Expected behavior",
-                        "timeContextFromParameter": "Timeframe",
+                        "title": "CPU Usage Actual vs Expected behavior (Past 7 days)",
+                        "timeContext": {
+                          "durationMs": 604800000
+                        },
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
                         "crossComponentResources": ["{Resource}"],
@@ -4758,7 +4676,9 @@
                         "query": "InsightsMetrics\r\n| where Computer in ({Computer})\r\n| where Namespace == 'prometheus' and Name == 'node_cpu_seconds_total'\r\n| extend Tags = todynamic(Tags)\r\n| extend HostName = tostring(Tags.hostName), Cpu = Tags.cpu, Mode = Tags.mode\r\n| where Mode == \"idle\"\r\n| extend NodeDisk = strcat(Mode, \"/\", Cpu, \"/\", HostName)\r\n| order by NodeDisk asc, TimeGenerated asc\r\n| serialize\r\n| extend PrevVal = iif(prev(NodeDisk) != NodeDisk, 0.0, prev(Val)), PrevTimeGenerated = iif(prev(NodeDisk) != NodeDisk, datetime(null), prev(TimeGenerated))\r\n| where isnotnull(PrevTimeGenerated) //and PrevTimeGenerated != TimeGenerated\r\n| extend Rate = iif(PrevVal > Val, Val / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1), iif(PrevVal == Val, 0.0, (Val - PrevVal) / (datetime_diff('Second', TimeGenerated, PrevTimeGenerated) * 1)))\r\n| project TimeGenerated, NodeDisk, Rate, HostName\r\n| summarize CpuUsage = 100 - (100 * avg(Rate)) by bin(TimeGenerated, 30m), HostName\r\n| order by TimeGenerated asc\r\n| summarize Timestamp=make_list(TimeGenerated), CpuUsage=make_list(CpuUsage) by HostName\r\n| extend series_decompose_anomalies(CpuUsage, 1.5, -1, 'linefit')\r\n| mv-expand Timestamp, CpuUsage, series_decompose_anomalies_CpuUsage_ad_flag, series_decompose_anomalies_CpuUsage_ad_score, series_decompose_anomalies_CpuUsage_baseline\r\n| where series_decompose_anomalies_CpuUsage_ad_flag == 1\r\n| project todatetime(Timestamp), HostName, Actual_CPU_Usage = round(todecimal(CpuUsage),3), Outlier_CPU_Usage = round(todecimal(series_decompose_anomalies_CpuUsage_baseline),3)\r\n| extend  HostName = strcat('🖥️ ',  HostName)\r\n| order by Timestamp desc",
                         "size": 0,
                         "title": "Anomaly (Outlier) detected over 30 min aggregation",
-                        "timeContextFromParameter": "Timeframe",
+                        "timeContext": {
+                          "durationMs": 172800000
+                        },
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
                         "crossComponentResources": ["{Resource}"],
@@ -4810,7 +4730,9 @@
                         "size": 0,
                         "aggregation": 3,
                         "title": " CPU Usage (Forecasting based on last 7 days data)",
-                        "timeContextFromParameter": "Timeframe",
+                        "timeContext": {
+                          "durationMs": 604800000
+                        },
                         "queryType": 0,
                         "resourceType": "microsoft.kubernetes/connectedclusters",
                         "crossComponentResources": ["{Resource}"],
