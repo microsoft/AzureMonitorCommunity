@@ -1,0 +1,544 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 1,
+        "content": {
+          "json": "# Azure Monitor Logs Workspace Audit"
+        },
+        "name": "Workbook-header-text"
+      },
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "crossComponentResources": [
+            "{Subscription}"
+          ],
+          "parameters": [
+            {
+              "id": "98a54f09-afd4-4353-a3fc-10b60883db4e",
+              "version": "KqlParameterItem/1.0",
+              "name": "Subscription",
+              "label": "Subscription(s)",
+              "type": 6,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| distinct subscriptionId\r\n| project value = subscriptionId, label = subscriptionId, selected = true",
+              "crossComponentResources": [
+                "value::selected"
+              ],
+              "typeSettings": {
+                "additionalResourceOptions": []
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            {
+              "id": "3acb4eea-faf3-4b0c-84be-9ea313a172cb",
+              "version": "KqlParameterItem/1.0",
+              "name": "Workspace",
+              "label": "Workspace(s)",
+              "type": 5,
+              "isRequired": true,
+              "multiSelect": true,
+              "quote": "'",
+              "delimiter": ",",
+              "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| project value = id, label = id, selected = true",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "isHiddenWhenLocked": true,
+              "typeSettings": {
+                "additionalResourceOptions": [],
+                "showDefault": false
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            }
+          ],
+          "style": "pills",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources"
+        },
+        "name": "Workbook-Global-Parameters"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "Use this workbook to understand what your workspaces are used for. This could be handy if you have a large number of workspaces, and would like to perform a consolidation or cleanup.\r\n\r\nSelect the workspace in the list below to view the data sources and agents using the workspace as a destination.",
+          "style": "info"
+        },
+        "name": "Explanation-text"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| where id in ({Workspace})\r\n| extend createdDate = tostring(properties.createdDate),\r\n    retentionInDays = tostring(properties.retentionInDays),\r\n    sku = tostring(properties.sku.name),\r\n    lastSkuUpdate = properties.sku.lastSkuUpdate,\r\n    dataIngestionStatus = tostring(properties.workspaceCapping.dataIngestionStatus),\r\n    dailyQuotaGb = tostring(properties.workspaceCapping.dailyQuotaGb)\r\n| extend dailyQuotaGb = iff(dailyQuotaGb has \"-1\", \"No Daily Cap\", dailyQuotaGb)\r\n| project id, name, location, resourceGroup, subscriptionId, createdDate, retentionInDays, sku, lastSkuUpdate, dataIngestionStatus, dailyQuotaGb",
+          "size": 0,
+          "showAnalytics": true,
+          "title": "All Workspaces in selected subscriptions",
+          "noDataMessage": "No workspaces detected in the selected subscription(s). Please update your subscription selection to view workspaces available.",
+          "exportFieldName": "id",
+          "exportParameterName": "workspaceid",
+          "showExportToExcel": true,
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources",
+          "crossComponentResources": [
+            "{Subscription}"
+          ],
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "id",
+                "formatter": 13,
+                "formatOptions": {
+                  "linkTarget": null,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "name",
+                "formatter": 5
+              },
+              {
+                "columnMatch": "location",
+                "formatter": 17
+              },
+              {
+                "columnMatch": "resourceGroup",
+                "formatter": 14,
+                "formatOptions": {
+                  "linkTarget": null,
+                  "showIcon": true
+                }
+              },
+              {
+                "columnMatch": "subscriptionId",
+                "formatter": 5
+              },
+              {
+                "columnMatch": "createdDate",
+                "formatter": 6
+              },
+              {
+                "columnMatch": "lastSkuUpdate",
+                "formatter": 6
+              },
+              {
+                "columnMatch": "dataIngestionStatus",
+                "formatter": 5
+              }
+            ],
+            "labelSettings": [
+              {
+                "columnId": "id",
+                "label": "Workspace"
+              },
+              {
+                "columnId": "location",
+                "label": "Location"
+              },
+              {
+                "columnId": "resourceGroup",
+                "label": "Resource Group"
+              },
+              {
+                "columnId": "createdDate",
+                "label": "Created Date"
+              },
+              {
+                "columnId": "retentionInDays",
+                "label": "Retention in Days"
+              },
+              {
+                "columnId": "sku",
+                "label": "Pricing Tier"
+              },
+              {
+                "columnId": "lastSkuUpdate",
+                "label": "Pricing Tier Updated"
+              },
+              {
+                "columnId": "dailyQuotaGb",
+                "label": "Daily Cap"
+              }
+            ]
+          }
+        },
+        "name": "Workspace-list"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "{workspaceid}"
+        },
+        "conditionalVisibility": {
+          "parameterName": "0",
+          "comparison": "isEqualTo",
+          "value": "0"
+        },
+        "name": "workspaceid-text-debug"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 9,
+              "content": {
+                "version": "KqlParameterItem/1.0",
+                "crossComponentResources": [
+                  "{Subscription}"
+                ],
+                "parameters": [
+                  {
+                    "id": "fdd68f5a-613a-4dad-980c-f7599202302e",
+                    "version": "KqlParameterItem/1.0",
+                    "name": "workspacedetail",
+                    "type": 5,
+                    "isRequired": true,
+                    "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| where id == '{workspaceid}'\r\n| project value = id, label = id, selected = true",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "isHiddenWhenLocked": true,
+                    "typeSettings": {
+                      "additionalResourceOptions": [],
+                      "showDefault": false
+                    },
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  }
+                ],
+                "style": "pills",
+                "queryType": 1,
+                "resourceType": "microsoft.resourcegraph/resources"
+              },
+              "name": "SelectedWorkspace-Param"
+            },
+            {
+              "type": 11,
+              "content": {
+                "version": "LinkItem/1.0",
+                "style": "tabs",
+                "links": [
+                  {
+                    "id": "2912f954-4789-4349-983a-a63203511087",
+                    "cellValue": "selectedTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "Data Collection",
+                    "subTarget": "Data",
+                    "preText": "Data Collected",
+                    "style": "link"
+                  },
+                  {
+                    "id": "5f8e1615-2267-486b-acb7-23e22db2d203",
+                    "cellValue": "selectedTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "Agents",
+                    "subTarget": "Agents",
+                    "style": "link"
+                  },
+                  {
+                    "id": "3d930cd7-8daa-4b86-9ce6-7a401f804cf0",
+                    "cellValue": "selectedTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "Azure Resources",
+                    "subTarget": "Azure",
+                    "style": "link"
+                  },
+                  {
+                    "id": "04c6e733-d5c3-4d74-8d9b-5486c3311e7f",
+                    "cellValue": "selectedTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "Application Insights",
+                    "subTarget": "Apps",
+                    "style": "link"
+                  }
+                ]
+              },
+              "name": "Workspace-tabs"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "In this tab, you should see the data sources currently collecting into this workspace.",
+                "style": "info"
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Data"
+              },
+              "name": "Data Collection Tab Text"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Usage\r\n| where TimeGenerated > startofday(ago(90d))\r\n| summarize IngestedGB = sum(Quantity) / 1000 by Solution, IsBillable\r\n| sort by IngestedGB desc",
+                "size": 0,
+                "title": "Data collected into this workspace in the last 7 days",
+                "noDataMessage": "No data is being collected into this workspace. It should be safe to delete this workspace.",
+                "timeContext": {
+                  "durationMs": 604800000
+                },
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{workspacedetail}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "Solution",
+                      "formatter": 0,
+                      "formatOptions": {
+                        "customColumnWidthSetting": "50ch"
+                      }
+                    },
+                    {
+                      "columnMatch": "IngestedGB",
+                      "formatter": 3,
+                      "formatOptions": {
+                        "palette": "blue",
+                        "customColumnWidthSetting": "40ch"
+                      },
+                      "numberFormat": {
+                        "unit": 39,
+                        "options": {
+                          "style": "decimal",
+                          "maximumFractionDigits": 2
+                        }
+                      }
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "Solution",
+                      "label": "Data Source"
+                    },
+                    {
+                      "columnId": "IsBillable",
+                      "label": "Billable"
+                    },
+                    {
+                      "columnId": "IngestedGB",
+                      "label": "Data Ingested"
+                    }
+                  ]
+                }
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Data"
+              },
+              "name": "Workspace-Datasources"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "In this tab, you can see any agents that are emitting heartbeat events into this workspace, using either the Microsoft Monitoring Agent or the Azure Monitor Agent.",
+                "style": "info"
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Agents"
+              },
+              "name": "Agents-Tab-Text"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Heartbeat \r\n| summarize LastHeartBeat = arg_max(TimeGenerated, *) by _ResourceId\r\n| extend TimeFromNow = now() - LastHeartBeat\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1s), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| extend ResourceID = iff(isempty(tolower(_ResourceId)), Computer, tolower(_ResourceId))\r\n| project ResourceID, Computer, LastHeartBeat, [\"Time\"]=strcat('🕒 ', TimeAgo), ResourceGroup, ComputerIP",
+                "size": 0,
+                "title": "Agent heartbeats for the last 7 days",
+                "noDataMessage": "No agent heartbeats detected in the last 7 days. It may be safe to delete this workspace, but be sure to evaluate other data sources first.",
+                "timeContext": {
+                  "durationMs": 604800000
+                },
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{workspacedetail}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "ResourceID",
+                      "formatter": 13,
+                      "formatOptions": {
+                        "linkTarget": "Resource",
+                        "linkIsContextBlade": true,
+                        "showIcon": true
+                      }
+                    },
+                    {
+                      "columnMatch": "Computer",
+                      "formatter": 5
+                    },
+                    {
+                      "columnMatch": "LastHeartBeat",
+                      "formatter": 5
+                    },
+                    {
+                      "columnMatch": "ResourceGroup",
+                      "formatter": 14,
+                      "formatOptions": {
+                        "linkTarget": null,
+                        "showIcon": true
+                      }
+                    }
+                  ],
+                  "sortBy": [
+                    {
+                      "itemKey": "$gen_link_ResourceID_0",
+                      "sortOrder": 1
+                    }
+                  ],
+                  "labelSettings": [
+                    {
+                      "columnId": "ResourceID",
+                      "label": "Virtual Machine"
+                    },
+                    {
+                      "columnId": "Time",
+                      "label": "Last Heartbeat Received"
+                    }
+                  ]
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_link_ResourceID_0",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Agents"
+              },
+              "name": "Workspace-Agents"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "In this tab, you can see any Azure Resources that are emitting telemetry events into this workspace.",
+                "style": "info"
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Azure"
+              },
+              "name": "Azure-Resources-text"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AzureDiagnostics\r\n| summarize by ResourceId, ResourceProvider, Resource, ResourceGroup",
+                "size": 0,
+                "noDataMessage": "No Azure Resources emitting logs or metrics into this workspace",
+                "timeContext": {
+                  "durationMs": 86400000
+                },
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{workspacedetail}"
+                ],
+                "gridSettings": {
+                  "formatters": [
+                    {
+                      "columnMatch": "ResourceId",
+                      "formatter": 13,
+                      "formatOptions": {
+                        "linkTarget": "Resource",
+                        "linkIsContextBlade": true,
+                        "showIcon": true
+                      }
+                    },
+                    {
+                      "columnMatch": "Resource",
+                      "formatter": 5
+                    }
+                  ]
+                }
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Azure"
+              },
+              "name": "Azure-Resources-Query"
+            },
+            {
+              "type": 1,
+              "content": {
+                "json": "In this tab, you can see any Application Insights instances that are emitting telemetry events into this workspace.",
+                "style": "info"
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Apps"
+              },
+              "name": "Apps-Text"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "AppMetrics \r\n| parse _ResourceId with * \"/resourcegroups/\" RGname \"/providers/\" *\r\n| summarize count() by _ResourceId, RGname",
+                "size": 0,
+                "noDataMessage": "No Application Insights instances found to be emiting telemetry into this workspace.",
+                "timeContext": {
+                  "durationMs": 604800000
+                },
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "crossComponentResources": [
+                  "{workspacedetail}"
+                ]
+              },
+              "conditionalVisibility": {
+                "parameterName": "selectedTab",
+                "comparison": "isEqualTo",
+                "value": "Apps"
+              },
+              "name": "AppInsights-query"
+            }
+          ]
+        },
+        "conditionalVisibility": {
+          "parameterName": "workspaceid",
+          "comparison": "isNotEqualTo"
+        },
+        "name": "WorkspaceThings"
+      }
+    ],
+    "fallbackResourceIds": [
+      "Azure Monitor"
+    ],
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }
