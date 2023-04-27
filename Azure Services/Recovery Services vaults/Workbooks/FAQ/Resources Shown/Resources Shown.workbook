@@ -1,0 +1,25 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Resources shown in this report\r\n\r\nAs this report uses data in your Log Analytics workspace(s), you can view information related to all vaults that are configured to send diagnostics data to the relevant workspace. You can use the built-in Azure Policy to configure diagnostics settings for your vaults. [Learn more](https://aka.ms/BCDRAuditReportTemplates)\r\n\r\n\r\n\r\n"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "If you are using the legacy diagnostics events, data will not render in the reports as expected. To configure the report to query data from the legacy events, you can edit the query and set the **ExcludeLegacyEvent** parameter as \"False\". However, it is recommended to move away from the legacy diagnostics events at the earliest. [Learn more](https://aka.ms/AzureBackupExcludeLegacyEventDoc)",
+        "style": "warning"
+      },
+      "name": "text - 1"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

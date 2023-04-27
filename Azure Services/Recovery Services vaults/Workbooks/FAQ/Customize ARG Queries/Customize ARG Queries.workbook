@@ -1,0 +1,71 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Customizing a view\r\n\r\nTo customize the query used in a particular view, follow the below steps:\r\n\r\n1. Click on the **Edit** button (Pencil icon) at the top of the screen. This opens the workbooks in Edit mode.\r\n\r\n2. Locate the view you wish to customize and click the **Edit** button next to it. This lets you view the underlying query that is used to render the view.\r\n\r\n3. Edit the query as per your requirements. As this report uses Azure Resource Graph (ARG), you will need to write a valid ARG query. Sample ARG queries along with reference documentation are provided below.\r\n\r\n4. Click on **Run Query** to test out the query. \r\n\r\n5. Once validated, save the workbook by clicking on the **Save** icon at the top of the screen. You can access this saved workbook in the future by visiting the Custom Workbooks section in the [templates landing page](https://aka.ms/BCDRAuditReportTemplates)\r\n\r\n### Sample Azure Resource Graph queries\r\n\r\n[Reference doc](https://aka.ms/AzureBackupARGDoc)\r\n\r\n"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "8665d824-10e9-4af6-8ac2-f74e392c5d24",
+            "version": "KqlParameterItem/1.0",
+            "name": "ProtectableVMs",
+            "label": "List VMs which are not configured for backup",
+            "type": 1,
+            "typeSettings": {
+              "multiLineText": true,
+              "editorLanguage": "kql"
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "Resources\r\n| where type in~ ('microsoft.compute/virtualmachines','microsoft.classiccompute/virtualmachines') \r\n| extend resourceId=tolower(id) \r\n| join kind = leftouter ( RecoveryServicesResources\r\n| where type == \"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\"\r\n| where properties.backupManagementType == \"AzureIaasVM\"\r\n| project resourceId = tolower(tostring(properties.sourceResourceId)), backupItemid = id, isBackedUp = isnotempty(id) ) on resourceId \r\n| extend isProtected = isnotempty(backupItemid)\r\n| where (isProtected == (0))\r\n| project id,name,resourceGroup,location,tags"
+          }
+        ],
+        "style": "formVertical",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "05dc1f18-60db-4095-8f6b-1cf6cbf9afc7",
+            "version": "KqlParameterItem/1.0",
+            "name": "VMPolicy",
+            "label": "List all VMs associated with a given backup policy",
+            "type": 1,
+            "typeSettings": {
+              "multiLineText": true,
+              "editorLanguage": "kql"
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "RecoveryServicesResources\r\n| where type == \"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\"\r\n| project propertiesJSON = parse_json(properties)\r\n| where propertiesJSON.backupManagementType == \"AzureIaasVM\"\r\n| project VMID=propertiesJSON.sourceResourceId, PolicyID=propertiesJSON.policyId\r\n| where PolicyID == \"<ARM ID of the given policy>\""
+          }
+        ],
+        "style": "formVertical",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1 - Copy"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

@@ -1,0 +1,16 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Reusing a view in another workbook\r\n\r\nYou can send any of the views in this template to your custom workbook. This is useful when you want to use views from various templates and consolidate them in a custom workbook to make further customizations. Follow the steps below to send a view to another workbook:\r\n\r\n1. Click on the **Edit** button (Pencil icon) at the top of the screen. This opens the workbook in Edit mode.\r\n\r\n2. Locate the view you wish to customize and click the **Edit** button next to it.\r\n\r\n3. Click the **Move** dropdown at the bottom of the view and select the **Send To** option.\r\n\r\n4. Select the target workbook and the views you wish to send.\r\n"
+      },
+      "name": "text - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

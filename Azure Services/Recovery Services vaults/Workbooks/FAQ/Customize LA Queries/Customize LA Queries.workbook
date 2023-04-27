@@ -1,0 +1,98 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Customizing a view\r\n\r\nTo customize the query used in a particular view, follow the below steps:\r\n\r\n1. Click on the **Edit** button (Pencil icon) at the top of the screen. This opens the workbooks in Edit mode.\r\n\r\n2. Locate the view you wish to customize and click the **Edit** button next to it. This lets you view the underlying query that is used to render the view.\r\n\r\n3. Edit the query as per your requirements. As this report uses data in a Log Analytics (LA) workspace, you will need to write a valid LA query. Sample LA queries along with reference documentation are provided below.\r\n\r\n4. Click on **Run Query** to test out the query. \r\n\r\n5. Once validated, save the workbook by clicking on the **Save** icon at the top of the screen. You can access this saved workbook in the future by visiting the Custom Workbooks section in the [templates landing page](https://aka.ms/BCDRAuditReportTemplates)\r\n\r\n### Sample Log Analytics queries\r\n\r\nAzure Backup provides a set of functions, called system functions or solution functions, that are available by default in your Log Analytics (LA) workspaces. It's recommended to use system functions for querying your backup data in LA workspaces for creating custom reports, as they provide a number of benefits. \r\n\r\n[Learn more about the benefits of functions and how to use them](https://aka.ms/AzureBackupLAFunctionsDoc)\r\n\r\n"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "8665d824-10e9-4af6-8ac2-f74e392c5d24",
+            "version": "KqlParameterItem/1.0",
+            "name": "FailedVMBackup",
+            "label": "List all failed Azure VM backup jobs in a given time range",
+            "type": 1,
+            "typeSettings": {
+              "multiLineText": true,
+              "editorLanguage": "kql"
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "_AzureBackup_GetJobs(\"2021-03-05\", \"2021-03-06\") //call function with RangeStart and RangeEnd parameters set, and other parameters with default value\r\n| where BackupSolution==\"Azure Virtual Machine Backup\" and Status==\"Failed\"\r\n| project BackupInstanceFriendlyName, BackupInstanceId, OperationCategory, Status,  JobStartDateTime=StartTime, JobDuration=DurationInSecs/3600, ErrorTitle, DataTransferred=DataTransferredInMBs"
+          }
+        ],
+        "style": "formVertical",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "05dc1f18-60db-4095-8f6b-1cf6cbf9afc7",
+            "version": "KqlParameterItem/1.0",
+            "name": "SQLBackupJobs",
+            "label": "List all SQL backup jobs in a given time range",
+            "type": 1,
+            "typeSettings": {
+              "multiLineText": true,
+              "editorLanguage": "kql"
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "_AzureBackup_GetJobs(\"2021-03-05\", \"2021-03-06\",\"*\",\"*\",\"*\",\"*\",true,\"*\",\"*\",\"*\",\"*\",\"*\",\"*\",false) //call function with RangeStart and RangeEnd parameters set, ExcludeLog parameter as false, and other parameters with default value\r\n| where BackupSolution==\"SQL in Azure VM Backup\"\r\n| project BackupInstanceFriendlyName, BackupInstanceId, OperationCategory, Status,  JobStartDateTime=StartTime, JobDuration=DurationInSecs/3600, ErrorTitle, DataTransferred=DataTransferredInMBs"
+          }
+        ],
+        "style": "formVertical",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1 - Copy"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "8cb6e07d-4577-4ead-bc48-c57ba4b5fff4",
+            "version": "KqlParameterItem/1.0",
+            "name": "BackupStorageTrend",
+            "label": "Show weekly trend of backup storage consumed for VM \"testvm\"",
+            "type": 1,
+            "typeSettings": {
+              "multiLineText": true,
+              "editorLanguage": "kql"
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "_AzureBackup_GetBackupInstancesTrends(\"2021-01-01\", \"2021-03-06\",\"*\",\"*\",\"*\",\"*\",false,\"*\",\"*\",\"*\",\"*\",true, \"Weekly\") //call function with RangeStart and RangeEnd parameters set, AggregationType parameter as Weekly, and other parameters with default value\r\n| where BackupSolution == \"Azure Virtual Machine Backup\"\r\n| where FriendlyName == \"testvm\"\r\n| project TimeGenerated, VaultStore_StorageConsumptionInMBs\r\n| render timechart"
+          }
+        ],
+        "style": "formVertical",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 1 - Copy - Copy"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

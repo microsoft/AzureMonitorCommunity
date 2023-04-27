@@ -1,0 +1,537 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Workspace details"
+      },
+      "name": "Grid1"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "paragraph",
+        "links": [
+          {
+            "id": "896cf942-e9ba-4530-bdde-5fba70f153d0",
+            "cellValue": "https://aka.ms/BCDRAuditReportTemplates",
+            "linkTarget": "WorkbookTemplate",
+            "linkLabel": "follow these steps",
+            "preText": "As this report involves historical data, you will need to have reporting data stored in a Log Analytics workspace to view the report. If you have not set up a workspace yet,",
+            "postText": "to get started.",
+            "style": "link",
+            "workbookContext": {
+              "componentIdSource": "workbook",
+              "resourceIdsSource": "workbook",
+              "templateIdSource": "static",
+              "templateId": "Community-Workbooks/Azure Backup/Backup Audit Reporting Templates",
+              "typeSource": "workbook",
+              "gallerySource": "workbook",
+              "locationSource": "default"
+            }
+          }
+        ]
+      },
+      "name": "Link1"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "d1f42f81-eb8f-4653-a0ff-38564d7487b4",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "description": "Subscriptions to filter the list of workspaces",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": false,
+              "selectAllValue": ""
+            },
+            "label": "Workspace Subscription"
+          },
+          {
+            "id": "2373a24f-ad32-4909-a7f6-59b373dcde6c",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "description": "LA Workspaces configured in vault diagnostic settings",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces' | project id",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [],
+            "label": "Workspace"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "100",
+      "name": "Filters1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "______________________"
+      },
+      "name": "Line1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## User triggered operations history"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "Heading2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "This report helps you view information on user triggered operations on Recovery Services vaults over a specified period of time. [Learn more](https://go.microsoft.com/fwlink/?linkid=2211543&clcid=0x409)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "Text2"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "d286fa7e-5b87-4d8e-8a14-533193c69231",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "description": "Time range for which you wish to view user triggered operations",
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 604800000
+            }
+          },
+          {
+            "id": "735b9d9d-f65c-4ade-a357-dc9a70e63487",
+            "version": "KqlParameterItem/1.0",
+            "name": "VaultSubscription",
+            "label": "Vault Subscription",
+            "type": 2,
+            "description": "Use to filter for vaults in a specific subscription",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "let RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet VaultSubscriptionList = \"*\";\r\nlet VaultLocationList = \"*\";\r\nlet VaultList = \"*\";\r\nlet VaultTypeList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet DisplayAllFields = false;\r\n_AzureBackup_GetBackupInstances(RangeStart, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, ProtectionInfoList, DatasourceSetName, BackupInstanceName, DisplayAllFields)\r\n| distinct VaultSubscriptionId",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "",
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "de475b1a-12b6-4f2e-bbe6-536ff0225236",
+            "version": "KqlParameterItem/1.0",
+            "name": "VaultLocation",
+            "label": "Vault Location",
+            "type": 2,
+            "description": "Use to filter for vaults in a specific location",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "let RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet VaultSubscriptionList = todynamic( replace(\"/subscriptions/\", \"\", @\"{VaultSubscription}\"));\r\nlet VaultLocationList = \"*\";\r\nlet VaultList = \"*\";\r\nlet VaultTypeList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet DisplayAllFields = false;\r\n_AzureBackup_GetBackupInstances(RangeStart, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, ProtectionInfoList, DatasourceSetName, BackupInstanceName, DisplayAllFields)\r\n| distinct VaultLocation",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "",
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "851eba7b-57b7-421e-983c-fbd35160b903",
+            "version": "KqlParameterItem/1.0",
+            "name": "VaultResourceGroup",
+            "label": "Vault Resource Group",
+            "type": 2,
+            "description": "Use to filter for vaults in a specific resource group",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "let RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet VaultSubscriptionList = todynamic( replace(\"/subscriptions/\", \"\", @\"{VaultSubscription}\"));\r\nlet LocationList = split('{VaultLocation}',\",\");\r\nlet VaultLocationList = \"*\";\r\nlet VaultList = \"*\";\r\nlet VaultTypeList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet DisplayAllFields = false;\r\n_AzureBackup_GetBackupInstances(RangeStart, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, ProtectionInfoList, DatasourceSetName, BackupInstanceName, DisplayAllFields)\r\n| extend location = tostring(split(VaultUniqueId,\";\")[0])\r\n| where set_has_element(LocationList,location)\r\n| extend VaultResourceGroup = tostring(split(VaultResourceId,\"/\")[4])\r\n| distinct VaultResourceGroup\r\n",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "28abba3c-afff-48c3-8b0e-927a75eddab1",
+            "version": "KqlParameterItem/1.0",
+            "name": "SearchItem",
+            "label": "Search Item",
+            "type": 1,
+            "description": "Use to search for a specific item by name"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "100",
+      "name": "Filters2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let RangeStart = startofday({TimeRange:start});\r\nlet VaultSubscriptionList = split('{VaultSubscription}',\",\");\r\nlet VaultLocationList = split('{VaultSubscription}',\",\");\r\nlet VaultResourceGroupList = split('{VaultResourceGroup}',\",\");\r\nAzureActivity\r\n| where TimeGenerated >=(RangeStart)\r\n| where ResourceProviderValue  == \"MICROSOFT.RECOVERYSERVICES\"\r\n| where tostring(split(tostring(todynamic(_ResourceId)),\"/\")[6])  == \"microsoft.recoveryservices\" and tostring(split(tostring(todynamic(_ResourceId)),\"/\")[7]) == \"vaults\"\r\n| extend VaultName = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[8])\r\n| extend VaultSubscriptionId = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[2])\r\n| extend VaultResourceGroup = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[4])\r\n| extend OperationType = OperationName\r\n| extend EventInitiatedBy = Caller\r\n| extend OperationStatus = ActivityStatusValue\r\n| where set_has_element(VaultSubscriptionList,VaultSubscriptionId)\r\n| where set_has_element(VaultResourceGroupList,toupper(VaultResourceGroup))\r\n| where Caller != \"Microsoft.RecoveryServices\"\r\n| where ActivityStatusValue == \"Success\" or ActivityStatusValue == \"Failure\"\r\n| extend operationType =  iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPPOLICIES/WRITE\",\"Create Backup Policy \", iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/DELETE\",\"Delete BackupItem\",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/WRITE\",\"Create BackupItem\",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/RECOVERYPOINTS/RESTORE/ACTION\",\"Restore BackupItem\",\"Others\"))))\r\n| sort by VaultName asc\r\n| summarize count() by operationType\r\n\r\n\r\n\r\n",
+        "size": 3,
+        "title": "Operation types by frequency",
+        "noDataMessage": "No record found for selected time and scope.",
+        "showRefreshButton": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "piechart",
+        "sortBy": []
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "50",
+      "name": "Chart1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"1.0.0\",\"content\":\"[{\\\"Question\\\": \\\"I want to re-use some of these views and create a custom report. How can I achieve that?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Reuse a View\\\"},\\r\\n{\\\"Question\\\": \\\"How can I export a grid as Excel?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Export as Excel\\\"},\\r\\n{\\\"Question\\\": \\\"Which resources are shown in this report?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Vaults Shown\\\"}\\r\\n]\",\"transformers\":null}",
+        "size": 3,
+        "title": "Frequently asked questions",
+        "queryType": 8,
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Question",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "Answer",
+                "linkTarget": "WorkbookTemplate",
+                "linkIsContextBlade": true,
+                "customColumnWidthSetting": "100%"
+              }
+            },
+            {
+              "columnMatch": "A",
+              "formatter": 5
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "50",
+      "name": "FAQ1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "1b883efd-864a-4e02-ac92-4b5217eb4e21",
+            "version": "KqlParameterItem/1.0",
+            "name": "RowsPerPage",
+            "label": "Rows Per Page",
+            "type": 2,
+            "description": "Number of rows to display in a single page",
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    { \"value\":10, \"label\":\"10\",\"selected\":true },\r\n    { \"value\":20, \"label\":\"20\"},\r\n    { \"value\":50, \"label\":\"50\"},\r\n    { \"value\":100, \"label\":\"100\" },\r\n    { \"value\":250, \"label\":\"250\" },\r\n    { \"value\":500, \"label\":\"500\" },\r\n    { \"value\":1000, \"label\":\"1000\" }\r\n]"
+          },
+          {
+            "id": "6637dd37-891e-49a9-bee4-2f04f7a98161",
+            "version": "KqlParameterItem/1.0",
+            "name": "Page",
+            "type": 2,
+            "description": "Page number",
+            "isRequired": true,
+            "query": "let RangeStart = startofday({TimeRange:start});\r\nlet VaultSubscriptionList = split('{VaultSubscription}',\",\");\r\nlet VaultLocationList = split('{VaultSubscription}',\",\");\r\nlet VaultResourceGroupList = split('{VaultResourceGroup}',\",\");\r\nAzureActivity\r\n| where TimeGenerated >=(RangeStart)\r\n| where ResourceProviderValue  == \"MICROSOFT.RECOVERYSERVICES\"\r\n| where tostring(split(tostring(todynamic(_ResourceId)),\"/\")[6])  == \"microsoft.recoveryservices\" and tostring(split(tostring(todynamic(_ResourceId)),\"/\")[7]) == \"vaults\"\r\n| extend VaultName = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[8])\r\n| extend VaultSubscriptionId = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[2])\r\n| extend VaultResourceGroup = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[4])\r\n| extend OperationType = OperationName\r\n| extend EventInitiatedBy = Caller\r\n| extend OperationStatus = ActivityStatusValue\r\n| where set_has_element(VaultSubscriptionList,VaultSubscriptionId)\r\n| where set_has_element(VaultResourceGroupList,toupper(VaultResourceGroup))\r\n| where Caller != \"Microsoft.RecoveryServices\"\r\n| where ActivityStatusValue == \"Success\" or ActivityStatusValue == \"Failure\"\r\n| extend operationType =  iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/BACKUP/ACTION\",\"Backup \",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPPOLICIES/WRITE\",\"Update BackupPolicy \", iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/DELETE\",\"Delete Backup\",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/WRITE\",\"Modify Backup\",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/RECOVERYPOINTS/RESTORE/ACTION\",\"Restore\",\"Others\")))))\r\n| summarize c=count()\r\n| project num = (c-1)/toint('{RowsPerPage}') + 1\r\n| sort by toint(num) asc\r\n| project nums = range(1,num,1), num\r\n| mvexpand nums\r\n| project nums = tostring(nums), num = strcat(tostring(nums),\" of \",tostring(num))\r\n\r\n\r\n\r\n",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": "1"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "100",
+      "name": "Filters2 - Copy"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let RangeStart = startofday({TimeRange:start});\r\nlet VaultSubscriptionList = split('{VaultSubscription}',\",\");\r\nlet VaultLocationList = split('{VaultSubscription}',\",\");\r\nlet VaultResourceGroupList = split('{VaultResourceGroup}',\",\");\r\nAzureActivity\r\n| where TimeGenerated >=(RangeStart)\r\n| where ResourceProviderValue  == \"MICROSOFT.RECOVERYSERVICES\"\r\n| where tostring(split(tostring(todynamic(_ResourceId)),\"/\")[6])  == \"microsoft.recoveryservices\" and tostring(split(tostring(todynamic(_ResourceId)),\"/\")[7]) == \"vaults\"\r\n| extend VaultName = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[8])\r\n| extend VaultSubscriptionId = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[2])\r\n| extend VaultResourceGroup = tostring(split(tostring(todynamic(_ResourceId)),\"/\")[4])\r\n| extend OperationType = OperationName\r\n| extend EventInitiatedBy = Caller\r\n| extend OperationStatus = ActivityStatusValue\r\n| where set_has_element(VaultSubscriptionList,VaultSubscriptionId)\r\n| where set_has_element(VaultResourceGroupList,toupper(VaultResourceGroup))\r\n| where Caller != \"Microsoft.RecoveryServices\"\r\n| where ActivityStatusValue == \"Success\" or ActivityStatusValue == \"Failure\"\r\n| extend operationType =  iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPPOLICIES/WRITE\",\"Create Backup Policy \", iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/DELETE\",\"Delete BackupItem\",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/WRITE\",\"Create BackupItem\",iff(OperationNameValue == \"MICROSOFT.RECOVERYSERVICES/VAULTS/BACKUPFABRICS/PROTECTIONCONTAINERS/PROTECTEDITEMS/RECOVERYPOINTS/RESTORE/ACTION\",\"Restore BackupItem\",\"Others\"))))\r\n| sort by VaultName asc\r\n| extend row_num = row_number()\r\n| extend page_num = tostring(((row_num-1)/toint('{RowsPerPage}') + 1))\r\n| where page_num has ('{Page}')\r\n| project TimeStamp = TimeGenerated,VaultName = VaultName,VaultSubscriptionId = VaultSubscriptionId,VaultResourceGroup = VaultResourceGroup,OperationType = operationType,DetailedOperationType = OperationNameValue, EventInitiatedBy = Caller,OperationStatus = ActivityStatusValue ,_ResourceId,ExtendProperties = Properties\r\n\r\n\r\n",
+        "size": 3,
+        "title": "List of user triggered operations on vault in period",
+        "noDataMessage": "No record found for the selected time and scope.",
+        "showRefreshButton": true,
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "TimeStamp",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "14%"
+              }
+            },
+            {
+              "columnMatch": "VaultName",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": null,
+                "showIcon": false,
+                "customColumnWidthSetting": "14%"
+              }
+            },
+            {
+              "columnMatch": "VaultSubscriptionId",
+              "formatter": 15,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "linkIsContextBlade": false,
+                "showIcon": true,
+                "customColumnWidthSetting": "16%"
+              }
+            },
+            {
+              "columnMatch": "VaultResourceGroup",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "14%"
+              }
+            },
+            {
+              "columnMatch": "OperationType",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "14%"
+              }
+            },
+            {
+              "columnMatch": "EventInitiatedBy",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "14%"
+              }
+            },
+            {
+              "columnMatch": "OperationStatus",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "14%"
+              }
+            },
+            {
+              "columnMatch": "_ResourceId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "ExtendProperties",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "CellDetails",
+                "linkIsContextBlade": true
+              }
+            }
+          ],
+          "rowLimit": 100,
+          "labelSettings": [
+            {
+              "columnId": "VaultName",
+              "label": "Vault"
+            },
+            {
+              "columnId": "VaultSubscriptionId",
+              "label": "Subscription"
+            },
+            {
+              "columnId": "VaultResourceGroup",
+              "label": "Resource Group"
+            },
+            {
+              "columnId": "OperationType",
+              "label": "Operation Type"
+            },
+            {
+              "columnId": "DetailedOperationType",
+              "label": "Detailed Operation Type"
+            },
+            {
+              "columnId": "EventInitiatedBy",
+              "label": "Operation Initiated By"
+            },
+            {
+              "columnId": "OperationStatus",
+              "label": "Operation Status"
+            },
+            {
+              "columnId": "ExtendProperties",
+              "label": "Extended Properties"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "Grid1",
+      "styleSettings": {
+        "margin": "5px",
+        "padding": "5px",
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Microsoft_Azure_DataProtection"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+
