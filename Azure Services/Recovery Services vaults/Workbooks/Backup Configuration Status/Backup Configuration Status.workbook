@@ -1,0 +1,346 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Backup configuration status"
+      },
+      "name": "Heading1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "This report helps you view information on whether all of your VMs have been configured for backup or  not. [Learn more](https://go.microsoft.com/fwlink/?linkid=2211462&clcid=0x409)\r\n\r\n*Note - This template is current scoped to Azure Backup. VMs which do not have Azure Backup enabled show up as resources that don't have backup configured*"
+      },
+      "name": "Text1"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{DataSourceSubscription}"
+        ],
+        "parameters": [
+          {
+            "id": "bfc5108e-dbd5-406c-8785-ce0a06663c7c",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceSubscription",
+            "label": "Datasource Subscription",
+            "type": 6,
+            "description": "Use to filter for resources in a specific subscription",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "resources\r\n| distinct subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "4d4c83bd-d78f-4ecc-bed2-b56a1c176597",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceLocation",
+            "label": "Datasource Location",
+            "type": 2,
+            "description": "Use to filter for resources in a specific location",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "resources\r\n| where tolower(type) == tolower(\"microsoft.compute/virtualmachines\")\r\n| where isnotempty(id)\r\n| distinct location\r\n\r\n",
+            "crossComponentResources": [
+              "{DataSourceSubscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "851812a0-bf3a-4cd9-814e-f5003fb9f9d2",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceResourceGroup",
+            "label": "Datasource Resource Group",
+            "type": 2,
+            "description": "Use to filter for resources in a specific resource group",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "resources\r\n| where tolower(type) == tolower(\"microsoft.compute/virtualmachines\")\r\n| where isnotempty(id)\r\n| distinct resourceGroup\r\n\r\n\r\n",
+            "crossComponentResources": [
+              "{DataSourceSubscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "4b91f1b0-b2a2-4db1-a6ca-62b33623a48b",
+            "version": "KqlParameterItem/1.0",
+            "name": "SearchItem",
+            "label": "Search Item",
+            "type": 1,
+            "description": "Use to search for a particular resource by name",
+            "value": ""
+          },
+          {
+            "id": "fef296cf-1433-4189-8b1c-09eb94516aa0",
+            "version": "KqlParameterItem/1.0",
+            "name": "SearchTags",
+            "label": "Search Tags",
+            "type": 1,
+            "description": "Use to search for resources having a specified tag"
+          },
+          {
+            "id": "bca13de5-b8b0-43c2-af3f-06d3beb855f8",
+            "version": "KqlParameterItem/1.0",
+            "name": "IsBackup",
+            "label": "Is Backup Configured",
+            "type": 2,
+            "description": "Use to filter for resources which don't have backup configured ",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "",
+              "showDefault": false
+            },
+            "jsonData": "[    \r\n{ \"value\": \"Yes\", \t\t\t\t\t\t\"label\": \"Yes\" },\r\n{ \"value\": \"No\", \t\t\t\"label\": \"No\" }\r\n]",
+            "value": [
+              "value::all"
+            ]
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "customWidth": "100",
+      "name": "Filters1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "recoveryservicesresources\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\")\r\n| extend dataSourceLocation = tostring(todynamic(properties).dataSourceInfo.resourceLocation)\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(dataSourceLocation) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| extend dataSourceResourceGroup = tostring(split(tostring(todynamic(properties).dataSourceInfo.resourceID),\"/\")[4])\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(dataSourceResourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| extend BackupItemName = tostring(todynamic(properties).friendlyName)\r\n| extend SubscriptionId = subscriptionId\r\n| extend DataSourceResourceGroup = dataSourceResourceGroup\r\n| extend DataSourceLocation = dataSourceLocation\r\n| extend dataSourceType = tostring(todynamic(properties).dataSourceInfo.datasourceType)\r\n| extend dataSourceResourceId = tostring(todynamic(properties).dataSourceInfo.resourceID)\r\n| where tolower(dataSourceType) == tolower(\"Microsoft.Compute/virtualMachines\")\r\n| project BackupItemName = BackupItemName,DataSourceType = dataSourceType, DataSourceResourceId = tostring(todynamic(dataSourceResourceId)),LowerCaseDataSourceResourceId = tolower(tostring(todynamic(dataSourceResourceId)))\r\n| distinct BackupItemName,DataSourceType,DataSourceResourceId,LowerCaseDataSourceResourceId\r\n| join kind = fullouter(\r\nresources\r\n| where tolower(type) == tolower(\"microsoft.compute/virtualmachines\")\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(location) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(resourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| where isnotempty(id)\r\n| extend LowerCaseId = tolower(id)\r\n| distinct LowerCaseId,tostring(name),tostring(tags),tostring(id),tostring(subscriptionId),tostring(resourceGroup),tostring(location)\r\n) on $left.LowerCaseDataSourceResourceId == $right.LowerCaseId\r\n| extend IsBackupConfigured = iff(isnotempty(LowerCaseDataSourceResourceId) and isnotempty(LowerCaseId) and LowerCaseDataSourceResourceId == LowerCaseId,\"Yes\",iff(isempty(LowerCaseDataSourceResourceId) and isnotempty(LowerCaseId),\"No\",\"Nothing\"))\r\n| where IsBackupConfigured != \"Nothing\"\r\n| where name contains iff(isnotempty('{SearchItem}'),'{SearchItem}',name)\r\n| where tags contains iff(isnotempty('{SearchTags}'),'{SearchTags}',tags)\r\n| where IsBackupConfigured == tostring(split('{IsBackup}',\",\")[0]) or IsBackupConfigured == tostring(split('{IsBackup}',\",\")[1])\r\n| extend IsBackupConfigured = iff(IsBackupConfigured ==\"Yes\",\"Backup Configured\",\"Backup Not Configured\")\r\n| sort by  id asc\r\n| summarize count() by IsBackupConfigured\r\n",
+        "size": 3,
+        "title": "Resources by backup configuration status",
+        "noDataMessage": "No record found for the selected scope.",
+        "showRefreshButton": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{DataSourceSubscription}"
+        ],
+        "visualization": "piechart"
+      },
+      "customWidth": "0",
+      "name": "Chart1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"1.0.0\",\"content\":\"[{\\\"Question\\\": \\\"How can I add more columns to the grid?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Customize ARG Queries\\\"},\\r\\n{\\\"Question\\\": \\\"I want to re-use some of these views and create a custom report (workbook). How can I achieve that?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Reuse a View\\\"},\\r\\n{\\\"Question\\\": \\\"How can I export a grid as Excel?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Export as Excel\\\"},\\r\\n{\\\"Question\\\": \\\"What resources are shown in this report?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/VMs Shown\\\"}]\",\"transformers\":null}",
+        "size": 3,
+        "title": "Frequently asked questions",
+        "queryType": 8,
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Question",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "Answer",
+                "linkTarget": "WorkbookTemplate",
+                "linkIsContextBlade": true,
+                "workbookContext": {
+                  "componentIdSource": "workbook",
+                  "resourceIdsSource": "workbook",
+                  "templateIdSource": "column",
+                  "templateId": "Answer",
+                  "typeSource": "workbook",
+                  "gallerySource": "workbook",
+                  "locationSource": "default"
+                },
+                "customColumnWidthSetting": "100%"
+              }
+            },
+            {
+              "columnMatch": "A",
+              "formatter": 5
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "name": "FAQ1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{DataSourceSubscription}"
+        ],
+        "parameters": [
+          {
+            "id": "00f56d1f-46a4-4073-84c0-fdb2aac40a72",
+            "version": "KqlParameterItem/1.0",
+            "name": "RowsPerPage",
+            "label": "Rows Per Page",
+            "type": 2,
+            "description": "Number of rows to be displayed in a single page",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    { \"value\":10, \"label\":\"10\",\"selected\":true  },\r\n    { \"value\":20, \"label\":\"20\" },\r\n    { \"value\":50, \"label\":\"50\" },\r\n    { \"value\":100, \"label\":\"100\"},\r\n    { \"value\":250, \"label\":\"250\" },\r\n    { \"value\":500, \"label\":\"500\" },\r\n    { \"value\":1000, \"label\":\"1000\" }\r\n]"
+          },
+          {
+            "id": "b702bd31-a23d-40e2-b037-4c5b51ba44a8",
+            "version": "KqlParameterItem/1.0",
+            "name": "Page",
+            "type": 2,
+            "description": "Page number",
+            "isRequired": true,
+            "query": "recoveryservicesresources\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\")\r\n| extend dataSourceLocation = tostring(todynamic(properties).dataSourceInfo.resourceLocation)\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(dataSourceLocation) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| extend dataSourceResourceGroup = tostring(split(tostring(todynamic(properties).dataSourceInfo.resourceID),\"/\")[4])\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(dataSourceResourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| extend BackupItemName = tostring(todynamic(properties).friendlyName)\r\n| extend SubscriptionId = subscriptionId\r\n| extend DataSourceResourceGroup = dataSourceResourceGroup\r\n| extend DataSourceLocation = dataSourceLocation\r\n| extend dataSourceType = tostring(todynamic(properties).dataSourceInfo.datasourceType)\r\n| extend dataSourceResourceId = tostring(todynamic(properties).dataSourceInfo.resourceID)\r\n| where tolower(dataSourceType) == tolower(\"Microsoft.Compute/virtualMachines\")\r\n| project BackupItemName = BackupItemName,DataSourceType = dataSourceType, DataSourceResourceId = tostring(todynamic(dataSourceResourceId)),LowerCaseDataSourceResourceId = tolower(tostring(todynamic(dataSourceResourceId)))\r\n| distinct BackupItemName,DataSourceType,DataSourceResourceId,LowerCaseDataSourceResourceId\r\n| join kind = fullouter(\r\nresources\r\n| where tolower(type) == tolower(\"microsoft.compute/virtualmachines\")\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(location) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(resourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| where isnotempty(id)\r\n| extend LowerCaseId = tolower(id)\r\n| distinct LowerCaseId,tostring(name),tostring(tags),tostring(id)\r\n) on $left.LowerCaseDataSourceResourceId == $right.LowerCaseId\r\n| extend IsBackupConfigured = iff(isnotempty(LowerCaseDataSourceResourceId) and isnotempty(LowerCaseId) and LowerCaseDataSourceResourceId == LowerCaseId,\"Yes\",iff(isempty(LowerCaseDataSourceResourceId) and isnotempty(LowerCaseId),\"No\",\"Nothing\"))\r\n| where IsBackupConfigured != \"Nothing\"\r\n| where IsBackupConfigured == tostring(split('{IsBackup}',\",\")[0]) or IsBackupConfigured == tostring(split('{IsBackup}',\",\")[1])\r\n| where name contains iff(isnotempty('{SearchItem}'),'{SearchItem}',name)\r\n| where tags contains iff(isnotempty('{SearchTags}'),'{SearchTags}',tags)\r\n| summarize c = count()\r\n| project num = (c-1)/toint('{RowsPerPage}') + 1\r\n| sort by toint(num) asc\r\n| project nums = range(1,num,1), num\r\n| mvexpand nums\r\n| project nums = tostring(nums), num = strcat(tostring(nums),\" of \",tostring(num))",
+            "crossComponentResources": [
+              "{DataSourceSubscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": "1"
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "customWidth": "100",
+      "name": "Filters2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "recoveryservicesresources\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\")\r\n| extend dataSourceLocation = tostring(todynamic(properties).dataSourceInfo.resourceLocation)\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(dataSourceLocation) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| extend dataSourceResourceGroup = tostring(split(tostring(todynamic(properties).dataSourceInfo.resourceID),\"/\")[4])\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(dataSourceResourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| extend BackupItemName = tostring(todynamic(properties).friendlyName)\r\n| extend SubscriptionId = subscriptionId\r\n| extend DataSourceResourceGroup = dataSourceResourceGroup\r\n| extend DataSourceLocation = dataSourceLocation\r\n| extend dataSourceType = tostring(todynamic(properties).dataSourceInfo.datasourceType)\r\n| extend dataSourceResourceId = tostring(todynamic(properties).dataSourceInfo.resourceID)\r\n| where tolower(dataSourceType) == tolower(\"Microsoft.Compute/virtualMachines\")\r\n| project BackupItemName = BackupItemName,DataSourceType = dataSourceType, DataSourceResourceId = tostring(todynamic(dataSourceResourceId)),LowerCaseDataSourceResourceId = tolower(tostring(todynamic(dataSourceResourceId)))\r\n| distinct BackupItemName,DataSourceType,DataSourceResourceId,LowerCaseDataSourceResourceId\r\n| join kind = fullouter(\r\nresources\r\n| where tolower(type) == tolower(\"microsoft.compute/virtualmachines\")\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(location) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(resourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| where isnotempty(id)\r\n| extend LowerCaseId = tolower(id)\r\n| distinct LowerCaseId,tostring(name),tostring(tags),tostring(id),tostring(subscriptionId),tostring(resourceGroup),tostring(location)\r\n) on $left.LowerCaseDataSourceResourceId == $right.LowerCaseId\r\n| extend IsBackupConfigured = iff(isnotempty(LowerCaseDataSourceResourceId) and isnotempty(LowerCaseId) and LowerCaseDataSourceResourceId == LowerCaseId,\"Yes\",iff(isempty(LowerCaseDataSourceResourceId) and isnotempty(LowerCaseId),\"No\",\"Nothing\"))\r\n| where IsBackupConfigured != \"Nothing\"\r\n| where name contains iff(isnotempty('{SearchItem}'),'{SearchItem}',name)\r\n| where tags contains iff(isnotempty('{SearchTags}'),'{SearchTags}',tags)\r\n| where IsBackupConfigured == tostring(split('{IsBackup}',\",\")[0]) or IsBackupConfigured == tostring(split('{IsBackup}',\",\")[1])\r\n| sort by  id asc\r\n| extend row_num = row_number()\r\n| extend page_num = tostring(((row_num-1)/toint('{RowsPerPage}') + 1))\r\n| where page_num has ('{Page}')\r\n| project ResourceSubscription = subscriptionId,ResourceId = id,ResourceName = name,ResouceGroup = resourceGroup,ResourceLocation = location,IsBackupConfigured,ResourceTags = tags\r\n",
+        "size": 3,
+        "title": "List of resources by backup configuration status",
+        "noDataMessage": "No record found for the selected scope",
+        "showRefreshButton": true,
+        "showExportToExcel": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{DataSourceSubscription}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "ResourceSubscription",
+              "formatter": 15,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "showIcon": true,
+                "customColumnWidthSetting": "20%"
+              }
+            },
+            {
+              "columnMatch": "ResourceId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "ResourceName",
+              "formatter": 16,
+              "formatOptions": {
+                "linkColumn": "ResourceId",
+                "linkTarget": "Resource",
+                "subTarget": "",
+                "showIcon": true,
+                "customColumnWidthSetting": "20%"
+              }
+            },
+            {
+              "columnMatch": "ResouceGroup",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "20%"
+              }
+            },
+            {
+              "columnMatch": "ResourceLocation",
+              "formatter": 17,
+              "formatOptions": {
+                "customColumnWidthSetting": "20%"
+              }
+            },
+            {
+              "columnMatch": "ResourceTags",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "20%"
+              }
+            }
+          ],
+          "rowLimit": 1000
+        }
+      },
+      "name": "Grid1",
+      "styleSettings": {
+        "margin": "5px",
+        "padding": "5px",
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "microsoft_azure_dataprotection"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

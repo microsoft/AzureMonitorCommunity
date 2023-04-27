@@ -1,0 +1,17 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Exporting a grid as Excel\r\n\r\nTo export a grid as Excel, you can click on the 3 dots at the top right of the grid and click on the **Download** option. This enables you to export all the rows on the current page. To export more rows in a single step, select a larger value in the **Rows per page** dropdown and then export the grid."
+      },
+      "name": "text - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

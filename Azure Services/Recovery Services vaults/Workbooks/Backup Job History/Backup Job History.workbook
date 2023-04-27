@@ -1,0 +1,622 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Workspace details"
+      },
+      "name": "Heading1"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "paragraph",
+        "links": [
+          {
+            "id": "bac30f99-eaf9-4c7f-8705-cc263b8e1e88",
+            "cellValue": "https://aka.ms/BCDRAuditReportTemplates",
+            "linkTarget": "Url",
+            "linkLabel": "follow these steps",
+            "preText": "As this report involves historical data, you will need to have reporting data stored in a Log Analytics workspace to view the report. If you have not set up a workspace yet,",
+            "postText": "to get started.",
+            "style": "link",
+            "workbookContext": {
+              "componentIdSource": "workbook",
+              "resourceIdsSource": "workbook",
+              "templateIdSource": "static",
+              "templateId": "Community-Workbooks/Azure Backup/Backup Audit Reporting Templates",
+              "typeSource": "workbook",
+              "gallerySource": "workbook",
+              "locationSource": "default"
+            }
+          }
+        ]
+      },
+      "name": "Text1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "*Note - This template is currently scoped to items that are protected using Azure Backup*"
+      },
+      "name": "text - 11"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "d1f42f81-eb8f-4653-a0ff-38564d7487b4",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "description": "Subscriptions to filter the list of workspaces",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": false,
+              "selectAllValue": ""
+            },
+            "label": "Workspace Subscription"
+          },
+          {
+            "id": "2373a24f-ad32-4909-a7f6-59b373dcde6c",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "description": "LA Workspaces configured in vault diagnostic settings",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces' | project id",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [],
+            "label": "Workspace"
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "100",
+      "name": "Filters1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "_____________________"
+      },
+      "name": "Line1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Backup job history"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "Heading2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "This report helps you view information on your successful and failed backup jobs over a specified duration of time. [Learn more](https://go.microsoft.com/fwlink/?linkid=2211463&clcid=0x409)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "Text2"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "2965ad33-1401-47c9-8f4b-9b7126f87014",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "description": "Period of time for which reports should be viewed",
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 604800000
+            }
+          },
+          {
+            "id": "efede5fa-f577-4766-b9b6-6ba4e525f844",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceSubscription",
+            "label": "Datasource  Subscription",
+            "type": 6,
+            "description": "Use to filter for datasources within a specific subscription",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "let RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet VaultSubscriptionList = \"*\";\r\nlet VaultLocationList = \"*\";\r\nlet VaultList = \"*\";\r\nlet VaultTypeList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet DisplayAllFields = false;\r\n_AzureBackup_GetBackupInstances(RangeStart, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, ProtectionInfoList, DatasourceSetName, BackupInstanceName, DisplayAllFields)\r\n| distinct tostring(split(tostring(todynamic(DatasourceResourceId)),\"/\")[2])",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "256c7e33-df90-4956-aaf3-699aeaad912f",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceLocation",
+            "label": "Datasource Location",
+            "type": 2,
+            "description": "Use to filter for datasources within a specific location",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "let RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet VaultSubscriptionList = todynamic( replace(\"/subscriptions/\", \"\", @\"{DataSourceSubscription}\"));\r\nlet VaultLocationList = \"*\";\r\nlet VaultList = \"*\";\r\nlet VaultTypeList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet DisplayAllFields = false;\r\n_AzureBackup_GetBackupInstances(RangeStart, RangeEnd, VaultSubscriptionList, VaultLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, ProtectionInfoList, DatasourceSetName, BackupInstanceName, DisplayAllFields)\r\n| distinct VaultLocation",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "16ad110f-4ea3-44d6-826b-4ea3bbd68c93",
+            "version": "KqlParameterItem/1.0",
+            "name": "JobOperation",
+            "label": "Job Operation",
+            "type": 2,
+            "description": "Use to filter for a particular operation type",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "jsonData": "\r\n[    \r\n{ \"value\": \"Backup\", \t\t\t\t\t\t\"label\": \"Backup\" },\r\n{ \"value\": \"Restore\", \t\t\t\t\t\t\"label\": \"Restore\" }\r\n]",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "6a6222bf-a28a-4c98-9d74-838e74497167",
+            "version": "KqlParameterItem/1.0",
+            "name": "JobStatus",
+            "label": "Job Status",
+            "type": 2,
+            "description": "Use to filter for a particular job status",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "jsonData": "\r\n[    \r\n{ \"value\": \"Completed\", \t\t\t\t\t\t\"label\": \"Completed\" },\r\n{ \"value\": \"Failed\", \t\t\t\"label\": \"Failed\" },\r\n\r\n{ \"value\": \"CompletedWithWarnings\", \t\t\t\t\t\t\"label\": \"CompletedWithWarnings\" },\r\n{ \"value\": \"Cancelled\", \"label\": \"Cancelled\" }\r\n]",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "849a6401-cbaf-44b9-a733-0819f8923791",
+            "version": "KqlParameterItem/1.0",
+            "name": "SearchItem",
+            "label": "Search Item",
+            "type": 1,
+            "description": "Use to search for an item by name"
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "100",
+      "name": "Filters2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "\r\nlet RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet DataSourceSubscriptionList = todynamic( replace(\"/subscriptions/\", \"\", @\"{DataSourceSubscription}\"));\r\nlet DataSourceLocationList = todynamic( @\"{DataSourceLocation}\"); \r\nlet VaultTypeList = \"*\";\r\nlet VaultList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet JobOperationList = todynamic( @\"{JobOperation}\"); \r\nlet JobStatusList = todynamic( @\"{JobStatus}\");\r\nlet JobFailureCodeList = \"*\";\r\nlet ExcludeLog = true; \r\n_AzureBackup_GetJobs(RangeStart, RangeEnd, DataSourceSubscriptionList, DataSourceLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, JobOperationList, JobStatusList, JobFailureCodeList, DatasourceSetName, BackupInstanceName, ExcludeLog)\r\n| where BackupInstanceFriendlyName contains iff(isnotempty('{SearchItem}'),'{SearchItem}',BackupInstanceFriendlyName)\r\n| sort by BackupInstanceId\r\n| summarize count() by Status",
+        "size": 3,
+        "title": "Jobs by Status",
+        "noDataMessage": "No record found for the selected time and scope.",
+        "showRefreshButton": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "piechart",
+        "tileSettings": {
+          "showBorder": false,
+          "titleContent": {
+            "columnMatch": "UniqueId",
+            "formatter": 1
+          },
+          "leftContent": {
+            "columnMatch": "DurationInSecs",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "auto"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "0",
+      "name": "Chart1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"1.0.0\",\"content\":\"[{\\\"Question\\\": \\\"How can I add more columns to the grid?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Customize LA Queries\\\"},\\r\\n{\\\"Question\\\": \\\"I want to re-use some of these views and create a custom report. How can I achieve that?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Reuse a View\\\"},\\r\\n{\\\"Question\\\": \\\"How can I export a grid as Excel?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Export as Excel\\\"},\\r\\n{\\\"Question\\\": \\\"What resources are shown in this report?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Resources Shown\\\"},\\r\\n{\\\"Question\\\": \\\"I am not able view certain jobs in this report. How do I troubleshoot?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Troubleshoot\\\"}]\",\"transformers\":null}",
+        "size": 3,
+        "title": "Frequently asked questions",
+        "queryType": 8,
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Question",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "Answer",
+                "linkTarget": "WorkbookTemplate",
+                "linkIsContextBlade": true,
+                "customColumnWidthSetting": "100%"
+              }
+            },
+            {
+              "columnMatch": "A",
+              "formatter": 5
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "50",
+      "name": "FAQ1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "7a64467f-eec7-495b-9099-233fb7bceb08",
+            "version": "KqlParameterItem/1.0",
+            "name": "RowsPerPage",
+            "label": "Rows Per Page",
+            "type": 2,
+            "description": "Number of rows to display in a single page",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    { \"value\":10, \"label\":\"10\", \"selected\":true  },\r\n    { \"value\":25, \"label\":\"25\" },\r\n    { \"value\":50, \"label\":\"50\" },\r\n    { \"value\":100, \"label\":\"100\" },\r\n    { \"value\":250, \"label\":\"250\" },\r\n    { \"value\":500, \"label\":\"500\" },\r\n    { \"value\":1000, \"label\":\"1000\" }\r\n]"
+          },
+          {
+            "id": "5c65bc61-a721-42b7-960b-3fe7a6170eb6",
+            "version": "KqlParameterItem/1.0",
+            "name": "Page",
+            "type": 2,
+            "description": "Page number",
+            "isRequired": true,
+            "query": "\r\nlet RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet DataSourceSubscriptionList = todynamic( replace(\"/subscriptions/\", \"\", @\"{DataSourceSubscription}\"));\r\nlet DataSourceLocationList = todynamic( @\"{DataSourceLocation}\"); \r\nlet VaultTypeList = \"*\";\r\nlet VaultList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet JobOperationList = todynamic( @\"{JobOperation}\"); \r\nlet JobStatusList = todynamic( @\"{JobStatus}\");\r\nlet JobFailureCodeList = \"*\";\r\nlet ExcludeLog = true; \r\nlet backupItem = '{SearchItem}';\r\n_AzureBackup_GetJobs(RangeStart, RangeEnd, DataSourceSubscriptionList, DataSourceLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, JobOperationList, JobStatusList, JobFailureCodeList, DatasourceSetName, BackupInstanceName, ExcludeLog)\r\n| where BackupInstanceFriendlyName contains backupItem\r\n| summarize c=count()\r\n| project num = (c-1)/toint('{RowsPerPage}') + 1\r\n| project nums = range(1,num,1), num\r\n| mvexpand nums\r\n| project nums = tostring(nums), num = strcat(tostring(nums),\" of \",tostring(num))\r\n\r\n",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": "1"
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "100",
+      "name": "Filters3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "\r\nlet RangeStart = startofday({TimeRange:start});\r\nlet RangeEnd = iff(startofday({TimeRange:end}) == startofday(now()) ,startofday({TimeRange:end}) - 1d , startofday({TimeRange:end}));\r\nlet DataSourceSubscriptionList = todynamic( replace(\"/subscriptions/\", \"\", @\"{DataSourceSubscription}\"));\r\nlet DataSourceLocationList = todynamic( @\"{DataSourceLocation}\"); \r\nlet VaultTypeList = \"*\";\r\nlet VaultList = \"*\";\r\nlet ExcludeLegacyEvent = true;\r\nlet BackupSolutionList = \"*\";\r\nlet ProtectionInfoList = \"*\";\r\nlet Item_search =  \"*;*\";\r\nlet ItemArray = split(Item_search, \";\");\r\nlet ItemArray_length = array_length(ItemArray);\r\nlet BackupInstanceName = iff(ItemArray_length == 2, ItemArray[1], ItemArray[0] );\r\nlet DatasourceSetName = iff(ItemArray_length == 2, ItemArray[0], \"\");\r\nlet JobOperationList = todynamic( @\"{JobOperation}\"); \r\nlet JobStatusList = todynamic( @\"{JobStatus}\");\r\nlet JobFailureCodeList = \"*\";\r\nlet ExcludeLog = true; \r\nlet backupItem = '{SearchItem}';\r\n_AzureBackup_GetJobs(RangeStart, RangeEnd, DataSourceSubscriptionList, DataSourceLocationList, VaultList, VaultTypeList, ExcludeLegacyEvent, BackupSolutionList, JobOperationList, JobStatusList, JobFailureCodeList, DatasourceSetName, BackupInstanceName, ExcludeLog)\r\n| where BackupInstanceFriendlyName contains iff(isnotempty('{SearchItem}'),'{SearchItem}',BackupInstanceFriendlyName)\r\n| sort by BackupInstanceId\r\n| extend row_num = row_number()\r\n| extend page_num = tostring(((row_num-1)/toint('{RowsPerPage}') + 1))\r\n| where page_num has ('{Page}')\r\n| project BackupItem = BackupInstanceId,BackupItemFriendlyName = BackupInstanceFriendlyName ,Vault = VaultResourceId,Subscription = VaultSubscriptionId, VaultLocation = VaultLocation,JobOperation = OperationCategory,JobStartTime = StartTime,JobDuration = tostring(todouble(DurationInSecs)/60/60),JobStatus = Status,FailureCode = ErrorTitle\r\n",
+        "size": 3,
+        "title": "List of jobs in period",
+        "noDataMessage": "No record found for the selected time and scope.",
+        "showRefreshButton": true,
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "BackupItem",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "BackupItemFriendlyName",
+              "formatter": 16,
+              "formatOptions": {
+                "linkColumn": "BackupItem",
+                "linkTarget": "Resource",
+                "showIcon": true,
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "Vault",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "Subscription",
+              "formatter": 15,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "showIcon": true,
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "VaultLocation",
+              "formatter": 17,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "JobOperation",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "JobStartTime",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "JobDuration",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              },
+              "numberFormat": {
+                "unit": 0,
+                "options": {
+                  "style": "decimal",
+                  "minimumFractionDigits": 2,
+                  "maximumFractionDigits": 2
+                }
+              }
+            },
+            {
+              "columnMatch": "JobStatus",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "icons",
+                "thresholdsGrid": [
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Warning",
+                    "representation": "2",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Failed",
+                    "representation": "failed",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "Default",
+                    "thresholdValue": null,
+                    "representation": "Blank",
+                    "text": "{0}{1}"
+                  }
+                ],
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "FailureCode",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            }
+          ],
+          "rowLimit": 1000,
+          "labelSettings": [
+            {
+              "columnId": "BackupItemFriendlyName",
+              "label": "Backup Instance"
+            },
+            {
+              "columnId": "Vault",
+              "label": "Vault"
+            },
+            {
+              "columnId": "Subscription",
+              "label": "Subscription"
+            },
+            {
+              "columnId": "VaultLocation",
+              "label": "Location"
+            },
+            {
+              "columnId": "JobOperation",
+              "label": "Job Operation"
+            },
+            {
+              "columnId": "JobStartTime",
+              "label": "Job Start Time (UTC)"
+            },
+            {
+              "columnId": "JobDuration",
+              "label": "Job Duration (Hours)"
+            },
+            {
+              "columnId": "JobStatus",
+              "label": "Job Status"
+            },
+            {
+              "columnId": "FailureCode",
+              "label": "Job Failure Code"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "conditionalVisibility": {
+        "parameterName": "Workspaces",
+        "comparison": "isNotEqualTo"
+      },
+      "customWidth": "100",
+      "name": "Grid1",
+      "styleSettings": {
+        "margin": "5px",
+        "padding": "5px",
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

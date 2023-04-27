@@ -1,0 +1,399 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Backup schedule and retention"
+      },
+      "name": "Heading1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "This report helps you view the schedule and retention of all your protected items so that you can verify if they meet your business requirements. [Learn more](https://go.microsoft.com/fwlink/?linkid=2211542&clcid=0x409)\r\n\r\n*Note - This template is currently scoped to items that are protected using Azure Backup*"
+      },
+      "name": "Text1"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{DataSourceSubscription}"
+        ],
+        "parameters": [
+          {
+            "id": "bfc5108e-dbd5-406c-8785-ce0a06663c7c",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceSubscription",
+            "label": "Datasource Subscription",
+            "type": 6,
+            "description": "Use to filter for datasources in a specific subscription",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "resources\r\n| distinct subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "851812a0-bf3a-4cd9-814e-f5003fb9f9d2",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceResourceGroup",
+            "label": "Datasource Resource Group",
+            "type": 2,
+            "description": "Use to filter for datasources in a specific resource group",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "\r\nrecoveryservicesresources\r\n| where type has \"microsoft.recoveryservices\"\r\n| extend dataSourceResourceGroup = tostring(split(tostring(todynamic(properties).dataSourceInfo.resourceID),\"/\")[4])\r\n| where isnotempty(dataSourceResourceGroup)\r\n| distinct dataSourceResourceGroup\r\n\r\n\r\n",
+            "crossComponentResources": [
+              "{DataSourceSubscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "4d4c83bd-d78f-4ecc-bed2-b56a1c176597",
+            "version": "KqlParameterItem/1.0",
+            "name": "DataSourceLocation",
+            "label": "Datasource Location",
+            "type": 2,
+            "description": "Use to filter for datasources in a specific location",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "",
+            "delimiter": ",",
+            "query": "\r\nrecoveryservicesresources\r\n| where type ==\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\"\r\n| extend datasourceLocation = tostring(todynamic(properties).dataSourceInfo.resourceLocation)\r\n| where isnotempty(tostring(todynamic(properties).dataSourceInfo.resourceLocation))\r\n| distinct datasourceLocation\r\n\r\n",
+            "crossComponentResources": [
+              "{DataSourceSubscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "4b91f1b0-b2a2-4db1-a6ca-62b33623a48b",
+            "version": "KqlParameterItem/1.0",
+            "name": "SearchItem",
+            "label": "Search Item",
+            "type": 1,
+            "description": "Use to search for a backup item by name",
+            "value": ""
+          },
+          {
+            "id": "204c7854-40c5-495c-a9bf-f4504d8558e7",
+            "version": "KqlParameterItem/1.0",
+            "name": "MinRetention",
+            "label": "Minimum RP Retention (days)",
+            "type": 1,
+            "description": "Use to filter for items which have a backup retention greater than a specified value (in days)"
+          },
+          {
+            "id": "fdcf17eb-2e38-40fe-92fe-6f88beb79f9e",
+            "version": "KqlParameterItem/1.0",
+            "name": "MaxRetention",
+            "label": "Maximum RP Retention (days)",
+            "type": 1,
+            "description": "Use to filter for items which have a backup retention lesser than a specified value (in days)"
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "customWidth": "100",
+      "name": "Filters1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"1.0.0\",\"content\":\"[{\\\"Question\\\": \\\"How can I add more columns to the grid?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Customize ARG Queries\\\"},\\r\\n{\\\"Question\\\": \\\"I want to re-use some of these views and create a custom report. How can I achieve that?\\\",\\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Reuse a View\\\"},\\r\\n{\\\"Question\\\": \\\"How can I export a grid as Excel?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Export as Excel\\\"},\\r\\n{\\\"Question\\\": \\\"What resources are shown in this report?\\\", \\\"Answer\\\":\\\"Community-Workbooks/Azure Backup/FAQ/Backup Instances Shown\\\"}]\",\"transformers\":null}",
+        "size": 3,
+        "title": "Frequently asked questions",
+        "queryType": 8,
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Question",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "Answer",
+                "linkTarget": "WorkbookTemplate",
+                "linkIsContextBlade": true,
+                "customColumnWidthSetting": "100%"
+              }
+            },
+            {
+              "columnMatch": "A",
+              "formatter": 5
+            }
+          ]
+        }
+      },
+      "customWidth": "50",
+      "name": "FAQ1",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{DataSourceSubscription}"
+        ],
+        "parameters": [
+          {
+            "id": "127359f1-a6b3-467f-8f71-f346457c7ffb",
+            "version": "KqlParameterItem/1.0",
+            "name": "RowsPerPage",
+            "label": "Rows Per Page",
+            "type": 2,
+            "description": "Number of rows to display in a single page",
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n    { \"value\":10, \"label\":\"10\" ,\"selected\":true},\r\n    { \"value\":25, \"label\":\"25\"},\r\n    { \"value\":50, \"label\":\"50\" },\r\n    { \"value\":100, \"label\":\"100\" },\r\n    { \"value\":250, \"label\":\"250\" },\r\n    { \"value\":500, \"label\":\"500\" },\r\n    { \"value\":1000, \"label\":\"1000\" }\r\n]"
+          },
+          {
+            "id": "31ef8258-708b-4284-9c3f-074b7551939b",
+            "version": "KqlParameterItem/1.0",
+            "name": "Page",
+            "type": 2,
+            "description": "Page number",
+            "isRequired": true,
+            "query": "recoveryservicesresources\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\")\r\n| extend dataSourceLocation = tostring(todynamic(properties).dataSourceInfo.resourceLocation)\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(dataSourceLocation) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| extend dataSourceResourceGroup = tostring(split(tostring(todynamic(properties).dataSourceInfo.resourceID),\"/\")[4])\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(dataSourceResourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| extend BackupItemName = tostring(todynamic(properties).friendlyName)\r\n| extend SubscriptionId = subscriptionId\r\n| extend DataSourceResourceGroup = dataSourceResourceGroup\r\n| extend VaultName = split(tostring(todynamic(properties).policyId),\"/\")[8]\r\n| extend DataSourceLocation = dataSourceLocation\r\n| extend PolicyId = tostring(todynamic(properties).policyId)\r\n| project BackupItemName = BackupItemName,BackupItemId = id,SubscriptionId = SubscriptionId,DataSourceResourceGroup = DataSourceResourceGroup,VaultName = VaultName,DataSourceLocation = DataSourceLocation, PolicyId = PolicyId,LowerCasePolicyId = tolower(PolicyId)\r\n| join kind = innerunique(\r\n recoveryservicesresources\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backuppolicies\")\r\n| extend LowerCaseId = tolower(id)\r\n) on $left.LowerCasePolicyId == $right.LowerCaseId\r\n| extend policyProperties = todynamic(properties)\r\n| extend MinimumRetention = iff(notempty('{MinRetention}'),toint('{MinRetention}'),0)\r\n| extend MaximumRetention = iff(notempty('{MaxRetention}'),toint('{MaxRetention}'),10000)\r\n| extend monthlySchedule =  tostring(toint(tostring(policyProperties.retentionPolicy.monthlySchedule.retentionDuration[\"count\"]))*30)\r\n| extend dailySchedule =tostring(policyProperties.retentionPolicy.dailySchedule.retentionDuration[\"count\"])\r\n| extend weeklySchedule = tostring(toint(tostring(policyProperties.retentionPolicy.weeklySchedule.retentionDuration[\"count\"]))*7)\r\n| extend yearlySchedule = tostring(toint(tostring(policyProperties.retentionPolicy.yearlySchedule.retentionDuration[\"count\"]))*365)\r\n| extend monthlyScheduleDuration = iff(toint(monthlySchedule) >= MinimumRetention,iff(toint(monthlySchedule) < MaximumRetention,monthlySchedule,\"\"),\"\")\r\n| extend dailyScheduleDuration = iff(toint(dailySchedule) >= MinimumRetention,iff(toint(dailySchedule) < MaximumRetention,dailySchedule,\"\"),\"\")\r\n| extend weeklyScheduleDuration = iff(toint(weeklySchedule) >= MinimumRetention,iff(toint(weeklySchedule) < MaximumRetention,weeklySchedule,\"\"),\"\")\r\n| extend yearlyScheduleDuration = iff(toint(yearlySchedule) >= MinimumRetention,iff(toint(yearlySchedule) < MaximumRetention,yearlySchedule,\"\"),\"\")\r\n| where isnotempty(monthlyScheduleDuration) or isnotempty(dailyScheduleDuration) or isnotempty(weeklyScheduleDuration) or isnotempty(yearlyScheduleDuration)\r\n| where BackupItemName contains iff(isnotempty('{SearchItem}'),'{SearchItem}',BackupItemName)\r\n| summarize c=count()\r\n| project num = (c-1)/toint('{RowsPerPage}') + 1\r\n| project nums = range(1,num,1), num\r\n| sort by toint(nums) asc\r\n| mvexpand nums\r\n| project nums = tostring(nums), num = strcat(tostring(nums),\" of \",tostring(num))\r\n",
+            "crossComponentResources": [
+              "{DataSourceSubscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": "1"
+          }
+        ],
+        "style": "above",
+        "doNotRunWhenHidden": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "customWidth": "100",
+      "name": "Filters2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "recoveryservicesresources\r\n| extend dataSourceLocationList = split('{DataSourceLocation}',\",\")\r\n| extend dataSourceResourceGroupList = split('{DataSourceResourceGroup}',\",\")\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backupfabrics/protectioncontainers/protecteditems\")\r\n| extend dataSourceLocation = tostring(todynamic(properties).dataSourceInfo.resourceLocation)\r\n| mv-expand  dataSourceLocationList to typeof(string)\r\n| where tolower(dataSourceLocation) == tolower(dataSourceLocationList) or dataSourceLocationList == \"*\"\r\n| extend dataSourceResourceGroup = tostring(split(tostring(todynamic(properties).dataSourceInfo.resourceID),\"/\")[4])\r\n| mv-expand  dataSourceResourceGroupList to typeof(string)\r\n| where tolower(dataSourceResourceGroup) == tolower(dataSourceResourceGroupList) or dataSourceResourceGroupList == \"*\"\r\n| extend BackupItemName = tostring(todynamic(properties).friendlyName)\r\n| extend SubscriptionId = subscriptionId\r\n| extend DataSourceResourceGroup = dataSourceResourceGroup\r\n| extend VaultName = split(tostring(id),\"/\")[8]\r\n| extend DataSourceLocation = dataSourceLocation\r\n| extend PolicyId = tostring(todynamic(properties).policyId)\r\n| project BackupItemName = BackupItemName,BackupItemId = id,SubscriptionId = SubscriptionId,DataSourceResourceGroup = DataSourceResourceGroup,VaultName = VaultName,DataSourceLocation = DataSourceLocation, PolicyId = PolicyId,LowerCasePolicyId = tolower(PolicyId)\r\n| join kind = innerunique(\r\n recoveryservicesresources\r\n| where tolower(type) == tolower(\"microsoft.recoveryservices/vaults/backuppolicies\")\r\n| extend LowerCaseId = tolower(id)\r\n) on $left.LowerCasePolicyId == $right.LowerCaseId\r\n| extend policyProperties = todynamic(properties)\r\n| extend MinimumRetention = iff(notempty('{MinRetention}'),toint('{MinRetention}'),0)\r\n| extend MaximumRetention = iff(notempty('{MaxRetention}'),toint('{MaxRetention}'),10000)\r\n| extend monthlySchedule =  tostring(toint(tostring(policyProperties.retentionPolicy.monthlySchedule.retentionDuration[\"count\"]))*30)\r\n| extend dailySchedule =tostring(policyProperties.retentionPolicy.dailySchedule.retentionDuration[\"count\"])\r\n| extend weeklySchedule = tostring(toint(tostring(policyProperties.retentionPolicy.weeklySchedule.retentionDuration[\"count\"]))*7)\r\n| extend yearlySchedule = tostring(toint(tostring(policyProperties.retentionPolicy.yearlySchedule.retentionDuration[\"count\"]))*365)\r\n| extend monthlyScheduleDuration = iff(toint(monthlySchedule) >= MinimumRetention,iff(toint(monthlySchedule) < MaximumRetention,monthlySchedule,\"\"),\"\")\r\n| extend dailyScheduleDuration = iff(toint(dailySchedule) >= MinimumRetention,iff(toint(dailySchedule) < MaximumRetention,dailySchedule,\"\"),\"\")\r\n| extend weeklyScheduleDuration = iff(toint(weeklySchedule) >= MinimumRetention,iff(toint(weeklySchedule) < MaximumRetention,weeklySchedule,\"\"),\"\")\r\n| extend yearlyScheduleDuration = iff(toint(yearlySchedule) >= MinimumRetention,iff(toint(yearlySchedule) < MaximumRetention,yearlySchedule,\"\"),\"\")\r\n| where isnotempty(monthlyScheduleDuration) or isnotempty(dailyScheduleDuration) or isnotempty(weeklyScheduleDuration) or isnotempty(yearlyScheduleDuration)\r\n| where BackupItemName contains iff(isnotempty('{SearchItem}'),'{SearchItem}',BackupItemName)\r\n| sort by BackupItemName asc\r\n| extend row_num = row_number()\r\n| extend page_num = tostring(((row_num-1)/toint('{RowsPerPage}') + 1))\r\n| where page_num has ('{Page}')\r\n| project BackupItemName = BackupItemName,BackupItemId = BackupItemId,SubscriptionId = SubscriptionId,DataSourceResourceGroup = DataSourceResourceGroup,VaultName = VaultName,DataSourceLocation = DataSourceLocation, PolicyId = PolicyId,BackupSchedule = tostring(policyProperties.schedulePolicy.scheduleRunFrequency),MonthlyScheduleDuration = monthlyScheduleDuration,DailyScheduleDuration = dailyScheduleDuration,WeeklyScheduleDuration = weeklyScheduleDuration,YearlyScheduleDuration = yearlyScheduleDuration\r\n",
+        "size": 3,
+        "title": "List of backup items with schedule and retention details",
+        "noDataMessage": "No record found for the selected scope.",
+        "showRefreshButton": true,
+        "showExportToExcel": true,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "BackupItemName",
+              "formatter": 16,
+              "formatOptions": {
+                "linkColumn": "BackupItemId",
+                "linkTarget": "Resource",
+                "showIcon": true,
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "BackupItemId",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "SubscriptionId",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "showIcon": true,
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "DataSourceResourceGroup",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "VaultName",
+              "formatter": 1,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "DataSourceLocation",
+              "formatter": 17,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "PolicyId",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "MonthlyScheduleDuration",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "DailyScheduleDuration",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "WeeklyScheduleDuration",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            },
+            {
+              "columnMatch": "YearlyScheduleDuration",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "10%"
+              }
+            }
+          ],
+          "rowLimit": 1000,
+          "sortBy": [
+            {
+              "itemKey": "MonthlyScheduleDuration",
+              "sortOrder": 1
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "BackupItemName",
+              "label": "Backup Item"
+            },
+            {
+              "columnId": "SubscriptionId",
+              "label": "Subscription"
+            },
+            {
+              "columnId": "DataSourceResourceGroup",
+              "label": "Resource Group"
+            },
+            {
+              "columnId": "VaultName",
+              "label": "Vault"
+            },
+            {
+              "columnId": "DataSourceLocation",
+              "label": "Location"
+            },
+            {
+              "columnId": "PolicyId",
+              "label": "Policy"
+            },
+            {
+              "columnId": "BackupSchedule",
+              "label": "Backup Schedule"
+            },
+            {
+              "columnId": "MonthlyScheduleDuration",
+              "label": "Monthly RP Retention (Days)"
+            },
+            {
+              "columnId": "DailyScheduleDuration",
+              "label": "Daily RP Retention (Days)"
+            },
+            {
+              "columnId": "WeeklyScheduleDuration",
+              "label": "Weekly RP Retention (Days)"
+            },
+            {
+              "columnId": "YearlyScheduleDuration",
+              "label": "Yearly RP Retention (Days)"
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "MonthlyScheduleDuration",
+            "sortOrder": 1
+          }
+        ]
+      },
+      "customWidth": "100",
+      "name": "Grid1",
+      "styleSettings": {
+        "margin": "5px",
+        "padding": "5px",
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "microsoft_azure_dataprotection"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
