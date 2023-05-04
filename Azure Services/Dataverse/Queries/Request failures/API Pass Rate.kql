@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Top 10 Failing Dependencies
+// Description: Summary of failing dependencies
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Other errors and failures
+
+dependencies
+| where timestamp > ago(7d)
+| where success == false
+| summarize ['Failing Dependencies'] = count() by ['Dependency'] = name
+| top 10 by ['Failing Dependencies'] desc

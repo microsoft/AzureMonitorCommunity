@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Active Users by Browser
+// Description: Number of active users by Browser.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Usage
+let start = startofday(_fromStartTime);
+requests
+| where timestamp >= start
+| where customDimensions.userAgent != "" and user_Id != "00000000-0000-0000-0000-000000000000" and session_Id != "00000000-0000-0000-0000-000000000000"
+| where customDimensions.userAgent !has "microsoft-flow" and customDimensions.userAgent !has "Flow-RP"
+| summarize count() by tostring(customDimensions.userAgent)

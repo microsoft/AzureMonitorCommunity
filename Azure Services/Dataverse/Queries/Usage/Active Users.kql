@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Active Users
+// Description: Number of active users (unique users) who performed an operation that caused one of these SDK calls: Retrieve, Retrieve Multiple, Delete, Create, and Update.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Usage
+
+let start = startofday(_fromStartTime);
+union customEvents, pageViews
+| where timestamp >= start
+| summarize Users = dcount(user_Id), Sessions = dcount(session_Id), Views = count()
+| project Users

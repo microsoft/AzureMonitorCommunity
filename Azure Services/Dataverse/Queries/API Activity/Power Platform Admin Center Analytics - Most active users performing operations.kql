@@ -1,0 +1,13 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - Most active users performing operations
+// Description: Most active users performing CRUD operations over a given amount of time. Variables are datetime
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: API
+dependencies
+| where timestamp between (_fromStartTime .. _toEndTime) //datetime
+| where user_Id != "00000000-0000-0000-0000-000000000000"
+| where isempty(operation_SyntheticSource)
+| where type in  ("SDKCreate", "SDKUpdate", "SDKRetrieve", "SDKDelete")
+| summarize sumDimension = count() by user_Id, type
+| top 10 by sumDimension

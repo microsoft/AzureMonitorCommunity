@@ -1,0 +1,10 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - Plug-In Executions
+// Description: Count of Plug-in executions over a given amount of time. Variables are datetime
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: API
+dependencies
+| where timestamp between (_fromStartTime .. _toEndTime) //datetime
+| where type == "Plugin"
+| count

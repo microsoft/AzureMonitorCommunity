@@ -1,0 +1,9 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - API Calls
+// Description: Count of API calls over a given amount of time. Variables are of type datetime
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: API
+requests
+| where timestamp between (_fromStartTime .. _toEndTime) //datetime
+| count
