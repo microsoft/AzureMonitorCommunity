@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Kubevirt VM storage write latency"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('kubevirt_vmi_storage_write_times_ms_total') | extend vmiName = tostring(Labels.name) | extend vmiNamespace = tostring(Labels.namespace) | extend vmiNode = tostring(Labels.node) | extend vmiDrive = tostring(Labels.drive) | extend DeltaTimeWrite = DeltaTimeSeconds | extend DeltaWriteTime = DeltaVal | join kind=inner (InsightsMetrics | invoke pquery_counter('kubevirt_vmi_storage_iops_write_total') | extend vmiName = tostring(Labels.name) | extend vmiNamespace = tostring(Labels.namespace) | extend vmiNode = tostring(Labels.node) | extend vmiDrive = tostring(Labels.drive) | extend DeltaTimeTotal = DeltaTimeSeconds | extend DeltaWriteTotal = DeltaVal) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, vmiNode, vmiNamespace, vmiName, vmiDrive | summarize AvgWriteTimeRate = (sum(DeltaWriteTime) / 1000) / sum(DeltaTimeWrite), AvgWriteTotalRate = sum(DeltaWriteTotal) / sum(DeltaTimeTotal) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, vmiNode, vmiNamespace, vmiName, vmiDrive | where AvgWriteTotalRate > 0 | extend Latency = AvgWriteTimeRate / AvgWriteTotalRate"
+    },
+    "metricMeasureColumn": {
+      "value": "Latency"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "vmiNode",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiNamespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiName",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA 80 Percent Array Space Used"
+    },
+    "alertDescription": {
+      "value": "PureFA Array Capacity Alerts will query both the PureFA Array Space Used and Array Space Capacity logs then calculate the Percentage used based on the results, as provided by PureFA in Bytes. This Alert will trigger when volume usage surpasses 80 percent."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_array_space_used_bytes') | extend Dimension = tostring(Labels.dimension) | summarize UsedBytes = sum(Val) by TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId | join kind=inner ( InsightsMetrics | invoke pquery_gauge('purefa_array_space_capacity_bytes') | extend VolumeTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId | extend VolumePctUsed = percentage(UsedBytes, VolumeTotalBytes) | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, UsedBytes, VolumeTotalBytes, VolumePctUsed"
+    },
+    "metricMeasureColumn": {
+      "value": "VolumePctUsed"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    }
+  }
+}

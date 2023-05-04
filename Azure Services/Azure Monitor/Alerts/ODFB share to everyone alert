@@ -1,0 +1,3 @@
+//Looks for sharing activity if someone shares from OneDrive to Everyone
+//Replace "YourTenantName" with the name of your tenant
+OfficeActivity | where Operation == 'SharingSet' | where Site_Url has "https://YourTenantName-my.sharepoint.com/personal" | where TargetUserOrGroupName has "Everyone

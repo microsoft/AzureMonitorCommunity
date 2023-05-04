@@ -1,0 +1,17 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Resources shown in this report\r\n\r\nAs this report uses Azure Resource Graph (ARG) queries, you can view information on all vaults/backup instances that you have access to. "
+      },
+      "name": "text - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

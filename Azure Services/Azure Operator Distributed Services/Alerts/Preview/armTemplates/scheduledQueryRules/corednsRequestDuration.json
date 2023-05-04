@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "CoreDNS Request Duration"
+    },
+    "alertDescription": {
+      "value": "CoreDNS Request Duration"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "let basename = 'coredns_dns_request_duration_seconds'; InsightsMetrics | invoke pquery_histogram_buckets(basename) | extend podname = tostring(Labels.pod_name) | extend podnamespace = tostring(Labels.namespace) | extend hostname = tostring(Labels.hostName) | join kind=inner (InsightsMetrics | invoke pquery_histogram_counts(basename) | extend podname = tostring(Labels.pod_name) | extend podnamespace = tostring(Labels.namespace) | extend hostname = tostring(Labels.hostName)) on AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, hostname, podname, podnamespace | summarize buckettotal=sum(bucketdiff), total=sum(totaldiff) by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostname, podname, podnamespace, le | sort by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostname, podname, podnamespace, le asc | invoke pquery_histogram_quantile(0.99)"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0.30"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "metricMeasureColumn": {
+      "value": "quantile"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "podnamespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "podname",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

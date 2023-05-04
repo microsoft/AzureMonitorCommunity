@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Most recent application console log entries across containers
+// Description: Shows the most recent console ouput logs in a form similar to seen in the Log Stream
+// Categories: Azure Container Apps
+// Resource types: Container Apps
+// Topic: Application Logs
+
+ContainerAppConsoleLogs_CL 
+| top 500 by _timestamp_d
+| project
+    TimeGenerated,
+    RevisionName_s,
+    Instance=strcat("…", substring(ContainerId_s, -5, 5)),
+    Log_s

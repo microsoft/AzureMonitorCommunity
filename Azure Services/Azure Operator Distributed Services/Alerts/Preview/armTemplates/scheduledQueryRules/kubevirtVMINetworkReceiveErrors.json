@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Kubevirt VM network receive errors high"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('kubevirt_vmi_network_receive_errors_total') | extend vmiName = tostring(Labels.name) | extend vmiNamespace = tostring(Labels.namespace) | extend vmiNode = tostring(Labels.node) | extend interface = tostring(Labels.interface) | where interface !in ('lo') | summarize ErrorRate = sum(DeltaVal) / sum(DeltaTimeSeconds) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface"
+    },
+    "metricMeasureColumn": {
+      "value": "ErrorRate"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "3000"
+    },
+    "timeAggregation": {
+      "value": "Total"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "vmiNode",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiNamespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiName",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

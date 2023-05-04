@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Statefulset replica count"
+    },
+    "alertDescription": {
+      "value": "the number of replicas is less than desired"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_statefulset_status_replicas') | extend statefulset = tostring(Labels.statefulset) | extend namespace = tostring(Labels.namespace) | extend StatusReplicas=Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('kube_statefulset_replicas') | extend statefulset = tostring(Labels.statefulset) | extend namespace = tostring(Labels.namespace) | extend Replicas = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, statefulset, namespace | where StatusReplicas < Replicas | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, StatusReplicas, Replicas, statefulset, namespace"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0"
+    },
+    "timeAggregation": {
+      "value": "Count"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "statefulset",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

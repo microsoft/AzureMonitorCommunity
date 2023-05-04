@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "etcd leader flapping"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('etcd_server_leader_changes_seen_total') | extend hostName = tostring(Labels.hostName)"
+    },
+    "metricMeasureColumn": {
+      "value": "DeltaVal"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThanOrEqual"
+    },
+    "threshold": {
+      "value": "4"
+    },
+    "timeAggregation": {
+      "value": "Total"
+    },
+    "windowSize": {
+      "value": "PT15M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostName",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

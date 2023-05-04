@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Average working set memory - Node"
+    },
+    "alertDescription": {
+      "value": "average working set (physical + virtual) memory % used for server/node"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "Insights.Container/nodes"
+    },
+    "metricName": {
+      "value": "memoryWorkingSetPercentage"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "85"
+    },
+    "timeAggregation": {
+      "value": "Average"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "host",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

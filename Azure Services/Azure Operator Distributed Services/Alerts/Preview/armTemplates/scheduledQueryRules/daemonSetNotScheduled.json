@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Daemonset not scheduled"
+    },
+    "alertDescription": {
+      "value": "the number of not scheduled daemonset"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_daemonset_status_desired_number_scheduled') | extend daemonset = tostring(Labels.daemonset) | extend namespace = tostring(Labels.namespace) | extend Desired = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('kube_daemonset_status_current_number_scheduled') | extend daemonset = tostring(Labels.daemonset) | extend namespace = tostring(Labels.namespace)) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, daemonset, namespace | extend Current = Val | where Desired > Current | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Desired, Current, daemonset, namespace"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0"
+    },
+    "timeAggregation": {
+      "value": "Count"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "daemonset",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

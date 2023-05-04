@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Pod container restart"
+    },
+    "alertDescription": {
+      "value": "the number of pod restarts"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('kube_pod_container_status_restarts_total') | extend container = tostring(Labels.container) | extend pod = tostring(Labels.pod) | extend namespace = tostring(Labels.namespace) | extend uid = tostring(Labels.uid) | summarize restarts = sum(DeltaVal) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, container, pod, namespace, uid"
+    },
+    "metricMeasureColumn": {
+      "value": "restarts"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "50"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT24H"
+    },
+    "evaluationFrequency": {
+      "value": "PT30M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "container",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

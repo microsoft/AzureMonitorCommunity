@@ -1,0 +1,424 @@
+{
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "workbookDisplayName": {
+        "type": "string",
+        "defaultValue": "ASR Workbook",
+        "metadata": {
+          "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+        }
+      },
+      "workbookType": {
+        "type": "string",
+        "defaultValue": "workbook",
+        "metadata": {
+          "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+        }
+      },
+      "workbookSourceId": {
+        "type": "string",
+        "defaultValue": "Azure Monitor",
+        "metadata": {
+          "description": "The id of resource instance to which the workbook will be associated"
+        }
+      },
+      "workbookId": {
+        "type": "string",
+        "defaultValue": "[newGuid()]",
+        "metadata": {
+          "description": "The unique guid for this workbook instance"
+        }
+      },
+      "workspaceId": {
+        "type": "array",
+        "metadata": {
+          "description": "Resource ID of Log Analytics Workspace"
+        }
+      }
+    },
+    "variables": {
+      "workbookContent": {
+        "version": "Notebook/1.0",
+        "items": [
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "efc9dcee-a32e-4b6e-bdbb-e93e79b206c9",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Replication Health",
+                  "subTarget": "ReplicationHealth",
+                  "preText": "Re",
+                  "style": "link"
+                },
+                {
+                  "id": "5843c8ef-ce25-4514-b68f-cb4b91494660",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Failover Health",
+                  "subTarget": "FailoverHealth",
+                  "style": "link"
+                },
+                {
+                  "id": "a3a0f435-36b9-44b2-b820-b9718fe26615",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Key Metrics",
+                  "subTarget": "KeyMetrics",
+                  "style": "link"
+                },
+                {
+                  "id": "45a06f6d-52e5-4802-897e-668403c24a66",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Summary",
+                  "subTarget": "Summary",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 0"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics  \r\n| where replicationProviderName_s == \"A2A\"   \r\n| where isnotempty(name_s) and isnotnull(name_s)  \r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by name_s  \r\n| project name_s , replicationHealth_s  ",
+              "size": 0,
+              "showAnalytics": true,
+              "timeContext": {
+                "durationMs": 1800000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": "[parameters('workspaceId')]",
+              "visualization": "graph",
+              "tileSettings": {
+                "showBorder": false
+              },
+              "graphSettings": {
+                "type": 2,
+                "topContent": {},
+                "centerContent": {
+                  "columnMatch": "name_s"
+                },
+                "bottomContent": {
+                  "columnMatch": "replicationHealth_s"
+                },
+                "nodeIdField": "name_s",
+                "graphOrientation": 3,
+                "showOrientationToggles": false,
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": {
+                  "nodeColorField": "replicationHealth_s",
+                  "type": 3,
+                  "thresholdsGrid": [
+                    {
+                      "operator": "contains",
+                      "thresholdValue": "Normal",
+                      "representation": "green"
+                    },
+                    {
+                      "operator": "contains",
+                      "thresholdValue": "Critical",
+                      "representation": "redBright"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "blue"
+                    }
+                  ]
+                },
+                "hivesMargin": 5
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "ReplicationHealth"
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics  \r\n| where replicationProviderName_s == \"A2A\"   \r\n| where isnotempty(name_s) and isnotnull(name_s)  \r\n| where isnotempty(failoverHealth_s) and isnotnull(failoverHealth_s)  \r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by name_s  \r\n| project name_s , Resource, failoverHealth_s  ",
+              "size": 0,
+              "showAnalytics": true,
+              "timeContext": {
+                "durationMs": 1800000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": "[parameters('workspaceId')]",
+              "visualization": "graph",
+              "graphSettings": {
+                "type": 2,
+                "topContent": {},
+                "centerContent": {
+                  "columnMatch": "name_s"
+                },
+                "bottomContent": {
+                  "columnMatch": "failoverHealth_s"
+                },
+                "nodeIdField": "name_s",
+                "graphOrientation": 3,
+                "showOrientationToggles": false,
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": {
+                  "nodeColorField": "failoverHealth_s",
+                  "type": 3,
+                  "thresholdsGrid": [
+                    {
+                      "operator": "contains",
+                      "thresholdValue": "Normal",
+                      "representation": "green"
+                    },
+                    {
+                      "operator": "contains",
+                      "thresholdValue": "Critical",
+                      "representation": "redBright"
+                    },
+                    {
+                      "operator": "contains",
+                      "thresholdValue": "Warning",
+                      "representation": "orange"
+                    },
+                    {
+                      "operator": "contains",
+                      "thresholdValue": "Healthy",
+                      "representation": "green"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "blue"
+                    }
+                  ]
+                },
+                "hivesMargin": 5
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "FailoverHealth"
+            },
+            "name": "query - 2"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "e25052b7-dfe7-4f4b-ba86-b33d0c37b1ce",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscription",
+                  "type": 6,
+                  "isRequired": true,
+                  "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+                  "crossComponentResources": [
+                    "value::all"
+                  ],
+                  "value": "",
+                  "typeSettings": {
+                    "resourceTypeFilter": {
+                      "microsoft.compute/virtualmachines": true,
+                      "microsoft.all/virtualmachines": true,
+                      "microsoft.devtestlab/labs/virtualmachines": true
+                    },
+                    "additionalResourceOptions": [
+                      "value::1"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 0,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "040cc128-0de7-4e53-8690-b9f66a215668",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "VirtualMachine",
+                  "type": 5,
+                  "isRequired": true,
+                  "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| order by name asc\r\n\t| extend Rank = row_number()\r\n\t| project value = id, label = id, selected = Rank <= 25",
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "value": ""
+                },
+                {
+                  "id": "74003280-7715-4818-85eb-66e3e27758d9",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "VMFilter",
+                  "type": 1,
+                  "query": "{\"version\":\"1.0.0\",\"content\":\"{\\\"snippet\\\": \\\"| where InstanceName_s startswith '{VirtualMachine:Name}'\\\"}\",\"transformers\":null}",
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 8
+                },
+                {
+                  "id": "0f4b5274-258d-4f0e-9ce8-ba235c4ff136",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "VMFilter2",
+                  "type": 1,
+                  "query": "{\"version\":\"1.0.0\",\"content\":\"{\\\"snippet\\\": \\\"| where name_s startswith '{VirtualMachine:Name}'\\\"}\",\"transformers\":null}",
+                  "isHiddenWhenLocked": true,
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 8
+                }
+              ],
+              "style": "pills",
+              "queryType": 8
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "KeyMetrics"
+            },
+            "name": "parameters - 3"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics   \r\n| where Category in (\"AzureSiteRecoveryProtectedDiskDataChurn\", \"AzureSiteRecoveryReplicationDataUploadRate\")   \r\n| extend CategoryS = case(Category contains \"Churn\", \"DataChurn\",   \r\nCategory contains \"Upload\", \"UploadRate\", \"none\")  \r\n| extend InstanceWithType=strcat(CategoryS, \"_\", InstanceName_s)   \r\n| where TimeGenerated > ago(24h) {VMFilter} \r\n| project TimeGenerated , InstanceWithType , Churn_MBps = todouble(Value_s)/1048576   \r\n| render timechart",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": "[parameters('workspaceId')]",
+              "chartSettings": {
+                "showLegend": true,
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "UploadRate",
+                    "label": "UploadRate_MBPS"
+                  },
+                  {
+                    "seriesName": "DataChurn",
+                    "label": "DataChurn_MBPS"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "KeyMetrics"
+            },
+            "name": "query - 4"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics   \r\n| where replicationProviderName_s == \"A2A\"   \r\n| where TimeGenerated > ago(72h)  \r\n| where isnotempty(name_s) and isnotnull(name_s)  {VMFilter2}  \r\n| project TimeGenerated, name_s , RPO_in_minutes = rpoInSeconds_d/60\r\n| render timechart",
+              "size": 0,
+              "aggregation": 2,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": "[parameters('workspaceId')]",
+              "chartSettings": {
+                "showLegend": true,
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "RPO_in_minutes",
+                    "label": "RPO in Minutes"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "KeyMetrics"
+            },
+            "name": "query - 5"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "AzureDiagnostics \r\n| where replicationProviderName_s == \"A2A\"   \r\n| where isnotempty(name_s) and isnotnull(name_s)   \r\n| summarize hint.strategy=partitioned arg_max(TimeGenerated, *) by name_s   \r\n| project VirtualMachine = name_s , Vault = Resource , ReplicationHealth = replicationHealth_s, Status = protectionState_s, RPO_in_seconds = rpoInSeconds_d, TestFailoverStatus = failoverHealth_s, AgentVersion = agentVersion_s, SourceLocation = primaryFabricName_s",
+              "size": 0,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": "[parameters('workspaceId')]"
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "Summary"
+            },
+            "name": "query - 6"
+          }
+        ],
+        "isLocked": false,
+        "fallbackResourceIds": [
+          "Azure Monitor"
+        ]
+      }
+    },
+    "resources": [
+      {
+        "name": "[parameters('workbookId')]",
+        "type": "microsoft.insights/workbooks",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2021-03-08",
+        "dependsOn": [],
+        "kind": "shared",
+        "properties": {
+          "displayName": "[parameters('workbookDisplayName')]",
+          "serializedData": "[string(variables('workbookContent'))]",
+          "version": "1.0",
+          "sourceId": "[parameters('workbookSourceId')]",
+          "category": "[parameters('workbookType')]"
+        }
+      }
+    ],
+    "outputs": {
+      "workbookId": {
+        "type": "string",
+        "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]"
+      }
+    },
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+  }

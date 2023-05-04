@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Filespace mounts usage"
+    },
+    "alertDescription": {
+      "value": "disk usage by filesystem at root"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('node_filesystem_free_bytes') | extend device = tostring(Labels.device) | extend hostname = tostring(Labels.hostName) | extend mountpoint = tostring(Labels.mountpoint) | extend FreeBytes = Val | join kind=inner (InsightsMetrics | invoke pquery_gauge('node_filesystem_size_bytes') | extend device = tostring(Labels.device) | extend hostname = tostring(Labels.hostName) | extend mountpoint = tostring(Labels.mountpoint) | extend SizeBytes = Val) on AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, hostname, device, mountpoint | extend PctFree = (FreeBytes / SizeBytes) * 100 | extend PctUsed = 100 - PctFree | project AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, hostname, device, mountpoint, FreeBytes, SizeBytes, PctFree, PctUsed"
+    },
+    "metricMeasureColumn": {
+      "value": "PctUsed"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "device",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "mountpoint",
+          "operator": "Exclude",
+          "values": ["tmpfs", "shm"]
+        }
+      ]
+    }
+  }
+}

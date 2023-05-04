@@ -1,0 +1,17 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Troubleshooting issues\r\n\r\nIf you observe data discrepancy issues in Backup Reports, perform these preliminary checks:\r\n\r\n1. Ensure that all vaults are sending the required [diagnostics logs to the Log Analytics workspace](https://aka.ms/AzureBackupDiagnosticsDocs).\r\n2. Ensure that you've selected right filters in the reports.\r\n3. Review the following limits:\r\n\r\n   - After you configure diagnostics, it might take up to 24 hours for the initial data push to complete. After data starts flowing into the Log Analytics workspace, you might not see data in the reports immediately because data for the current partial day isn't shown in the reports. We recommend you start viewing the reports two days after you configure your vaults to send data to Log Analytics.\r\n   - SQL log backup jobs are currently not displayed in Backup Reports.\r\n   - As mentioned above, the reports don't show data for the current partial day, and take only full days (UTC) into consideration.\r\n\r\n     For example, in the report, even if you select a time range of 23/3 4:30 PM – 24/3 10:00 AM, internally the query runs for the period 23/3 12:00 AM UTC – 24/3 11:59 PM UTC. This meaning that the time component of the datetime is overridden by the query.\r\n\r\n     Similarly, if today's date is March 29, data is only shown upto the end (11:59 pm UTC) of March 28. For jobs that were created on March 29, you can see them when you check the reports on the next day, that is, March 30.\r\n\r\nIf none of the above explains the data seen in the report, please contact Microsoft Support."
+      },
+      "name": "text - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

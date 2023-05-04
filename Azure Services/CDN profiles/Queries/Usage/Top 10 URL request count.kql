@@ -9,8 +9,7 @@
 // Render line chart showing total requests per hour . 
 // Summarize number of requests per hour 
 AzureDiagnostics
-| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write" and Category == "AzureCdnAccessLog" 
-| where isReceivedFromClient_b == true
-| summarize UserRequestCount = count() by requestUri_s
-| order by UserRequestCount
-| limit 10
+ | where ResourceProvider == "MICROSOFT.CDN" and Category == "FrontDoorAccessLog"
+ | summarize UserRequestCount = count() by requestUri_s
+ | order by UserRequestCount
+ | limit 10

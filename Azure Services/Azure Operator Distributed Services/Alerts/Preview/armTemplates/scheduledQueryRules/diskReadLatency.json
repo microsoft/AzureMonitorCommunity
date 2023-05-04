@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Disk read latency"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('node_disk_read_time_seconds_total') | extend device = tostring(Labels.device) | extend hostname = tostring(Labels.hostName) | extend DeltaTimeRead = DeltaTimeSeconds | extend DeltaReadTime = DeltaVal | join kind=inner (InsightsMetrics | invoke pquery_counter('node_disk_reads_completed_total') | extend device = tostring(Labels.device) | extend hostname = tostring(Labels.hostName) | extend DeltaTimeTotal = DeltaTimeSeconds | extend DeltaReadTotal = DeltaVal) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostname, device | summarize AvgReadTimeRate = sum(DeltaReadTime) / sum(DeltaTimeRead), AvgReadTotalRate = sum(DeltaReadTotal) / sum(DeltaTimeTotal) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostname, device | where AvgReadTotalRate > 0 | extend Latency = AvgReadTimeRate / AvgReadTotalRate"
+    },
+    "metricMeasureColumn": {
+      "value": "Latency"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

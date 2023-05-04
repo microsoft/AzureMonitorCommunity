@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "etcd Fsync durations"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "let basename = 'etcd_disk_wal_fsync_duration_seconds'; InsightsMetrics | invoke pquery_histogram_buckets(basename) | extend hostname = tostring(Labels.hostName) | join kind=inner (InsightsMetrics | invoke pquery_histogram_counts(basename) | extend hostname = tostring(Labels.hostName)) on AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, hostname | summarize buckettotal=sum(bucketdiff), total=sum(totaldiff) by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostname, le | sort by AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, hostname, le asc | invoke pquery_histogram_quantile(0.99)"
+    },
+    "metricMeasureColumn": {
+      "value": "quantile"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "0.5"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    }
+  }
+}

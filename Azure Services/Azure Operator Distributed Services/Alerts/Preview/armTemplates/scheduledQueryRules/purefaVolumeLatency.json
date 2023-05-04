@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Average Volume Latency"
+    },
+    "alertDescription": {
+      "value": "PureFA Average Volume Latency Alert will query the PureFA Volume Performance logs which will provide the IO Latency based on the operations, as provided by PureFA in microseconds. This Alert will trigger when latency for the operations surpasses 10 ms."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_volume_performance_latency_usec') | extend Volume = tostring(Labels.volume) | extend Dimension = tostring(Labels.dimension) | extend IO_Latency = Val | where IO_Latency > 0"
+    },
+    "metricMeasureColumn": {
+      "value": "IO_Latency"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "10000"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Volume",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

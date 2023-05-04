@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA 80 Percent Host Total Space Used"
+    },
+    "alertDescription": {
+      "value": "PureFA Host Total Capacity Alerts will query both the PureFA Host Space Used and Host Space Capacity logs then calculate the Percentage used based on the results, as provided by PureFA in Bytes. This Alert will trigger when volume usage surpasses 80 percent."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_host_space_bytes') | where Labels.dimension == 'total' | extend host = tostring(Labels.host) | extend TotalUsedBytes = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('purefa_host_space_size_bytes') | extend host = tostring(Labels.host) | extend TotalofTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, host | extend PctUsed = percentage(TotalUsedBytes, TotalofTotalBytes) | project TimeGenerated, host, TotalUsedBytes, TotalofTotalBytes, PctUsed, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId"
+    },
+    "metricMeasureColumn": {
+      "value": "PctUsed"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "host",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

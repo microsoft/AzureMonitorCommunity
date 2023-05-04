@@ -1,0 +1,17 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Resources shown in this report\r\n\r\nAs this report uses data in your Log Analytics workspace(s), you can view information related to all vaults that are configured to send Activity Log data to the relevant workspace. You can configure this by navigating to the vault's Activity Logs page, selecting 'Export Activity Logs' and creating a diagnostics setting to a Log Analytics workspace of your choice. [Learn more](https://aka.ms/BCDRUserTriggeredOperationsDoc)"
+      },
+      "name": "text - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

@@ -1,0 +1,1535 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Vital Signs #"
+      },
+      "name": "workbookTitle"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::1",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/0e234f3c-d3f3-4dac-8196-4d685bd4228a"
+            ]
+          },
+          {
+            "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, custId= properties.customerId",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::1",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/0e234f3c-d3f3-4dac-8196-4d685bd4228a/resourceGroups/oms/providers/Microsoft.OperationalInsights/workspaces/oms-ader"
+            ]
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 3600000
+            }
+          },
+          {
+            "id": "ce7bc1af-150e-43c2-a3ee-2e31c86ed5c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "Servers",
+            "label": "Server(s)",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Heartbeat\r\n| distinct Computer",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "d4b63f41-737d-46e6-a441-81bf8d8467b1",
+            "version": "KqlParameterItem/1.0",
+            "name": "Groups",
+            "label": "Group(s)",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"{Workspaces}/SavedSearches?api-version=2020-10-01\",\"urlParams\":[],\"batchDisabled\":false,\"transformers\":[{\"type\":\"jsonpath\"}]}",
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 12
+          },
+          {
+            "id": "d4354e02-6b2e-41be-b23d-16d8e6292b67",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]\r\n",
+            "timeContext": {
+              "durationMs": 5184000000
+            },
+            "timeContextFromParameter": "TimeRange"
+          },
+          {
+            "id": "c6cb97b1-5703-4b65-b0df-51a9c9875dbd",
+            "version": "KqlParameterItem/1.0",
+            "name": "Is_AzMonForVM_NotEnabled",
+            "type": 2,
+            "isRequired": true,
+            "query": "InsightsMetrics\r\n| top 10 by TimeGenerated\r\n| summarize count()",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::1",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.5 **\r\n>2022-04-28\r\n>- Set group *Load type* to **Always**\r\n>\r\n>** Version 1.4 **\r\n>2022-04-28\r\n>- Fixed thresholds and heatmap color \r\n>\r\n>** Version 1.3 **\r\n>2022-04-06\r\n>- Added tiles for disk latency\r\n>- Fixed bug with wrong timrange paramenter in some tiles\r\n>\r\n>** Version 1.2 **\r\n>2022-03-30\r\n>- Added tiles for agent processor and memory footprint over time\r\n>- Added tiles for all processes footprint\r\n> \r\n>** Version 1.1 **\r\n>2022-03-28\r\n>- Added graph chart with heatmap for current performance states\r\n>- Added Monitoring Agent' processes status info\r\n>- Fixed the agent footprint query to inlcude both Windows and Linux\r\n>- Added more tile options for pinning, open query and data export in csv\r\n>\r\n>** Version 1.0 **\r\n>2021-02-01\r\n>- Initial version."
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "50",
+      "name": "changeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\n## Virtual Machines - Vital Signs ##\r\n\r\nWelcome to the ***Virtual Machines - Vital Signs*** workbook. This workbook is designed to provide you with an basic set of info about performance indicators, monitoring agent footprint and processes footprint using the Microsoft Monitoring Agent (aka MMA) for both Windows and Linux Operating systems.\r\n\r\n## Prerequistes ##\r\n\r\n* A [Log Analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n\r\n* [Azure Monitor for VM](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview) enabled\r\n\r\n* The following performance counters collected:\r\n\t* Windows:\r\n\t\t* Process(*)\\% Processor Time\r\n\t\t* Process(*)\\Working Set - Private\r\n\r\n\t* Linux:\r\n\t\t* Pct User Time\r\n\t\t* Used Memory\r\n\r\nIn order to work, the workbook needs:\r\n\r\n* The enablement of ***Azure Monitor for VMs***. If you are unfamiliar with how to enable it, see [Configuring Azure Monitor for VMs](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview#configuring-azure-monitor-for-vms)\r\n\r\n* The configuration of the above mentioned performance counters. If you are not familiar with how to enable it, see [Collect Windows and Linux performance data sources with Log Analytics agent](https://docs.microsoft.com/en-us/azure/azure-monitor/agents/data-sources-performance-counters#configuring-performance-counters)\r\n"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "<br>\r\n### ⚠️ Azure Monitor for VMs doesn't seem to have been configured or is not reporting to the selected workspace(s).\r\n---\r\n\r\nAzure Monitor for VMs has not been configured or is configured to store data in a different workspace.\r\n\r\nPlease select another workspace or check out the detailed documentation on how to [Configuring Azure Monitor for VMs.](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Is_AzMonForVM_NotEnabled",
+        "comparison": "isEqualTo",
+        "value": "0"
+      },
+      "name": "AzMonForVM_NotEnabled"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "loadType": "always",
+        "items": [
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "95186c7d-8807-498d-b353-762e1bfd187c",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Performance",
+                  "subTarget": "grp_Perf",
+                  "preText": "Performance",
+                  "style": "link"
+                },
+                {
+                  "id": "52f8ebfb-25d7-4c46-b9ba-06468c30b99d",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Processes",
+                  "subTarget": "grp_Processes",
+                  "style": "link"
+                },
+                {
+                  "id": "69809a6c-075f-443f-b98b-d85283c9d072",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Monitoring Agent Info",
+                  "subTarget": "grp_Agent",
+                  "preText": "Agent Information",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 1"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "loadType": "always",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Namespace == \"Processor\"\r\n| where Name == \"UtilizationPercentage\"\r\n| summarize arg_max(TimeGenerated, *) by Computer\r\n| project Computer, Val",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "CPU Utilization % - Last sample",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "graph",
+                    "graphSettings": {
+                      "type": 2,
+                      "topContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "centerContent": {
+                        "columnMatch": "Val",
+                        "formatter": 1,
+                        "numberFormat": {
+                          "unit": 1,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2,
+                            "maximumSignificantDigits": 3
+                          }
+                        }
+                      },
+                      "nodeIdField": "Computer",
+                      "graphOrientation": 3,
+                      "showOrientationToggles": false,
+                      "nodeSize": null,
+                      "staticNodeSize": 100,
+                      "colorSettings": {
+                        "nodeColorField": "Val",
+                        "type": 4,
+                        "heatmapPalette": "greenRed",
+                        "heatmapMin": 30,
+                        "heatmapMax": 80
+                      },
+                      "hivesMargin": 5
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "cpuPercentageCurrent",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Namespace == \"Processor\"\r\n| where Name == \"UtilizationPercentage\"\r\n| summarize avg(Val) by bin(TimeGenerated, 1m), Computer",
+                    "size": 0,
+                    "aggregation": 5,
+                    "showAnalytics": true,
+                    "title": "CPU Utilization % - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "cpuPercentageOvertime",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Namespace == \"Memory\"\r\n| where Name == \"AvailableMB\"\r\n| summarize arg_max(TimeGenerated, *) by Computer\r\n| extend memorySizeMB = round(toreal(parse_json(Tags).[\"vm.azm.ms/memorySizeMB\"]))\r\n| extend freePercentage = round((Val / memorySizeMB) * 100,2)\r\n| project Computer, Val, freePercentage",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Available Memory - Last sample",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "graph",
+                    "graphSettings": {
+                      "type": 2,
+                      "topContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "centerContent": {
+                        "columnMatch": "freePercentage",
+                        "formatter": 1,
+                        "numberFormat": {
+                          "unit": 1,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2,
+                            "maximumSignificantDigits": 3
+                          }
+                        }
+                      },
+                      "bottomContent": {
+                        "columnMatch": "Val",
+                        "formatter": 1,
+                        "numberFormat": {
+                          "unit": 4,
+                          "options": {
+                            "style": "decimal",
+                            "minimumFractionDigits": 2,
+                            "maximumSignificantDigits": 3
+                          }
+                        }
+                      },
+                      "nodeIdField": "Computer",
+                      "graphOrientation": 3,
+                      "showOrientationToggles": false,
+                      "nodeSize": null,
+                      "staticNodeSize": 100,
+                      "colorSettings": {
+                        "nodeColorField": "freePercentage",
+                        "type": 4,
+                        "heatmapPalette": "redGreen",
+                        "heatmapMin": 10,
+                        "heatmapMax": 50
+                      },
+                      "hivesMargin": 5
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "availableMemoryCurrent",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Namespace == \"Memory\"\r\n| where Name == \"AvailableMB\"\r\n| summarize avg(Val) by bin(TimeGenerated, 1m), Computer",
+                    "size": 0,
+                    "aggregation": 5,
+                    "showAnalytics": true,
+                    "title": "Available Memory - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "availableMemoryOvertime",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let diskSizeAndFreeSpaceMb = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Name == \"FreeSpaceMB\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize arg_max(TimeGenerated, *) by Computer, diskUnit\r\n| extend diskSizeMb = round(toreal(parse_json(Tags).[\"vm.azm.ms/diskSizeMB\"]))\r\n| extend freeMB = Val\r\n| distinct TimeGenerated, Computer, diskUnit, diskSizeMb, freeMB, _ResourceId;\r\nInsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Name == \"FreeSpacePercentage\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize (TimeGenerated, freePerc) = arg_max(TimeGenerated, Val) by Computer, diskUnit, _ResourceId\r\n| join (diskSizeAndFreeSpaceMb) on Computer, diskUnit\r\n| project Computer, diskUnit, diskSizeMb, freePerc, freeMB\r\n",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Logical Disk Free Space (Mb & %) - Current",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "graph",
+                    "graphSettings": {
+                      "type": 2,
+                      "topContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "diskUnit",
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal"
+                          }
+                        }
+                      },
+                      "rightContent": {
+                        "columnMatch": "freeMB",
+                        "formatter": 1,
+                        "numberFormat": {
+                          "unit": 4,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "bottomContent": {
+                        "columnMatch": "freePerc",
+                        "formatter": 1,
+                        "numberFormat": {
+                          "unit": 1,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "hivesContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "nodeIdField": "Computer",
+                      "graphOrientation": 3,
+                      "showOrientationToggles": false,
+                      "nodeSize": null,
+                      "staticNodeSize": 100,
+                      "colorSettings": {
+                        "nodeColorField": "freePerc",
+                        "type": 4,
+                        "heatmapPalette": "redGreen",
+                        "heatmapMin": 30,
+                        "heatmapMax": 80
+                      },
+                      "groupByField": "Computer",
+                      "hivesMargin": 5
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "diskSpaceUsageCurrent",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Namespace == \"LogicalDisk\"\r\n| where Name == \"FreeSpacePercentage\"\r\n| extend diskUnit = strcat(Computer,\" - \",tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"]))\r\n| summarize avg(Val) by bin(TimeGenerated,1m), Computer, diskUnit",
+                    "size": 0,
+                    "aggregation": 5,
+                    "showAnalytics": true,
+                    "title": "Logical Disk Free Space % - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart",
+                    "chartSettings": {
+                      "group": "diskUnit",
+                      "createOtherGroup": null
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "diskSpaceUsagePerc",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "//Logical Disk Info (WINDOWS & LINUX)\r\nInsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace  == 'LogicalDisk'\r\n| where Name == \"ReadLatencyMs\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize (TimeGenerated, ReadLatency) = arg_max(TimeGenerated, Val) by Computer, diskUnit, Name, _ResourceId\r\n| project TimeGenerated, Computer, diskUnit, ReadLatency\r\n| sort by TimeGenerated asc, Computer asc, diskUnit asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Logical Disk Read Latency (ms) - Current",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "graph",
+                    "graphSettings": {
+                      "type": 2,
+                      "topContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "centerContent": {
+                        "columnMatch": "ReadLatency",
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "bottomContent": {
+                        "columnMatch": "diskUnit",
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal"
+                          }
+                        }
+                      },
+                      "hivesContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "nodeIdField": "Computer",
+                      "graphOrientation": 3,
+                      "showOrientationToggles": false,
+                      "nodeSize": null,
+                      "staticNodeSize": 100,
+                      "colorSettings": {
+                        "nodeColorField": "ReadLatency",
+                        "type": 4,
+                        "heatmapPalette": "greenRed",
+                        "heatmapMin": 0.25,
+                        "heatmapMax": null
+                      },
+                      "groupByField": "Computer",
+                      "hivesMargin": 5
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "diskReadLatencyCurrent",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace == \"LogicalDisk\"\r\n| where Name == \"ReadLatencyMs\"\r\n| extend diskUnit = strcat(Computer,\" - \",tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"]))\r\n| summarize avg(Val) by bin(TimeGenerated,1m), Computer, diskUnit",
+                    "size": 0,
+                    "aggregation": 5,
+                    "showAnalytics": true,
+                    "title": "Logical Disk Read Latency (ms) - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart",
+                    "chartSettings": {
+                      "group": "diskUnit",
+                      "createOtherGroup": null
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "diskReadLatencyOvertime",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "//Logical Disk Info (WINDOWS & LINUX)\r\nInsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace  == 'LogicalDisk'\r\n| where Name == \"WriteLatencyMs\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize (TimeGenerated, ReadLatency) = arg_max(TimeGenerated, Val) by Computer, diskUnit, Name, _ResourceId\r\n| project TimeGenerated, Computer, diskUnit, ReadLatency\r\n| sort by TimeGenerated asc, Computer asc, diskUnit asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Logical Disk Write Latency (ms) - Current",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "graph",
+                    "graphSettings": {
+                      "type": 2,
+                      "topContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "centerContent": {
+                        "columnMatch": "ReadLatency",
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "bottomContent": {
+                        "columnMatch": "diskUnit",
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal"
+                          }
+                        }
+                      },
+                      "hivesContent": {
+                        "columnMatch": "Computer",
+                        "formatter": 1
+                      },
+                      "nodeIdField": "Computer",
+                      "graphOrientation": 3,
+                      "showOrientationToggles": false,
+                      "nodeSize": null,
+                      "staticNodeSize": 100,
+                      "colorSettings": {
+                        "nodeColorField": "ReadLatency",
+                        "type": 4,
+                        "heatmapPalette": "greenRed",
+                        "heatmapMin": 0.25,
+                        "heatmapMax": null
+                      },
+                      "groupByField": "Computer",
+                      "hivesMargin": 5
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "diskWriteLatencyCurrent",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace == \"LogicalDisk\"\r\n| where Name == \"WriteLatencyMs\"\r\n| extend diskUnit = strcat(Computer,\" - \",tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"]))\r\n| summarize avg(Val) by bin(TimeGenerated,1m), Computer, diskUnit",
+                    "size": 0,
+                    "aggregation": 5,
+                    "showAnalytics": true,
+                    "title": "Logical Disk WriteLatency (ms) - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart",
+                    "chartSettings": {
+                      "group": "diskUnit",
+                      "createOtherGroup": null
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "diskWriteLatencyOvertime",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "//Logical Disk Info (WINDOWS & LINUX)\r\nlet diskSizeAndFreeSpaceMb = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace  == 'LogicalDisk'\r\n| where Name == \"FreeSpaceMB\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize arg_max(TimeGenerated, *) by Computer, diskUnit\r\n| extend diskSizeMb = round(toreal(parse_json(Tags).[\"vm.azm.ms/diskSizeMB\"]))\r\n| extend freeMB = Val\r\n| distinct TimeGenerated, Computer, diskUnit, diskSizeMb, freeMB, _ResourceId;\r\nlet diskReadLatency = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace  == 'LogicalDisk'\r\n| where Name == \"ReadLatencyMs\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize (TimeGenerated, ReadLatency) = arg_max(TimeGenerated, Val) by Computer, diskUnit, Name, _ResourceId\r\n| project TimeGenerated, Computer, diskUnit, Name, ReadLatency;\r\nlet diskWriteLatency = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace  == 'LogicalDisk'\r\n| where Name == \"WriteLatencyMs\" //,'ReadLatencyMs')\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize (TimeGenerated, WriteLatency) = arg_max(TimeGenerated, Val) by Computer, diskUnit, Name, _ResourceId\r\n| project TimeGenerated, Computer, diskUnit, Name, WriteLatency;\r\nInsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Name == \"FreeSpacePercentage\"\r\n| extend diskUnit = tostring(parse_json(Tags).[\"vm.azm.ms/mountId\"])\r\n| summarize (TimeGenerated, freePerc) = arg_max(TimeGenerated, Val) by Computer, diskUnit, _ResourceId\r\n| join (diskSizeAndFreeSpaceMb) on Computer, diskUnit\r\n| join (diskReadLatency) on Computer, diskUnit\r\n| join (diskWriteLatency) on Computer, diskUnit\r\n| project TimeGenerated, Computer, diskUnit, diskSizeMb, freePerc, freeMB, ReadLatency, WriteLatency\r\n| sort by TimeGenerated asc, Computer asc, diskUnit asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Logical Disk Info - Summary",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "TimeGenerated",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "Computer",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "diskUnit",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "10ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "diskSizeMb",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "21.4286ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "freePerc",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 30,
+                            "max": 50,
+                            "palette": "redGreen",
+                            "customColumnWidthSetting": "18.8571ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal",
+                              "minimumFractionDigits": 2,
+                              "maximumSignificantDigits": 3
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "freeMB",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "22.8571ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "ReadLatency",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0.2,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "21.1429ch"
+                          },
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal",
+                              "maximumFractionDigits": 4
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "WriteLatency",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0.2,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "21.1429ch"
+                          },
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal",
+                              "maximumFractionDigits": 4
+                            }
+                          }
+                        }
+                      ],
+                      "rowLimit": 1000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "Computer"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "diskUnit",
+                          "label": "Unit"
+                        },
+                        {
+                          "columnId": "diskSizeMb",
+                          "label": "Disk size (Mbytes)"
+                        },
+                        {
+                          "columnId": "freePerc",
+                          "label": "Free space (%)"
+                        },
+                        {
+                          "columnId": "freeMB",
+                          "label": "Free space (MBytes)"
+                        },
+                        {
+                          "columnId": "ReadLatency",
+                          "label": "Read latency (ms)"
+                        },
+                        {
+                          "columnId": "WriteLatency",
+                          "label": "Write latency (ms)"
+                        }
+                      ]
+                    }
+                  },
+                  "showPin": true,
+                  "name": "diskSpaceUsageDetails",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "grp_Perf"
+            },
+            "name": "grp_Performance"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "loadType": "always",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Monitoring Agent footprint (WINDOWS)\r\n//Used memory on Windows computers\r\nlet UsedMem_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName  == \"Working Set - Private\" // in bytes\r\n| where InstanceName !in ('_Total', 'Idle')\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| project Computer, InstanceName, memUsage = (CounterValue/1024/1024);   // converted in MBytes\r\n//Used CPU on Windows computers\r\nlet UsedCpu_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"% Processor Time\"\r\n| where InstanceName !in ('_Total', 'Idle')\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| project TimeGenerated, Computer, InstanceName, cpuUsage=CounterValue;\r\n// memory size info\r\nlet memSizing = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Name == \"AvailableMB\"\r\n| summarize arg_max(TimeGenerated, *) by Computer\r\n| extend memorySizeMB = round(toreal(parse_json(Tags).[\"vm.azm.ms/memorySizeMB\"]))\r\n| distinct TimeGenerated, Computer, memorySizeMB;\r\n// Joining Windows info\r\nUsedMem_Windows\r\n| join (UsedCpu_Windows) on Computer, InstanceName\r\n| join kind=leftouter (memSizing) on Computer\r\n| extend memUsagePercentage = round((memUsage / memorySizeMB) * 100,2)\r\n| project TimeGenerated, Computer, InstanceName, cpuUsage, memUsage, memUsagePercentage, memorySizeMB\r\n| sort by Computer asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Windows computer(s) - Process(es) footprint - Last sample",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Time",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "27ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "Computer",
+                          "formatter": 5,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "37.8571ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "InstanceName",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "27ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "cpuUsage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 30,
+                            "max": 80,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "17.8571ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal",
+                              "minimumFractionDigits": 2,
+                              "maximumFractionDigits": 2
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memUsage",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memUsagePercentage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 10,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "24ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memorySizeMB",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        }
+                      ],
+                      "rowLimit": 1000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "Computer"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "sortBy": [
+                        {
+                          "itemKey": "$gen_heatmap_cpuUsage_4",
+                          "sortOrder": 2
+                        }
+                      ],
+                      "labelSettings": [
+                        {
+                          "columnId": "InstanceName",
+                          "label": "Process name"
+                        },
+                        {
+                          "columnId": "cpuUsage",
+                          "label": "Used CPU (%)"
+                        },
+                        {
+                          "columnId": "memUsage",
+                          "label": "Used Memory (MBytes)"
+                        },
+                        {
+                          "columnId": "memUsagePercentage",
+                          "label": "Used Memory (%)"
+                        },
+                        {
+                          "columnId": "memorySizeMB",
+                          "label": "Memory size"
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "$gen_heatmap_cpuUsage_4",
+                        "sortOrder": 2
+                      }
+                    ]
+                  },
+                  "showPin": true,
+                  "name": "windowsProcessesFootprint",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Monitoring Agent footprint (LINUX)\r\n//Used memory on Linux computers\r\nlet UsedMem_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Used Memory kBytes\" // in kBytes\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| project TimeGenerated, Computer, InstanceName, memUsage = (CounterValue/1024);   // converted in MBytes\r\n//Used CPU on Linux computers\r\nlet UsedCpu_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Pct User Time\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| project TimeGenerated, Computer, InstanceName, cpuUsage=CounterValue;\r\n// memory size info\r\nlet memSizing = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Name == \"AvailableMB\"\r\n| summarize arg_max(TimeGenerated, *) by Computer\r\n| extend memorySizeMB = round(toreal(parse_json(Tags).[\"vm.azm.ms/memorySizeMB\"]))\r\n| distinct TimeGenerated, Computer, memorySizeMB;\r\n// Joining Linux info\r\nUsedMem_Linux\r\n| join (UsedCpu_Linux) on Computer, InstanceName\r\n| join kind=leftouter (memSizing) on Computer\r\n| extend memUsagePercentage = round((memUsage / memorySizeMB) * 100,2)\r\n| project TimeGenerated, Computer, InstanceName, cpuUsage, memUsage, memUsagePercentage, memorySizeMB\r\n| sort by Computer asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Linux computer(s) - Process(es) footprint - Last sample",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Time",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "27ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "Computer",
+                          "formatter": 5,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "37.8571ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "InstanceName",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "27ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "cpuUsage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 30,
+                            "max": 80,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "17.8571ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal",
+                              "minimumFractionDigits": 2,
+                              "maximumFractionDigits": 2
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memUsage",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memUsagePercentage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 10,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "24ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memorySizeMB",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        }
+                      ],
+                      "rowLimit": 1000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "Computer"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "InstanceName",
+                          "label": "Process name"
+                        },
+                        {
+                          "columnId": "cpuUsage",
+                          "label": "Used CPU (%)"
+                        },
+                        {
+                          "columnId": "memUsage",
+                          "label": "Used Memory (MBytes)"
+                        },
+                        {
+                          "columnId": "memUsagePercentage",
+                          "label": "Used Memory (%)"
+                        },
+                        {
+                          "columnId": "memorySizeMB",
+                          "label": "Memory size"
+                        }
+                      ]
+                    }
+                  },
+                  "showPin": true,
+                  "name": "linuxProcessesFootprint",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "grp_Processes"
+            },
+            "name": "grp_Processes"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "loadType": "always",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Monitoring Agent's processes state (WINDOWS & LINUX)\r\n//Monitoring process on Windows computers\r\nlet monitoringProcesses_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"% Processor Time\"\r\n| where InstanceName in ('HealthService', 'MicrosoftDependencyAgent') or InstanceName startswith \"MonitoringHost\"\r\n//| where InstanceName startswith \"healthservice\" or InstanceName startswith \"MonitoringHost\" or InstanceName startswith \"MicrosoftDependencyAgent\"\r\n| summarize lastSeen_internal = arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| project lastSeen_internal, Computer, InstanceName;\r\n//Monitoring process on Linux computers\r\nlet monitoringProcesses_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Pct User Time\"\r\n| where InstanceName startswith \"omiag\" or InstanceName startswith \"omsag\" or InstanceName startswith \"microsoft-depen\"\r\n| summarize lastSeen_internal = arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| project lastSeen_internal, Computer, InstanceName;\r\n// merging Windows and Linux info\r\nunion monitoringProcesses_Windows, monitoringProcesses_Linux\r\n| extend State = iff(lastSeen_internal > ago(2m), \"Running\", \"Not Running\")\r\n| extend TimeFromNow = now() - lastSeen_internal\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project lastSeen_internal, Computer, InstanceName, State, [\"Last seen\"]=strcat('🕒 ', TimeAgo)\r\n| sort by Computer, InstanceName asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Agent status by process",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Computer",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "TimeGenerated",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "30ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "State",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Not Running",
+                                "representation": "3",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "rowLimit": 1000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "Computer"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "lastSeen_internal",
+                          "label": "Time Generated"
+                        },
+                        {
+                          "columnId": "InstanceName",
+                          "label": "Process name"
+                        }
+                      ]
+                    }
+                  },
+                  "showPin": true,
+                  "name": "agentStatus",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Monitoring Agent footprint (WINDOWS & LINUX)\r\n//Used memory on Windows computers\r\nlet UsedMem_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName  == \"Working Set - Private\" // in bytes\r\n| where InstanceName in ('HealthService', 'MicrosoftDependencyAgent') or InstanceName startswith \"MonitoringHost\"\r\n//| where InstanceName startswith \"healthservice\" or InstanceName startswith \"MonitoringHost\" or InstanceName startswith \"MicrosoftDependencyAgent\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| summarize TotalMemUsage = round(sum(CounterValue)/1024/1024,2) by Computer // converted in MBytes\r\n| project Computer, TotalMemUsage;\r\n//Used memory on Linux computers\r\nlet UsedMem_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Used Memory kBytes\" // in kBytes\r\n| where InstanceName startswith \"omiag\" or InstanceName startswith \"omsag\" or InstanceName startswith \"microsoft-depen\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| summarize TotalMemUsage = round(sum(CounterValue)/1024,2) by Computer // converted in MBytes\r\n| project Computer, TotalMemUsage;\r\n//Used CPU on Windows computers\r\nlet UsedCpu_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"% Processor Time\"\r\n| where InstanceName in ('HealthService', 'MicrosoftDependencyAgent') or InstanceName startswith \"MonitoringHost\"\r\n//| where InstanceName startswith \"healthservice\" or InstanceName startswith \"MonitoringHost\" or InstanceName startswith \"MicrosoftDependencyAgent\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| summarize TotalCpuUsage = round(sum(CounterValue),2) by Computer\r\n| project Computer, TotalCpuUsage;\r\n//Used CPU on Linux computers\r\nlet UsedCpu_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Pct User Time\"\r\n| where InstanceName startswith \"omi\" or InstanceName startswith \"oms\" or InstanceName startswith \"microsoft-depen\"\r\n| summarize arg_max(TimeGenerated, *) by Computer, InstanceName, CounterName\r\n| summarize TotalCpuUsage = round(sum(CounterValue),2) by Computer\r\n| project Computer, TotalCpuUsage;\r\n// memory size info\r\nlet memSizing = InsightsMetrics\r\n| where Computer in ({Servers})\r\n| where Origin == \"vm.azm.ms\"\r\n| where Name == \"AvailableMB\"\r\n| summarize arg_max(TimeGenerated, *) by Computer\r\n| extend memorySizeMB = round(toreal(parse_json(Tags).[\"vm.azm.ms/memorySizeMB\"]))\r\n| distinct Computer, memorySizeMB;\r\n// Joining Windows info\r\nlet agentFootprint_Windows = UsedMem_Windows\r\n| join (UsedCpu_Windows) on Computer\r\n| join (memSizing) on Computer\r\n| extend memUsagePercentage = round((TotalMemUsage / memorySizeMB) * 100,2)\r\n| project Time = now(), Computer, TotalCpuUsage, TotalMemUsage, memUsagePercentage, memorySizeMB;\r\n// Joining Linux info\r\nlet agentFootprint_Linux = UsedMem_Linux\r\n| join (UsedCpu_Linux) on Computer\r\n| join (memSizing) on Computer\r\n| extend memUsagePercentage = round((TotalMemUsage / memorySizeMB) * 100,2)\r\n| project Time = now(), Computer, TotalCpuUsage, TotalMemUsage, memUsagePercentage, memorySizeMB;\r\n// merging Windows and Linux info\r\nunion agentFootprint_Windows, agentFootprint_Linux\r\n| sort by Computer asc",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Agent Footprint - Last sample",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Time",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "27ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "Computer",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "37.8571ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "TotalCpuUsage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 10,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "27ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "TotalMemUsage",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "29ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memUsagePercentage",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 10,
+                            "palette": "greenRed",
+                            "customColumnWidthSetting": "24ch"
+                          },
+                          "numberFormat": {
+                            "unit": 1,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "memorySizeMB",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          },
+                          "numberFormat": {
+                            "unit": 4,
+                            "options": {
+                              "style": "decimal"
+                            }
+                          }
+                        }
+                      ],
+                      "rowLimit": 1000,
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "TotalCpuUsage",
+                          "label": "Used CPU (%)"
+                        },
+                        {
+                          "columnId": "TotalMemUsage",
+                          "label": "Used memory (Mbytes)"
+                        },
+                        {
+                          "columnId": "memUsagePercentage",
+                          "label": "Used memory (%)"
+                        },
+                        {
+                          "columnId": "memorySizeMB",
+                          "label": "Memory size"
+                        }
+                      ]
+                    }
+                  },
+                  "showPin": true,
+                  "name": "agentFootprintCurrent",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Monitoring Agent footprint (WINDOWS & LINUX)\r\n//Used CPU on Windows computers\r\nlet UsedCpu_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"% Processor Time\"\r\n| where InstanceName in ('HealthService', 'MicrosoftDependencyAgent') or InstanceName startswith \"MonitoringHost\"\r\n//| where InstanceName startswith \"healthservice\" or InstanceName startswith \"MonitoringHost\" or InstanceName startswith \"MicrosoftDependencyAgent\"\r\n| summarize val=avg(CounterValue) by bin(TimeGenerated,5m), processName=strcat(Computer,\"-\",InstanceName)\r\n| project TimeGenerated, processName, val;\r\n//Used CPU on Linux computers\r\nlet UsedCpu_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Pct User Time\"\r\n| where InstanceName startswith \"omiag\" or InstanceName startswith \"omsag\" or InstanceName startswith \"microsoft-depen\"\r\n| summarize val=avg(CounterValue) by bin(TimeGenerated,5m), processName=strcat(Computer,\"-\",InstanceName)\r\n| project TimeGenerated, processName, val;\r\nunion UsedCpu_Windows, UsedCpu_Linux",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Agent Processor % Footprint - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "agentProcessorFootprintOvertime",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Monitoring Agent footprint (WINDOWS & LINUX)\r\n//Used CPU on Windows computers\r\nlet UsedCpu_Windows = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName  == \"Working Set - Private\" // in bytes\r\n| where InstanceName in ('HealthService', 'MicrosoftDependencyAgent') or InstanceName startswith \"MonitoringHost\"\r\n//| where InstanceName startswith \"healthservice\" or InstanceName startswith \"MonitoringHost\" or InstanceName startswith \"MicrosoftDependencyAgent\"\r\n| summarize val=(avg(CounterValue)/1024/1024) by bin(TimeGenerated,5m), processName=strcat(Computer,\"-\",InstanceName)\r\n| project TimeGenerated, processName, val;\r\n//Used CPU on Linux computers\r\nlet UsedCpu_Linux = Perf\r\n| where Computer in ({Servers})\r\n| where ObjectName == \"Process\"\r\n| where CounterName == \"Used Memory kBytes\" // in kBytes\r\n| where InstanceName startswith \"omiag\" or InstanceName startswith \"omsag\" or InstanceName startswith \"microsoft-depen\"\r\n| summarize val=(avg(CounterValue)/1024) by bin(TimeGenerated,5m), processName=strcat(Computer,\"-\",InstanceName)\r\n| project TimeGenerated, processName, val;\r\nunion UsedCpu_Windows, UsedCpu_Linux",
+                    "size": 0,
+                    "showAnalytics": true,
+                    "title": "Agent Memory (Mb) Footprint - Over time",
+                    "timeContextFromParameter": "TimeRange",
+                    "showExportToExcel": true,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspaces}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "agentMemoryFootprintOvertime",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "grp_Agent"
+            },
+            "name": "grp_MonitoringAgent"
+          }
+        ]
+      },
+      "name": "workbookContentGoesHere"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

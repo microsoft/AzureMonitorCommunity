@@ -1,0 +1,46 @@
+let ConnectionMonitor = 'Name_of_connection_monitor';
+let Status = NWConnectionMonitorTestResult
+  | where ConnectionMonitorResourceId contains ConnectionMonitor
+  | summarize TestTime=max(TimeGenerated) by TestGroupName, TestResult
+  | extend Status=replace_regex(TestResult, @'Fail', @'failed') //replacements to use icon fields
+  | extend Status=replace_regex(Status, @'Pass', @'Available') //replacements to use icon fields
+  | project TestGroupName, Status, TestTime;
+let AvgRoundTripTimeMs = NWConnectionMonitorTestResult
+  | where TimeGenerated {TimeRange} //TimeRange workbook parameter
+  | where ConnectionMonitorResourceId contains ConnectionMonitor
+  | summarize AvgRoundTripMs=round(avg(AvgRoundTripTimeMs),2) by TestGroupName;
+let SerieRoundTripTimeMs = NWConnectionMonitorTestResult //for using a spark-bar column
+  | where TimeGenerated {TimeRange}
+  | where ConnectionMonitorResourceId contains ConnectionMonitor
+  | make-series round(avg(AvgRoundTripTimeMs),2) on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by TestGroupName
+  | project TestGroupName, RoundTripMsSerie=avg_AvgRoundTripTimeMs;
+let MinRoundTripTimeMs = NWConnectionMonitorTestResult
+  | where TimeGenerated {TimeRange}
+  | where ConnectionMonitorResourceId contains ConnectionMonitor
+  | summarize arg_min(AvgRoundTripTimeMs, *) by TestGroupName
+  | project TestGroupName, MinRoundTripMs=round(AvgRoundTripTimeMs, 2);
+let MaxRoundTripTimeMs = NWConnectionMonitorTestResult
+  | where TimeGenerated {TimeRange}
+  | where ConnectionMonitorResourceId contains ConnectionMonitor
+  | summarize arg_max(AvgRoundTripTimeMs, *) by TestGroupName
+  | project TestGroupName, MaxRoundTripMs=round(AvgRoundTripTimeMs, 2);
+let History = NWConnectionMonitorTestResult //for using a spark-bar column
+  | where TimeGenerated {TimeRange}
+  | where ConnectionMonitorResourceId contains ConnectionMonitor
+  | extend Status=replace_regex(TestResult, @'Fail', @'0')
+  | extend Status=replace_regex(Status, @'Pass', @'1')
+  | extend Status=todouble(Status)
+  | make-series History=avg(Status) on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {TimeRange:grain} by TestGroupName
+  | project TestGroupName, History;
+NWConnectionMonitorTestResult
+| where TimeGenerated {TimeRange}
+| where ConnectionMonitorResourceId contains ConnectionMonitor
+| distinct TestGroupName
+| join kind=inner ( Status ) on TestGroupName
+| join kind=inner ( AvgRoundTripTimeMs ) on TestGroupName
+| join kind=inner ( SerieRoundTripTimeMs ) on TestGroupName
+| join kind=inner ( MinRoundTripTimeMs ) on TestGroupName
+| join kind=inner ( MaxRoundTripTimeMs ) on TestGroupName
+| join kind=inner ( History ) on TestGroupName
+| sort by TestGroupName asc
+| project ConnectivityTest=TestGroupName, Status, TestTime, AvgRoundTripMs, MinRoundTripMs, MaxRoundTripMs,RoundTripMsSerie, History

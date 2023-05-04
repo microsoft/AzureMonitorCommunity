@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Average Available Swap Space"
+    },
+    "alertDescription": {
+      "value": "Average % Available Swap Space"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('node_memory_SwapFree_bytes') | extend hostname = tostring(Labels.hostName) | extend SwapFreeBytes = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('node_memory_SwapTotal_bytes') | extend hostname = tostring(Labels.hostName) | extend SwapTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostname | extend SwapPctFree = percentage(SwapFreeBytes, SwapTotalBytes) | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostname, SwapFreeBytes, SwapTotalBytes, SwapPctFree"
+    },
+    "metricMeasureColumn": {
+      "value": "SwapPctFree"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": "10"
+    },
+    "timeAggregation": {
+      "value": "Average"
+    },
+    "windowSize": {
+      "value": "PT15M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

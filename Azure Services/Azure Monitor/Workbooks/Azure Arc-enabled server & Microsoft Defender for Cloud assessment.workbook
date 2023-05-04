@@ -1,0 +1,1001 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Azure Arc-enabled server & Microsoft Defender for Cloud assessment #"
+      },
+      "name": "workbookTitle"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "parameters": [
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "includeAll": true,
+              "showDefault": false
+            },
+            "defaultValue": "value::1",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "d4354e02-6b2e-41be-b23d-16d8e6292b67",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]\r\n",
+            "timeContext": {
+              "durationMs": 5184000000
+            },
+            "timeContextFromParameter": "TimeRange"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.0 **\r\n>2022-10-11\r\n>- Initial version."
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "50",
+      "name": "changeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\nWelcome to the Azure Arc-enabled server and Microsoft Defender for Cloud onboarding workbook. This workbook is designed to provide you with an understanding of:\r\n\r\n1. **Azure Arc-enabled server** - Assess the number, type and distribution of on-premises and 3rd party cloud servers which have been onboarded onto *Azure Arc*.\r\n\r\n2. **Microsoft Defender for Cloud** - Assess the number, type and distribution of on-premises and 3rd party cloud servers which have been onboarded onto *Microsoft Defender for Cloud* through machine extension.\r\n\r\nFor additional information about how to onboard your server onto Azure Arc, see [Plan and deploy Azure Arc-enabled servers](https://learn.microsoft.com/en-us/azure/azure-arc/servers/plan-at-scale-deployment)\r\n\r\nFor additional information about how to onboard your server onto Microsoft Defender for Cloud, see [Overview of Microsoft Defender for Servers](https://learn.microsoft.com/en-us/azure/defender-for-cloud/defender-for-servers-introduction)\r\n"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "8fcbb2c9-8787-47ee-8fbf-7cad479b3a3b",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Azure Arc-enabled servers",
+                  "subTarget": "ARC",
+                  "style": "link"
+                },
+                {
+                  "id": "99efb72d-e06e-47cb-a071-820cf7e96faa",
+                  "cellValue": "selectedTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "Microsoft Defender for Cloud",
+                  "subTarget": "MDC",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "links - 0"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| summarize count()\r\n| project \"TOTAL\", count_",
+                    "size": 3,
+                    "title": "Total",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "count_",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "blue"
+                        }
+                      },
+                      "showBorder": false
+                    }
+                  },
+                  "customWidth": "15",
+                  "showPin": true,
+                  "name": "totalArc",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| summarize countByOs = count() by tostring(properties.osType)\r\n| extend oS=iif((tostring(properties_osType) has \"windows\"), \"Windows\", iif((tostring(properties_osType) has \"linux\"), \"Linux\",\"Unknown\"))\r\n| project oS, countByOs\r\n| sort by oS asc",
+                    "size": 3,
+                    "title": "Count by Operating System",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "oS",
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "countByOs",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "blue"
+                        }
+                      },
+                      "showBorder": false
+                    }
+                  },
+                  "customWidth": "42",
+                  "showPin": true,
+                  "name": "subtotalWindows",
+                  "styleSettings": {
+                    "margin": "28",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| summarize statusCount = count() by tostring(properties.status)\r\n| extend Status=iif((tostring(properties_status) has \"Connected\"), \"Connected\", iif((tostring(properties_status) has \"Disconnected\"), \"Disconnected\",\"Unknown\"))\r\n| project Status, statusCount\r\n| sort by Status asc",
+                    "size": 3,
+                    "title": "Count by status",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "sortBy": [],
+                    "tileSettings": {
+                      "showBorder": false,
+                      "titleContent": {
+                        "columnMatch": "Status",
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "statusCount",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "maximumSignificantDigits": 3,
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "customWidth": "42",
+                  "showPin": true,
+                  "name": "countByStatus",
+                  "styleSettings": {
+                    "margin": "28",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| summarize count() by subscriptionId",
+                    "size": 0,
+                    "title": "Count of Azure Arc-enabled server by subscription",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 15,
+                        "formatOptions": {
+                          "linkTarget": null,
+                          "showIcon": true
+                        }
+                      },
+                      "leftContent": {
+                        "columnMatch": "count_",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "maximumSignificantDigits": 3,
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "showBorder": false,
+                      "rowLimit": 100
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "arcBySubscription",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| summarize count() by subscriptionId, resourceGroup",
+                    "size": 0,
+                    "title": "Count of Azure Arc-enabled server by subscription, by Resource Group",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "resourceGroup",
+                          "formatter": 5
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "subscriptionId"
+                        ],
+                        "expandTopLevel": true,
+                        "finalBy": "resourceGroup"
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource group"
+                        },
+                        {
+                          "columnId": "count_",
+                          "label": "Count"
+                        }
+                      ]
+                    },
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 15,
+                        "formatOptions": {
+                          "linkTarget": null,
+                          "showIcon": true
+                        }
+                      },
+                      "leftContent": {
+                        "columnMatch": "count_",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "maximumSignificantDigits": 3,
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "showBorder": false,
+                      "rowLimit": 100
+                    }
+                  },
+                  "customWidth": "40",
+                  "showPin": true,
+                  "name": "arcBySubscriptionbyResourceGroup",
+                  "styleSettings": {
+                    "margin": "10",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type == \"microsoft.hybridcompute/machines\"\r\n| project id, location, resourceGroup, subscriptionId, properties.agentVersion, properties.provisioningState, properties.status, properties, info=\"Click here for additional info\"\r\n| sort by id asc",
+                    "size": 0,
+                    "title": "All Azure ARC-enabled servers",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "id",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "26ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "16ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "resourceGroup",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "20.8571ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "32.5ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties_agentVersion",
+                          "formatter": 1,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "23ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties_provisioningState",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "unknown",
+                                "text": "{0}{1}"
+                              }
+                            ],
+                            "customColumnWidthSetting": "20.2857ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties_status",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Connected",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Disconnected",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "unknown",
+                                "text": "{0}{1}"
+                              }
+                            ],
+                            "customColumnWidthSetting": "20ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "info",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "GenericDetails",
+                            "linkIsContextBlade": true
+                          }
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Server"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Location"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "properties_agentVersion",
+                          "label": "ARC Agent version"
+                        },
+                        {
+                          "columnId": "properties_provisioningState",
+                          "label": "Provisioning State"
+                        },
+                        {
+                          "columnId": "properties_status",
+                          "label": "ARC Agent Status"
+                        },
+                        {
+                          "columnId": "info",
+                          "label": "Additional Details"
+                        }
+                      ]
+                    }
+                  },
+                  "showPin": true,
+                  "name": "fullList"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "ARC"
+            },
+            "name": "rgp_ARC"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n//| where type == \"microsoft.hybridcompute/machines/extensions\"\r\n| where properties.publisher == \"Microsoft.Azure.AzureDefenderForServers\"\r\n| summarize count()\r\n| project \"TOTAL\", count_",
+                    "size": 3,
+                    "title": "Total",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "count_",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "blue"
+                        }
+                      },
+                      "showBorder": false
+                    }
+                  },
+                  "customWidth": "15",
+                  "showPin": true,
+                  "name": "totalMdC",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where properties.publisher == \"Microsoft.Azure.AzureDefenderForServers\"\r\n| summarize countByOs = dcount(id) by tostring(name)\r\n| extend oS = substring(name, 4)\r\n| project oS, countByOs",
+                    "size": 3,
+                    "title": "Count by Operating System",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "oS",
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "countByOs",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "blue"
+                        }
+                      },
+                      "showBorder": false
+                    }
+                  },
+                  "customWidth": "30",
+                  "showPin": true,
+                  "name": "subtotalMdC_Windows",
+                  "styleSettings": {
+                    "margin": "28",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where properties.publisher == \"Microsoft.Azure.AzureDefenderForServers\"\r\n| summarize statusCount = count() by tostring(properties.provisioningState)\r\n| project properties_provisioningState, statusCount\r\n| sort by properties_provisioningState desc",
+                    "size": 3,
+                    "title": "Count by provisioning state",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "sortBy": [],
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "properties_provisioningState",
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "statusCount",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 2,
+                            "maximumSignificantDigits": 3
+                          }
+                        }
+                      },
+                      "showBorder": false,
+                      "sortCriteriaField": "properties_provisioningState",
+                      "sortOrderField": 2
+                    }
+                  },
+                  "customWidth": "55",
+                  "showPin": true,
+                  "name": "countByProvisioningState_MdC",
+                  "styleSettings": {
+                    "margin": "28",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where properties.publisher == \"Microsoft.Azure.AzureDefenderForServers\"\r\n| summarize count() by subscriptionId",
+                    "size": 0,
+                    "title": "Count of MdC enabled servers by subscriptions",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 15,
+                        "formatOptions": {
+                          "linkTarget": null,
+                          "showIcon": true
+                        }
+                      },
+                      "leftContent": {
+                        "columnMatch": "count_",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "maximumSignificantDigits": 3,
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "showBorder": false
+                    }
+                  },
+                  "customWidth": "50",
+                  "showPin": true,
+                  "name": "mdcBySubscription",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where properties.publisher == \"Microsoft.Azure.AzureDefenderForServers\"\r\n| summarize count() by subscriptionId, resourceGroup",
+                    "size": 0,
+                    "title": "Count of MdC enabled servers by subscription, by Resource Group",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true
+                          }
+                        },
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "resourceGroup",
+                          "formatter": 5
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "subscriptionId"
+                        ],
+                        "expandTopLevel": true,
+                        "finalBy": "resourceGroup"
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource group"
+                        },
+                        {
+                          "columnId": "count_",
+                          "label": "Count"
+                        }
+                      ]
+                    },
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 15,
+                        "formatOptions": {
+                          "linkTarget": null,
+                          "showIcon": true
+                        }
+                      },
+                      "leftContent": {
+                        "columnMatch": "count_",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 17,
+                          "options": {
+                            "maximumSignificantDigits": 3,
+                            "maximumFractionDigits": 2
+                          }
+                        }
+                      },
+                      "showBorder": false,
+                      "rowLimit": 100
+                    }
+                  },
+                  "customWidth": "40",
+                  "showPin": true,
+                  "name": "mdcBySubscriptionbyResourceGroup",
+                  "styleSettings": {
+                    "margin": "10",
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where properties.publisher == \"Microsoft.Azure.AzureDefenderForServers\"\r\n| extend oS = substring(name, 4)\r\n| project id, properties.settings.azureResourceId, oS, location, resourceGroup, subscriptionId, properties.provisioningState, properties, info=\"Click here for additional info\"\r\n| sort by id asc",
+                    "size": 0,
+                    "title": "All Microsoft Defender for Cloud onboarded servers",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "id",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "properties_settings_azureResourceId",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "32.5ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "oS",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "22ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "location",
+                          "formatter": 0,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "16ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "resourceGroup",
+                          "formatter": 14,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "21.5714ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "subscriptionId",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": null,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "32.5ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties_provisioningState",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Failed",
+                                "representation": "failed",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Succeeded",
+                                "representation": "success",
+                                "text": "{0}{1}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "unknown",
+                                "text": "{0}{1}"
+                              }
+                            ],
+                            "customColumnWidthSetting": "24ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "info",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "GenericDetails",
+                            "linkIsContextBlade": true,
+                            "customColumnWidthSetting": "36ch"
+                          }
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "filter": true,
+                      "labelSettings": [
+                        {
+                          "columnId": "properties_settings_azureResourceId",
+                          "label": "Server"
+                        },
+                        {
+                          "columnId": "oS",
+                          "label": "Operating System"
+                        },
+                        {
+                          "columnId": "location",
+                          "label": "Location"
+                        },
+                        {
+                          "columnId": "resourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "subscriptionId",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "properties_provisioningState",
+                          "label": "Provisioning State"
+                        },
+                        {
+                          "columnId": "properties",
+                          "label": "Properties"
+                        },
+                        {
+                          "columnId": "info",
+                          "label": "Additional Details"
+                        }
+                      ]
+                    }
+                  },
+                  "showPin": true,
+                  "name": "mdcFullList"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedTab",
+              "comparison": "isEqualTo",
+              "value": "MDC"
+            },
+            "name": "rgp_MDC"
+          }
+        ]
+      },
+      "name": "workbookContentGoesHere"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

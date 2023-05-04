@@ -1,0 +1,1760 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Workspace & Application Insights Inventory #"
+      },
+      "name": "workbookTitle"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "parameters": [
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::1",
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::1",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/270601b0-93f6-432f-814f-7189c4d44fb3"
+            ]
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": false
+            }
+          },
+          {
+            "id": "d4354e02-6b2e-41be-b23d-16d8e6292b67",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]\r\n",
+            "timeContext": {
+              "durationMs": 5184000000
+            },
+            "timeContextFromParameter": "TimeRange"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 1.4 **\r\n>2022-05-25\r\n>- Added CMK usage for Dedicated Cluster tiles\r\n>\r\n>** Version 1.3 **\r\n>2022-05-20\r\n>- Added Log Analytics Dedicated Cluster tiles\r\n>\r\n>** Version 1.2 **\r\n>2022-04-29\r\n>- Added AppInsights detail pane\r\n>\r\n>** Version 1.1 **\r\n>2022-04-28\r\n>- Moved to tabbed approach\r\n>- Added the Application Insights parts\r\n>- Moved Workspace and AppInsights parameters inside respective groups\r\n>\r\n>** Version 1.0 **\r\n>2022-03-29\r\n>- Initial version."
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "50",
+      "name": "changeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\n## Workspace & Application Insights Inventory ##\r\n\r\nWelcome to the ***Workspace & Application Insights Inventory*** workbook. This workbook is designed to provide you, for both Log Analytics workspace and Application Insights instances, with an understanding of:\r\n\r\n1. The number of items in each selected subscription(s)\r\n\r\n2. The average of billable daily ingestion for each selected item(s) in the selected subscription(s)\r\n\r\n3. The total amount of billable ingested data for the selected time range for each selected item(s) in the selected subscription(s)\r\n\r\n## Prerequistes ##\r\n\r\n* A [Log Analytics workspace.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "2fff5270-9c54-4181-9c3e-42c9847ec6ff",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Application Insights instances",
+            "subTarget": "AppInsights",
+            "style": "link"
+          },
+          {
+            "id": "2f4297ec-8809-4696-8a4f-66f18a4c1b57",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Log Analytics Workspaces",
+            "subTarget": "Workspace",
+            "style": "link"
+          },
+          {
+            "id": "31cd7deb-cef6-4c7b-b4fa-5ee9fcccb30a",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Log Analytics Dedicated Cluster",
+            "subTarget": "LaCluster",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 5"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Overview",
+        "expandable": true,
+        "loadType": "always",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where ['type'] == \"microsoft.insights/components\"\r\n| summarize count() by subscriptionId\r\n| sort by count_ desc",
+              "size": 0,
+              "title": "Count of all Application Insights by subscription",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "59.5714ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "count_",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "11ch"
+                    }
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "count_",
+                    "label": "Count"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "appInsightsBySubscription",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Application Insights inventory\r\nresources\r\n| where type == \"microsoft.insights/components\"\r\n| extend ingestionMode = tostring(properties.IngestionMode)\r\n| extend ingestionMode = iif((ingestionMode==\"LogAnalytics\"), \"Workspace-Based\", \"Classic\")\r\n| summarize count() by ingestionMode",
+              "size": 0,
+              "title": "Count of all Application Insights by ingestion mode",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart"
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "appInsightsByLaIntegration",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Application Insights inventory\r\nresources\r\n| where ['type'] == \"microsoft.insights/components\"\r\n| extend ingestionMode = tostring(properties.IngestionMode)\r\n| extend linkedWorkspaceId = tostring(properties.WorkspaceResourceId)\r\n| extend ingestionMode = iif((ingestionMode==\"LogAnalytics\"), \"Workspace-based\", \"Classic\")\r\n| extend notes = iif((ingestionMode==\"Workspace-based\"), \"\", \"Attention required\")\r\n| extend noteText = \"On February 29th, 2024, support for classic Application Insights will end. Transition to workspace-based Application Insights to take advantage of new capabilities. Newer regions introduced after February 2021 do not support creating classic Application Insights resources.\"\r\n| extend Details = \"Click here for additional details.\"\r\n| project id, kind, location, resourceGroup, subscriptionId, ingestionMode, linkedWorkspaceId, notes, noteText, Details, properties\r\n| sort by id desc\r\n",
+              "size": 0,
+              "title": "All Application Insights - Details",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "25.8571ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "32.5ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "kind",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "9ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "13.1429ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "resourceGroup",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "31ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ingestionMode",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Classic",
+                          "representation": "2",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Workspace-based",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "{0}{1}"
+                        }
+                      ],
+                      "customColumnWidthSetting": "18ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "linkedWorkspaceId",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "21.4286ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "notes",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkColumn": "noteText",
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true,
+                      "customColumnWidthSetting": "20.7143ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "noteText",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Details",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkColumn": "properties",
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true,
+                      "customColumnWidthSetting": "29.7143ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "properties",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subscriptionId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_link_linkedWorkspaceId_7",
+                    "sortOrder": 1
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Name"
+                  },
+                  {
+                    "columnId": "kind",
+                    "label": "Kind"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "Resource Group"
+                  },
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "ingestionMode",
+                    "label": "Ingestion Mode"
+                  },
+                  {
+                    "columnId": "linkedWorkspaceId",
+                    "label": "Linked workspace"
+                  },
+                  {
+                    "columnId": "notes",
+                    "label": "Notes"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_link_linkedWorkspaceId_7",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "showPin": true,
+            "name": "appInsightsDetails",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "AppInsights"
+      },
+      "name": "grp_AppInsightsGeneral",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Details by selected Application Insights instance(s)",
+        "expandable": true,
+        "loadType": "always",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "parameters": [
+                {
+                  "id": "b2c9f544-a82c-45d0-9859-439d756c68d1",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "AppInsights",
+                  "label": "Application Insights",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources| where type == \"microsoft.insights/components\"\r\n| project id",
+                  "crossComponentResources": [
+                    "{Subscriptions}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1",
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                }
+              ],
+              "style": "pills",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "parameters - 5"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let daysBin = toint(datetime_diff('day',{TimeRange:end}, startofday({TimeRange:start})));\r\nunion *\r\n| where timestamp >= startofday({TimeRange:start})\r\n| summarize BillableDataGB=sum(_BilledSize) / 1.E9 by _ResourceId\r\n| summarize avgDaily = avg(BillableDataGB)/daysBin by _ResourceId\r\n| project subId = split(_ResourceId,\"/\")[2], _ResourceId, avgDaily\r\n| sort by avgDaily desc",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Daily Ingestion (Avg)",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "crossComponentResources": [
+                "{AppInsights}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "30.7143ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "subId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "_ResourceId",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "32.4286ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "avgDaily",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed",
+                      "customColumnWidthSetting": "12.1429ch"
+                    },
+                    "numberFormat": {
+                      "unit": 5,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "subId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "_ResourceId",
+                    "label": "Name"
+                  },
+                  {
+                    "columnId": "avgDaily",
+                    "label": "Quantity"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "appInsightsAvgDailyIngestion",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "union *\r\n| where timestamp >= startofday({TimeRange:start})\r\n| summarize BillableDataGB=sum(_BilledSize) / 1.E9 by _ResourceId, bin(timestamp, 1d)\r\n",
+              "size": 0,
+              "aggregation": 5,
+              "showAnalytics": true,
+              "title": "Daily Ingestion - Trend by {TimeRange:label}",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "crossComponentResources": [
+                "{AppInsights}"
+              ],
+              "visualization": "barchart",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "appInsightsAvgDailyIngestionTrend",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "union *\r\n| where timestamp >= startofday({TimeRange:start})\r\n| summarize BillableDataGB=sum(_BilledSize) / 1.E9 by _ResourceId\r\n| project subId = split(_ResourceId,\"/\")[2], _ResourceId, firstDay=startofday({TimeRange:start}), lastDay=startofday({TimeRange:end}), BillableDataGB\r\n| sort by BillableDataGB desc",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "{TimeRange:label} ingestion",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "crossComponentResources": [
+                "{AppInsights}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "24.7143ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "subId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "_ResourceId",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "34ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "firstDay",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "21.7143ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "lastDay",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "17.7143ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "BillableDataGB",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed",
+                      "customColumnWidthSetting": "13.5714ch"
+                    },
+                    "numberFormat": {
+                      "unit": 5,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "subId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "_ResourceId",
+                    "label": "Name"
+                  },
+                  {
+                    "columnId": "firstDay",
+                    "label": "First day"
+                  },
+                  {
+                    "columnId": "lastDay",
+                    "label": "Last day"
+                  },
+                  {
+                    "columnId": "BillableDataGB",
+                    "label": "Quantity"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "appInsightsPeriodicIngestion",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "AppInsights"
+      },
+      "name": "grp_AppInsightsSpecific",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Overview",
+        "expandable": true,
+        "loadType": "always",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.operationalinsights/workspaces'\r\n| summarize count() by subscriptionId\r\n| sort by count_ desc",
+              "size": 0,
+              "title": "Count of all workspaces by subscription",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "59.5714ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "count_",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "11ch"
+                    }
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "count_",
+                    "label": "Count"
+                  }
+                ]
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "workspaceBySubscription",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Workspace Inventory\r\nresources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| extend SKU_name = tostring(properties.sku.name)\r\n| summarize count() by SKU_name",
+              "size": 0,
+              "title": "Count of all Workspaces by pricing tier ",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart"
+            },
+            "customWidth": "50",
+            "name": "workspaceBySku",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Workspace Inventory\r\nresources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| extend SKU_name = properties.sku.name\r\n| extend Capping = properties.workspaceCapping.dailyQuotaGb\r\n| extend Retention = properties.retentionInDays\r\n| project id, properties.customerId, location, resourceGroup, subscriptionId, SKU_name, Capping, Retention, Details=\"Click for more detailed properties\", properties\r\n| sort by id desc",
+              "size": 0,
+              "title": "All Workspace - Details",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Details",
+                    "formatter": 1,
+                    "formatOptions": {
+                      "linkColumn": "properties",
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "properties",
+                    "formatter": 5
+                  }
+                ],
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subscriptionId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Name"
+                  },
+                  {
+                    "columnId": "properties_customerId",
+                    "label": "Workspace Id"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "Resource group"
+                  },
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "SKU_name",
+                    "label": "Pricing tier"
+                  },
+                  {
+                    "columnId": "Capping",
+                    "label": "Daily cap"
+                  },
+                  {
+                    "columnId": "Retention",
+                    "label": "Retention"
+                  },
+                  {
+                    "columnId": "Details",
+                    "label": "Details"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "workspaceDetails",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Workspace"
+      },
+      "name": "grp_workspacesGeneral",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Details by selected workspace(s)",
+        "expandable": true,
+        "expanded": true,
+        "loadType": "always",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "parameters": [
+                {
+                  "id": "67c5bd95-c3f7-4410-a0ba-fbf08dbcec88",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Workspaces",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| project id, custId = properties.customerId",
+                  "crossComponentResources": [
+                    "{Subscriptions}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1",
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::1",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                }
+              ],
+              "style": "pills",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "paramWorkspacesGrp"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where type == 'microsoft.operationalinsights/workspaces'\r\n| where id in~ ({Workspaces})\r\n| project id, name, properties.customerId, location",
+              "size": 0,
+              "title": "Workspace Lookup",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "rowLimit": 1000
+              }
+            },
+            "customWidth": "25",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "workspaceLookup",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Usage\r\n| where StartTime >= startofday({TimeRange:start}) and EndTime < startofday(now())\r\n| where IsBillable == true\r\n| summarize BillableDataGB = sum(Quantity) / 1024. by TenantId, ResourceUri\r\n| project subId = split(ResourceUri,\"/\")[2], firstDay=startofday({TimeRange:start}), lastDay=startofday({TimeRange:end}), BillableDataGB, TenantId\r\n| sort by BillableDataGB desc",
+              "size": 0,
+              "title": "Periodic ingestion",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "rowLimit": 1000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "subId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "firstDay",
+                    "label": "First day"
+                  },
+                  {
+                    "columnId": "lastDay",
+                    "label": "Last day"
+                  },
+                  {
+                    "columnId": "BillableDataGB",
+                    "label": "Ingestion"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "periodicIngestion",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let daysBin = toint(datetime_diff('day',{TimeRange:end}, startofday({TimeRange:start})));\r\nUsage\r\n| where StartTime >= startofday({TimeRange:start}) and EndTime < startofday(now())\r\n| where IsBillable == true\r\n| summarize BillableDataGB = sum(Quantity) / 1024. by TenantId, ResourceUri\r\n| summarize avgDaily = avg(BillableDataGB)/daysBin by TenantId, ResourceUri\r\n| project subId = split(ResourceUri,\"/\")[2], TenantId, avgDaily\r\n| sort by avgDaily desc",
+              "size": 0,
+              "title": "Daily Ingestion (Avg)",
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "rowLimit": 1000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "subId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "avgDaily",
+                    "label": "Daily ingestion (avg)"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "conditionalVisibility": {
+              "parameterName": "_",
+              "comparison": "isEqualTo",
+              "value": "_"
+            },
+            "name": "avgDailyIngestion",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a19153\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspaceLookup\",\"rightTable\":\"avgDailyIngestion\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[workspaceLookup].id\",\"mergedName\":\"id\",\"fromId\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a19153\"},{\"originalName\":\"[workspaceLookup].location\",\"mergedName\":\"location\",\"fromId\":\"unknown\"},{\"originalName\":\"[avgDailyIngestion].avgDaily\",\"mergedName\":\"avgDaily\",\"fromId\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a19153\"},{\"originalName\":\"[avgDailyIngestion].subId\",\"mergedName\":\"subId\",\"fromId\":\"unknown\"},{\"originalName\":\"[workspaceLookup].name\"},{\"originalName\":\"[workspaceLookup].properties_customerId\"},{\"originalName\":\"[avgDailyIngestion].TenantId\"}]}",
+              "size": 0,
+              "title": "Daily Ingestion (avg)",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "avgDaily",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    },
+                    "numberFormat": {
+                      "unit": 5,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "subId",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Workspace name"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Region"
+                  },
+                  {
+                    "columnId": "avgDaily",
+                    "label": "Quantity"
+                  },
+                  {
+                    "columnId": "subId",
+                    "label": "Subscription"
+                  }
+                ]
+              },
+              "sortBy": []
+            },
+            "showPin": false,
+            "name": "merge_DailyIngestion",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Usage\r\n| where StartTime >= startofday({TimeRange:start}) and EndTime < startofday(now())\r\n| where IsBillable == true\r\n| summarize BillableDataGB = sum(Quantity / 1024.) by ResourceUri, bin(TimeGenerated, 1d)",
+              "size": 0,
+              "aggregation": 5,
+              "showAnalytics": true,
+              "title": "Daily Ingestion - Trend by {TimeRange:label}",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "barchart",
+              "gridSettings": {
+                "rowLimit": 1000
+              }
+            },
+            "showPin": true,
+            "name": "dailyIngestionTrend",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a1914d\",\"mergeType\":\"innerunique\",\"leftTable\":\"workspaceLookup\",\"rightTable\":\"periodicIngestion\",\"leftColumn\":\"properties_customerId\",\"rightColumn\":\"TenantId\"}],\"projectRename\":[{\"originalName\":\"[workspaceLookup].id\",\"mergedName\":\"id\",\"fromId\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a1914d\"},{\"originalName\":\"[workspaceLookup].location\",\"mergedName\":\"location\",\"fromId\":\"unknown\"},{\"originalName\":\"[periodicIngestion].firstDay\",\"mergedName\":\"firstDay\",\"fromId\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a1914d\"},{\"originalName\":\"[periodicIngestion].lastDay\",\"mergedName\":\"lastDay\",\"fromId\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a1914d\"},{\"originalName\":\"[periodicIngestion].BillableDataGB\",\"mergedName\":\"BillableDataGB\",\"fromId\":\"5a3d63c3-23d3-4ea7-9c7b-c7c812a1914d\"},{\"originalName\":\"[periodicIngestion].subId\",\"mergedName\":\"subId\",\"fromId\":\"unknown\"},{\"originalName\":\"[periodicIngestion].daysBin\",\"mergedName\":\"daysBin\",\"fromId\":\"unknown\"},{\"originalName\":\"[workspaceLookup].name\"},{\"originalName\":\"[workspaceLookup].properties_customerId\"},{\"originalName\":\"[periodicIngestion].TenantId\"}]}",
+              "size": 0,
+              "title": "{TimeRange:label} ingestion",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "BillableDataGB",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    },
+                    "numberFormat": {
+                      "unit": 5,
+                      "options": {
+                        "style": "decimal",
+                        "minimumFractionDigits": 2,
+                        "maximumFractionDigits": 2
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "subId",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Workspace name"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Region"
+                  },
+                  {
+                    "columnId": "firstDay",
+                    "label": "First day"
+                  },
+                  {
+                    "columnId": "lastDay",
+                    "label": "Last day"
+                  },
+                  {
+                    "columnId": "BillableDataGB",
+                    "label": "Quantity"
+                  },
+                  {
+                    "columnId": "subId",
+                    "label": "Subscription"
+                  }
+                ]
+              },
+              "sortBy": []
+            },
+            "showPin": false,
+            "name": "merge_PeriodicIngestion",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Workspace"
+      },
+      "name": "grp_workspacesSpecific",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Overview",
+        "expandable": true,
+        "expanded": true,
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| summarize count() by subscriptionId\r\n| sort by count_ desc",
+              "size": 0,
+              "title": "Count of Dedicated Clusters by subscription",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "59.5714ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "count_",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "11ch"
+                    }
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "count_",
+                    "label": "Count"
+                  }
+                ]
+              }
+            },
+            "customWidth": "33",
+            "showPin": true,
+            "name": "clusterBySubscription",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Dedicated Clusters by Data Tier\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| extend dataTier = tostring(sku.capacity)\r\n| summarize count() by dataTier\r\n",
+              "size": 0,
+              "title": "Count of Dedicated Clusters by Data Tier",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart"
+            },
+            "customWidth": "33",
+            "showPin": true,
+            "name": "clusterByDataTier",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Count of Associated workspaces by cluster\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| mv-expand properties.associatedWorkspaces\r\n| summarize count() by id",
+              "size": 0,
+              "title": "Count of associated workspace(s)",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "id",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Cluster name"
+                  },
+                  {
+                    "columnId": "count_",
+                    "label": "Count"
+                  }
+                ]
+              }
+            },
+            "customWidth": "33",
+            "showPin": true,
+            "name": "countOfAssociatedWSByCluster",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == \"microsoft.operationalinsights/clusters\"\r\n| extend resourceGroup = split(id,\"/provider/\")[0]\r\n| extend propertiesJson = parse_json(properties)\r\n| extend useCmk = iff(isnotnull(propertiesJson.keyVaultProperties.keyVaultUri),\"Yes\", \"No\")\r\n| extend keyVaultUri = iff(isnotnull(propertiesJson.keyVaultProperties.keyVaultUri), tostring(propertiesJson.keyVaultProperties.keyVaultUri),\"None\")\r\n| extend keyName = iif(isnotnull(propertiesJson.keyVaultProperties.keyName), tostring(propertiesJson.keyVaultProperties.keyName),\"None\")\r\n| project subscriptionId, id, location, resourceGroup, tostring(sku.name), tostring(sku.capacity), useCmk, keyVaultUri, keyName",
+              "size": 0,
+              "title": "Dedicated Cluster(s) - Details",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "resourceGroup",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "sku_capacity",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 39,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subscriptionId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "id",
+                    "label": "Dedicated Cluster Name"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "Resource group"
+                  },
+                  {
+                    "columnId": "sku_name",
+                    "label": "Pricing Tier"
+                  },
+                  {
+                    "columnId": "sku_capacity",
+                    "label": "Data tier"
+                  },
+                  {
+                    "columnId": "useCmk",
+                    "label": "CMK"
+                  },
+                  {
+                    "columnId": "keyVaultUri",
+                    "label": "KeyVault Uri"
+                  },
+                  {
+                    "columnId": "keyName",
+                    "label": "Key Name"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "dedicatedClustersInfo",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "LaCluster"
+      },
+      "name": "grp_LaClusterOverview",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Details by selected cluster(s)",
+        "expandable": true,
+        "expanded": true,
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "parameters": [
+                {
+                  "id": "99a22ce4-3d4d-4624-b8ce-310e99ee9ebe",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ClusterName",
+                  "label": "Cluster Name",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| distinct id",
+                  "crossComponentResources": [
+                    "{Subscriptions}"
+                  ],
+                  "value": [
+                    "/subscriptions/270601b0-93f6-432f-814f-7189c4d44fb3/resourceGroups/LOG-ANALYTICS-DEDICATED-CLUSTERS/providers/Microsoft.OperationalInsights/clusters/ladedicatedclusters01azwe"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::1",
+                      "value::all"
+                    ]
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "1764cf7c-c8f1-41f0-ad41-6fe92be76296",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "associatedWS",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "// ## Associated workspaces\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| where id in ({ClusterName})\r\n| mv-expand properties.associatedWorkspaces\r\n| extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n| project wsResourceId\r\n| top 100 by wsResourceId\r\n",
+                  "crossComponentResources": [
+                    "{Subscriptions}"
+                  ],
+                  "isHiddenWhenLocked": true,
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                }
+              ],
+              "style": "pills",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "paramClusterGrp"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Associated workspaces\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| where id in ({ClusterName})\r\n| mv-expand properties.associatedWorkspaces\r\n| extend wsSubscription = split(properties_associatedWorkspaces.resourceId,\"/resourcegroups/\")[0]\r\n| extend wsResourceGroup = split(properties_associatedWorkspaces.resourceId,\"/providers/\")[0]\r\n| project id, properties_associatedWorkspaces.resourceId, wsSubscription, wsResourceGroup, properties_associatedWorkspaces.associateDate",
+              "size": 0,
+              "title": "Workspace membership for the selected cluster(s)",
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "properties_associatedWorkspaces_resourceId",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "wsSubscription",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "wsResourceGroup",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "properties_associatedWorkspaces_associateDate",
+                    "formatter": 6
+                  }
+                ],
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "id"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Cluster name"
+                  },
+                  {
+                    "columnId": "properties_associatedWorkspaces_resourceId",
+                    "label": "Workspace"
+                  },
+                  {
+                    "columnId": "wsSubscription",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "wsResourceGroup",
+                    "label": "Resource Group"
+                  },
+                  {
+                    "columnId": "properties_associatedWorkspaces_associateDate",
+                    "label": "Association date"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "clusterMembership",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Usage\r\n| where TimeGenerated > ago(14d)\r\n| where IsBillable == true\r\n| summarize sum(Quantity)/1000. by bin(TimeGenerated, 1d)",
+              "size": 0,
+              "aggregation": 5,
+              "title": "Daily Ingestion - Last 14 days",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{associatedWS}"
+              ],
+              "visualization": "barchart",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "TimeGenerated",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "TimeGenerated",
+                  "sortOrder": 1
+                }
+              ],
+              "chartSettings": {
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 39,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": true
+                    }
+                  }
+                }
+              }
+            },
+            "showPin": true,
+            "name": "dataFillingByCluster",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "LaCluster"
+      },
+      "name": "grp_LaClusterDetails"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

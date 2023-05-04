@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Memory vmstat paging rate"
+    },
+    "alertDescription": {
+      "value": "memory paging rate of change %"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('node_vmstat_pswpout') | extend hostname = tostring(Labels.hostName) | extend pswpout_irate = rate(DeltaVal, DeltaTimeSeconds) | join kind=inner ( InsightsMetrics | invoke pquery_counter('node_vmstat_pswpin') | extend hostname = tostring(Labels.hostName) | extend pswpin_irate = rate(DeltaVal, DeltaTimeSeconds)) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostname | extend PagingRate = pswpout_irate + pswpin_irate"
+    },
+    "metricMeasureColumn": {
+      "value": "PagingRate"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "80"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

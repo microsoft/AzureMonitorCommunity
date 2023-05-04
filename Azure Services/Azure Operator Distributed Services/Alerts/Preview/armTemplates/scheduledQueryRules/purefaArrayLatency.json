@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Average Array Latency"
+    },
+    "alertDescription": {
+      "value": "PureFA Average Array Latency Alert will query the PureFA Array Performance logs which will provide the IO Latency based on the operations, as provided by PureFA in microseconds. This Alert will trigger when latency for the operations surpasses 10 ms."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_array_performance_latency_usec') | extend dimension = tostring(Labels.dimension) | extend IO_Latency = Val | where IO_Latency > 0 | project TimeGenerated, dimension, IO_Latency, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId"
+    },
+    "metricMeasureColumn": {
+      "value": "IO_Latency"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "10000"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Component Health"
+    },
+    "alertDescription": {
+      "value": "PureFA Component Health will query the PureFA Hardware compenent health logs and list the Time of the log, the Chassis Index, the Controller Index, the Component Type, and the Component Index. The Health of each component is given in a binary 1=Health, 0=Unhealthy, as provided by PureFA."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_hardware_component_health') | extend Chassis = tostring(Labels.chassis) | extend Controller = tostring(Labels.controller) | extend Component = tostring(Labels.component) | extend Index = tostring(Labels.index) | extend Health = Val"
+    },
+    "metricMeasureColumn": {
+      "value": "Health"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": "1"
+    },
+    "timeAggregation": {
+      "value": "Minimum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": []
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Kubevirt VM network transmit drop high"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('kubevirt_vmi_network_transmit_packets_dropped_total') | extend vmiName = tostring(Labels.name) | extend vmiNamespace = tostring(Labels.namespace) | extend vmiNode = tostring(Labels.node) | extend interface = tostring(Labels.interface) | where interface !in ('lo') | summarize DropRate = sum(DeltaVal) / sum(DeltaTimeSeconds) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface"
+    },
+    "metricMeasureColumn": {
+      "value": "DropRate"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "3000"
+    },
+    "timeAggregation": {
+      "value": "Total"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "vmiNode",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiNamespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiName",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Chassis Health"
+    },
+    "alertDescription": {
+      "value": "PureFA Chassis Health will query the PureFA Hardware Chassis health logs and list the Time of the log, the Chassis's health. The Health of each component is given in a binary 1=Health, 0=Unhealthy, as provided by PureFA."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_hardware_chassis_health') | extend Health = Val"
+    },
+    "metricMeasureColumn": {
+      "value": "Health"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": "1"
+    },
+    "timeAggregation": {
+      "value": "Minimum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": []
+    }
+  }
+}

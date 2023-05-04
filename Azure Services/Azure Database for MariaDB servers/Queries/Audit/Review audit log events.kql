@@ -1,0 +1,12 @@
+// Author: Microsoft Azure
+// Display name: Review audit log events
+// Description: Identify audit events for your server.
+// Categories: Workloads,Audit
+// Resource types: Azure Database for MariaDB servers
+// Topic: Audit
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.DBFORMARIADB" 
+| where Category == 'MySqlAuditLogs'
+| project TimeGenerated, LogicalServerName_s, event_subclass_s, event_time_t, user_s , ip_s , sql_text_s 
+| order by TimeGenerated asc

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Heartbeat - Server"
+    },
+    "alertDescription": {
+      "value": "Generate an alert if heartbeats are missing from a server for more than 3 minutes."
+    },
+    "alertSeverity": {
+      "value": 1
+    },
+    "query": {
+      "value": "Heartbeat | where ResourceProvider == 'Microsoft.HybridCompute' | summarize LastHeartbeat = max(TimeGenerated) by Computer, ResourceProvider, ResourceType, _ResourceId | extend TimeSinceLastHeartbeat = datetime_diff('second', now(), LastHeartbeat)"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "180"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "metricMeasureColumn": {
+      "value": "TimeSinceLastHeartbeat"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT1M"
+    }
+  }
+}

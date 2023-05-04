@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "CoreDNS Response Count"
+    },
+    "alertDescription": {
+      "value": "CoreDNS Response Count"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('coredns_dns_responses_total') | extend rcode = tostring(Labels.rcode) | extend hostName = tostring(Labels.hostName) | extend corednsrescount = DeltaVal | summarize servfailcounttotal=sumif(corednsrescount, rcode == 'SERVFAIL'), corednsrescounttotal=sum(corednsrescount) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostName | extend percentage = percentage(servfailcounttotal, corednsrescounttotal)"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "3"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "metricMeasureColumn": {
+      "value": "percentage"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    }
+  }
+}

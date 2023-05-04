@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Volume Capacity Consumption"
+    },
+    "alertDescription": {
+      "value": "PureFA Volume Capacity Consumption will parse each volume's space used and each volume's size in bytes to calculate that volume's percentage used. If the difference in the percentage used in the window size of 5 minutes is greater than 50 percent then the information alarm will be raised."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_volume_space_bytes') | where Labels.dimension == 'total' | extend Volume = tostring(Labels.volume) | extend UsedVolumeBytes = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('purefa_volume_space_size_bytes') | extend Volume = tostring(Labels.volume) | extend VolumeTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Volume | extend VolumePctUsed = percentage(UsedVolumeBytes, VolumeTotalBytes) | summarize DiffOverTime = max(VolumePctUsed) - min(VolumePctUsed) by Volume, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId"
+    },
+    "metricMeasureColumn": {
+      "value": "DiffOverTime"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "50"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Volume",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

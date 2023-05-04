@@ -1,0 +1,1736 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "tabStyle": "bigger",
+        "links": [
+          {
+            "id": "5cbbbcb3-f092-4624-a639-99354cc4595d",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Extensions Windows",
+            "subTarget": "1",
+            "style": "link"
+          },
+          {
+            "id": "d1301531-1f44-4c79-aef6-e056c569a90f",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Extensions Linux",
+            "subTarget": "2",
+            "style": "link"
+          },
+          {
+            "id": "3f04b1b8-765f-4a79-9974-336e9f7589f6",
+            "cellValue": "tab",
+            "linkTarget": "parameter",
+            "linkLabel": "LogAnalytics",
+            "subTarget": "3",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 6"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "# Log Analytics Report"
+            },
+            "name": "text - 7"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "cf72b08b-e727-4a5e-b78f-84940a9726a3",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscriptions",
+                  "type": 6,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "includeAll": true
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::all"
+                },
+                {
+                  "id": "ce1d8e43-28b6-4fd4-8ebb-ad04a68d504f",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "WorkSpaces",
+                  "type": 5,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id",
+                  "crossComponentResources": [
+                    "{Subscriptions}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "609f90be-cab1-43d1-8724-d192dd7a9f64",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ShowOriginalTables",
+                  "label": "Show Original Tables",
+                  "type": 10,
+                  "value": "No",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n    \"Yes\",\r\n    \"No\"\r\n]"
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 9"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "This workbook reflects the machines that are reporting to a Log Analytics Workspace vs. the servers that are already onboarded Azure Arc or are Azure VMs.\r\n\r\n\r\n\r\nThe result table shows the **machines reporting** in any **Log Analytics** workspace that ARE NOT **Azure VMs**, NOR **Azure Arc Machines**.",
+              "style": "info"
+            },
+            "name": "text - 6"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Heartbeat\r\n| summarize  arg_max(TimeGenerated,*) by Resource\r\n| project ResourceId, Resource, Category, ComputerIP, SCAgentChannel\r\n| count\r\n| extend Metric = \"Log Analytics entries\"",
+              "size": 4,
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{WorkSpaces}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Metric",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Count",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal",
+                      "maximumFractionDigits": 2,
+                      "maximumSignificantDigits": 3
+                    }
+                  }
+                },
+                "showBorder": false
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 4"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.hybridcompute/machines' or type == 'microsoft.compute/virtualmachines'\r\n| extend ExtensionName = tostring(properties.type)\r\n| count\r\n| extend Metric = \"Arc & Azure entries\"",
+              "size": 4,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Metric"
+                },
+                "leftContent": {
+                  "columnMatch": "Count",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                "showBorder": false
+              }
+            },
+            "customWidth": "50",
+            "name": "query - 5"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Heartbeat\r\n| summarize  arg_max(TimeGenerated,*) by Resource\r\n| project ResourceId, Resource, Category, ComputerIP, SCAgentChannel,TimeGenerated\r\n| sort by Resource asc",
+              "size": 0,
+              "title": "Query Log Analytics for MMA",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{WorkSpaces}"
+              ],
+              "gridSettings": {
+                "rowLimit": 10000,
+                "filter": true
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "ShowOriginalTables",
+              "comparison": "isEqualTo",
+              "value": "Yes"
+            },
+            "name": "Query - LA"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.hybridcompute/machines' or type == 'microsoft.compute/virtualmachines'\r\n| extend ExtensionName = tostring(properties.type)\r\n| project id,name",
+              "size": 0,
+              "title": "Query Resource Graph for Machines",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "gridSettings": {
+                "rowLimit": 10000,
+                "filter": true
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "ShowOriginalTables",
+              "comparison": "isEqualTo",
+              "value": "Yes"
+            },
+            "name": "Query Graph"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"ffbd6be0-0895-45b7-81a1-99b7222b60bd\",\"mergeType\":\"leftanti\",\"leftTable\":\"Query - LA\",\"rightTable\":\"Query Graph\",\"leftColumn\":\"Resource\",\"rightColumn\":\"name\"}],\"projectRename\":[{\"originalName\":\"ResourceId\",\"mergedName\":\"ResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"Resource\",\"mergedName\":\"Resource\",\"fromId\":\"unknown\"},{\"originalName\":\"Category\",\"mergedName\":\"Category\",\"fromId\":\"unknown\"},{\"originalName\":\"ComputerIP\",\"mergedName\":\"ComputerIP\",\"fromId\":\"unknown\"},{\"originalName\":\"SCAgentChannel\",\"mergedName\":\"SCAgentChannel\",\"fromId\":\"unknown\"},{\"originalName\":\"[Query - LA].ResourceId\",\"mergedName\":\"Resource Id\",\"fromId\":\"ffbd6be0-0895-45b7-81a1-99b7222b60bd\"},{\"originalName\":\"[Query - LA].Resource\",\"mergedName\":\"Resource Name\",\"fromId\":\"ffbd6be0-0895-45b7-81a1-99b7222b60bd\"},{\"originalName\":\"[Query - LA].Category\",\"mergedName\":\"Category1\",\"fromId\":\"ffbd6be0-0895-45b7-81a1-99b7222b60bd\"},{\"originalName\":\"[Query - LA].ComputerIP\",\"mergedName\":\"ComputerIP1\",\"fromId\":\"ffbd6be0-0895-45b7-81a1-99b7222b60bd\"},{\"originalName\":\"[Query - LA].SCAgentChannel\",\"mergedName\":\"SCAgentChannel1\",\"fromId\":\"ffbd6be0-0895-45b7-81a1-99b7222b60bd\"},{\"originalName\":\"[Query - LA].TimeGenerated\",\"mergedName\":\"TimeGenerated\",\"fromId\":\"unknown\"}]}",
+              "size": 0,
+              "title": "Machines in Log Analytics but not in Arc nor in Azure VMs",
+              "queryType": 7,
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "TimeGenerated",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "TimeGenerated",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "showPin": false,
+            "name": "query - 2"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tab",
+        "comparison": "isEqualTo",
+        "value": "3"
+      },
+      "name": "Log Analytics tab"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "parameters": [
+                {
+                  "id": "cf72b08b-e727-4a5e-b78f-84940a9726a3",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscriptions",
+                  "type": 6,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "includeAll": true
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::all"
+                },
+                {
+                  "id": "cc87c729-ab54-440b-bdc6-00580dbbc0be",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "MachineType",
+                  "label": "Machine Type",
+                  "type": 2,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"microsoft.hybridcompute/machines\", \"label\": \"Azure Arc Servers\"},\r\n {\"value\": \"microsoft.compute/virtualmachines\", \"label\": \"Azure Vms\"}\r\n]\r\n",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::all"
+                },
+                {
+                  "id": "d04170e7-feef-4d3d-9789-ff697c6133bc",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ServerStatus",
+                  "type": 2,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources\r\n| where type == 'microsoft.compute/virtualmachines' or type == 'microsoft.hybridcompute/machines'\r\n| extend ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| distinct ServerStatus",
+                  "crossComponentResources": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                }
+              ],
+              "style": "pills",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "parameters - 8"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| extend ExtensionName = tostring(properties.type)\r\n| distinct  ExtensionName\r\n| where ExtensionName notlike \"Linux\"",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "Hidden",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "DiscoveredExtensionWindows"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "42f0f26a-a700-448b-8467-10e993951a8b",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension1",
+                  "label": "Extension 1",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00e4\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionWindows\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionWindows].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00e4\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "AzureMonitorWindowsAgent"
+                },
+                {
+                  "id": "740d2360-9a86-4bda-8633-6c8e72743389",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension2",
+                  "label": "Extension 2",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00e8\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionWindows\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionWindows].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00e8\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "AzureSecurityWindowsAgent"
+                },
+                {
+                  "id": "9dd0fd98-12a6-4649-b4ef-d31a6348e06d",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension3",
+                  "label": "Extension 3",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00ea\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionWindows\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionWindows].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00ea\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "CustomScriptExtension"
+                },
+                {
+                  "id": "322a1b3b-9956-4d8c-9d7c-9aea33bd634a",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension4",
+                  "label": "Extension 4",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00ec\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionWindows\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionWindows].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00ec\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "WindowsAgent.SqlServer"
+                }
+              ],
+              "style": "pills",
+              "queryType": 7
+            },
+            "name": "Extension Parameters windows"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "# Azure Arc Servers & VMs Extensions (Windows)\r\n"
+            },
+            "conditionalVisibility": {
+              "parameterName": "tab",
+              "comparison": "isEqualTo",
+              "value": "1"
+            },
+            "name": "text - 0 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension1:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension1:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension1:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green",
+                    "comment": ""
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows1Pie"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension2:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension2:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension2:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green",
+                    "comment": ""
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows2Pie"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension3:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension3:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension3:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "label": "",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows3Pie"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension4:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension4:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension4:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows4Pie"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "889211ce-4505-429c-a299-f0970e98d488",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension1Status",
+                  "label": "Extension 1",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]\r\n",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "6f86635c-a9d5-4f36-8de3-d9728299b636",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension2Status",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "label": "Extension 2"
+                },
+                {
+                  "id": "e4b863cf-239a-4f8c-b750-80d41a48bd1f",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension3Status",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "label": "Extension 3"
+                },
+                {
+                  "id": "8836930c-1bea-4fc5-9177-e20696478fdd",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension4Status",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "label": "Extension 4"
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "37",
+            "name": "Filter parameters"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osName), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension1:value}','{Extension2:value}','{Extension3:value}','{Extension4:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tVersion = tostring(properties.instanceView.typeHandlerVersion),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend ArcServer = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by ArcServer, OSType, ServerStatus\r\n| extend ['{Extension1:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension1:value}']),(parse_json(ExtProvision)).['{Extension1:value}'],\"<blank>\")\r\n| extend ['{Extension2:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension2:value}']),(parse_json(ExtProvision)).['{Extension2:value}'],\"<blank>\")\r\n| extend ['{Extension3:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension3:value}']),(parse_json(ExtProvision)).['{Extension3:value}'],\"<blank>\")\r\n| extend ['{Extension4:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension4:value}']),(parse_json(ExtProvision)).['{Extension4:value}'],\"<blank>\")\r\n| where \"{Extension1Status}\"==\"\" or ['{Extension1:value}'] == \"{Extension1Status:value}\"\r\n| where \"{Extension2Status}\"==\"\" or ['{Extension2:value}'] == \"{Extension2Status:value}\"\r\n| where \"{Extension3Status}\"==\"\" or ['{Extension3:value}'] == \"{Extension3Status:value}\"\r\n| where \"{Extension4Status}\"==\"\" or ['{Extension4:value}'] == \"{Extension4Status:value}\"\r\n| count\r\n| extend Metric=\"Total of Servers filtered:\"",
+              "size": 3,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Metric",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Count",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "13",
+            "name": "query - 9",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Version checker:",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "ca005540-0d09-45c2-b0f1-da762d4c1be6",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "ExtensiontoCheck",
+                        "label": "Choose extension",
+                        "type": 2,
+                        "query": "resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| extend ExtensionName = tostring(properties.type)\r\n| distinct  ExtensionName\r\n| where ExtensionName notlike \"Linux\"",
+                        "crossComponentResources": [
+                          "{Subscriptions}"
+                        ],
+                        "typeSettings": {
+                          "additionalResourceOptions": []
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "value": "AzureMonitorWindowsAgent"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "name": "parameters - 1"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n\tOSName = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osProfile.computerName), tostring((properties.extended.instanceView).computerName)),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osName), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    OSsku = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osSku), tostring((properties.extended.instanceView).osName)),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{ExtensiontoCheck:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n        Version = iff( type  == 'microsoft.hybridcompute/machines/extensions', tostring(properties.instanceView.typeHandlerVersion), tostring(properties.typeHandlerVersion)),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend VersionNumber = pack(ExtensionName, Version)\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtVersions = make_bag(VersionNumber),ExtProvision = make_bag(ProvisionState) by id\r\n| extend ExtensionVersion = tostring((parse_json(ExtVersions)).['{ExtensiontoCheck:value}'])\r\n| where isnotempty(ExtensionVersion) \r\n| project ExtensionVersion\r\n| summarize count() by ExtensionVersion",
+                    "size": 4,
+                    "title": "{ExtensiontoCheck:value} version distribution",
+                    "showRefreshButton": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "piechart"
+                  },
+                  "showPin": false,
+                  "name": "query - 9"
+                }
+              ]
+            },
+            "customWidth": "25",
+            "name": "Versions"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n\tOSName = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osProfile.computerName), tostring((properties.extended.instanceView).computerName)),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osName), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    OSsku = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osSku), tostring((properties.extended.instanceView).osName)),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension1:value}','{Extension2:value}','{Extension3:value}','{Extension4:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n        Version = iff( type  == 'microsoft.hybridcompute/machines/extensions', tostring(properties.instanceView.typeHandlerVersion), tostring(properties.typeHandlerVersion)),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('windows')\r\n| extend ServerName = id\r\n| extend VersionNumber = pack(ExtensionName, Version)\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtVersions = make_bag(VersionNumber),ExtProvision = make_bag(ProvisionState) by ServerName, OSType, OSName,OSsku, ServerStatus\r\n| extend Extension1Version = tostring((parse_json(ExtVersions)).['{Extension1:value}']), ['1-{Extension1:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension1:value}']),(parse_json(ExtProvision)).['{Extension1:value}'],\"<blank>\")\r\n| extend Extension2Version = tostring((parse_json(ExtVersions)).['{Extension2:value}']), ['2-{Extension2:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension2:value}']),(parse_json(ExtProvision)).['{Extension2:value}'],\"<blank>\")\r\n| extend Extension3Version = tostring((parse_json(ExtVersions)).['{Extension3:value}']), ['3-{Extension3:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension3:value}']),(parse_json(ExtProvision)).['{Extension3:value}'],\"<blank>\")\r\n| extend Extension4Version = tostring((parse_json(ExtVersions)).['{Extension4:value}']), ['4-{Extension4:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension4:value}']),(parse_json(ExtProvision)).['{Extension4:value}'],\"<blank>\")\r\n| where \"{Extension1Status}\"==\"\" or ['1-{Extension1:value}'] == \"{Extension1Status:value}\"\r\n| where \"{Extension2Status}\"==\"\" or ['2-{Extension2:value}'] == \"{Extension2Status:value}\"\r\n| where \"{Extension3Status}\"==\"\" or ['3-{Extension3:value}'] == \"{Extension3Status:value}\"\r\n| where \"{Extension4Status}\"==\"\" or ['4-{Extension4:value}'] == \"{Extension4Status:value}\"\r\n| project ServerName, OSsku, ServerStatus, OSType,\r\n['1-{Extension1:value}'],Extension1Version,\r\n['2-{Extension2:value}'],Extension2Version,\r\n['3-{Extension3:value}'],Extension3Version,\r\n['4-{Extension4:value}'],Extension4Version\r\n| sort by Extension1Version",
+              "size": 2,
+              "showAnalytics": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "ServerName",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "26.8571ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "OSsku",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "35.2857ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "ServerStatus",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "16.2857ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "OSType",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "13ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "^1-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension1Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension1Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension1Version",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "^2-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension2Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension2Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension2Version",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "^3-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension3Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension3Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension3Version",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "^4-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension4Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension4Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension4Version",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 2000,
+                "filter": true
+              },
+              "sortBy": []
+            },
+            "name": "query - 5"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tab",
+        "comparison": "isEqualTo",
+        "value": "1"
+      },
+      "name": "Group - Extensions Windows"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "cf72b08b-e727-4a5e-b78f-84940a9726a3",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscriptions",
+                  "type": 6,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "includeAll": true
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::all"
+                },
+                {
+                  "id": "cc87c729-ab54-440b-bdc6-00580dbbc0be",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "MachineType",
+                  "label": "Machine Type",
+                  "type": 2,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"microsoft.hybridcompute/machines\", \"label\": \"Azure Arc Servers\"},\r\n {\"value\": \"microsoft.compute/virtualmachines\", \"label\": \"Azure Vms\"}\r\n]\r\n",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "defaultValue": "value::all"
+                },
+                {
+                  "id": "d04170e7-feef-4d3d-9789-ff697c6133bc",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ServerStatus",
+                  "type": 2,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources\r\n| where type == 'microsoft.compute/virtualmachines' or type == 'microsoft.hybridcompute/machines'\r\n| extend ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| distinct ServerStatus",
+                  "crossComponentResources": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "value": [
+                    "value::all"
+                  ]
+                }
+              ],
+              "style": "pills",
+              "queryType": 0,
+              "resourceType": "microsoft.resourcegraph/resources"
+            },
+            "name": "parameters - 8"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| extend ExtensionName = tostring(properties.type)\r\n| distinct  ExtensionName\r\n| where ExtensionName notlike \"Windows\"",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "Hidden",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "DiscoveredExtensionLinux"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "42f0f26a-a700-448b-8467-10e993951a8b",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension1Lin",
+                  "label": "Extension 1",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00e4\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionLinux\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionLinux].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00e4\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "MDE.Linux"
+                },
+                {
+                  "id": "740d2360-9a86-4bda-8633-6c8e72743389",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension2Lin",
+                  "label": "Extension 2",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00e8\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionLinux\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionLinux].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00e8\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "CustomScript"
+                },
+                {
+                  "id": "9dd0fd98-12a6-4649-b4ef-d31a6348e06d",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension3Lin",
+                  "label": "Extension 3",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00ea\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionLinux\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionLinux].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00ea\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "OmsAgentForLinux"
+                },
+                {
+                  "id": "322a1b3b-9956-4d8c-9d7c-9aea33bd634a",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension4Lin",
+                  "label": "Extension 4",
+                  "type": 2,
+                  "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d00ec\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionLinux\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionLinux].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d00ec\"}]}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 7,
+                  "value": "NetworkWatcherAgentLinux"
+                }
+              ],
+              "style": "pills",
+              "queryType": 7
+            },
+            "conditionalVisibility": {
+              "parameterName": "tab",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "Extension Parameters linux"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "# Azure Arc Servers & VMs Extensions (Linux)\r\n"
+            },
+            "conditionalVisibility": {
+              "parameterName": "tab",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "Tittle Linux"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension1Lin:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension1Lin:value}']\r\n| project status\r\n| summarize count() by tostring(status)",
+              "size": 3,
+              "title": "{Extension1Lin:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green",
+                    "comment": ""
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows1Pie"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension2Lin:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension2Lin:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension2Lin:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green",
+                    "comment": ""
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows2Pie"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension3Lin:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension3Lin:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension3Lin:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "label": "",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows3Pie"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osType), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension4Lin:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend Serverid = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by Serverid, OSType, ServerStatus\r\n| extend status = (parse_json(ExtProvision)).['{Extension4Lin:value}']\r\n| project status\r\n| summarize count() by tostring(status)\r\n",
+              "size": 3,
+              "title": "{Extension4Lin:value}",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "piechart",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Succeeded",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "",
+                    "label": "Not Present",
+                    "color": "gray"
+                  },
+                  {
+                    "seriesName": "Failed",
+                    "color": "red"
+                  },
+                  {
+                    "seriesName": "Deleting",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "customWidth": "25",
+            "name": "ExtensionWindows4Pie"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "889211ce-4505-429c-a299-f0970e98d488",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension1LinStatus",
+                  "label": "Extension 1",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]\r\n",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "6f86635c-a9d5-4f36-8de3-d9728299b636",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension2LinStatus",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "label": "Extension 2"
+                },
+                {
+                  "id": "e4b863cf-239a-4f8c-b750-80d41a48bd1f",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension3LinStatus",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "label": "Extension 3"
+                },
+                {
+                  "id": "8836930c-1bea-4fc5-9177-e20696478fdd",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Extension4LinStatus",
+                  "type": 10,
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "jsonData": "[\r\n {\"value\": \"Succeeded\", \"label\": \"Succeeded\"},\r\n {\"value\": \"Creating\", \"label\": \"Creating\"},\r\n {\"value\": \"Updating\", \"label\": \"Updating\"},\r\n {\"value\": \"Deleting\", \"label\": \"Deleting\"},\r\n {\"value\": \"Failed\", \"label\": \"Failed\"},\r\n {\"value\": \"<blank>\", \"label\": \"NotPresent\"}\r\n]",
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "label": "Extension 4",
+                  "value": null
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "37",
+            "name": "Filter parameters"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osName), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension1Lin:value}','{Extension2Lin:value}','{Extension3Lin:value}','{Extension4Lin:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n\t\tVersion = tostring(properties.instanceView.typeHandlerVersion),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend ArcServer = id\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtProvision = make_bag(ProvisionState) by ArcServer, OSType, ServerStatus\r\n| extend ['{Extension1Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension1Lin:value}']),(parse_json(ExtProvision)).['{Extension1Lin:value}'],\"<blank>\")\r\n| extend ['{Extension2Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension2Lin:value}']),(parse_json(ExtProvision)).['{Extension2Lin:value}'],\"<blank>\")\r\n| extend ['{Extension3Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension3Lin:value}']),(parse_json(ExtProvision)).['{Extension3Lin:value}'],\"<blank>\")\r\n| extend ['{Extension4Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension4Lin:value}']),(parse_json(ExtProvision)).['{Extension4Lin:value}'],\"<blank>\")\r\n| where \"{Extension1LinStatus}\"==\"\" or ['{Extension1Lin:value}'] == \"{Extension1LinStatus:value}\"\r\n| where \"{Extension2LinStatus}\"==\"\" or ['{Extension2Lin:value}'] == \"{Extension2LinStatus:value}\"\r\n| where \"{Extension3LinStatus}\"==\"\" or ['{Extension3Lin:value}'] == \"{Extension3LinStatus:value}\"\r\n| where \"{Extension4LinStatus}\"==\"\" or ['{Extension4Lin:value}'] == \"{Extension4LinStatus:value}\"\r\n| count\r\n| extend Metric=\"Total of Servers filtered:\"",
+              "size": 3,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "tiles",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Metric",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Count",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "13",
+            "name": "query - 9",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Version checker:",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "ca005540-0d09-45c2-b0f1-da762d4c1be6",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "ExtensiontoCheck",
+                        "label": "Choose extension",
+                        "type": 2,
+                        "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"16c11101-93b9-4d76-87ee-c65bb60d016a\",\"mergeType\":\"table\",\"leftTable\":\"DiscoveredExtensionLinux\"}],\"projectRename\":[{\"originalName\":\"[DiscoveredExtensionLinux].ExtensionName\",\"mergedName\":\"ExtensionName\",\"fromId\":\"16c11101-93b9-4d76-87ee-c65bb60d016a\"}]}",
+                        "typeSettings": {
+                          "additionalResourceOptions": [],
+                          "showDefault": false
+                        },
+                        "timeContext": {
+                          "durationMs": 86400000
+                        },
+                        "queryType": 7,
+                        "value": "OmsAgentForLinux"
+                      }
+                    ],
+                    "style": "pills",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces"
+                  },
+                  "name": "parameters - 1"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n\tOSName = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osProfile.computerName), tostring((properties.extended.instanceView).computerName)),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osName), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    OSsku = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osSku), tostring((properties.extended.instanceView).osName)),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{ExtensiontoCheck:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n        Version = iff( type  == 'microsoft.hybridcompute/machines/extensions', tostring(properties.instanceView.typeHandlerVersion), tostring(properties.typeHandlerVersion)),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend VersionNumber = pack(ExtensionName, Version)\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtVersions = make_bag(VersionNumber),ExtProvision = make_bag(ProvisionState) by id\r\n| extend ExtensionVersion = tostring((parse_json(ExtVersions)).['{ExtensiontoCheck:value}'])\r\n| where isnotempty(ExtensionVersion) \r\n| project ExtensionVersion\r\n| summarize count() by ExtensionVersion",
+                    "size": 4,
+                    "title": "{ExtensiontoCheck:value} version distribution",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscriptions}"
+                    ],
+                    "visualization": "piechart"
+                  },
+                  "showPin": false,
+                  "name": "query - 9"
+                }
+              ]
+            },
+            "customWidth": "47",
+            "name": "Versions"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type in ({MachineType})\r\n| extend\r\n    JoinID = toupper(id),\r\n\tOSName = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osProfile.computerName), tostring((properties.extended.instanceView).computerName)),\r\n    OSType = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osName), tolower(tostring((properties.storageProfile).osDisk.osType))),\r\n    OSsku = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.osSku), tostring((properties.extended.instanceView).osName)),\r\n    ServerStatus = iff( type  == 'microsoft.hybridcompute/machines', tostring(properties.status), tostring((properties.extended.instanceView).powerState.displayStatus))\r\n| where ServerStatus in ({ServerStatus})\r\n| join kind=leftouter(\r\n    resources\r\n| where type == 'microsoft.hybridcompute/machines/extensions' or type == 'microsoft.compute/virtualmachines/extensions'\r\n| where properties.type in ('{Extension1Lin:value}','{Extension2Lin:value}','{Extension3Lin:value}','{Extension4Lin:value}')\r\n| extend\r\n        VMId = toupper(substring(id, 0, indexof(id, '/extensions'))),\r\n        ExtensionName = tostring(properties.type),\r\n        Version = iff( type  == 'microsoft.hybridcompute/machines/extensions', tostring(properties.instanceView.typeHandlerVersion), tostring(properties.typeHandlerVersion)),\r\n\t\tStatus = tostring (properties.provisioningState)\r\n) on $left.JoinID == $right.VMId\r\n| where OSType in ('linux')\r\n| extend ServerName = id\r\n| extend VersionNumber = pack(ExtensionName, Version)\r\n| extend ProvisionState = pack(ExtensionName, Status)\r\n| summarize ExtVersions = make_bag(VersionNumber),ExtProvision = make_bag(ProvisionState) by ServerName, OSType, OSName,OSsku, ServerStatus\r\n| extend Extension1Version = tostring((parse_json(ExtVersions)).['{Extension1Lin:value}']), ['1-{Extension1Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension1Lin:value}']),(parse_json(ExtProvision)).['{Extension1Lin:value}'],\"<blank>\")\r\n| extend Extension2Version = tostring((parse_json(ExtVersions)).['{Extension2Lin:value}']), ['2-{Extension2Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension2Lin:value}']),(parse_json(ExtProvision)).['{Extension2Lin:value}'],\"<blank>\")\r\n| extend Extension3Version = tostring((parse_json(ExtVersions)).['{Extension3Lin:value}']), ['3-{Extension3Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension3Lin:value}']),(parse_json(ExtProvision)).['{Extension3Lin:value}'],\"<blank>\")\r\n| extend Extension4Version = tostring((parse_json(ExtVersions)).['{Extension4Lin:value}']), ['4-{Extension4Lin:value}'] = iff(isnotnull((parse_json(ExtProvision)).['{Extension4Lin:value}']),(parse_json(ExtProvision)).['{Extension4Lin:value}'],\"<blank>\")\r\n| where \"{Extension1LinStatus}\"==\"\" or ['1-{Extension1Lin:value}'] == \"{Extension1LinStatus:value}\"\r\n| where \"{Extension2LinStatus}\"==\"\" or ['2-{Extension2Lin:value}'] == \"{Extension2LinStatus:value}\"\r\n| where \"{Extension3LinStatus}\"==\"\" or ['3-{Extension3Lin:value}'] == \"{Extension3LinStatus:value}\"\r\n| where \"{Extension4LinStatus}\"==\"\" or ['4-{Extension4Lin:value}'] == \"{Extension4LinStatus:value}\"\r\n| project ServerName, OSsku, ServerStatus, OSType,\r\n['1-{Extension1Lin:value}'],Extension1Version,\r\n['2-{Extension2Lin:value}'],Extension2Version,\r\n['3-{Extension3Lin:value}'],Extension3Version,\r\n['4-{Extension4Lin:value}'],Extension4Version\r\n| sort by Extension1Version",
+              "size": 3,
+              "showAnalytics": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "ServerName",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "26.8571ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "OSsku",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "35.2857ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "ServerStatus",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "16.2857ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "OSType",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "13ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "^1-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension1Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension1Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension1Version",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "^2-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension2Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension2Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension2Version",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "^3-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension3Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension3Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension3Version",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "^4-.*",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "<blank>",
+                          "text": ""
+                        },
+                        {
+                          "operator": "!=",
+                          "thresholdValue": "Succeeded",
+                          "representation": "3",
+                          "text": "[\"Extension4Version\"] ({0})"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "[\"Extension4Version\"]"
+                        }
+                      ],
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Extension4Version",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 2000,
+                "filter": true
+              },
+              "sortBy": []
+            },
+            "name": "query - 5"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "tab",
+        "comparison": "isEqualTo",
+        "value": "2"
+      },
+      "name": "Group - Extensions Linux"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

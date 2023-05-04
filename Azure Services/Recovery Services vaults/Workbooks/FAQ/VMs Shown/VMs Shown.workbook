@@ -1,0 +1,17 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Resources shown in this report\r\n\r\nAs this report uses Azure Resource Graph (ARG) queries, you can view information on all VMs that you have access to. For VMs where backup is configured a Recovery Services vault, you will need to have access to the vault as well in order to see the backup configuration status for the VM as expected."
+      },
+      "name": "text - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+

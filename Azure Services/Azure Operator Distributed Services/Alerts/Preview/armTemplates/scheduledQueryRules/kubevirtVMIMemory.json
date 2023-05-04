@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Kubevirt VM Memory Usage"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('kubevirt_vmi_memory_available_bytes') | extend vmiName = tostring(Labels.name) | extend vmiNamespace = tostring(Labels.namespace) | extend vmiNode = tostring(Labels.node) | extend MemoryAvailableBytes = Val | join kind=inner (InsightsMetrics | invoke pquery_gauge('kubevirt_vmi_memory_unused_bytes') | extend vmiName = tostring(Labels.name) | extend vmiNamespace = tostring(Labels.namespace) | extend vmiNode = tostring(Labels.node) | extend MemoryUnusedBytes = Val) on AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, vmiName, vmiNamespace, vmiNode | extend PctFree = (MemoryUnusedBytes / MemoryAvailableBytes) * 100 | extend PctUsed = 100 - PctFree | project AgentId, Computer, Origin, SourceSystem, Type, _ResourceId, TimeGenerated, vmiName, vmiNamespace, vmiNode, MemoryAvailableBytes, MemoryUnusedBytes, PctFree, PctUsed"
+    },
+    "metricMeasureColumn": {
+      "value": "PctUsed"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "85"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "vmiNode",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiNamespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "vmiName",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

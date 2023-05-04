@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA 90 Percent Volume Space Used"
+    },
+    "alertDescription": {
+      "value": "PureFA Volume Total Capacity Alerts will query both the PureFA Volume Space Used and Volume Space Capacity logs then calculate the Percentage used based on the results, as provided by PureFA in Bytes. This Alert will trigger when volume usage surpasses 90 percent."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('purefa_volume_space_bytes') | where Labels.dimension == 'total' | extend Volume = tostring(Labels.volume) | extend UsedVolumeBytes = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('purefa_volume_space_size_bytes') | extend Volume = tostring(Labels.volume) | extend VolumeTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Volume | extend VolumePctUsed = percentage(UsedVolumeBytes, VolumeTotalBytes) | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Volume, UsedVolumeBytes, VolumeTotalBytes, VolumePctUsed"
+    },
+    "metricMeasureColumn": {
+      "value": "VolumePctUsed"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "90"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Volume",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

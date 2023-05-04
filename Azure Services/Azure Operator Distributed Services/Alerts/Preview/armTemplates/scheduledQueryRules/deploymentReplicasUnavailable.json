@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Deployment replicas unavailable"
+    },
+    "alertDescription": {
+      "value": "the number of unavailable replicas as a % of Total"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_gauge('kube_deployment_status_replicas_available') | extend deployment = tostring(Labels.deployment) | extend namespace = tostring(Labels.namespace) | extend Available = Val | join kind=inner ( InsightsMetrics | invoke pquery_gauge('kube_deployment_status_replicas') | extend deployment = tostring(Labels.deployment) | extend namespace = tostring(Labels.namespace) | extend Total = Val) on TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, deployment, namespace | project TimeGenerated, Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, Available, Total, Pct = percentage(Available, Total), deployment, namespace"
+    },
+    "metricMeasureColumn": {
+      "value": "Pct"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": "35"
+    },
+    "timeAggregation": {
+      "value": "Minimum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "deployment",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "namespace",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}

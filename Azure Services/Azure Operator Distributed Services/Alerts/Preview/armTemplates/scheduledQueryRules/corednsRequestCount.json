@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "CoreDNS Request Count"
+    },
+    "alertDescription": {
+      "value": "CoreDNS Request Count"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('coredns_dns_requests_total') | extend dnstype = tostring(Labels.type) | extend podname = tostring(Labels.pod_name) | extend podnamespace = tostring(Labels.namespace) | extend corednsreqcount = DeltaVal"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": "10"
+    },
+    "timeAggregation": {
+      "value": "Total"
+    },
+    "metricMeasureColumn": {
+      "value": "corednsreqcount"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    }
+  }
+}

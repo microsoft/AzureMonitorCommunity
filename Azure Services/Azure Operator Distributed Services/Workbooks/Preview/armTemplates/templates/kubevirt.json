@@ -1,0 +1,2103 @@
+{
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workbookDisplayName": {
+      "type": "string",
+      "defaultValue": "Kubevirt",
+      "metadata": {
+        "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "workbookType": {
+      "type": "string",
+      "defaultValue": "workbook",
+      "metadata": {
+        "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+      }
+    },
+    "workspaceLAW": {
+      "type": "string",
+      "defaultValue": "afoinc-nft-law",
+      "metadata": {
+        "description": "The friendly name for the workspace that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "connectedCluster": {
+      "type": "string",
+      "defaultValue": "nft-target-cluster",
+      "metadata": {
+        "description": "The friendly name for the connected cluster.  This name must be unique within a resource group."
+      }
+    },
+    "workbookSourceId": {
+      "type": "string",
+      "defaultValue": "[concat(resourceGroup().id, '/providers/microsoft.operationalinsights/workspaces/', parameters('workspaceLAW'))]",
+      "metadata": {
+        "description": "The id of resource instance to which the workbook will be associated"
+      }
+    },
+    "workbookId": {
+      "type": "string",
+      "defaultValue": "[newGuid()]",
+      "metadata": {
+        "description": "The unique guid for this workbook instance"
+      }
+    },
+    "workbookLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The Azure region with which the workbook will be associated"
+      }
+    }
+  },
+  "variables": {
+    "workbookContent": {
+      "version": "Notebook/1.0",
+      "items": [
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": []
+          },
+          "conditionalVisibility": {
+            "parameterName": "setTab",
+            "comparison": "isEqualTo",
+            "value": "overview"
+          },
+          "name": "group - 14"
+        },
+        {
+          "type": 9,
+          "content": {
+            "version": "KqlParameterItem/1.0",
+            "crossComponentResources": ["{Resource}"],
+            "parameters": [
+              {
+                "id": "be71f3be-3897-458a-90cb-e6ab57d967cc",
+                "version": "KqlParameterItem/1.0",
+                "name": "Timeframe",
+                "type": 4,
+                "isRequired": true,
+                "value": {
+                  "durationMs": 1800000
+                },
+                "typeSettings": {
+                  "selectableValues": [
+                    {
+                      "durationMs": 300000
+                    },
+                    {
+                      "durationMs": 900000
+                    },
+                    {
+                      "durationMs": 1800000
+                    },
+                    {
+                      "durationMs": 3600000
+                    },
+                    {
+                      "durationMs": 14400000
+                    },
+                    {
+                      "durationMs": 43200000
+                    },
+                    {
+                      "durationMs": 86400000
+                    },
+                    {
+                      "durationMs": 172800000
+                    },
+                    {
+                      "durationMs": 259200000
+                    },
+                    {
+                      "durationMs": 604800000
+                    }
+                  ]
+                },
+                "timeContext": {
+                  "durationMs": 86400000
+                }
+              },
+              {
+                "id": "b10bdd9e-cd0a-48e4-bb18-68378b19f439",
+                "version": "KqlParameterItem/1.0",
+                "name": "Resource",
+                "label": "Workspace",
+                "type": 5,
+                "isRequired": true,
+                "query": "InsightsMetrics \r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_info\"\r\n| distinct _ResourceId",
+                "typeSettings": {
+                  "additionalResourceOptions": [],
+                  "showDefault": false
+                },
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "Timeframe",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces"
+              },
+              {
+                "id": "0ee5e0cd-d492-4ebc-9f63-12c155665587",
+                "version": "KqlParameterItem/1.0",
+                "name": "Computer",
+                "label": "Hostname",
+                "type": 2,
+                "multiSelect": true,
+                "quote": "'",
+                "delimiter": ",",
+                "query": "KubeNodeInventory\r\n| distinct Computer\r\n| sort by Computer asc\r\n",
+                "crossComponentResources": ["{Resource}"],
+                "typeSettings": {
+                  "additionalResourceOptions": ["value::all"],
+                  "showDefault": false
+                },
+                "timeContext": {
+                  "durationMs": 0
+                },
+                "timeContextFromParameter": "Timeframe",
+                "defaultValue": "value::all",
+                "queryType": 0,
+                "resourceType": "microsoft.kubernetes/connectedclusters",
+                "value": ["value::all"]
+              }
+            ],
+            "style": "above",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters"
+          },
+          "name": "parameters"
+        },
+        {
+          "type": 11,
+          "content": {
+            "version": "LinkItem/1.0",
+            "style": "tabs",
+            "links": [
+              {
+                "id": "e9e40348-2059-4b2f-ad8b-edc4c6448101",
+                "cellValue": "setTab",
+                "linkTarget": "parameter",
+                "linkLabel": "Overview",
+                "subTarget": "overview",
+                "style": "link"
+              },
+              {
+                "id": "0406a996-65e7-40f7-a165-f8b7fdad7824",
+                "cellValue": "setTab",
+                "linkTarget": "parameter",
+                "linkLabel": "Utilization",
+                "subTarget": "utilization",
+                "preText": "Utilization",
+                "style": "link"
+              },
+              {
+                "id": "bfec81eb-7e30-4087-a249-85fdb9ecc8b6",
+                "cellValue": "setTab",
+                "linkTarget": "parameter",
+                "linkLabel": "Network",
+                "subTarget": "network",
+                "style": "link"
+              },
+              {
+                "id": "3c9eb74a-9feb-4c55-bc9e-a18fc8369c80",
+                "cellValue": "setTab",
+                "linkTarget": "parameter",
+                "linkLabel": "Storage",
+                "subTarget": "storage",
+                "style": "link"
+              }
+            ]
+          },
+          "name": "links - 8"
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_actual_balloon_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend actualBalloonBytes = Val\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_available_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend availableBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_domain_total_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend domainTotalBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_resident_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend memoryResidentBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_swap_in_traffic_bytes_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend swapInTrafficBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_swap_out_traffic_bytes_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend swapOutTrafficBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_unused_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend memoryUnusedBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_usable_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend memoryUsableBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| top-nested of vmiName by max(1), top-nested of vmiNamespace by max(1), top-nested of vmiNode by max(1), top-nested 1 of TimeGenerated by max(TimeGenerated), top-nested of actualBalloonBytes by max(1), top-nested of availableBytes by max(1), top-nested of domainTotalBytes by max(1), top-nested of memoryResidentBytes by max(1), top-nested of swapInTrafficBytes by max(1), top-nested of swapOutTrafficBytes by max(1), top-nested of memoryUnusedBytes by max(1), top-nested of memoryUsableBytes by max(1)\r\n| join kind=inner(\r\nInsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_pgmajfault\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| extend pgmajfault = Val\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_pgminfault\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend pgminfault = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode\r\n| project TimeGenerated, Tags, vmiName, vmiNamespace, vmiNode, pgmajfault, pgminfault\r\n| order by Tags, TimeGenerated asc\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags, datetime(null), prev(TimeGenerated))\r\n| extend PrevPgmajfault = prev(pgmajfault)\r\n| extend PrevPgminfault = prev(pgminfault)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaPgmajfault = iif(PrevPgmajfault > pgmajfault, pgmajfault, (pgmajfault - PrevPgmajfault)) \r\n| extend DeltaPgminfault = iif(PrevPgminfault > pgminfault, pgminfault, (pgminfault - PrevPgminfault)) \r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| summarize pgmajfault = sum(DeltaPgmajfault), pgminfault = sum(DeltaPgminfault), TimeSeconds = sum(DeltaTime) by vmiNode, vmiName, vmiNamespace\r\n) on vmiName, vmiNamespace, vmiNode\r\n| project vmiName, vmiNamespace, vmiNode, actualBalloonBytes, availableBytes, domainTotalBytes, memoryResidentBytes, swapInTrafficBytes, swapOutTrafficBytes, memoryUnusedBytes, memoryUsableBytes, pgmajfault, pgminfault\r\n",
+            "size": 1,
+            "title": "Virtual Machine Instances",
+            "timeContextFromParameter": "Timeframe",
+            "exportParameterName": "vmi",
+            "exportDefaultValue": "all",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "table",
+            "showExpandCollapseGrid": true,
+            "gridSettings": {
+              "formatters": [
+                {
+                  "columnMatch": "actualBalloonBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "availableBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "domainTotalBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "memoryResidentBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "swapInTrafficBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "swapOutTrafficBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "memoryUnusedBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "memoryUsableBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                }
+              ],
+              "filter": true,
+              "hierarchySettings": {
+                "treeType": 1,
+                "groupBy": ["vmiNamespace"],
+                "finalBy": "vmiName"
+              },
+              "sortBy": [
+                {
+                  "itemKey": "vmiName",
+                  "sortOrder": 1
+                }
+              ],
+              "labelSettings": [
+                {
+                  "columnId": "vmiName",
+                  "label": "VMI Name"
+                },
+                {
+                  "columnId": "vmiNamespace",
+                  "label": "Namespace"
+                },
+                {
+                  "columnId": "vmiNode",
+                  "label": "Node"
+                },
+                {
+                  "columnId": "actualBalloonBytes",
+                  "label": "Current Balloon Bytes",
+                  "comment": "Current balloon bytes"
+                },
+                {
+                  "columnId": "availableBytes",
+                  "label": "Available Memory",
+                  "comment": "Amount of usable memory as seen by the domain"
+                },
+                {
+                  "columnId": "domainTotalBytes",
+                  "label": "Domain Memory",
+                  "comment": "The amount of memory in bytes allocated to the domain"
+                },
+                {
+                  "columnId": "memoryResidentBytes",
+                  "label": "Resident Memory",
+                  "comment": "Resident set size of the process running the domain"
+                },
+                {
+                  "columnId": "swapInTrafficBytes",
+                  "label": "Swap In Traffic",
+                  "comment": "Swap in memory traffic in bytes"
+                },
+                {
+                  "columnId": "swapOutTrafficBytes",
+                  "label": "Swap Out Traffic",
+                  "comment": "Swap out memory traffic in bytes"
+                },
+                {
+                  "columnId": "memoryUnusedBytes",
+                  "label": "Unused Memory",
+                  "comment": "Amount of unused memory as seen by the domain"
+                },
+                {
+                  "columnId": "memoryUsableBytes",
+                  "label": "Usable Memory",
+                  "comment": "The amount of memory which can be reclaimed by balloon without causing host swapping in bytes"
+                },
+                {
+                  "columnId": "pgmajfault",
+                  "label": "Disk I/O Page Faults",
+                  "comment": "The number of page faults when disk IO was required"
+                },
+                {
+                  "columnId": "pgminfault",
+                  "label": "Other Page Faults",
+                  "comment": "The number of other page faults, when disk IO was not required"
+                }
+              ]
+            },
+            "sortBy": [
+              {
+                "itemKey": "vmiName",
+                "sortOrder": 1
+              }
+            ]
+          },
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "utilization"
+            },
+            {
+              "parameterName": "Computer",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "query - 6",
+          "styleSettings": {
+            "margin": "15",
+            "padding": "10",
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_storage_iops_write_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend drive = tostring(json.drive)\r\n| where vmiNode in ({Computer})\r\n| extend iopsWriteTotal = Val\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_storage_iops_read_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend drive = tostring(json.drive)\r\n| extend iopsReadTotal = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, drive\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_storage_read_traffic_bytes_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend drive = tostring(json.drive)\r\n| extend readTraffic = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, drive\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_storage_write_traffic_bytes_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend drive = tostring(json.drive)\r\n| extend writeTraffic = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, drive\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_storage_read_times_ms_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend drive = tostring(json.drive)\r\n| extend readTimes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, drive\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_storage_write_times_ms_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend drive = tostring(json.drive)\r\n| extend writeTimes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, drive\r\n| project TimeGenerated, Tags, vmiName, vmiNamespace, vmiNode, drive, iopsWriteTotal, iopsReadTotal, readTraffic, writeTraffic, readTimes, writeTimes\r\n| order by Tags, TimeGenerated asc\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags, datetime(null), prev(TimeGenerated))\r\n| extend PrevIopsWriteTotal = prev(iopsWriteTotal)\r\n| extend PrevIopsReadTotal = prev(iopsReadTotal)\r\n| extend PrevReadTraffic = prev(readTraffic)\r\n| extend PrevWriteTraffic = prev(writeTraffic)\r\n| extend PrevReadTimes = prev(readTimes)\r\n| extend PrevWriteTimes = prev(writeTimes)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaIopsWriteTotal = iif(PrevIopsWriteTotal > iopsWriteTotal, iopsWriteTotal, (iopsWriteTotal - PrevIopsWriteTotal)) \r\n| extend DeltaIopsReadTotal = iif(PrevIopsReadTotal > iopsReadTotal, iopsReadTotal, (iopsReadTotal - PrevIopsReadTotal)) \r\n| extend DeltaReadTraffic = iif(PrevReadTraffic > readTraffic, readTraffic, (readTraffic - PrevReadTraffic)) \r\n| extend DeltaWriteTraffic = iif(PrevWriteTraffic > writeTraffic, writeTraffic, (writeTraffic - PrevWriteTraffic)) \r\n| extend DeltaReadTimes = iif(PrevReadTimes > readTimes, readTimes, (readTimes - PrevReadTimes)) \r\n| extend DeltaWriteTimes = iif(PrevWriteTimes > writeTimes, writeTimes, (writeTimes - PrevWriteTimes)) \r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| summarize IopsWritesTotal = sum(DeltaIopsWriteTotal), IopsReadsTotal = sum(DeltaIopsReadTotal), ReadTrafficBytes = sum(DeltaReadTraffic), WriteTrafficBytes = sum(DeltaWriteTraffic), ReadTimesMillis = sum(DeltaReadTimes), WriteTimesMillis = sum(DeltaWriteTimes), TimeSeconds = sum(DeltaTime) by vmiNode, vmiName, vmiNamespace, drive",
+            "size": 1,
+            "title": "Storage Drives",
+            "timeContextFromParameter": "Timeframe",
+            "exportParameterName": "drive",
+            "exportDefaultValue": "all",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "gridSettings": {
+              "formatters": [
+                {
+                  "columnMatch": "ReadTrafficBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "WriteTrafficBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "ReadTimesMillis",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 23,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "WriteTimesMillis",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 23,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "TimeSeconds",
+                  "formatter": 5
+                },
+                {
+                  "columnMatch": "Tags",
+                  "formatter": 5
+                }
+              ],
+              "filter": true,
+              "hierarchySettings": {
+                "treeType": 1,
+                "groupBy": ["vmiNamespace", "vmiName"],
+                "finalBy": "drive"
+              },
+              "labelSettings": [
+                {
+                  "columnId": "vmiNode",
+                  "label": "Node"
+                },
+                {
+                  "columnId": "vmiName",
+                  "label": "VMI Name"
+                },
+                {
+                  "columnId": "vmiNamespace",
+                  "label": "VMI Namespace"
+                },
+                {
+                  "columnId": "drive",
+                  "label": "Drive"
+                },
+                {
+                  "columnId": "IopsWritesTotal",
+                  "label": "I/O Writes"
+                },
+                {
+                  "columnId": "IopsReadsTotal",
+                  "label": "I/O Reads"
+                },
+                {
+                  "columnId": "ReadTrafficBytes",
+                  "label": "Read Traffic"
+                },
+                {
+                  "columnId": "WriteTrafficBytes",
+                  "label": "Write Traffic"
+                },
+                {
+                  "columnId": "ReadTimesMillis",
+                  "label": "Read Time"
+                },
+                {
+                  "columnId": "WriteTimesMillis",
+                  "label": "Write Time"
+                }
+              ]
+            }
+          },
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "storage"
+            },
+            {
+              "parameterName": "Computer",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "query - 10",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_vcpu_seconds\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend row = parse_json('{vmi}')\r\n| where tostring(row) == 'all' or (vmiName == row.vmiName and vmiNamespace == row.vmiNamespace)\r\n| sort by Tags, TimeGenerated asc\r\n| extend cpu = tostring(json.id)\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags, datetime(null), prev(TimeGenerated))\r\n| extend PrevVal = prev(Val)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend totalvCPUTimeinSeconds = iif(PrevVal > Val, Val, Val - PrevVal)\r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| summarize cpuUsage = sum(totalvCPUTimeinSeconds) / sum(DeltaTime) by bin(TimeGenerated, 5m), vmiName, vmiNamespace, cpu",
+            "size": 0,
+            "aggregation": 3,
+            "title": "Average CPU Usage",
+            "timeContextFromParameter": "Timeframe",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "timechart",
+            "chartSettings": {
+              "ySettings": {
+                "numberFormatSettings": {
+                  "unit": 0,
+                  "options": {
+                    "style": "percent",
+                    "useGrouping": true,
+                    "maximumFractionDigits": 0
+                  }
+                },
+                "min": 0,
+                "max": 1
+              }
+            }
+          },
+          "customWidth": "50",
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "utilization"
+            },
+            {
+              "parameterName": "vmi",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "query - 0",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_memory_resident_bytes\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend row = parse_json('{vmi}')\r\n| where tostring(row) == 'all' or (vmiName == row.vmiName and vmiNamespace == row.vmiNamespace)\r\n",
+            "size": 0,
+            "title": "Memory Usage (RSS)",
+            "timeContextFromParameter": "Timeframe",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "linechart",
+            "chartSettings": {
+              "group": "vmiName",
+              "createOtherGroup": null,
+              "ySettings": {
+                "numberFormatSettings": {
+                  "unit": 2,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": true
+                  }
+                }
+              }
+            }
+          },
+          "customWidth": "50",
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "utilization"
+            },
+            {
+              "parameterName": "vmi",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "Memory Usage",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name in (\"kubevirt_vmi_storage_iops_read_total\",\"kubevirt_vmi_storage_iops_write_total\")\r\n| sort by Tags, Name, TimeGenerated asc \r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend drive = tostring(json.drive)\r\n| extend row = parse_json('{drive}')\r\n| where tostring(row) == 'all' or (vmiName == row.vmiName and vmiNamespace == row.vmiNamespace and drive == row.drive)\r\n| extend type = strcat(vmiName, \" - \", drive, \" - \", iff(Name == 'kubevirt_vmi_storage_iops_read_total', 'read', 'write'))\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags or prev(Name) != Name, datetime(null), prev(TimeGenerated))\r\n| extend PrevVal = prev(Val)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaVal = iif(PrevVal > Val, Val, (Val - PrevVal)) \r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| extend IOPS = DeltaVal / DeltaTime",
+            "size": 0,
+            "aggregation": 3,
+            "title": "IOPS",
+            "timeContextFromParameter": "Timeframe",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "timechart",
+            "chartSettings": {
+              "yAxis": ["IOPS"],
+              "group": "type",
+              "createOtherGroup": null,
+              "ySettings": {
+                "numberFormatSettings": {
+                  "unit": 31,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": true
+                  }
+                }
+              }
+            }
+          },
+          "customWidth": "33",
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "storage"
+            },
+            {
+              "parameterName": "drive",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "IOPS",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name in (\"kubevirt_vmi_storage_read_traffic_bytes_total\", \"kubevirt_vmi_storage_write_traffic_bytes_total\")\r\n| sort by Tags, Name, TimeGenerated asc \r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend drive = tostring(json.drive)\r\n| extend row = parse_json('{drive}')\r\n| where tostring(row) == 'all' or (vmiName == row.vmiName and vmiNamespace == row.vmiNamespace and drive == row.drive)\r\n| extend type = strcat(vmiName, \" - \", drive, \" - \", iff(Name == 'kubevirt_vmi_storage_read_traffic_bytes_total', 'read', 'write'))\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags or prev(Name) != Name, datetime(null), prev(TimeGenerated))\r\n| extend PrevVal = prev(Val)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaVal = iif(PrevVal > Val, Val, (Val - PrevVal)) \r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| extend iotraffic = DeltaVal / DeltaTime",
+            "size": 0,
+            "aggregation": 3,
+            "title": "IO Traffic",
+            "timeContextFromParameter": "Timeframe",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "timechart",
+            "chartSettings": {
+              "yAxis": ["iotraffic"],
+              "group": "type",
+              "createOtherGroup": null,
+              "ySettings": {
+                "numberFormatSettings": {
+                  "unit": 11,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": true
+                  }
+                }
+              }
+            }
+          },
+          "customWidth": "33",
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "storage"
+            },
+            {
+              "parameterName": "drive",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "iotraffic",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name in (\"kubevirt_vmi_storage_read_times_ms_total\", \"kubevirt_vmi_storage_write_times_ms_total\")\r\n| sort by Tags, Name, TimeGenerated asc \r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend drive = tostring(json.drive)\r\n| extend row = parse_json('{drive}')\r\n| where tostring(row) == 'all' or (vmiName == row.vmiName and vmiNamespace == row.vmiNamespace and drive == row.drive)\r\n| extend dtype = strcat(vmiName, \" - \", drive, \" - \", iff(Name == 'kubevirt_vmi_storage_read_times_ms_total', 'read', 'write'))\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags or prev(Name) != Name, datetime(null), prev(TimeGenerated))\r\n| extend PrevVal = prev(Val)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaVal = iif(PrevVal > Val, Val, (Val - PrevVal)) \r\n| extend DeltaTime = datetime_diff('Minute', TimeGenerated, PrevTimeGenerated)\r\n| extend iotime = DeltaVal / DeltaTime",
+            "size": 0,
+            "title": "IO Time",
+            "timeContextFromParameter": "Timeframe",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "timechart",
+            "chartSettings": {
+              "yAxis": ["iotime"],
+              "group": "dtype",
+              "createOtherGroup": null,
+              "ySettings": {
+                "numberFormatSettings": {
+                  "unit": 23,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": true
+                  }
+                }
+              }
+            }
+          },
+          "customWidth": "33",
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "storage"
+            },
+            {
+              "parameterName": "drive",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "iotime",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_receive_bytes_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| where vmiNode in ({Computer})\r\n| extend receiveBytes = Val\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_receive_errors_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend receiveErrors = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_receive_packets_dropped_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend receivePacketsDropped = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_receive_packets_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend receivePacketsTotal = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_transmit_bytes_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend transmitBytes = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_transmit_errors_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend transmitErrors = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_transmit_packets_dropped_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend transmitPacketsDropped = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| join kind=inner (InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name == \"kubevirt_vmi_network_transmit_packets_total\"\r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend interface = tostring(json.interface)\r\n| extend transmitPacketsTotal = Val) on TimeGenerated, Computer, Origin, AgentId, Type, _ResourceId, vmiName, vmiNamespace, vmiNode, interface\r\n| project TimeGenerated, Tags, vmiName, vmiNamespace, vmiNode, interface, receiveBytes, receiveErrors, receivePacketsDropped, receivePacketsTotal, transmitBytes, transmitErrors, transmitPacketsDropped, transmitPacketsTotal\r\n| order by Tags, TimeGenerated asc\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags, datetime(null), prev(TimeGenerated))\r\n| extend PrevReceiveBytes = prev(receiveBytes)\r\n| extend PrevReceiveErrors = prev(receiveErrors)\r\n| extend PrevReceivePacketsDropped = prev(receivePacketsDropped)\r\n| extend PrevReceivePacketsTotal = prev(receivePacketsTotal)\r\n| extend PrevTransmitBytes = prev(transmitBytes)\r\n| extend PrevTransmitErrors = prev(transmitErrors)\r\n| extend PrevTransmitPacketsDropped = prev(transmitPacketsDropped)\r\n| extend PrevTransmitPacketsTotal = prev(transmitPacketsTotal)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaReceiveBytes = iif(PrevReceiveBytes > receiveBytes, receiveBytes, (receiveBytes - PrevReceiveBytes)) \r\n| extend DeltaReceiveErrors = iif(PrevReceiveErrors > receiveErrors, receiveErrors, (receiveErrors - PrevReceiveErrors)) \r\n| extend DeltaReceivePacketsDropped = iif(PrevReceivePacketsDropped > receivePacketsDropped, receivePacketsDropped, (receivePacketsDropped - PrevReceivePacketsDropped)) \r\n| extend DeltaReceivePacketsTotal = iif(PrevReceivePacketsTotal > receivePacketsTotal, receivePacketsTotal, (receivePacketsTotal - PrevReceivePacketsTotal)) \r\n| extend DeltaTransmitBytes = iif(PrevTransmitBytes > transmitBytes, transmitBytes, (transmitBytes - PrevTransmitBytes)) \r\n| extend DeltaTransmitErrors = iif(PrevTransmitErrors > transmitErrors, transmitErrors, (transmitErrors - PrevTransmitErrors)) \r\n| extend DeltaTransmitPacketsDropped = iif(PrevTransmitPacketsDropped > transmitPacketsDropped, transmitPacketsDropped, (transmitPacketsDropped - PrevTransmitPacketsDropped)) \r\n| extend DeltaTransmitPacketsTotal = iif(PrevTransmitPacketsTotal > transmitPacketsTotal, transmitPacketsTotal, (transmitPacketsTotal - PrevTransmitPacketsTotal)) \r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| summarize ReceiveBytes = sum(DeltaReceiveBytes), ReceiveErrors = sum(DeltaReceiveErrors), ReceivePacketsDropped = sum(DeltaReceivePacketsDropped), ReceivePacketsTotal = sum(DeltaReceivePacketsTotal), TransmitBytes = sum(DeltaTransmitBytes), TransmitErrors = sum(DeltaTransmitErrors), TransmitPacketsDropped = sum(DeltaTransmitPacketsDropped), TransmitPacketsTotal = sum(DeltaTransmitPacketsTotal) by vmiNode, vmiName, vmiNamespace, interface\r\n",
+            "size": 1,
+            "title": "Network Interfaces",
+            "timeContextFromParameter": "Timeframe",
+            "exportParameterName": "interface",
+            "exportDefaultValue": "all",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "table",
+            "showExpandCollapseGrid": true,
+            "gridSettings": {
+              "formatters": [
+                {
+                  "columnMatch": "ReceiveBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                {
+                  "columnMatch": "TransmitBytes",
+                  "formatter": 0,
+                  "numberFormat": {
+                    "unit": 2,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                }
+              ],
+              "filter": true,
+              "hierarchySettings": {
+                "treeType": 1,
+                "groupBy": ["vmiNamespace", "vmiName"],
+                "finalBy": "interface"
+              },
+              "sortBy": [
+                {
+                  "itemKey": "vmiName",
+                  "sortOrder": 1
+                }
+              ],
+              "labelSettings": [
+                {
+                  "columnId": "vmiNode",
+                  "label": "Node"
+                },
+                {
+                  "columnId": "vmiName",
+                  "label": "VMI Name"
+                },
+                {
+                  "columnId": "vmiNamespace",
+                  "label": "Namespace"
+                },
+                {
+                  "columnId": "interface",
+                  "label": "Interface"
+                },
+                {
+                  "columnId": "ReceiveBytes",
+                  "label": "Receive Bytes",
+                  "comment": "Network traffic receive in bytes"
+                },
+                {
+                  "columnId": "ReceiveErrors",
+                  "label": "Receive Errors",
+                  "comment": "Network receive error packets"
+                },
+                {
+                  "columnId": "ReceivePacketsDropped",
+                  "label": "Receive Packets Dropped",
+                  "comment": "The number of rx packets dropped on vNIC interfaces"
+                },
+                {
+                  "columnId": "ReceivePacketsTotal",
+                  "label": "Receive Packets Total",
+                  "comment": "Network traffic receive packets"
+                },
+                {
+                  "columnId": "TransmitBytes",
+                  "label": "Transmit Bytes",
+                  "comment": "Network traffic transmit in bytes"
+                },
+                {
+                  "columnId": "TransmitErrors",
+                  "label": "Transmit Errors",
+                  "comment": "Network transmit error packets"
+                },
+                {
+                  "columnId": "TransmitPacketsDropped",
+                  "label": "Transmit Packets Dropped",
+                  "comment": "The number of tx packets dropped on vNIC interfaces"
+                },
+                {
+                  "columnId": "TransmitPacketsTotal",
+                  "label": "Transmit Packets Total",
+                  "comment": "Network traffic transmit packets"
+                }
+              ]
+            },
+            "sortBy": [
+              {
+                "itemKey": "vmiName",
+                "sortOrder": 1
+              }
+            ]
+          },
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "network"
+            },
+            {
+              "parameterName": "Computer",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "network",
+          "styleSettings": {
+            "margin": "15",
+            "padding": "10",
+            "showBorder": true
+          }
+        },
+        {
+          "type": 3,
+          "content": {
+            "version": "KqlItem/1.0",
+            "query": "InsightsMetrics\r\n| where Namespace == \"prometheus\" and Name in (\"kubevirt_vmi_network_receive_bytes_total\", \"kubevirt_vmi_network_transmit_bytes_total\")\r\n| sort by Name, Tags, TimeGenerated asc \r\n| extend json = parse_json(Tags)\r\n| extend vmiName = tostring(json.name)\r\n| extend vmiNamespace = tostring(json.namespace)\r\n| extend vmiNode = tostring(json.node)\r\n| extend vmi = strcat(vmiNamespace, '/', vmiName)\r\n| where vmiNode in ({Computer})\r\n| extend interface = tostring(json.interface)\r\n| extend row = parse_json('{interface}')\r\n| where tostring(row) == 'all' or (vmiName == row.vmiName and vmiNamespace == row.vmiNamespace and interface == row.interface)\r\n| extend type = strcat(vmiName, \" - \", interface, \" - \", iff(Name == 'kubevirt_vmi_network_receive_bytes_total', 'rx', 'tx'))\r\n| extend PrevTimeGenerated = iif(prev(Tags) != Tags or prev(Name) != Name, datetime(null), prev(TimeGenerated))\r\n| extend PrevVal = prev(Val)\r\n| where isnotnull(PrevTimeGenerated)\r\n| extend DeltaVal = iif(PrevVal > Val, Val, (Val - PrevVal)) \r\n| extend DeltaTime = datetime_diff('Second', TimeGenerated, PrevTimeGenerated)\r\n| extend nettraffic = DeltaVal / DeltaTime",
+            "size": 0,
+            "aggregation": 3,
+            "title": "Network Traffic",
+            "timeContextFromParameter": "Timeframe",
+            "queryType": 0,
+            "resourceType": "microsoft.kubernetes/connectedclusters",
+            "crossComponentResources": ["{Resource}"],
+            "visualization": "timechart",
+            "chartSettings": {
+              "yAxis": ["nettraffic"],
+              "group": "type",
+              "createOtherGroup": null,
+              "ySettings": {
+                "numberFormatSettings": {
+                  "unit": 11,
+                  "options": {
+                    "style": "decimal",
+                    "useGrouping": true
+                  }
+                }
+              }
+            }
+          },
+          "conditionalVisibilities": [
+            {
+              "parameterName": "setTab",
+              "comparison": "isEqualTo",
+              "value": "network"
+            },
+            {
+              "parameterName": "interface",
+              "comparison": "isNotEqualTo"
+            }
+          ],
+          "name": "nettraffic",
+          "styleSettings": {
+            "showBorder": true
+          }
+        },
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": [
+              {
+                "type": 9,
+                "content": {
+                  "version": "KqlParameterItem/1.0",
+                  "parameters": [
+                    {
+                      "id": "1d9aca7f-8515-44d2-8416-7892105135c0",
+                      "version": "KqlParameterItem/1.0",
+                      "name": "Application",
+                      "type": 2,
+                      "value": "coredns",
+                      "isHiddenWhenLocked": true,
+                      "typeSettings": {
+                        "additionalResourceOptions": [],
+                        "showDefault": false
+                      },
+                      "jsonData": "[[[\"kubevirt\", \"coredns\", \"pure\", \"virt\"]",
+                      "timeContext": {
+                        "durationMs": 86400000
+                      }
+                    }
+                  ],
+                  "style": "pills",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                "name": "parameters - 10"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Name, Namespace\r\n| summarize dcount(Name) by Computer",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Count of Pod running in each Node",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "tiles",
+                  "tileSettings": {
+                    "titleContent": {
+                      "columnMatch": "Computer",
+                      "formatter": 1
+                    },
+                    "leftContent": {
+                      "columnMatch": "dcount_Name",
+                      "formatter": 12,
+                      "formatOptions": {
+                        "palette": "auto"
+                      },
+                      "numberFormat": {
+                        "unit": 17,
+                        "options": {
+                          "style": "decimal",
+                          "maximumFractionDigits": 2,
+                          "maximumSignificantDigits": 3
+                        }
+                      }
+                    },
+                    "showBorder": false
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Name, Namespace, ContainerID\r\n| summarize dcount(ContainerID) by Computer",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Count of Container running in each Node",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "tiles",
+                  "tileSettings": {
+                    "titleContent": {
+                      "columnMatch": "Computer",
+                      "formatter": 1
+                    },
+                    "leftContent": {
+                      "columnMatch": "dcount_ContainerID",
+                      "formatter": 12,
+                      "formatOptions": {
+                        "palette": "auto"
+                      },
+                      "numberFormat": {
+                        "unit": 17,
+                        "options": {
+                          "style": "decimal",
+                          "maximumFractionDigits": 2,
+                          "maximumSignificantDigits": 3
+                        }
+                      }
+                    },
+                    "showBorder": false
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, PodStatus\r\n| summarize count() by PodStatus",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Pod Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "piechart"
+                },
+                "customWidth": "20",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, PodStatus",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Pod Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "table",
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "_ResourceId",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "PodStatus",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Running",
+                              "representation": "Available",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Terminating",
+                              "representation": "disabled",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Pending",
+                              "representation": "pending",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| project TimeGenerated, Computer, Namespace, Name, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName\r\n| summarize sum(PodRestartCount) by bin(TimeGenerated,30m), Name",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Pod Restarts over Time",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "timechart"
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, ContainerStatus, ContainerID\r\n| summarize count() by ContainerStatus",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Container Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "piechart"
+                },
+                "customWidth": "20",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, ContainerStatus, ContainerID",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Container Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "table",
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "_ResourceId",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "ContainerStatus",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "running",
+                              "representation": "success",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "thresholdValue": "waiting",
+                              "representation": "pending",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| project TimeGenerated, Computer, Namespace, Name, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName\r\n| summarize sum(ContainerRestartCount) by bin(TimeGenerated,30m), ContainerName",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Container details",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "timechart"
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 1,
+                "content": {
+                  "json": "## 💡 _Click on a Pod to see more details about the Container's listed, logs, events and more information._ "
+                },
+                "name": "text - 14"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Name, Namespace, ContainerName\r\n| extend PodName = Name\r\n| project-away Name\r\n| project-reorder Computer, PodName, Namespace, ContainerName",
+                  "size": 0,
+                  "title": "List Node, Pod, Containers",
+                  "timeContextFromParameter": "Timeframe",
+                  "exportParameterName": "row",
+                  "exportDefaultValue": "{}",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"]
+                },
+                "customWidth": "50",
+                "name": "query - 15",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\", \"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n//| where TimeGenerated >= ago(startDateTime)\r\n| where Namespace in('default', 'kube-system', 'nc-system') // and ControllerKind == 'ReplicaSet' // the system namespace filter goes here\r\n| distinct\r\n    ClusterName,\r\n    Computer,\r\n    PodUid,\r\n    TimeGenerated,\r\n    PodStatus,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    ContainerStatus,\r\n    Name,\r\n    ControllerKind\r\n| summarize\r\n    arg_max(TimeGenerated, *),\r\n    TotalPODCount = count(),\r\n    podCount = sumif(1, PodStatus == 'Running' or PodStatus != 'Running'),\r\n    containerNotrunning = sumif(1, ContainerStatus != 'running')\r\n    by\r\n    ClusterName,\r\n    TimeGenerated,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    Name,\r\n    ControllerKind\r\n| project\r\n    ClusterName,\r\n    ServiceName,\r\n    podCount,\r\n    containerNotrunning,\r\n    containerNotrunningPercent = (containerNotrunning * 100 / podCount),\r\n    TimeGenerated,\r\n    PodStatus,\r\n    PodLabel,\r\n    Namespace,\r\n    Environment = tostring(split(ClusterName, '-')[3]),\r\n    Location = tostring(split(ClusterName, '-')[4]),\r\n    ContainerStatus,\r\n    ControllerKind,\r\n    Name,\r\n    Computer\r\n//Uncomment the below line to set for automated alert\r\n| where PodStatus == \"Running\" //and containerNotrunningPercent > _minalertThreshold and containerNotrunningPercent < _maxalertThreshold\r\n| summarize arg_max(TimeGenerated, *), c_entry=count() by PodLabel, ServiceName, ClusterName, ControllerKind, Name, Computer\r\n//Below lines are to parse the labels to identify the impacted service/component name\r\n| extend parseLabel = replace(@'k8s-app', @'k8sapp', PodLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/component', @'appkubernetesiocomponent', parseLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/instance', @'appkubernetesioinstance', parseLabel)\r\n| extend tags = todynamic(parseLabel)\r\n| extend tag01 = todynamic(tags[0].app)\r\n| extend tag02 = todynamic(tags[0].k8sapp)\r\n| extend tag03 = todynamic(tags[0].appkubernetesiocomponent)\r\n| extend tag04 = todynamic(tags[0].aadpodidbinding)\r\n| extend tag05 = todynamic(tags[0].appkubernetesioinstance)\r\n| extend tag06 = todynamic(tags[0].component)\r\n| extend ContainerRunning = 100 - containerNotrunningPercent\r\n| project ClusterName, TimeGenerated, ControllerKind, Name, Computer,\r\n    ServiceName = strcat(ServiceName, tag01, tag02, tag03, tag04, tag05, tag06),\r\n    ContainerUnavailable = strcat(\"Unavailable Percentage: \", containerNotrunningPercent),\r\n    ContainerRunning,\r\n    containerNotrunningPercent,\r\n    PodStatus = PodStatus, \r\n    ContainerStatus = ContainerStatus",
+                  "size": 0,
+                  "title": "Pod/Container Availability",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "ClusterName",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "TimeGenerated",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "ContainerRunning",
+                        "formatter": 22,
+                        "formatOptions": {
+                          "compositeBarSettings": {
+                            "labelText": "",
+                            "columnSettings": [
+                              {
+                                "columnName": "ContainerRunning",
+                                "color": "blue"
+                              },
+                              {
+                                "columnName": "containerNotrunningPercent",
+                                "color": "red"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "columnMatch": "containerNotrunningPercent",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "PodStatus",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Running",
+                              "representation": "success",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Terminating",
+                              "representation": "disabled",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "columnMatch": "containerrunningPercent",
+                        "formatter": 22,
+                        "formatOptions": {
+                          "compositeBarSettings": {
+                            "labelText": "",
+                            "columnSettings": [
+                              {
+                                "columnName": "containerrunningPercent",
+                                "color": "blue"
+                              },
+                              {
+                                "columnName": "containerNotrunningPercent",
+                                "color": "red"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 11",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| top-nested of PodUid by max(1), top-nested 1 of TimeGenerated by max(TimeGenerated), top-nested of Computer by max(1), top-nested of Namespace by max(1), top-nested of Name by max(1), top-nested of PodCreationTimeStamp by max(1), top-nested of PodRestartCount by max(1), top-nested of PodStartTime by max(1), top-nested of PodStatus by max(1), top-nested of PodIp by max(1), top-nested of ServiceName by max(1), top-nested of ControllerKind by max(1), top-nested of ControllerName by max(1)\r\n| extend  PodName = Name\r\n| project TimeGenerated, Computer, Namespace, PodName, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName\r\n//| project TimeGenerated, Computer, Namespace, PodName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName",
+                  "size": 0,
+                  "title": "Pod details",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "Computer",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "Name",
+                        "formatter": 5
+                      }
+                    ],
+                    "hierarchySettings": {
+                      "treeType": 1,
+                      "groupBy": ["Computer"],
+                      "expandTopLevel": true
+                    }
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| top-nested of ContainerID by max(1), top-nested 1 of TimeGenerated by max(TimeGenerated), top-nested of Computer by max(1), top-nested of Namespace by max(1), top-nested of Name by max(1), top-nested of ContainerLastStatus by max(1), top-nested of ContainerName by max(1), top-nested of ContainerRestartCount by max(1), top-nested of ContainerStartTime by max(1), top-nested of ContainerStatus by max(1), top-nested of ContainerStatusReason by max(1), top-nested of ControllerKind by max(1), top-nested of ControllerName by max(1)\r\n| extend  PodName = Name\r\n| project TimeGenerated, Computer, Namespace, PodName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName\r\n//| project TimeGenerated, Computer, Namespace, Name, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName",
+                  "size": 0,
+                  "title": "Container details",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "Computer",
+                        "formatter": 5
+                      }
+                    ],
+                    "hierarchySettings": {
+                      "treeType": 1,
+                      "groupBy": ["Computer"],
+                      "expandTopLevel": true
+                    }
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| project TimeGenerated, Computer, Namespace, Name, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, _ResourceId\r\n| join KubeEvents on Computer, Name, _ResourceId, TimeGenerated\r\n| project TimeGenerated, Computer, Name, Reason, Message, KubeEventType, SourceComponent\r\n| extend PodName = Name\r\n\r\n\r\n",
+                  "size": 0,
+                  "title": "KubeEvents for the Pods",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "table",
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "Name",
+                        "formatter": 5
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| project TimeGenerated, Computer, Namespace, Name, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, _ResourceId\r\n| join ContainerLog on Computer, ContainerID, _ResourceId\r\n| project-away TimeGenerated\r\n| project TimeGenerated1, ContainerID, TimeOfCommand, Image, LogEntry, LogEntrySource\r\n| project-rename TimeGenerated = TimeGenerated1\r\n",
+                  "size": 0,
+                  "title": "Container Log",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"]
+                },
+                "customWidth": "50",
+                "name": "query - 13",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              }
+            ]
+          },
+          "conditionalVisibility": {
+            "parameterName": "setTab",
+            "comparison": "isEqualTo",
+            "value": "Log"
+          },
+          "name": "group - 6"
+        },
+        {
+          "type": 12,
+          "content": {
+            "version": "NotebookGroup/1.0",
+            "groupType": "editable",
+            "items": [
+              {
+                "type": 9,
+                "content": {
+                  "version": "KqlParameterItem/1.0",
+                  "parameters": [
+                    {
+                      "id": "1d9aca7f-8515-44d2-8416-7892105135c0",
+                      "version": "KqlParameterItem/1.0",
+                      "name": "Application",
+                      "type": 2,
+                      "value": "virt",
+                      "isHiddenWhenLocked": true,
+                      "typeSettings": {
+                        "additionalResourceOptions": [],
+                        "showDefault": false
+                      },
+                      "jsonData": "[[\"kubevirt\", \"coredns\", \"pure\", \"virt\"]",
+                      "timeContext": {
+                        "durationMs": 86400000
+                      }
+                    }
+                  ],
+                  "style": "pills",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces"
+                },
+                "name": "parameters - 10"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Name, Namespace\r\n| summarize dcount(Name) by Computer",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Count of Pod running in each Node",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "tiles",
+                  "tileSettings": {
+                    "titleContent": {
+                      "columnMatch": "Computer",
+                      "formatter": 1
+                    },
+                    "leftContent": {
+                      "columnMatch": "dcount_Name",
+                      "formatter": 12,
+                      "formatOptions": {
+                        "palette": "auto"
+                      },
+                      "numberFormat": {
+                        "unit": 17,
+                        "options": {
+                          "style": "decimal",
+                          "maximumFractionDigits": 2,
+                          "maximumSignificantDigits": 3
+                        }
+                      }
+                    },
+                    "showBorder": false
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Name, Namespace, ContainerID\r\n| summarize dcount(ContainerID) by Computer",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Count of Container running in each Node",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "tiles",
+                  "tileSettings": {
+                    "titleContent": {
+                      "columnMatch": "Computer",
+                      "formatter": 1
+                    },
+                    "leftContent": {
+                      "columnMatch": "dcount_ContainerID",
+                      "formatter": 12,
+                      "formatOptions": {
+                        "palette": "auto"
+                      },
+                      "numberFormat": {
+                        "unit": 17,
+                        "options": {
+                          "style": "decimal",
+                          "maximumFractionDigits": 2,
+                          "maximumSignificantDigits": 3
+                        }
+                      }
+                    },
+                    "showBorder": false
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, PodStatus\r\n| summarize count() by PodStatus",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Pod Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "piechart"
+                },
+                "customWidth": "20",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, PodStatus",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Pod Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "table",
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "_ResourceId",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "PodStatus",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Running",
+                              "representation": "Available",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Terminating",
+                              "representation": "disabled",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Pending",
+                              "representation": "pending",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| project TimeGenerated, Computer, Namespace, Name, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName\r\n| summarize sum(PodRestartCount) by bin(TimeGenerated,30m), Name",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Pod Restarts over Time",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "timechart"
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, ContainerStatus, ContainerID\r\n| summarize count() by ContainerStatus",
+                  "size": 3,
+                  "aggregation": 3,
+                  "title": "Container Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "piechart"
+                },
+                "customWidth": "20",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Namespace, Name, _ResourceId, ContainerStatus, ContainerID",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Container Status",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "table",
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "_ResourceId",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "ContainerStatus",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "running",
+                              "representation": "success",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "thresholdValue": "waiting",
+                              "representation": "pending",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| project TimeGenerated, Computer, Namespace, Name, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName\r\n| summarize sum(ContainerRestartCount) by bin(TimeGenerated,30m), ContainerName",
+                  "size": 0,
+                  "aggregation": 3,
+                  "title": "Container details",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "timechart"
+                },
+                "customWidth": "40",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 1,
+                "content": {
+                  "json": "## 💡 _Click on a Pod to see more details about the Container's listed, logs, events and more information._ "
+                },
+                "name": "text - 14"
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "KubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| distinct Computer, Name, Namespace, ContainerName\r\n| extend PodName = Name\r\n| project-away Name\r\n| project-reorder Computer, PodName, Namespace, ContainerName",
+                  "size": 0,
+                  "title": "List Node, Pod, Containers",
+                  "timeContextFromParameter": "Timeframe",
+                  "exportParameterName": "row",
+                  "exportDefaultValue": "{}",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"]
+                },
+                "customWidth": "50",
+                "name": "query - 15",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\", \"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n//| where TimeGenerated >= ago(startDateTime)\r\n| where Namespace in('default', 'kube-system', 'nc-system') // and ControllerKind == 'ReplicaSet' // the system namespace filter goes here\r\n| distinct\r\n    ClusterName,\r\n    Computer,\r\n    PodUid,\r\n    TimeGenerated,\r\n    PodStatus,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    ContainerStatus,\r\n    Name,\r\n    ControllerKind\r\n| summarize\r\n    arg_max(TimeGenerated, *),\r\n    TotalPODCount = count(),\r\n    podCount = sumif(1, PodStatus == 'Running' or PodStatus != 'Running'),\r\n    containerNotrunning = sumif(1, ContainerStatus != 'running')\r\n    by\r\n    ClusterName,\r\n    TimeGenerated,\r\n    ServiceName,\r\n    PodLabel,\r\n    Namespace,\r\n    Name,\r\n    ControllerKind\r\n| project\r\n    ClusterName,\r\n    ServiceName,\r\n    podCount,\r\n    containerNotrunning,\r\n    containerNotrunningPercent = (containerNotrunning * 100 / podCount),\r\n    TimeGenerated,\r\n    PodStatus,\r\n    PodLabel,\r\n    Namespace,\r\n    Environment = tostring(split(ClusterName, '-')[3]),\r\n    Location = tostring(split(ClusterName, '-')[4]),\r\n    ContainerStatus,\r\n    ControllerKind,\r\n    Name,\r\n    Computer\r\n//Uncomment the below line to set for automated alert\r\n| where PodStatus == \"Running\" //and containerNotrunningPercent > _minalertThreshold and containerNotrunningPercent < _maxalertThreshold\r\n| summarize arg_max(TimeGenerated, *), c_entry=count() by PodLabel, ServiceName, ClusterName, ControllerKind, Name, Computer\r\n//Below lines are to parse the labels to identify the impacted service/component name\r\n| extend parseLabel = replace(@'k8s-app', @'k8sapp', PodLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/component', @'appkubernetesiocomponent', parseLabel)\r\n| extend parseLabel = replace(@'app.kubernetes.io/instance', @'appkubernetesioinstance', parseLabel)\r\n| extend tags = todynamic(parseLabel)\r\n| extend tag01 = todynamic(tags[0].app)\r\n| extend tag02 = todynamic(tags[0].k8sapp)\r\n| extend tag03 = todynamic(tags[0].appkubernetesiocomponent)\r\n| extend tag04 = todynamic(tags[0].aadpodidbinding)\r\n| extend tag05 = todynamic(tags[0].appkubernetesioinstance)\r\n| extend tag06 = todynamic(tags[0].component)\r\n| extend ContainerRunning = 100 - containerNotrunningPercent\r\n| project ClusterName, TimeGenerated, ControllerKind, Name, Computer,\r\n    ServiceName = strcat(ServiceName, tag01, tag02, tag03, tag04, tag05, tag06),\r\n    ContainerUnavailable = strcat(\"Unavailable Percentage: \", containerNotrunningPercent),\r\n    ContainerRunning,\r\n    containerNotrunningPercent,\r\n    PodStatus = PodStatus, \r\n    ContainerStatus = ContainerStatus",
+                  "size": 0,
+                  "title": "Pod/Container Availability",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "ClusterName",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "TimeGenerated",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "ContainerRunning",
+                        "formatter": 22,
+                        "formatOptions": {
+                          "compositeBarSettings": {
+                            "labelText": "",
+                            "columnSettings": [
+                              {
+                                "columnName": "ContainerRunning",
+                                "color": "blue"
+                              },
+                              {
+                                "columnName": "containerNotrunningPercent",
+                                "color": "red"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "columnMatch": "containerNotrunningPercent",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "PodStatus",
+                        "formatter": 18,
+                        "formatOptions": {
+                          "thresholdsOptions": "icons",
+                          "thresholdsGrid": [
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Running",
+                              "representation": "success",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "==",
+                              "thresholdValue": "Terminating",
+                              "representation": "disabled",
+                              "text": "{0}{1}"
+                            },
+                            {
+                              "operator": "Default",
+                              "thresholdValue": null,
+                              "representation": "more",
+                              "text": "{0}{1}"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "columnMatch": "containerrunningPercent",
+                        "formatter": 22,
+                        "formatOptions": {
+                          "compositeBarSettings": {
+                            "labelText": "",
+                            "columnSettings": [
+                              {
+                                "columnName": "containerrunningPercent",
+                                "color": "blue"
+                              },
+                              {
+                                "columnName": "containerNotrunningPercent",
+                                "color": "red"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 11",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| top-nested of PodUid by max(1), top-nested 1 of TimeGenerated by max(TimeGenerated), top-nested of Computer by max(1), top-nested of Namespace by max(1), top-nested of Name by max(1), top-nested of PodCreationTimeStamp by max(1), top-nested of PodRestartCount by max(1), top-nested of PodStartTime by max(1), top-nested of PodStatus by max(1), top-nested of PodIp by max(1), top-nested of ServiceName by max(1), top-nested of ControllerKind by max(1), top-nested of ControllerName by max(1)\r\n| extend  PodName = Name\r\n| project TimeGenerated, Computer, Namespace, PodName, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName\r\n//| project TimeGenerated, Computer, Namespace, PodName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName",
+                  "size": 0,
+                  "title": "Pod details",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "Computer",
+                        "formatter": 5
+                      },
+                      {
+                        "columnMatch": "Name",
+                        "formatter": 5
+                      }
+                    ],
+                    "hierarchySettings": {
+                      "treeType": 1,
+                      "groupBy": ["Computer"],
+                      "expandTopLevel": true
+                    }
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| top-nested of ContainerID by max(1), top-nested 1 of TimeGenerated by max(TimeGenerated), top-nested of Computer by max(1), top-nested of Namespace by max(1), top-nested of Name by max(1), top-nested of ContainerLastStatus by max(1), top-nested of ContainerName by max(1), top-nested of ContainerRestartCount by max(1), top-nested of ContainerStartTime by max(1), top-nested of ContainerStatus by max(1), top-nested of ContainerStatusReason by max(1), top-nested of ControllerKind by max(1), top-nested of ControllerName by max(1)\r\n| extend  PodName = Name\r\n| project TimeGenerated, Computer, Namespace, PodName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName\r\n//| project TimeGenerated, Computer, Namespace, Name, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, ControllerKind, ControllerName",
+                  "size": 0,
+                  "title": "Container details",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "Computer",
+                        "formatter": 5
+                      }
+                    ],
+                    "hierarchySettings": {
+                      "treeType": 1,
+                      "groupBy": ["Computer"],
+                      "expandTopLevel": true
+                    }
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| project TimeGenerated, Computer, Namespace, Name, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, _ResourceId\r\n| join KubeEvents on Computer, Name, _ResourceId, TimeGenerated\r\n| project TimeGenerated, Computer, Name, Reason, Message, KubeEventType, SourceComponent\r\n| extend PodName = Name\r\n\r\n\r\n",
+                  "size": 0,
+                  "title": "KubeEvents for the Pods",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"],
+                  "visualization": "table",
+                  "gridSettings": {
+                    "formatters": [
+                      {
+                        "columnMatch": "Name",
+                        "formatter": 5
+                      }
+                    ]
+                  }
+                },
+                "customWidth": "50",
+                "name": "query - 0 - Copy",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              },
+              {
+                "type": 3,
+                "content": {
+                  "version": "KqlItem/1.0",
+                  "query": "let row = dynamic({row});\r\nKubePodInventory\r\n| where Name has strcat(\"{Application}\",\"-\")\r\n| where Computer in ({Computer})\r\n| where '{row}' == '{}' or (Name == row.PodName)\r\n| project TimeGenerated, Computer, Namespace, Name, PodUid, PodCreationTimeStamp, PodRestartCount, PodStartTime, PodStatus, PodIp, ServiceName, ControllerKind, ControllerName, ContainerID, ContainerLastStatus, ContainerName, ContainerRestartCount, ContainerStartTime, ContainerStatus, ContainerStatusReason, _ResourceId\r\n| join ContainerLog on Computer, ContainerID, _ResourceId\r\n| project-away TimeGenerated\r\n| project TimeGenerated1, ContainerID, TimeOfCommand, Image, LogEntry, LogEntrySource\r\n| project-rename TimeGenerated = TimeGenerated1\r\n",
+                  "size": 0,
+                  "title": "Container Log",
+                  "timeContextFromParameter": "Timeframe",
+                  "queryType": 0,
+                  "resourceType": "microsoft.kubernetes/connectedclusters",
+                  "crossComponentResources": ["{Resource}"]
+                },
+                "customWidth": "50",
+                "name": "query - 13",
+                "styleSettings": {
+                  "showBorder": true
+                }
+              }
+            ]
+          },
+          "conditionalVisibility": {
+            "parameterName": "setTab",
+            "comparison": "isEqualTo",
+            "value": "overview"
+          },
+          "name": "group - 6"
+        }
+      ],
+      "isLocked": false,
+      "fallbackResourceIds": ["[parameters('workbookSourceId')]"]
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('workbookId')]",
+      "type": "microsoft.insights/workbooks",
+      "location": "[parameters('workbookLocation')]",
+      "apiVersion": "2021-03-08",
+      "dependsOn": [],
+      "kind": "shared",
+      "properties": {
+        "displayName": "[parameters('workbookDisplayName')]",
+        "serializedData": "[string(variables('workbookContent'))]",
+        "version": "1.0",
+        "sourceId": "[parameters('workbookSourceId')]",
+        "category": "[parameters('workbookType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "workbookId": {
+      "type": "string",
+      "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]"
+    }
+  },
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Network transmit errors high"
+    },
+    "alertDescription": {
+      "value": ""
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "query": {
+      "value": "InsightsMetrics | invoke pquery_counter('node_network_transmit_errs_total') | extend hostname = tostring(Labels.hostName) | extend device = tostring(Labels.device) | where device !in ('lo') | summarize ErrorRate = sum(DeltaVal) / sum(DeltaTimeSeconds) by Computer, Origin, AgentId, SourceSystem, Type, _ResourceId, hostname, device"
+    },
+    "metricMeasureColumn": {
+      "value": "ErrorRate"
+    },
+    "resourceIdColumn": {
+      "value": "_ResourceId"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": "3000"
+    },
+    "timeAggregation": {
+      "value": "Total"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "hostname",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}
