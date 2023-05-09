@@ -12,5 +12,3 @@ dependencies
 | make-series 
 Requests = count() default = 0 on timestamp in range(_fromStartTime, _toEndTime, 1h) by type
 | mvexpand timestamp to typeof(datetime), Requests to typeof(long)
-
-American Airlines Group
