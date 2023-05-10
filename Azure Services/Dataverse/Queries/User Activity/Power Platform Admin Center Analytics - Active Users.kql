@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - Active Users
+// Description: Summary of Active Users for use within a Card
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: User Activity
+
+let start = startofday(_fromStartTime); //datetime
+union customEvents, pageViews
+| where timestamp >= start
+| summarize Users = dcount(user_Id), Sessions = dcount(session_Id), Views = count()
+| project Users

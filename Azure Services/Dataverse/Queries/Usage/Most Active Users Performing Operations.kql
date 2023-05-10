@@ -1,0 +1,14 @@
+// Author: aliyoussefi
+// Display name: Most Active Users
+// Description: Performing Operations List of most active users who performed an operation that caused a Create, Update, Read, or Delete SDK call in the Dynamics 365 environment over the selected time period.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Usage
+
+dependencies
+| where timestamp between (_fromStartTime .. _toEndTime)
+| where user_Id != "00000000-0000-0000-0000-000000000000"
+| where isempty(operation_SyntheticSource)
+| where type in  ("SDKCreate", "SDKUpdate", "SDKRetrieve", "SDKDelete")
+| summarize sumDimension = count() by user_Id, type
+| top 10 by sumDimension

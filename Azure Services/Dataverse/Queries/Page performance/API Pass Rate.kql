@@ -1,0 +1,11 @@
+// Author: aliyoussefi
+// Display name: API Pass Rate
+// Description: This chart shows the API pass rate as percentage of total API calls that were made in the environment with a Dataverse database over the specified time.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Performance
+
+requests
+| where timestamp between (_fromStartTime .. _toEndTime)
+| summarize CountFailed = countif(success == false), Count = count()
+| project round(100.0 * (Count - CountFailed) / Count, 2)

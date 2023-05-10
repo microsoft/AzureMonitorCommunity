@@ -1,0 +1,13 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - Active Users by Browser
+// Description: Active Users by Browser over a given time. Variables are datetime
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: User Activity
+
+let start = startofday(_fromStartTime); //Variables are datetime
+requests
+| where timestamp >= start
+| where customDimensions.userAgent != "" and user_Id != "00000000-0000-0000-0000-000000000000" and session_Id != "00000000-0000-0000-0000-000000000000"
+| where customDimensions.userAgent !has "microsoft-flow" and customDimensions.userAgent !has "Flow-RP"
+| summarize count() by tostring(customDimensions.userAgent)

@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - Top plug-ins by failures
+// Description: Top plug-ins with failures over a given amount of time. Variables are datetime
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: API
+dependencies
+| where timestamp between(_fromStartTime .. _toEndTime) //datetime
+| where type == "Plugin"
+| extend cd = parse_json(customDimensions)
+| summarize PerceivedErrors = countif(success=="False") by name
+| top 10 by name

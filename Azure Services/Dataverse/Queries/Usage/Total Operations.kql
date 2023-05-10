@@ -1,0 +1,13 @@
+// Author: aliyoussefi
+// Display name: Total Operations
+// Description: This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Usage
+
+dependencies
+| where timestamp between (_fromStartTime .. _toEndTime)
+| where type in  ("SDKCreate", "SDKUpdate", "SDKRetrieve", "SDKDelete")
+| make-series 
+Requests = count() default = 0 on timestamp in range(_fromStartTime, _toEndTime, 1h) by type
+| mvexpand timestamp to typeof(datetime), Requests to typeof(long)

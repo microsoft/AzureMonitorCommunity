@@ -1,0 +1,21 @@
+// Author: aliyoussefi
+// Display name: Timechart of CRUD Operations over last 24 hours
+// Description: Summary of Dataverse CRUD operations by SDK Message over the last 24 hours. Results can be drilled down by user_Id which is Azure AD Object Id.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Dependency Diagnostics
+
+//Operations view (CRUD) - All operations by all users by duration
+let crudTable = dependencies
+| where timestamp between (ago(1d) .. now())
+| where type in ("SDKCreate", "SDKUpdate", "SDKRetrieve","SDKRetrieveMultiple", "SDKDelete");
+//| where user_Id != "00000000-0000-0000-0000-000000000000";
+let splitTable = () {
+    crudTable
+    | extend dimension = column_ifexists('user_Id', '')
+    | extend dimension = iif(isempty(dimension), "<undefined>", dimension)
+};
+let cohortedTable = splitTable
+    | summarize events_Counts = count() by bin(timestamp, 1h), type, dimension;
+cohortedTable
+| render timechart

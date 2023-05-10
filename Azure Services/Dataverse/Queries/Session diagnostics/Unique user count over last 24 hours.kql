@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Unique user count over last 24 hours drilled down by hour
+// Description: Summary ofy Users over last 24 hour drilled down by hour. Returns timestamp and user count.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Session Diagnostics
+
+// Unique user count over last 24 hours drilled down by hour
+requests
+| where timestamp > ago(1d)
+| summarize UniqueUsers = dcount(user_Id) by bin(timestamp, 1h)
+| render timechart 

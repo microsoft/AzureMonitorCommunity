@@ -1,0 +1,13 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center - Total Operations by Entity
+// Description: This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database grouped by table over the specified time.
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Usage
+dependencies
+| where timestamp between (_fromStartTime .. _toEndTime)
+| where user_Id != "00000000-0000-0000-0000-000000000000"
+| where isempty(operation_SyntheticSource)
+| where type in  ("SDKCreate", "SDKUpdate", "SDKRetrieve", "SDKDelete")
+| summarize sumDimension = count() by name, type
+| top 10 by sumDimension

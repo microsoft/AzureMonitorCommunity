@@ -1,0 +1,1240 @@
+{
+    "$schema": "https://dataexplorer.azure.com/static/d/schema/35/dashboard.json",
+    "id": "a35222bf-7db7-412a-87b3-68778850a6b9",
+    "eTag": "Z4NRMwm/l0MfyW0029QGig==",
+    "schema_version": "35",
+    "title": "Dataverse Analytics-PfeStaffing",
+    "autoRefresh": {
+        "defaultInterval": "30s",
+        "enabled": true,
+        "minInterval": "30s"
+    },
+    "sharedQueries": [],
+    "tiles": [
+        {
+            "id": "c937d2e1-b3c1-43bf-9a8b-767bd6a3daf3",
+            "title": "Top plug-ins by failures",
+            "layout": {
+                "x": 0,
+                "y": 17,
+                "width": 24,
+                "height": 6
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "bar",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "dependencies\n| where timestamp between(_fromStartTime .. _toEndTime)\n| where type == \"Plugin\"\n| extend cd = parse_json(customDimensions)\n| summarize PerceivedErrors = countif(success==\"False\") by name\n| top 10 by name"
+            },
+            "visualOptions": {
+                "hideLegend": false,
+                "yAxisMinimumValue": {
+                    "type": "infer"
+                },
+                "yAxisMaximumValue": {
+                    "type": "infer"
+                },
+                "xColumn": {
+                    "type": "infer"
+                },
+                "xColumnTitle": "",
+                "yColumns": {
+                    "type": "infer"
+                },
+                "yColumnTitle": "",
+                "yAxisRight": false,
+                "hideTileTitle": false,
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "columns": [],
+                        "label": "",
+                        "yAxisMinimumValue": null,
+                        "yAxisMaximumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "b1a7fa82-3874-4a67-b1d0-76db20ed93fb",
+            "title": "Total Operations",
+            "layout": {
+                "x": 0,
+                "y": 7,
+                "width": 24,
+                "height": 5
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "line",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "//Total Operations This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time.\ndependencies\n| where timestamp between (_fromStartTime .. _toEndTime)\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n    | where user_Id != \"00000000-0000-0000-0000-000000000000\"\n    | where isempty(operation_SyntheticSource)\n| make-series \nRequests = count() default = 0 on timestamp in range(_fromStartTime, _toEndTime, 1h) by type\n| mvexpand timestamp to typeof(datetime), Requests to typeof(long)"
+            },
+            "visualOptions": {
+                "hideLegend": false,
+                "yAxisMinimumValue": {
+                    "type": "infer"
+                },
+                "yAxisMaximumValue": {
+                    "type": "infer"
+                },
+                "xColumn": {
+                    "type": "specified",
+                    "value": "timestamp"
+                },
+                "xColumnTitle": "",
+                "yColumns": {
+                    "type": "infer"
+                },
+                "yColumnTitle": "",
+                "yAxisRight": false,
+                "hideTileTitle": false,
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "columns": [],
+                        "label": "",
+                        "yAxisMinimumValue": null,
+                        "yAxisMaximumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "d88580b1-a9b1-4c2c-bbfb-ab4a29547efa",
+            "title": "Most active users performing operations",
+            "layout": {
+                "x": 0,
+                "y": 12,
+                "width": 24,
+                "height": 5
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "stackedbar",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "//Total Operations This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time.\ndependencies\n| where timestamp between (_fromStartTime .. _toEndTime)\n| where user_Id != \"00000000-0000-0000-0000-000000000000\"\n| where isempty(operation_SyntheticSource)\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n| summarize sumDimension = count() by user_Id, type\n| top 10 by sumDimension"
+            },
+            "visualOptions": {
+                "hideLegend": false,
+                "yAxisMinimumValue": {
+                    "type": "infer"
+                },
+                "yAxisMaximumValue": {
+                    "type": "infer"
+                },
+                "xColumn": {
+                    "type": "infer"
+                },
+                "xColumnTitle": "",
+                "yColumns": {
+                    "type": "infer"
+                },
+                "yColumnTitle": "",
+                "yAxisRight": false,
+                "hideTileTitle": false,
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "columns": [],
+                        "label": "",
+                        "yAxisMinimumValue": null,
+                        "yAxisMaximumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "74e3703b-4e8a-45b0-a46a-02d7c5079d9b",
+            "title": "Dataverse Analytics",
+            "layout": {
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 4
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "markdownCard",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": "Active Users\tNumber of active users (unique users) who performed an operation that caused one of these SDK calls:\nRetrieve, Retrieve Multiple, Delete, Create, and Update.\n\nAPI Calls\tNumber of API calls that were made by the environment with a Dataverse database for the selected time period.\n\nAPI Pass Rate\tThis chart shows the API pass rate as percentage of total API calls that were made in the environment with a Dataverse database over the specified time.\n\nExecutions\tThis chart shows how many plug-ins have been executed in the environment with a Dataverse database over the specified time.\n\nTotal Operations\tThis chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time.\n\nMost Active Users Performing Operations\tList of most active users who performed an operation that caused a Create, Update, Read, or Delete SDK call in the Dynamics 365 environment over the selected time period.\n\nTop Plug-ins by Failures\tThis chart shows top 10 most failing plug-in in the environment with a Dataverse database over the specified time."
+            },
+            "visualOptions": {
+                "pie__TopNSlices": null
+            }
+        },
+        {
+            "id": "289fa730-4f6f-43d2-b2ee-23b5e7a78dc7",
+            "title": "Active Users",
+            "layout": {
+                "x": 0,
+                "y": 4,
+                "width": 6,
+                "height": 3
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "card",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime"
+                ],
+                "text": "let start = startofday(_fromStartTime);\nunion customEvents, pageViews\n| where timestamp >= start\n| summarize Users = dcount(user_Id), Sessions = dcount(session_Id), Views = count()\n| project Users"
+            },
+            "visualOptions": {
+                "yAxisRight": false,
+                "multiStat__textSize": "large",
+                "multiStat__valueColumn": {
+                    "type": "infer"
+                },
+                "hideTileTitle": false,
+                "colorRulesDisabled": false,
+                "colorRules": [],
+                "pie__TopNSlices": null,
+                "colorStyle": "light"
+            }
+        },
+        {
+            "id": "5775994c-26bf-452d-9a1f-20e3239d7f55",
+            "title": "API Calls",
+            "layout": {
+                "x": 6,
+                "y": 4,
+                "width": 6,
+                "height": 3
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "card",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "requests\n| where timestamp between (_fromStartTime .. _toEndTime)\n| count"
+            },
+            "visualOptions": {
+                "yAxisRight": false,
+                "multiStat__textSize": "large",
+                "multiStat__valueColumn": {
+                    "type": "infer"
+                },
+                "hideTileTitle": false,
+                "colorRulesDisabled": false,
+                "colorRules": [],
+                "pie__TopNSlices": null,
+                "colorStyle": "light"
+            }
+        },
+        {
+            "id": "4deadda9-01b4-4604-a727-d367b837e292",
+            "title": "API Pass Rate",
+            "layout": {
+                "x": 12,
+                "y": 4,
+                "width": 6,
+                "height": 3
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "card",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "requests\n| where timestamp between (_fromStartTime .. _toEndTime)\n| summarize CountFailed = countif(success == false), Count = count()\n| project round(100.0 * (Count - CountFailed) / Count, 2)\n\n// requests\n// | where timestamp between (_fromStartTime .. _toEndTime) and success == false\n// | count"
+            },
+            "visualOptions": {
+                "yAxisRight": false,
+                "multiStat__textSize": "large",
+                "multiStat__valueColumn": {
+                    "type": "infer"
+                },
+                "hideTileTitle": false,
+                "colorRulesDisabled": false,
+                "colorRules": [
+                    {
+                        "id": "b1144a24-2c2c-478b-b30f-9ab932bfcb29",
+                        "ruleType": "colorByCondition",
+                        "ruleName": "",
+                        "applyTo": "cells",
+                        "chainingOperator": "and",
+                        "colorStyle": "light",
+                        "hideText": false,
+                        "applyToColumn": null,
+                        "color": "red",
+                        "tag": "Critical",
+                        "icon": null,
+                        "conditions": [
+                            {
+                                "column": null,
+                                "operator": "<",
+                                "values": [
+                                    "90"
+                                ]
+                            }
+                        ],
+                        "visualType": "stat"
+                    },
+                    {
+                        "id": "01e63eea-112f-4362-9070-83c98dc059b4",
+                        "ruleType": "colorByCondition",
+                        "ruleName": "",
+                        "applyTo": "cells",
+                        "chainingOperator": "and",
+                        "colorStyle": "light",
+                        "hideText": false,
+                        "applyToColumn": null,
+                        "color": "green",
+                        "tag": "Healthy",
+                        "icon": null,
+                        "conditions": [
+                            {
+                                "column": null,
+                                "operator": ">",
+                                "values": [
+                                    "90"
+                                ]
+                            }
+                        ],
+                        "visualType": "stat"
+                    }
+                ],
+                "pie__TopNSlices": null,
+                "colorStyle": "light"
+            }
+        },
+        {
+            "id": "d2228c75-3585-43f0-a25c-f53bca7885f4",
+            "title": "Executions",
+            "layout": {
+                "x": 18,
+                "y": 4,
+                "width": 6,
+                "height": 3
+            },
+            "pageId": "fb83e70b-0cc7-4784-87e6-e0f8da742765",
+            "visualType": "card",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "//This chart shows how many plug-ins have been executed in the environment with a Dataverse database over the specified time.\ndependencies\n| where timestamp between (_fromStartTime .. _toEndTime)\n| where type == \"Plugin\"\n| count"
+            },
+            "visualOptions": {
+                "yAxisRight": false,
+                "multiStat__textSize": "large",
+                "multiStat__valueColumn": {
+                    "type": "infer"
+                },
+                "hideTileTitle": false,
+                "colorRulesDisabled": false,
+                "colorRules": [],
+                "pie__TopNSlices": null,
+                "colorStyle": "light"
+            }
+        },
+        {
+            "id": "3535cf57-908f-4068-9268-67f062540d76",
+            "title": "Dataverse Analytics",
+            "layout": {
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 1
+            },
+            "pageId": "cf887c34-a9d2-497d-8d81-ef4b09117409",
+            "visualType": "markdownCard",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": ""
+            },
+            "visualOptions": {
+                "pie__TopNSlices": null
+            }
+        },
+        {
+            "id": "93931e04-b39e-4877-ab7f-5b42e90ed086",
+            "title": "Active Users by Browser",
+            "layout": {
+                "x": 0,
+                "y": 1,
+                "width": 8,
+                "height": 8
+            },
+            "pageId": "cf887c34-a9d2-497d-8d81-ef4b09117409",
+            "visualType": "pie",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime"
+                ],
+                "text": "// Author: aliyoussefi\n// Display name: Active Users\n// Description: Number of active users (unique users) who performed an operation that caused one of these SDK calls: Retrieve, Retrieve Multiple, Delete, Create, and Update.\n// Categories: Dataverse\n// Resource types: Dataverse\n// Topic: Usage\nlet start = startofday(_fromStartTime);\nrequests\n| where timestamp >= start\n| where customDimensions.userAgent != \"\" and user_Id != \"00000000-0000-0000-0000-000000000000\" and session_Id != \"00000000-0000-0000-0000-000000000000\"\n| where customDimensions.userAgent !has \"microsoft-flow\" and customDimensions.userAgent !has \"Flow-RP\"\n| summarize count() by tostring(customDimensions.userAgent)"
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "infer"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "pie__topNSlices": null,
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "22b9b624-c8b7-4e54-9329-767b2e3f95de",
+            "title": "Most Active Users Performing Operations",
+            "layout": {
+                "x": 4,
+                "y": 9,
+                "width": 16,
+                "height": 8
+            },
+            "pageId": "cf887c34-a9d2-497d-8d81-ef4b09117409",
+            "visualType": "stackedbar",
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "// Author: aliyoussefi\n// Display name: Most Active Users\n// Description: Performing Operations List of most active users who performed an operation that caused a Create, Update, Read, or Delete SDK call in the Dynamics 365 environment over the selected time period.\n// Categories: Dataverse\n// Resource types: Dataverse\n// Topic: Usage\n\ndependencies\n| where timestamp between (_fromStartTime .. _toEndTime)\n| where user_Id != \"00000000-0000-0000-0000-000000000000\"\n| where isempty(operation_SyntheticSource)\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n| summarize sumDimension = count() by user_Id, type\n| top 10 by sumDimension"
+            },
+            "visualOptions": {
+                "hideLegend": false,
+                "yAxisMinimumValue": {
+                    "type": "infer"
+                },
+                "yAxisMaximumValue": {
+                    "type": "infer"
+                },
+                "xColumn": {
+                    "type": "infer"
+                },
+                "xColumnTitle": "",
+                "yColumns": {
+                    "type": "infer"
+                },
+                "yColumnTitle": "",
+                "yAxisRight": false,
+                "hideTileTitle": false,
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "columns": [],
+                        "label": "",
+                        "yAxisMinimumValue": null,
+                        "yAxisMaximumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "5c895b2d-2300-4a8e-9ca4-602fab024c16",
+            "title": "Dataverse Analytics",
+            "layout": {
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 1
+            },
+            "pageId": "3e54fb97-4767-43a5-8545-d349af387260",
+            "visualType": "markdownCard",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": ""
+            },
+            "visualOptions": {
+                "pie__TopNSlices": null
+            }
+        },
+        {
+            "id": "499f4027-5f18-4cbb-be8e-ee884e2733dd",
+            "title": "Active users by OS",
+            "visualType": "pie",
+            "pageId": "3e54fb97-4767-43a5-8545-d349af387260",
+            "layout": {
+                "x": 0,
+                "y": 1,
+                "width": 12,
+                "height": 7
+            },
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [],
+                "text": "let ['numValues']=3;\nlet randomSet = materialize(range x from 1 to numValues step 1 \n| project tostring(x), Windows = rand(1000), MacOS = rand(1000));\nrandomSet"
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "specified",
+                    "value": "x"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "pie__topNSlices": null,
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "1a310e90-395c-40f2-b5b4-9b2d312c4a5e",
+            "title": "Active users by device type",
+            "visualType": "pie",
+            "pageId": "3e54fb97-4767-43a5-8545-d349af387260",
+            "layout": {
+                "x": 12,
+                "y": 1,
+                "width": 12,
+                "height": 7
+            },
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": "let ['numValues']=4;\nlet randomSet = materialize(range x from 1 to numValues step 1 \n| project tostring(x), Windows = rand(1000), MacOS = rand(1000));\nrandomSet",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "f411e9ed-fe75-4762-82da-9c430c184afb"
+                }
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "specified",
+                    "value": "x"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "453a728d-34ec-455a-8cab-2bc3cec66dd8",
+            "title": "Active users by browser",
+            "visualType": "pie",
+            "pageId": "3e54fb97-4767-43a5-8545-d349af387260",
+            "layout": {
+                "x": 0,
+                "y": 8,
+                "width": 12,
+                "height": 7
+            },
+            "query": {
+                "kind": "inline",
+                "usedVariables": [
+                    "_fromStartTime"
+                ],
+                "text": "// Author: aliyoussefi\n// Display name: Active Users\n// Description: Number of active users (unique users) who performed an operation that caused one of these SDK calls: Retrieve, Retrieve Multiple, Delete, Create, and Update.\n// Categories: Dataverse\n// Resource types: Dataverse\n// Topic: Usage\nlet start = startofday(_fromStartTime);\nrequests\n| where timestamp >= start\n| where customDimensions.userAgent != \"\" and user_Id != \"00000000-0000-0000-0000-000000000000\" and session_Id != \"00000000-0000-0000-0000-000000000000\"\n| where customDimensions.userAgent !has \"microsoft-flow\" and customDimensions.userAgent !has \"Flow-RP\"\n| summarize count() by tostring(customDimensions.userAgent)",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "176fa460-9b47-43f7-814c-03eeada6e9d3"
+                }
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "specified",
+                    "value": "x"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "74a67e09-98f6-45a7-aa63-dad52209b175",
+            "title": "Active users by security role",
+            "visualType": "pie",
+            "pageId": "3e54fb97-4767-43a5-8545-d349af387260",
+            "layout": {
+                "x": 12,
+                "y": 8,
+                "width": 12,
+                "height": 7
+            },
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": "let ['numValues']=3;\nlet randomSet = materialize(range x from 1 to numValues step 1 \n| project tostring(x), Windows = rand(1000), MacOS = rand(1000));\nrandomSet",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "f411e9ed-fe75-4762-82da-9c430c184afb"
+                }
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "specified",
+                    "value": "x"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "bff3b50d-cfec-4d1a-917b-d842f9d1dea2",
+            "title": "Active users by business unit",
+            "visualType": "pie",
+            "pageId": "3e54fb97-4767-43a5-8545-d349af387260",
+            "layout": {
+                "x": 0,
+                "y": 15,
+                "width": 12,
+                "height": 7
+            },
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": "let ['numValues']=10;\nlet randomSet = materialize(range x from 1 to numValues step 1 \n| project tostring(x), Windows = rand(1000), MacOS = rand(1000));\nrandomSet",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "f411e9ed-fe75-4762-82da-9c430c184afb"
+                }
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "specified",
+                    "value": "x"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "3458eaa7-73ae-4a69-b890-634363cc7b53",
+            "title": "Dataverse Analytics",
+            "layout": {
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 1
+            },
+            "pageId": "b833e702-92cc-40c5-a1f1-fe8dac50e5f0",
+            "visualType": "markdownCard",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": ""
+            },
+            "visualOptions": {
+                "pie__TopNSlices": null
+            }
+        },
+        {
+            "id": "e8d35c4f-54db-4e22-b327-7ee46ca1c1fb",
+            "title": "Active Users",
+            "layout": {
+                "x": 0,
+                "y": 1,
+                "width": 8,
+                "height": 8
+            },
+            "pageId": "b833e702-92cc-40c5-a1f1-fe8dac50e5f0",
+            "visualType": "pie",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [],
+                "text": "print AugustSales=rand(5000)",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "f411e9ed-fe75-4762-82da-9c430c184afb"
+                }
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumn": {
+                    "type": "infer"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "labelDisabled": false,
+                "pie__label": [
+                    "name",
+                    "percentage"
+                ],
+                "tooltipDisabled": false,
+                "pie__tooltip": [
+                    "name",
+                    "percentage",
+                    "value"
+                ],
+                "pie__orderBy": "size",
+                "pie__kind": "donut",
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "533da7a3-afb3-45d4-99ea-365aa0d10095",
+            "title": "Most Active Users Performing Operations",
+            "layout": {
+                "x": 8,
+                "y": 1,
+                "width": 16,
+                "height": 8
+            },
+            "pageId": "b833e702-92cc-40c5-a1f1-fe8dac50e5f0",
+            "visualType": "stackedbar",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [
+                    "numValues"
+                ],
+                "text": "let names = range(datetime(2015-01-01), datetime(2015-12-31), 1d);\nlet randomSet = materialize(range x from 1 to numValues step 1 \n| project x, Creates = rand(100), Reads = rand(100), Updates = rand(100), Deletes = rand(100)); \nrandomSet\n| render barchart with (title = \"StackedBar\", kind = stacked)",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "f411e9ed-fe75-4762-82da-9c430c184afb"
+                }
+            },
+            "visualOptions": {
+                "hideLegend": false,
+                "yAxisMinimumValue": {
+                    "type": "infer"
+                },
+                "yAxisMaximumValue": {
+                    "type": "infer"
+                },
+                "xColumn": {
+                    "type": "infer"
+                },
+                "xColumnTitle": "",
+                "yColumns": {
+                    "type": "infer"
+                },
+                "yColumnTitle": "",
+                "yAxisRight": false,
+                "hideTileTitle": false,
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "columns": [],
+                        "label": "",
+                        "yAxisMinimumValue": null,
+                        "yAxisMaximumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "f390b004-778a-4812-bd78-041ce76bd0be",
+            "title": "Total Operations",
+            "layout": {
+                "x": 0,
+                "y": 9,
+                "width": 24,
+                "height": 5
+            },
+            "pageId": "b833e702-92cc-40c5-a1f1-fe8dac50e5f0",
+            "visualType": "line",
+            "query": {
+                "kind": "inline",
+                "usedVariables": [
+                    "numValues"
+                ],
+                "text": "let randomSet = materialize(range x from 1 to numValues step 1 \n| project x, Reads = rand(10000), Creates = rand(1000), Updates = rand(1000), Deletes = rand(1000)); \nrandomSet\n| render linechart with (title = \"Line\")",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "f411e9ed-fe75-4762-82da-9c430c184afb"
+                }
+            },
+            "visualOptions": {
+                "hideLegend": false,
+                "yAxisMinimumValue": {
+                    "type": "infer"
+                },
+                "yAxisMaximumValue": {
+                    "type": "infer"
+                },
+                "xColumn": {
+                    "type": "infer"
+                },
+                "xColumnTitle": "",
+                "yColumns": {
+                    "type": "infer"
+                },
+                "yColumnTitle": "",
+                "yAxisRight": false,
+                "hideTileTitle": false,
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "columns": [],
+                        "label": "",
+                        "yAxisMinimumValue": null,
+                        "yAxisMaximumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        },
+        {
+            "id": "e987a02c-e8e1-4571-b01f-405be28277dc",
+            "title": "Active Users",
+            "visualType": "column",
+            "pageId": "cf887c34-a9d2-497d-8d81-ef4b09117409",
+            "layout": {
+                "x": 8,
+                "y": 1,
+                "width": 16,
+                "height": 8
+            },
+            "query": {
+                "kind": "inline",
+                "dataSource": {
+                    "kind": "inline",
+                    "dataSourceId": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297"
+                },
+                "usedVariables": [
+                    "_fromStartTime",
+                    "_toEndTime"
+                ],
+                "text": "// Author: aliyoussefi\n// Display name: Total Operations\n// Description: This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time.\n// Categories: Dataverse\n// Resource types: Dataverse\n// Topic: Usage\n\ndependencies\n| where timestamp between (_fromStartTime .. _toEndTime)\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n| make-series \nRequests = count() default = 0 on timestamp in range(_fromStartTime, _toEndTime, 1h) by type\n| mvexpand timestamp to typeof(datetime), Requests to typeof(long)"
+            },
+            "visualOptions": {
+                "hideTileTitle": false,
+                "hideLegend": false,
+                "xColumnTitle": "",
+                "xColumn": {
+                    "type": "infer"
+                },
+                "yColumns": {
+                    "type": "infer"
+                },
+                "seriesColumns": {
+                    "type": "infer"
+                },
+                "xAxisScale": "linear",
+                "verticalLine": "",
+                "crossFilterDisabled": false,
+                "drillthroughDisabled": false,
+                "multipleYAxes": {
+                    "base": {
+                        "id": "-1",
+                        "label": "",
+                        "columns": [],
+                        "yAxisMaximumValue": null,
+                        "yAxisMinimumValue": null,
+                        "yAxisScale": "linear",
+                        "horizontalLines": []
+                    },
+                    "additional": [],
+                    "showMultiplePanels": false
+                },
+                "pie__TopNSlices": null,
+                "crossFilter": [],
+                "drillthrough": []
+            }
+        }
+    ],
+    "parameters": [
+        {
+            "kind": "duration",
+            "id": "26fa25be-652b-44a3-986d-4ab70f59f75b",
+            "displayName": "From",
+            "beginVariableName": "_fromStartTime",
+            "endVariableName": "_fromEndTime",
+            "defaultValue": {
+                "kind": "dynamic",
+                "count": 7,
+                "unit": "days"
+            },
+            "showOnPages": {
+                "kind": "all"
+            }
+        },
+        {
+            "kind": "string",
+            "id": "04a18aae-bc53-4cf4-aea5-46b6e1c9d899",
+            "displayName": "Environment",
+            "variableName": "_environment",
+            "selectionType": "scalar",
+            "includeAllOption": true,
+            "defaultValue": {
+                "kind": "value",
+                "value": "production.crm.dynamics.com"
+            },
+            "dataSource": {
+                "kind": "static",
+                "values": [
+                    {
+                        "value": "production.crm.dynamics.com"
+                    },
+                    {
+                        "value": "staging.crm.dynamics.com"
+                    },
+                    {
+                        "value": "development.crm.dynamics.com"
+                    },
+                    {
+                        "value": "uat.crm.dynamics.com"
+                    }
+                ]
+            },
+            "showOnPages": {
+                "kind": "all"
+            }
+        },
+        {
+            "kind": "duration",
+            "id": "149f3b78-26f9-447d-aa6c-a69798f8becb",
+            "displayName": "To",
+            "beginVariableName": "_toStartTime",
+            "endVariableName": "_toEndTime",
+            "defaultValue": {
+                "kind": "dynamic",
+                "count": 7,
+                "unit": "days"
+            },
+            "showOnPages": {
+                "kind": "all"
+            }
+        },
+        {
+            "kind": "int",
+            "id": "98b205dc-f669-4955-89b5-9b5e1f1da3fd",
+            "displayName": "numValues",
+            "variableName": "numValues",
+            "selectionType": "scalar",
+            "includeAllOption": false,
+            "defaultValue": {
+                "kind": "value",
+                "value": 5
+            },
+            "dataSource": {
+                "kind": "static",
+                "values": [
+                    {
+                        "value": 1
+                    },
+                    {
+                        "value": 2
+                    },
+                    {
+                        "value": 3
+                    },
+                    {
+                        "value": 4
+                    },
+                    {
+                        "value": 5
+                    }
+                ]
+            },
+            "showOnPages": {
+                "kind": "all"
+            }
+        }
+    ],
+    "dataSources": [
+        {
+            "id": "cf65fe17-5b6f-4139-9db5-9fcb4b4bc297",
+            "name": "<yourname>",
+            "clusterUri": "https://ade.applicationinsights.io/subscriptions/<subscriptionid>/resourceGroups/<resourceGroupId>/providers/microsoft.insights/components/<applicationInsightsName>",
+            "database": "<applicationInsightsName>",
+            "kind": "manual-kusto",
+            "scopeId": "kusto"
+        }
+    ],
+    "pages": [
+        {
+            "name": "Home",
+            "id": "fb83e70b-0cc7-4784-87e6-e0f8da742765"
+        },
+        {
+            "id": "cf887c34-a9d2-497d-8d81-ef4b09117409",
+            "name": "Active Users"
+        },
+        {
+            "id": "3e54fb97-4767-43a5-8545-d349af387260",
+            "name": "Mode of Access"
+        },
+        {
+            "id": "b833e702-92cc-40c5-a1f1-fe8dac50e5f0",
+            "name": "Entity Usage"
+        }
+    ]
+}

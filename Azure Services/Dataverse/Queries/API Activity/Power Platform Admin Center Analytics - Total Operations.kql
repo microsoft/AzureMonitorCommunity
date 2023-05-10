@@ -1,0 +1,14 @@
+// Author: aliyoussefi
+// Display name: Power Platform Admin Center Analytics - Total Operations
+// Description: Total Operations This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time. Variables are datetime
+// Categories: Power Platform Admin Center Analytics
+// Resource types: Dataverse
+// Topic: API
+dependencies
+| where timestamp between (_fromStartTime .. _toEndTime) //datetime
+| where type in  ("SDKCreate", "SDKUpdate", "SDKRetrieve", "SDKDelete")
+    | where user_Id != "00000000-0000-0000-0000-000000000000"
+    | where isempty(operation_SyntheticSource)
+| make-series 
+Requests = count() default = 0 on timestamp in range(_fromStartTime, _toEndTime, 1h) by type
+| mvexpand timestamp to typeof(datetime), Requests to typeof(long)

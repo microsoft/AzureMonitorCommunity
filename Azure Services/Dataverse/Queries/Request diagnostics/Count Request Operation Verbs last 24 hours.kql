@@ -1,0 +1,13 @@
+// Author: aliyoussefi
+// Display name: Count Request Operation Verbs last 24 hours
+// Description: Summary of Dataverse requests by verb over the last 24 hours
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Request Diagnostics
+
+requests
+| where timestamp > ago(1d)
+| extend operation1 = split(operation_Name, " ")[0]
+| project timestamp,operation_Name, url, success, duration, user_Id, session_Id, operation_Id, operation1
+| summarize OperationCount = count() by Operation = tostring(operation1)
+| render barchart 
