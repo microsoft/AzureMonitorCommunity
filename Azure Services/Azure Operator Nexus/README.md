@@ -5,16 +5,16 @@ Language: bash etc.
 Tags: lma,telemetry,networkcloud,nc,aods,workbooks,alerts
 ---
 
-# Azure Operator Nexus (AON) Logging, Monitoring, and Alerting
+# Azure Operator Nexus (AzON) Logging, Monitoring, and Alerting
 
 ## Overview
 
-This folder contains sample workbooks and alert rules related to Azure Operator Nexus (AON) Logging, Monitoring and Alerting.
+This folder contains sample workbooks and alert rules related to Azure Operator Nexus (AzON) Logging, Monitoring and Alerting.
 It provides various ARM templates for use by customers to deploy selected resources.
 
 ### Prerequisites
 
-The samples require one or more AON instances connected with a Log Analytics Workspace. An AON instance will deploy
+The samples require one or more AzON instances connected with a Log Analytics Workspace. An AzON instance will deploy
 all of the necessary Prometheus exporters, which will provide the metrics supporting these workbooks and alert rules.
 
 ## Azure Workbooks
@@ -102,7 +102,7 @@ run to create alert rules.
 AzureMonitorCommunity repository path:  **`Alerts/Preview/armTemplates`**
 
 - `deployActivityLogAlerts.sh` - Shell script utility for creating resource health alerts on Arc connected Kubernetes/Servers
-- `deployMetricAlerts.sh` - Shell script utility for creating metric alert rules on an AON cluster
+- `deployMetricAlerts.sh` - Shell script utility for creating metric alert rules on an AzON cluster
 - `deployScheduledQueryRules.sh` - Shell script utility for creating log alert rules on a Log Analytics Workspace
 - `/templates` - Folder contains ARM templates for use in deploying
 [alert rule types](https://docs.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-types).
@@ -146,9 +146,9 @@ where
 
 #### **Log Alert Rules**
 
-![AON Logging](AONLogs.png)
+![AzON Logging](AzONLogs.png)
 
-You can apply Log query alert rules to a Log Analytics Workspace where logs from one or more AON clusters are collected.
+You can apply Log query alert rules to a Log Analytics Workspace where logs from one or more AzON clusters are collected.
 These alert rules rely on log query results to trigger and attach to the appropriate resource producing the log.
 Deploy a single sample log query alert rule using the following command:
 
@@ -168,7 +168,7 @@ where
 - **<RESOURCE_GROUP>** = resource group where the alert rule will be created
 - **<PATH_TO_TEMPLATE_FILE>** = path to `templates/scheduledQueryRules.bicep`
 - **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `scheduledQueryRules/` for alert rule to be created
-- **<LAW_RESOURCE_ID>** = Full Resource ID of the AON Log Analytics Workspace
+- **<LAW_RESOURCE_ID>** = Full Resource ID of the AzON Log Analytics Workspace
 - **<AZ_LOCATION>** = Region in which to create the log alert rule
 - **<ACTION_GROUP_IDS>** = Optional comma-separated list of Action Group resource IDs to be associated to the alert
 rule.
@@ -193,7 +193,7 @@ You can run the script from the alert rules folder:
 
 #### **Metric Alert Rules**
 
-You can apply Metric alert rules to an AON Undercloud Arc-Connected K8s Cluster that emits metrics that the alert rules
+You can apply Metric alert rules to an AzON Undercloud Arc-Connected K8s Cluster that emits metrics that the alert rules
 monitor. Deploy a single sample metric alert rule using the following command:
 
 ```sh
@@ -212,7 +212,7 @@ where
 - **<RESOURCE_GROUP>** = resource group where the alert rule will be created
 - **<PATH_TO_TEMPLATE_FILE>** = path to `templates/metricAlerts.bicep`
 - **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `metricAlerts/` for alert rule to be created
-- **<CLUSTER_RESOURCE_ID>** = Full Resource ID of the AON cluster emitting the metric
+- **<CLUSTER_RESOURCE_ID>** = Full Resource ID of the AzON cluster emitting the metric
 - **<ACTION_GROUP_IDS>** = Optional comma-separated list of Action Group resource IDs to be associated to the alert
 rule.
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs that can override other parameter file values
@@ -222,8 +222,8 @@ A sample shell script (`deployMetricAlerts.sh`) that you can use to deploy all o
 You can invoke the script with the following environment variables set or passed as arguments, if you didn't set a value
 the script will prompt for it.
 
-- `RESOURCE_GROUP` - The resource group in which the AON Undercloud Arc-Connected K8s Cluster resource is located
-- `CLUSTER_NAME` - The name of the AON Undercloud Arc-Connected K8s Cluster in the Resource Group that will emit the metrics
+- `RESOURCE_GROUP` - The Resource Group in which the AzON Undercloud Arc-Connected K8s Cluster resource is located
+- `CLUSTER_NAME` - The name of the AzON Undercloud Arc-Connected K8s Cluster in the Resource Group that will emit the metrics
 - `ACTION_GROUP_IDS` - *Optional* - Comma-separated list of action group resource IDs
 
 You can run the script from the alert rules folder:
