@@ -3,10 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Arc Resource Disconnected"
+      "value": "Arc Kubernetes Disconnected"
     },
     "alertDescription": {
-      "value": "Resource is disconnected from Arc"
+      "value": "Kubernetes cluster is disconnected from Arc"
+    },
+    "resourceType": {
+      "value": "microsoft.kubernetes/connectedclusters"
     }
   }
 }

@@ -101,7 +101,7 @@ run to create alert rules.
 
 AzureMonitorCommunity repository path:  **`Alerts/Preview/armTemplates`**
 
-- `deployActivityLogAlerts.sh` - Shell script utility for creating resource health alerts on Arc connected Kubernetes/Servers
+- `deployActivityLogAlerts.sh` - Shell script utility for creating resource health alerts on Arc connected Kubernetes cluster
 - `deployMetricAlerts.sh` - Shell script utility for creating metric alert rules on an AzON cluster
 - `deployScheduledQueryRules.sh` - Shell script utility for creating log alert rules on a Log Analytics Workspace
 - `/templates` - Folder contains ARM templates for use in deploying
@@ -234,7 +234,7 @@ You can run the script from the alert rules folder:
 
 #### **Resource Health Alert Rules**
 
-You can apply Resource health alert rules to an Arc-Connected K8s Cluster and Servers. To deploy a single sample resource health alert rule using the following command:
+You can apply Resource health alert rules to an Arc-Connected K8s Cluster. To deploy a single sample resource health alert rule using the following command:
 
 ```sh
   az deployment group create \
@@ -253,7 +253,7 @@ where
 - **<RESOURCE_GROUP>** = resource group where the Arc connected resource exists. Alert rules will also be created in this Resource Group.
 - **<PATH_TO_TEMPLATE_FILE>** = path to `templates/activityLogAlerts.bicep`
 - **<PATH_TO_PARAMETER_FILE>** = path to parameter file in `activityLogAlerts/` for alert rule to be created
-- **<SUBSCRIPTION_ID>** = subscription ID where target resource (Arc Kubernetes/Server) lives
+- **<SUBSCRIPTION_ID>** = subscription ID where target resource (Arc Kubernetes) lives
 - **<ACTION_GROUP_IDS>** = optional comma-separated list of Action Group resource IDs to be associated to the alert rule.
 - **<PARAM_NAME>="<PARAM_VALUE>"** = Optional name/value pairs, which can override other parameter file values
 
