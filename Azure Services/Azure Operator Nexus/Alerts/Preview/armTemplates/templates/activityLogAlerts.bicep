@@ -19,6 +19,10 @@ param isEnabled bool = true
 @minLength(1)
 param resourceGroup string
 
+@description('Resource type of the alert')
+@minLength(1)
+param resourceType string
+
 resource alertName_resource 'microsoft.insights/activitylogalerts@2020-10-01' = {
   name: alertName
   location: 'global'
@@ -82,11 +86,7 @@ resource alertName_resource 'microsoft.insights/activitylogalerts@2020-10-01' = 
           anyOf: [
             {
               field: 'resourceType'
-              equals: 'microsoft.hybridcompute/machines'
-            }
-            {
-              field: 'resourceType'
-              equals: 'microsoft.kubernetes/connectedclusters'
+              equals: resourceType
             }
           ]
         }
