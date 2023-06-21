@@ -145,7 +145,7 @@ function Get-DCRArmTemplate
     $dataCollectionEndpoint = GetOrCreate-DataCollectionEndpoint -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
     if ($dataCollectionEndpoint.id -ne $null)
     {
-        $dceId = $dataCollectionEndpoint["id"]
+        $dceId = $dataCollectionEndpoint.id
     }
     
     #ARM Template File
@@ -243,7 +243,7 @@ function Get-DCRBaseJson
     {
         $properties = 
         [ordered]@{
-            "dataCollectionEndpointId" = "[parameters(dataCollectionEndpoint_id)]";
+            "dataCollectionEndpointId" = "[parameters('dataCollectionEndpoint_id')]";
             "streamDeclarations" = $streamDeclarations;
             "dataSources" = $dataSources;
             "destinations" = $destinations;
@@ -548,10 +548,11 @@ function Get-CustomLogsInDCRFormat
                     {
                         $filePatterns = $input.location.fileSystemLocations.linuxFileTypeLogPaths
                     }
-                    elseif($input.location.windowsFileTypeLogPaths -ne $null)
+                    elseif($input.location.fileSystemLocations.windowsFileTypeLogPaths -ne $null)
                     {
                         $filePatterns = $input.location.fileSystemLocations.windowsFileTypeLogPaths
                     }
+
                     $dcrCustomLogs.filePatterns += $filePatterns
                 }
                 else 
@@ -561,7 +562,7 @@ function Get-CustomLogsInDCRFormat
             }
             
             $dcrCustomLogs.streams += $tableName
-            $dcrCustomLogs.name = $properties.Name
+            $dcrCustomLogs.name = $dataSource.Name
             $dcrCustomLogs.settings.text = @{
                 "recordStartTimestampFormat" = "ISO 8601"
             }
@@ -769,7 +770,7 @@ function GetOrCreate-DataCollectionEndpoint
     $dce = az monitor data-collection endpoint create --name $dceName --public-network-access "Enabled" --resource-group $ResourceGroupName
     if ($dce.Count -gt 0)
     {
-        return $dce
+        return $dce | ConvertFrom-Json
     }
     else {
         Write-Host "Error: Unable to get or create a Data Collection Endpoint."
@@ -843,6 +844,10 @@ function Get-CustomLogStreamDeclarations
                     @{
                         "name" = "TimeGenerated";
                         "type" = "datetime";
+                    },
+                    @{
+                        "name" = "RawData";
+                        "type" = "string";
                     }
                 )
             }
