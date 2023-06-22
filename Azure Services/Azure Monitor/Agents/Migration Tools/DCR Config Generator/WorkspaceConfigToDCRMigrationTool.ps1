@@ -526,6 +526,7 @@ function Get-CustomLogsInDCRFormat
 
     $dataSourceType = "CustomLog"
     $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
+    $dcrCustomLogs = $null
 
     foreach($dataSource in $workspaceDataSourceList)
     {
@@ -718,6 +719,7 @@ function Get-Destinations
     @{
         "logAnalytics" = $logAnalytics;
     }
+    
     return $destinations
 
 }
@@ -764,7 +766,7 @@ function GetOrCreate-DataCollectionEndpoint
         [Parameter(Mandatory=$true)][string] $ResourceGroupName,
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
-    
+
     $dceName = $SubscriptionId + "-dce"
     # If DCE does not exist, it will create a new one. If it does exists, it will return the existing one
     $dce = az monitor data-collection endpoint create --name $dceName --public-network-access "Enabled" --resource-group $ResourceGroupName
@@ -774,6 +776,7 @@ function GetOrCreate-DataCollectionEndpoint
     }
     else {
         Write-Host "Error: Unable to get or create a Data Collection Endpoint."
+        return $null
     }
 }
 
@@ -809,8 +812,6 @@ function Get-DataFlows
 
     $streams += Get-DCRStream -DataSourceType CustomLog -WorkspaceName $WorkspaceName -ResourceGroupName $ResourceGroupName
     $streams += Get-DCRStream -DataSourceType IISLog
-    # $outputStream = "Custom-$"
-    # TODO: Add outputStream for custom log
 
     $destinations = @($WorkspaceName)
     $workspaceDataFlow = 
@@ -856,7 +857,6 @@ function Get-CustomLogStreamDeclarations
             Write-Host "Error: Unable to get stream name for Custom Log data source."
         }
     }
-    # TODO: Ask if it's okay to have streamDeclaration as empty
     return $streamDeclarations
 }
 
