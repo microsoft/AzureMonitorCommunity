@@ -4,7 +4,7 @@
     {
       "type": 1,
       "content": {
-        "json": ">**Author**\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>**Version 1.1**\r\n>2022-02-16\r\n> - Added more info about Allowed, Detected and Mathced requests\r\n>\r\n>**Version 1.0**\r\n>2020-10-22\r\n> - Initial version. Inspired by https://github.com/iamrobdavies/MonitoringExamples/tree/master/ApplicationGateway/Dashboard and https://docs.microsoft.com/en-us/archive/blogs/robdavies/monitoring-application-gateway-with-azure-log-analytics"
+        "json": ">**Author**\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>**Version 1.2**\r\n>2023-07-06\r\n> - Fixed parameters\r\n>\r\n>**Version 1.1**\r\n>2022-02-16\r\n> - Added more info about Allowed, Detected and Matched requests\r\n>\r\n>**Version 1.0**\r\n>2020-10-22\r\n> - Initial version. Inspired by https://github.com/iamrobdavies/MonitoringExamples/tree/master/ApplicationGateway/Dashboard and https://docs.microsoft.com/en-us/archive/blogs/robdavies/monitoring-application-gateway-with-azure-log-analytics"
       },
       "conditionalVisibility": {
         "parameterName": "_",
@@ -29,20 +29,6 @@
         ],
         "parameters": [
           {
-            "id": "1e2b3246-fe4e-4d39-b265-7a42a4ae46c1",
-            "version": "KqlParameterItem/1.0",
-            "name": "DefaultSubscription_Internal",
-            "type": 1,
-            "isRequired": true,
-            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
-            "crossComponentResources": [
-              "value::selected"
-            ],
-            "isHiddenWhenLocked": true,
-            "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
-          },
-          {
             "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
             "version": "KqlParameterItem/1.0",
             "name": "Subscriptions",
@@ -51,18 +37,38 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ '{DefaultSubscription_Internal}', true, false)",
+            "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| project value = id, label = name, selected = true",
             "crossComponentResources": [
               "value::selected"
             ],
             "typeSettings": {
-              "additionalResourceOptions": []
+              "additionalResourceOptions": [],
+              "showDefault": false
             },
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources",
-            "value": [
-              "/subscriptions/23aa6822-7f78-4718-b0c5-381b8b204c33"
-            ]
+            "label": "Subscription(s)"
+          },
+          {
+            "id": "1e2b3246-fe4e-4d39-b265-7a42a4ae46c1",
+            "version": "KqlParameterItem/1.0",
+            "name": "WSSubs",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| distinct subscriptionId\r\n| project value = subscriptionId, label = subscriptionId, selected = true",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
           },
           {
             "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
@@ -70,18 +76,18 @@
             "name": "Workspaces",
             "type": 5,
             "isRequired": true,
-            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, selected = iff(id =~ todynamic('{DefaultSubscription_Internal}').ws, true, false), custId= properties.customerId",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| project value = id, label = name, selected = true",
             "crossComponentResources": [
-              "{Subscriptions}"
+              "{WSSubs}"
             ],
-            "value": "/subscriptions/23aa6822-7f78-4718-b0c5-381b8b204c33/resourceGroups/mms-weu/providers/Microsoft.OperationalInsights/workspaces/Minlavoro-AD",
             "typeSettings": {
               "additionalResourceOptions": [],
               "showDefault": false
             },
             "timeContextFromParameter": "TimeRange",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
+            "resourceType": "microsoft.resourcegraph/resources",
+            "label": ""
           },
           {
             "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
@@ -146,14 +152,13 @@
             "id": "ce7bc1af-150e-43c2-a3ee-2e31c86ed5c1",
             "version": "KqlParameterItem/1.0",
             "name": "p_waf",
-            "label": "Application Gateway",
+            "label": "Application Gateway Server",
             "type": 2,
             "isRequired": true,
             "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where ResourceType == \"APPLICATIONGATEWAYS\"\r\n| distinct Resource",
             "crossComponentResources": [
               "{Workspaces}"
             ],
-            "value": "AGW-TEST-01",
             "typeSettings": {
               "additionalResourceOptions": [],
               "showDefault": false
@@ -163,7 +168,8 @@
             },
             "timeContextFromParameter": "TimeRange",
             "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": null
           },
           {
             "id": "d4b63f41-737d-46e6-a441-81bf8d8467b1",
@@ -171,24 +177,24 @@
             "name": "WAF_AzureDiagnostics_NotEnabled",
             "type": 2,
             "isRequired": true,
-            "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category in (\"ApplicationGatewayFirewallLog\", \"ApplicationGatewayAccessLog\", \"ApplicationGatewayPerformanceLog\")\r\n| top 10 by TimeGenerated desc\r\n| summarize count() by Resource\r\n",
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category in (\"ApplicationGatewayFirewallLog\", \"ApplicationGatewayAccessLog\", \"ApplicationGatewayPerformanceLog\")\r\n| summarize count() by Resource\r\n| project value = count_, label = count_, selected = true\r\n",
             "crossComponentResources": [
               "{Workspaces}"
             ],
             "isHiddenWhenLocked": true,
             "typeSettings": {
-              "additionalResourceOptions": [
-                "value::1"
-              ],
+              "additionalResourceOptions": [],
               "showDefault": false
             },
             "timeContext": {
-              "durationMs": 2419200000
+              "durationMs": 0
             },
             "timeContextFromParameter": "TimeRange",
-            "defaultValue": "value::1",
             "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
+            "resourceType": "microsoft.resourcegraph/resources"
           }
         ],
         "style": "pills",
@@ -200,7 +206,8 @@
     {
       "type": 1,
       "content": {
-        "json": "<br>\r\n### ⚠️ AzureDiagnostics for '{p_waf}' Azure Application Firewall not configured or not reporting to the selected workspace(s).\r\n---\r\n\r\nAzureDiagnosics has not been configured for the selected Application Gateways or is configured to store data in a different workspace.\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the Diagnostic logs at [this](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging) link."
+        "json": "<br>\r\n### AzureDiagnostics for '{p_waf}' Azure Application Firewall not configured or not reporting to the selected workspace(s).\r\n---\r\n\r\nAzureDiagnosics has not been configured for the selected Application Gateways or is configured to store data in a different workspace.\r\n\r\nPlease select another workspace or check out the detailed documentation on how to configure the Diagnostic logs at [this](https://docs.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics#diagnostic-logging) link.",
+        "style": "warning"
       },
       "conditionalVisibility": {
         "parameterName": "WAF_AzureDiagnostics_NotEnabled",
@@ -269,7 +276,8 @@
                   },
                   "defaultValue": "value::1",
                   "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces"
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "value": null
                 },
                 {
                   "id": "bf61516d-c629-4942-add5-75547b89b6cc",
@@ -293,7 +301,8 @@
                   },
                   "defaultValue": "value::1",
                   "queryType": 0,
-                  "resourceType": "microsoft.operationalinsights/workspaces"
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "value": null
                 }
               ],
               "style": "pills",
@@ -360,7 +369,7 @@
                         "crossComponentResources": [
                           "{Workspaces}"
                         ],
-                        "value": [],
+                        "value": null,
                         "typeSettings": {
                           "additionalResourceOptions": [
                             "value::all"
@@ -418,9 +427,6 @@
                     "size": 1,
                     "showAnalytics": true,
                     "title": "Count of requests by Action",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -514,9 +520,6 @@
                           "size": 1,
                           "showAnalytics": true,
                           "title": "Count of allowed requests by rule Id",
-                          "timeContext": {
-                            "durationMs": 1209600000
-                          },
                           "timeContextFromParameter": "TimeRange",
                           "queryType": 0,
                           "resourceType": "microsoft.operationalinsights/workspaces",
@@ -542,9 +545,6 @@
                           "title": "Top 50 allowed requests by rule name ",
                           "noDataMessage": "No allowed requests matching the specified criteria",
                           "noDataMessageStyle": 3,
-                          "timeContext": {
-                            "durationMs": 0
-                          },
                           "timeContextFromParameter": "TimeRange",
                           "queryType": 0,
                           "resourceType": "microsoft.operationalinsights/workspaces",
@@ -577,9 +577,6 @@
                           "title": "Allowed requests by Rule set type, Rule set version and Rule Id",
                           "noDataMessage": "No allowed requests matching the specified criteria",
                           "noDataMessageStyle": 3,
-                          "timeContext": {
-                            "durationMs": 0
-                          },
                           "timeContextFromParameter": "TimeRange",
                           "exportedParameters": [
                             {
@@ -664,9 +661,6 @@
                           "title": "Details for requests with Rule Set Type == '{p_ruleSetType_s}' , Rule Set Version == '{p_ruleSetVersion_s}' and Rule Id == '{p_ruleId_s}'.",
                           "noDataMessage": "No allowed requests matching the specified criteria",
                           "noDataMessageStyle": 3,
-                          "timeContext": {
-                            "durationMs": 0
-                          },
                           "timeContextFromParameter": "TimeRange",
                           "queryType": 0,
                           "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1832,9 +1826,6 @@
                     "size": 0,
                     "aggregation": 5,
                     "title": "Requests/min by URI",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "exportFieldName": "requestURI_s",
                     "exportParameterName": "p_requestURI_s",
@@ -1855,9 +1846,6 @@
                     "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayAccessLog\"\r\n| where requestUri_s in ({p_api})\r\n| where httpStatus_d >= 400\r\n| summarize count() by httpStatus_d, requestUri_s\r\n| project httpStatus_d, requestUri_s, count_",
                     "size": 0,
                     "title": "Failed Requests by URI",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1878,9 +1866,6 @@
                     "size": 0,
                     "aggregation": 5,
                     "title": "Failed requests by protected application(s).",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1906,9 +1891,6 @@
                     "size": 0,
                     "aggregation": 5,
                     "title": "HTTP 502 errors by protected Application(s) (every 5 mins).",
-                    "timeContext": {
-                      "durationMs": 0
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1967,9 +1949,6 @@
                     "query": "let unHealthyHostCount = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize max(unHealthyHostCount_d) by Resource, bin(TimeGenerated, 1m);\r\nlet HealthyHostCount = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize max(healthyHostCount_d) by Resource, bin(TimeGenerated, 1m);\r\nunHealthyHostCount\r\n| union HealthyHostCount\r\n",
                     "size": 0,
                     "title": "Count of  backend Virtual Machines by status.",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -1987,9 +1966,6 @@
                     "query": "let allReqs = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(requestCount_d) by bin(TimeGenerated, 1m);\r\nlet failedReqs = AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(failedRequestCount_d) by bin(TimeGenerated, 1m);\r\nallReqs\r\n| union failedReqs\r\n",
                     "size": 0,
                     "title": "Avg Requests per min",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2007,9 +1983,6 @@
                     "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(throughput_d) by Resource, bin(TimeGenerated, 1m)\r\n| extend ThroughputMb = (avg_throughput_d/1000)/1000\r\n| project Resource, TimeGenerated, ThroughputMb",
                     "size": 0,
                     "title": "Avg throughput per second (Mb)",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2027,9 +2000,6 @@
                     "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.NETWORK\"\r\n| where Resource == ('{p_waf}')\r\n| where Category == \"ApplicationGatewayPerformanceLog\"\r\n| summarize avg(latency_d) by bin(TimeGenerated, 1m)",
                     "size": 0,
                     "title": "Avg Latency (ms)",
-                    "timeContext": {
-                      "durationMs": 1209600000
-                    },
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
@@ -2088,5 +2058,6 @@
   "fallbackResourceIds": [
     "Azure Monitor"
   ],
+  "fromTemplateId": "sentinel-UserWorkbook",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
