@@ -17,29 +17,16 @@
         ],
         "parameters": [
           {
-            "id": "95beef3a-9413-41d2-892f-b50890f24a57",
-            "version": "KqlParameterItem/1.0",
-            "name": "DefaultSubscription_Internal",
-            "type": 1,
-            "isRequired": true,
-            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| take 1\r\n| project subscriptionId",
-            "crossComponentResources": [
-              "value::selected"
-            ],
-            "isHiddenWhenLocked": true,
-            "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
-          },
-          {
             "id": "b458b572-f4bb-4db8-a71c-c8e1e494747a",
             "version": "KqlParameterItem/1.0",
             "name": "Subscriptions",
+            "label": "Subscription(s)",
             "type": 6,
             "isRequired": true,
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId, selected = iff(subscriptionId =~ '{DefaultSubscription_Internal}', true, false)",
+            "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| project value = id, label = name, selected = true",
             "crossComponentResources": [
               "value::selected"
             ],
@@ -51,22 +38,41 @@
             },
             "defaultValue": "value::all",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources",
-            "value": [
-            ]
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "166c79f9-5c36-4e71-af39-8ee4f517adb2",
+            "version": "KqlParameterItem/1.0",
+            "name": "WSSubs",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| distinct subscriptionId\r\n| project value = subscriptionId, label = subscriptionId, selected = true",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
           },
           {
             "id": "743c129b-0ea4-49d3-b815-ecaba2a210ef",
             "version": "KqlParameterItem/1.0",
             "name": "Workspaces",
+            "label": "Workspace(s)",
             "type": 5,
             "isRequired": true,
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id, selected = iff(id =~ todynamic('{DefaultSubscription_Internal}').ws, true, false), custId= properties.customerId",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| project value = id, label = name, selected = true",
             "crossComponentResources": [
-              "{Subscriptions}"
+              "{WSSubs}"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
@@ -76,10 +82,37 @@
             },
             "defaultValue": "value::all",
             "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "cdb57f0e-5d5d-49a8-8afc-d6dac6c30c6a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Servers",
+            "label": "Gateway Server(s)",
+            "type": 2,
+            "description": "This param is used to group only servers which are used as Log Analytics Gateway and allow for specific server selection",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Heartbeat\r\n| where IsGatewayInstalled == 'true' \r\n| distinct Computer\r\n| order by Computer asc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
+            "queryType": 0,
             "resourceType": "microsoft.resourcegraph/resources",
-            "value": [
-              "value::all"
-            ]
+            "value": null
           },
           {
             "id": "c171fcc2-ef30-4c0d-ad8e-cc2c25cb2aec",
@@ -139,39 +172,8 @@
                 }
               ],
               "allowCustom": true
-            }
-          },
-          {
-            "id": "cdb57f0e-5d5d-49a8-8afc-d6dac6c30c6a",
-            "version": "KqlParameterItem/1.0",
-            "name": "Servers",
-            "label": "Gateway Servers",
-            "type": 2,
-            "description": "This param is used to group only servers which are used as OMS Gateway and allow for specific server selection",
-            "isRequired": true,
-            "multiSelect": true,
-            "quote": "'",
-            "delimiter": ",",
-            "query": "Heartbeat\r\n| where IsGatewayInstalled == 'true' \r\n| distinct Computer\r\n| order by Computer asc",
-            "crossComponentResources": [
-              "{Workspaces}"
-            ],
-            "typeSettings": {
-              "additionalResourceOptions": [
-                "value::all"
-              ],
-              "showDefault": false
             },
-            "timeContext": {
-              "durationMs": 604800000
-            },
-            "timeContextFromParameter": "TimeRange",
-            "defaultValue": "value::all",
-            "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces",
-            "value": [
-              "value::all"
-            ]
+            "label": ""
           },
           {
             "id": "ce1f1909-d772-455e-a5df-c149ba478cd5",
@@ -190,7 +192,7 @@
             "version": "KqlParameterItem/1.0",
             "name": "PerfTest",
             "type": 1,
-            "description": "This param is used to check if at one OMS Gateway perf counter has been collected over the time range for the selected server(s). No result could lead to a wrong or none perf counter collection configuration.",
+            "description": "This param is used to check if at one Log Analytics Gateway perf counter has been collected over the time range for the selected server(s). No result could lead to a wrong or none perf counter collection configuration.",
             "query": "Perf\r\n| where Computer in ({Servers})\r\n| where CounterPath contains \"OMS Gateway\"\r\n| summarize recCount = count() \r\n| project selected = iff(recCount > 0, true, false)",
             "crossComponentResources": [
               "{Workspaces}"
@@ -209,7 +211,7 @@
             "name": "EventTest",
             "type": 1,
             "description": "This param is used to check if at one OMS Gateway event has been collected over the time range for the selected server(s). No result could lead to a wrong or none event collection configuration.",
-            "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"OMS Gateway Log\"\r\n| summarize recCount = count() \r\n| project selected = iff(recCount > 0, true, false)",
+            "query": "Event\r\n| where Computer in ({Servers})\r\n| where EventLog == \"Log Analytics Gateway Log\"\r\n| summarize recCount = count() \r\n| project selected = iff(recCount > 0, true, false)",
             "crossComponentResources": [
               "{Workspaces}"
             ],
@@ -224,14 +226,14 @@
         ],
         "style": "pills",
         "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces"
+        "resourceType": "microsoft.resourcegraph/resources"
       },
-      "name": "parameters - 13"
+      "name": "parameters"
     },
     {
       "type": 1,
       "content": {
-        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Version 2.2 **\r\n>2021-06-09\r\n>- Fixed charting bug on *Active Client Connection* and *Connected Client*\r\n>- Added threshold line with value of 50 as per alert on the *Rejection count* chart\r\n>\r\n>** Version 2.1 **\r\n>2021-05-24\r\n>- Added *Active Client Connection* and *Connected Client*\r\n>\r\n>** Version 2.0 **\r\n>2021-05-05\r\n>- Added the *Last occurrence* column in the *List of forbidden hosts* and *List of forbidden certificates* table tiles.\r\n>- Added tiles for Event Id 405\r\n>\r\n>** Version 1.9 **\r\n>2021-04-22\r\n>- Filtered forbidden hosts to remove non-Azure related stuff from the list.\r\n>\r\n>** Version 1.8 **\r\n>2021-04-08\r\n>- Fixed verification queries on parameters PerfTest and EventTest\r\n>\r\n>** Version 1.7 **\r\n>2021-04-07\r\n>- Fixed query bug for forbidden certificates' command suggestion.\r\n>\r\n>** Version 1.6 **\r\n>2021-02-10\r\n>- Added count of forbidden certificates and forbidden hosts.\r\n>- Added help command for adding both forbidden hosts and certificates.\r\n>- Added collapsing groups.\r\n>- Minor cosmetic changes.\r\n>\r\n>** Version 1.5 **\r\n>2020-12-09\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>** Version 1.4 **\r\n>2020-09-24\r\n>- Added detail pane view for forbidden hosts, certificates and proxy URLs to make easier the copy/paste when adding them as allowed.\r\n>\r\n>** Version 1.3 **\r\n>2020-04-06\r\n>- Added checks to hide event log and perf counter groups if no data is available. In place of them, a text which reminds to check for the correct onboarding is shown.\r\n>\r\n>** Version 1.2 **\r\n>2020-04-02\r\n>- Added the rejection perf counter chart\r\n>\r\n>** Version 1.1 **\r\n>2020-04-01\r\n>- Added the *Gateway Servers* parameter to allow selection\r\n>- Added dedicated *Gateway communication* group containing pie-chart and list of gateway servers communication status\r\n>- Added the *Computer* field in some of the list based tiles to allow server recognition for generated events\r\n>\r\n>** Version 1.0 **\r\n>2019-11-14\r\n> - Initial version"
+        "json": ">**Author**\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>**Version 2.4**\r\n>2023-07-05\r\n>- Fixed reference links\r\n- Renamed OMS Gateway to Log Analytics Gateway\r\n>\r\n>**Version 2.3**\r\n>2021-11-18\r\n>- Fixed wrong count of agent based on ComputerIP\r\n>\r\n>**Version 2.2**\r\n>2021-06-09\r\n>- Fixed charting bug on *Active Client Connection* and *Connected Client*\r\n>- Added threshold line with value of 50 as per alert on the *Rejection count* chart\r\n>\r\n>**Version 2.1**\r\n>2021-05-24\r\n>- Added *Active Client Connection* and *Connected Client*\r\n>\r\n>**Version 2.0**\r\n>2021-05-05\r\n>- Added the *Last occurrence* column in the *List of forbidden hosts* and *List of forbidden certificates* table tiles.\r\n>- Added tiles for Event Id 405\r\n>\r\n>**Version 1.9**\r\n>2021-04-22\r\n>- Filtered forbidden hosts to remove non-Azure related stuff from the list.\r\n>\r\n>**Version 1.8**\r\n>2021-04-08\r\n>- Fixed verification queries on parameters PerfTest and EventTest\r\n>\r\n>**Version 1.7**\r\n>2021-04-07\r\n>- Fixed query bug for forbidden certificates' command suggestion.\r\n>\r\n>**Version 1.6**\r\n>2021-02-10\r\n>- Added count of forbidden certificates and forbidden hosts.\r\n>- Added help command for adding both forbidden hosts and certificates.\r\n>- Added collapsing groups.\r\n>- Minor cosmetic changes.\r\n>\r\n>**Version 1.5**\r\n>2020-12-09\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>**Version 1.4**\r\n>2020-09-24\r\n>- Added detail pane view for forbidden hosts, certificates and proxy URLs to make easier the copy/paste when adding them as allowed.\r\n>\r\n>**Version 1.3**\r\n>2020-04-06\r\n>- Added checks to hide event log and perf counter groups if no data is available. In place of them, a text which reminds to check for the correct onboarding is shown.\r\n>\r\n>**Version 1.2**\r\n>2020-04-02\r\n>- Added the rejection perf counter chart\r\n>\r\n>**Version 1.1**\r\n>2020-04-01\r\n>- Added the *Gateway Servers* parameter to allow selection\r\n>- Added dedicated *Gateway communication* group containing pie-chart and list of gateway servers communication status\r\n>- Added the *Computer* field in some of the list based tiles to allow server recognition for generated events\r\n>\r\n>**Version 1.0**\r\n>2019-11-14\r\n> - Initial version"
       },
       "conditionalVisibility": {
         "parameterName": "Help",
@@ -247,7 +249,7 @@
     {
       "type": 1,
       "content": {
-        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\nWelcome to the Log Analytics Gateway workbook. This workbook is designed to provide you with an understanding of how the Log Analytics Gateway (aka OMS Gateway) is behaving and performing. In this workbook you will find info about:\r\n\r\n1. **Gateway Communication** - Is your gateway correctly communicating? When was the last heartbeat received by Log Analytics?\r\n\r\n2. **Agents communication** - Are your agents correctly sending data through the Log Analytics Gateway? When was the last heartbeat received by Log Analytics?\r\n\r\n3. **Forbidden hosts and certificates** - In these tiles you can get a clear understanding about communication flow from specific agent(s) blocked by the Log Analytics Gateway itself. You can, hence approve these agents by adding the necessary *allowed certificate(s)* or *allowed host(s)*.\r\n\r\n4. **Gateway connection issues** - Can your gateway correctly send data, through the configured company proxy or firewall, to Log Analytics?\r\n\r\n5. **Gateway performance indicators** - What is the resource (CPU. Memory, specific counters) consumption on the Log Analytics Gateway server(s)? Is there any rejection?\r\n\r\nFor additional information about the Log Analytics Gateway, see [Connect computers without internet access by using the Log Analytics gateway in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/gateway).\r\n\r\n## Requirements ##\r\n\r\n* A [Log Analytics workspace.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n\r\nIn order to work, the workbook needs the following:\r\n\r\n* Windows Event Logs:\r\n\r\n\t* Application\r\n\r\n\t* System\r\n\r\n\t* OMS Gateway Log\r\n\t\r\n  If you're unfamiliar with how to enable Windows Event collection, see [Collect Windows event log data sources with Log Analytics agent](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events)\r\n\r\n* Windows Performance Counters:\r\n\r\n\t* Memory(*)\\Available Mbytes\r\n\r\n\t* OMS Gateway(*)\\Active Client Connection\r\n\r\n\t* OMS Gateway(*)\\Connected Client\r\n\r\n\t* OMS Gateway(*)\\Connected Client - Realtime\r\n\r\n\t* OMS Gateway(*)\\Error Count\r\n\r\n\t* OMS Gateway(*)\\Rejection Count\r\n\r\n\t* Processor(*)\\% Processor Time\r\n\t\r\n  If you're unfamiliar with how to enable Performance Counter collection, see [Collect Windows and Linux performance data sources with Log Analytics agent](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-performance-counters)"
+        "json": "></br>\r\n># Get Started #\r\n>\r\n>-------------------------\r\n>\r\n>Welcome to the Log Analytics Gateway workbook. This workbook is designed to provide you with an understanding of how the Log Analytics Gateway (aka OMS Gateway) is behaving and performing. In this workbook you will find info about:\r\n>\r\n>1. **Gateway Communication** - Is your gateway correctly communicating? When was the last heartbeat received by Log Analytics?\r\n>\r\n>2. **Agents communication** - Are your agents correctly sending data through the Log Analytics Gateway? When was the last heartbeat received by Log Analytics?\r\n>\r\n>3. **Forbidden hosts and certificates** - In these tiles you can get a clear understanding about communication flow from specific agent(s) blocked by the Log Analytics Gateway itself. You can, hence approve these agents by adding the necessary *allowed certificate(s)* or *allowed host(s)*.\r\n>\r\n>4. **Gateway connection issues** - Can your gateway correctly send data, through the configured company proxy or firewall, to Log Analytics?\r\n>\r\n>5. **Gateway performance indicators** - What is the resource (CPU. Memory, specific counters) consumption on the Log Analytics Gateway server(s)? Is there any rejection?\r\n>\r\n>For additional information about the Log Analytics Gateway, see [Connect computers without internet access by using the Log Analytics gateway in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/gateway).\r\n>\r\n>## Requirements ##\r\n>\r\n>* A [Log Analytics workspace.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n>\r\n>In order to work, the workbook needs data collected from the following:\r\n>\r\n>- Windows Event Logs:\r\n>\t- Application\r\n>\t- System\r\n>\t- OMS Gateway Log\r\n>\r\n></br>\r\n>\tIf you're unfamiliar with how to enable Windows Event collection, see:\r\n>\t\t- [Collect Windows event log data sources with Log Analytics agent](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events) if you're using the [Log Analytics agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/log-analytics-agent) \r\n>\t\t- [Collect events and performance counters from virtual machines with Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-rule-azure-monitor-agent?tabs=portal) if you're using the new [Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/agents-overview)\r\n>\r\n>- Windows Performance Counters:\r\n>\t- Memory(*)\\Available Mbytes\r\n>\t- OMS Gateway(*)\\Active Client Connection\r\n>\t- OMS Gateway(*)\\Connected Client\r\n>\t- OMS Gateway(*)\\Connected Client - Realtime\r\n>\t- OMS Gateway(*)\\Error Count\r\n>\t- OMS Gateway(*)\\Rejection Count\r\n>\t- Processor(*)\\% Processor Time\r\n>\r\n>\r\n>\tIf you're unfamiliar with how to enable Performance Counter collection, see:\r\n>\t\t- [Collect Windows and Linux performance data sources with Log Analytics agent](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-performance-counters) if you're using the [Log Analytics agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/log-analytics-agent) \r\n>\t\t- [Collect events and performance counters from virtual machines with Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-rule-azure-monitor-agent?tabs=portal) if you're using the new [Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/agents-overview)\r\n>\r\n></br>"
       },
       "conditionalVisibility": {
         "parameterName": "Help",
@@ -287,7 +289,8 @@
     {
       "type": 1,
       "content": {
-        "json": "⚠ No OMS Gateway related performance counters were detected in the selected workspace for the specified time period (`{TimeRange:label}`). Either try a broader time range, select a different workspace, or onboard virtual machines to the selected workspace `{Workspaces:label}`.\r\n\r\nIf you choose to onboard virtual machines to workspace `{Workspaces:label}`, follow the instruction in the following link: [Azure Monitor for VMs (preview)](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview).\r\n\r\nCheck also if the correct Event Log collection configuration was performed, following the instruction at [Windows and Linux performance data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-performance-counters)."
+        "json": "No Log Analytics Gateway related performance counters were detected in the selected workspace for the specified time period (`{TimeRange:label}`). Either try a broader time range, select a different workspace, or onboard virtual machines to the selected workspace `{Workspaces:label}`.\r\n\r\nIf you choose to onboard virtual machines to workspace `{Workspaces:label}`, follow the instruction in the following link: [Azure Monitor for VMs](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview).\r\n\r\nCheck also if the correct Event Log collection configuration was performed, following the instruction at [Windows and Linux performance data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-performance-counters) if using the Log Analytics agent or at [Collect events and performance counters from virtual machines with Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-rule-azure-monitor-agent?tabs=portal) if using the Azure Monitor Agent.",
+        "style": "warning"
       },
       "conditionalVisibilities": [
         {
@@ -309,7 +312,8 @@
     {
       "type": 1,
       "content": {
-        "json": "⚠ No OMS Gateway related events were detected in the selected workspace for the specified time period (`{TimeRange:label}`). Either try a broader time range, select a different workspace, or onboard virtual machines to the selected workspace `{Workspaces:label}`.\r\n\r\nIf you choose to onboard virtual machines to workspace `{Workspaces:label}`, follow the instruction in the following link: [Azure Monitor for VMs](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview).\r\n\r\nCheck also if the correct Event Log collection configuration was performed, following the instruction at [Windows event log data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events)."
+        "json": "No Log Analytics Gateway related events were detected in the selected workspace for the specified time period (`{TimeRange:label}`). Either try a broader time range, select a different workspace, or onboard virtual machines to the selected workspace `{Workspaces:label}`.\r\n\r\nIf you choose to onboard virtual machines to workspace `{Workspaces:label}`, follow the instruction in the following link: [Azure Monitor for VMs](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/vminsights-overview).\r\n\r\nCheck also if the correct Event Log collection configuration was performed, following the instruction at [Windows event log data sources in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-sources-windows-events) if using the Log Analytics agent or at [Collect events and performance counters from virtual machines with Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-rule-azure-monitor-agent?tabs=portal) if using the Azure Monitor Agent.",
+        "style": "warning"
       },
       "conditionalVisibilities": [
         {
@@ -335,6 +339,7 @@
         "groupType": "editable",
         "title": "GATEWAY COMMUNICATION",
         "expandable": true,
+        "expanded": true,
         "items": [
           {
             "type": 1,
@@ -347,11 +352,8 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat \r\n| where Computer in ({Servers})\r\n| summarize lastCall = max(TimeGenerated) by Computer \r\n| extend commState=iif(lastCall > ago(1h), \"GATEWAY(S) COMMUNICATING\",\"GATEWAY(S) NOT COMMUNICATING\") \r\n| summarize computers=count(Computer) by commState",
+              "query": "Heartbeat \r\n| where Computer in ({Servers})\r\n| where IsGatewayInstalled == \"True\"\r\n| summarize lastCall = max(TimeGenerated) by Computer \r\n| extend commState=iif(lastCall > ago(1h), \"GATEWAY(S) COMMUNICATING\",\"GATEWAY(S) NOT COMMUNICATING\") \r\n| summarize computers=count(Computer) by commState",
               "size": 0,
-              "timeContext": {
-                "durationMs": 14400000
-              },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
@@ -368,12 +370,9 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat\r\n| where Computer in ({Servers})\r\n| summarize lastCommunication = max(TimeGenerated) by Computer \r\n| extend State = iff(lastCommunication < ago(1h), 'NOT COMMUNICATING', 'COMMUNICATING')\r\n| extend TimeFromNow = now() - lastCommunication\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project Computer, [\"Last Communication on\"]=strcat('🕒 ', TimeAgo), State\r\n| sort by State desc nulls first",
+              "query": "Heartbeat\r\n| where Computer in ({Servers})\r\n| where IsGatewayInstalled == \"True\"\r\n| summarize lastCommunication = arg_max(TimeGenerated, *) by Computer \r\n| extend State = iff(lastCommunication < ago(1h), 'NOT COMMUNICATING', 'COMMUNICATING')\r\n| extend TimeFromNow = now() - lastCommunication\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project Computer, [\"Last Communication on\"]=strcat('🕒 ', TimeAgo), State, ComputerIP\r\n| sort by State desc nulls first",
               "size": 0,
               "showAnalytics": true,
-              "timeContext": {
-                "durationMs": 14400000
-              },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
               "queryType": 0,
@@ -410,12 +409,6 @@
                   {
                     "columnId": "Computer",
                     "label": "Gateway server"
-                  },
-                  {
-                    "columnId": "Last Communication on"
-                  },
-                  {
-                    "columnId": "State"
                   }
                 ]
               }
@@ -451,6 +444,7 @@
         "groupType": "editable",
         "title": "AGENT COMMUNICATION STATUS",
         "expandable": true,
+        "expanded": true,
         "items": [
           {
             "type": 1,
@@ -463,11 +457,8 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat \r\n| where Computer !in ({Servers})\r\n| where ComputerIP in (OMSGW_IP) \r\n| summarize lastCall = max(TimeGenerated) by Computer \r\n| extend commState=iif(lastCall > ago(1h), \"AGENTS COMMUNICATING\",\"AGENTS NOT COMMUNICATING\") \r\n| summarize computers=count(Computer) by commState",
+              "query": "Heartbeat \r\n| where Computer !in ({Servers})\r\n| summarize lastCall = max(TimeGenerated) by Computer \r\n| extend commState=iif(lastCall > ago(1h), \"AGENTS COMMUNICATING\",\"AGENTS NOT COMMUNICATING\") \r\n| summarize computers=count(Computer) by commState",
               "size": 0,
-              "timeContext": {
-                "durationMs": 14400000
-              },
               "timeContextFromParameter": "TimeRange",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces",
@@ -496,12 +487,9 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let OMSGW_IP = Heartbeat \r\n| where Computer in ({Servers})\r\n| distinct ComputerIP;\r\nHeartbeat\r\n| where Computer !in ({Servers})\r\n| where ComputerIP in (OMSGW_IP) \r\n| summarize lastCommunication = max(TimeGenerated) by Computer \r\n| extend State = iff(lastCommunication < ago(1h), 'NOT COMMUNICATING', 'COMMUNICATING')\r\n| extend TimeFromNow = now() - lastCommunication\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project Computer, [\"Last Communication on\"]=strcat('🕒 ', TimeAgo), State\r\n| sort by State desc nulls first",
+              "query": "Heartbeat\r\n| where Computer !in ({Servers})\r\n| summarize lastCommunication = arg_max(TimeGenerated, *) by Computer \r\n| extend State = iff(lastCommunication < ago(1h), 'NOT COMMUNICATING', 'COMMUNICATING')\r\n| extend TimeFromNow = now() - lastCommunication\r\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\r\n| project Computer, [\"Last Communication on\"]=strcat('🕒 ', TimeAgo), State, ComputerIP\r\n| sort by State desc nulls first",
               "size": 0,
               "showAnalytics": true,
-              "timeContext": {
-                "durationMs": 14400000
-              },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
               "queryType": 0,
@@ -687,9 +675,6 @@
                     "label": "Count"
                   },
                   {
-                    "columnId": "Command"
-                  },
-                  {
                     "columnId": "lastOccurrence",
                     "label": "Last occurrence"
                   }
@@ -835,9 +820,6 @@
                     "label": "Annotation"
                   },
                   {
-                    "columnId": "Command"
-                  },
-                  {
                     "columnId": "lastOccurrence",
                     "label": "Last occurrence"
                   }
@@ -969,12 +951,6 @@
                 ],
                 "labelSettings": [
                   {
-                    "columnId": "proxyUrl"
-                  },
-                  {
-                    "columnId": "Computer"
-                  },
-                  {
                     "columnId": "errorMessage",
                     "label": "Error Message"
                   },
@@ -985,9 +961,6 @@
                   {
                     "columnId": "lastOccurrence",
                     "label": "Last occurrence"
-                  },
-                  {
-                    "columnId": "RenderedDescription"
                   }
                 ]
               },
@@ -1235,7 +1208,7 @@
               "showAnalytics": true,
               "title": "OMS Gateway\\Rejection Count ",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 14400000
               },
               "timeContextFromParameter": "TimeRange",
               "showExportToExcel": true,
@@ -1340,5 +1313,6 @@
   "fallbackResourceIds": [
     "Azure Monitor"
   ],
+  "fromTemplateId": "sentinel-UserWorkbook",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
