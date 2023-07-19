@@ -529,14 +529,12 @@ function Get-CustomLogsInDCRFormat
     $dcrCustomLogs = $null
 
     $dcrCustomLogs = New-Object DCRCustomLogFiles
-        $dcrCustomLogSettings = New-Object DCRCustomLogSettings
-        $dcrCustomLogSettings.text = New-Object DCRCustomLogSettingsText
-        $dcrCustomLogs.settings = $dcrCustomLogSettings
-
+    $dcrCustomLogSettings = New-Object DCRCustomLogSettings
+    $dcrCustomLogSettings.text = New-Object DCRCustomLogSettingsText
+    $dcrCustomLogs.settings = $dcrCustomLogSettings
 
     foreach($dataSource in $workspaceDataSourceList)
-    {
-        
+    {    
         if ($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null -and $dataSource.Properties.inputs -ne $null)
         {
             $properties = $dataSource.Properties
