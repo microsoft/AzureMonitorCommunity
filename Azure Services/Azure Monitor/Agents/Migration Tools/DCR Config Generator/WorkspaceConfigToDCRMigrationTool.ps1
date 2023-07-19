@@ -528,13 +528,15 @@ function Get-CustomLogsInDCRFormat
     $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
     $dcrCustomLogs = $null
 
-    foreach($dataSource in $workspaceDataSourceList)
-    {
-        $dcrCustomLogs = New-Object DCRCustomLogFiles
+    $dcrCustomLogs = New-Object DCRCustomLogFiles
         $dcrCustomLogSettings = New-Object DCRCustomLogSettings
         $dcrCustomLogSettings.text = New-Object DCRCustomLogSettingsText
         $dcrCustomLogs.settings = $dcrCustomLogSettings
 
+
+    foreach($dataSource in $workspaceDataSourceList)
+    {
+        
         if ($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null -and $dataSource.Properties.inputs -ne $null)
         {
             $properties = $dataSource.Properties
@@ -753,7 +755,7 @@ function Get-DCRStream
             Break
         }
 
-        "IISLog" { $stream += "Microsoft-W3CIISLog" }
+        "IISLog" { $stream += "Microsoft-W3CIISLog"; Break }
     }
 
     return $stream
