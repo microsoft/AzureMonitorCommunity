@@ -526,7 +526,6 @@ function Get-CustomLogsInDCRFormat
 
     $dataSourceType = "CustomLog"
     $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
-    $dcrCustomLogs = $null
 
     $dcrCustomLogs = New-Object DCRCustomLogFiles
     $dcrCustomLogSettings = New-Object DCRCustomLogSettings
