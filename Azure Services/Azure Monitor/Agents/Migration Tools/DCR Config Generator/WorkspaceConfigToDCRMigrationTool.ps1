@@ -149,7 +149,6 @@ function Get-DCRArmTemplate
     $dcrJson = Get-DCRBaseJson -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
     
     $dataCollectionEndpoint = GetOrCreate-DataCollectionEndpoint -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCEName $DCEName
-    Write-Host "DataCollectionEndpoint = $dataCollectionEndpoint"
     if ($dataCollectionEndpoint.id -ne $null)
     {
         $dceId = $dataCollectionEndpoint.id
