@@ -20,7 +20,10 @@ Param(
     [string]$FolderPath = ".",
 
     [Parameter(Mandatory=$False)]
-    [switch]$GetDcrPayload
+    [switch]$GetDcrPayload,
+
+    [Parameter(Mandatory=$False)]
+    [string]$DCEName = "null"
 )
 
 class DCRPerformanceCounter
@@ -106,14 +109,15 @@ function Get-DCRFromWorkspace
         [Parameter(Mandatory=$true)][string] $DCRName,
         [Parameter(Mandatory=$true)][string] $Location,
         [Parameter(Mandatory=$true)][string] $FolderPath,
-        [Parameter(Mandatory=$true)][string] $SubscriptionId
+        [Parameter(Mandatory=$true)][string] $SubscriptionId,
+        [Parameter(Mandatory=$true)][string] $DCEName
     )
 
     $windowsDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-windows"
-    $windowsDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Windows" -FolderPath $FolderPath -SubscriptionId $SubscriptionId
+    $windowsDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Windows" -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
     
     $linuxDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-linux"
-    $linuxDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Linux" -FolderPath $FolderPath -SubscriptionId $SubscriptionId
+    $linuxDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Linux" -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
 
     $currentDateTime = Get-Date -Format "MM-dd-yyyy-HH-mm-ss"
     if($windowsDCRArmTemplate.Count -gt 0)
@@ -138,11 +142,14 @@ function Get-DCRArmTemplate
         [ValidateSet("Linux", "Windows")]
         [Parameter(Mandatory=$true)][string] $PlatformType,
         [Parameter(Mandatory=$true)][string] $FolderPath,
-        [Parameter(Mandatory=$true)][string] $SubscriptionId
+        [Parameter(Mandatory=$true)][string] $SubscriptionId,
+        [Parameter(Mandatory=$true)][string] $DCEName
     )
 
     $dcrJson = Get-DCRBaseJson -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
-    $dataCollectionEndpoint = GetOrCreate-DataCollectionEndpoint -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+    
+    $dataCollectionEndpoint = GetOrCreate-DataCollectionEndpoint -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCEName $DCEName
+    Write-Host "DataCollectionEndpoint = $dataCollectionEndpoint"
     if ($dataCollectionEndpoint.id -ne $null)
     {
         $dceId = $dataCollectionEndpoint.id
@@ -763,10 +770,15 @@ function GetOrCreate-DataCollectionEndpoint
     param (
         [Parameter(Mandatory=$true)][string] $SubscriptionId,
         [Parameter(Mandatory=$true)][string] $ResourceGroupName,
-        [Parameter(Mandatory=$true)][string] $WorkspaceName
+        [Parameter(Mandatory=$true)][string] $WorkspaceName,
+        [Parameter(Mandatory=$true)][string] $DCEName
     )
 
-    $dceName = $SubscriptionId + "-dce"
+    if ($DCEName -eq "null")
+    {
+        $DCEName = $SubscriptionId + "-dce"
+    }
+    
     # If DCE does not exist, it will create a new one. If it does exists, it will return the existing one
     $dce = az monitor data-collection endpoint create --name $dceName --public-network-access "Enabled" --resource-group $ResourceGroupName
     if ($dce.Count -gt 0)
@@ -921,7 +933,7 @@ $WarningPreference = 'SilentlyContinue'
 ConnectToAz -SubscriptionId $SubscriptionId
 
 # Entry point of the script
-Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath -SubscriptionId $SubscriptionId
+Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
 
 # End of script
 Write-Output ""
