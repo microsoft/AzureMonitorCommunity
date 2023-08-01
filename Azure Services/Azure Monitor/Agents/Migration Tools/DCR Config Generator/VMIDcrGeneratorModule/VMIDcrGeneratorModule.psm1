@@ -20,10 +20,10 @@ function Get-VmiDataSources
     
     $vmiPerfCounter = [ordered]@{
         "name" = "VMInsightsPerfCounters";
-        "streams" = "Microsoft-InsightsMetrics";
+        "streams" = @("Microsoft-InsightsMetrics");
         "scheduledTransferPeriod" = "PT1M";
         "samplingFrequencyInSeconds" = 60;
-        "counterSpecifiers" = "\\VmInsights\\DetailedMetrics";
+        "counterSpecifiers" = @("\\VmInsights\\DetailedMetrics");
     }
     $vmiPerfCounters = @($vmiPerfCounter)
     $vmiDataSources = [ordered]@{
@@ -31,7 +31,7 @@ function Get-VmiDataSources
     }
     if ($ProcessAndDependencies) {
         $vmiExtension = [ordered]@{
-        "streams" = "Microsoft-ServiceMap";
+        "streams" = @("Microsoft-ServiceMap");
         "extensionName" = "DependencyAgent";
         "extensionSettings" = @{};
         "name" = "DependencyAgentDataSource";
@@ -68,16 +68,19 @@ function Get-VmiDataFlows
     )
 
     $vmiDataFlows = [System.Collections.ArrayList]::new()
-    $newDataFlow =
+    $InsightDataFlow =
     [ordered]@{
-        "streams" = "Microsoft-InsightsMetrics";
-        "destinations" = "VMInsightsPerf-Logs-Dest";
+        "streams" = @("Microsoft-InsightsMetrics");
+        "destinations" = @("VMInsightsPerf-Logs-Dest");
     }
-    $vmiDataFlows.Add($newDataFlow) | Out-Null
+    $ServiceMapDataFlow =
+    [ordered]@{
+        "streams" = @("Microsoft-ServiceMap");
+        "destinations" = @("VMInsightsPerf-Logs-Dest");
+    }
+    $vmiDataFlows.Add($InsightDataFlow) | Out-Null
     if ($ProcessAndDependencies) {
-        $newDataFlow["streams"] = "Microsoft-ServiceMap"
-        $newDataFlow["destinations"] = "VMInsightsPerf-Logs-Dest"
-        $vmiDataFlows.Add($newDataFlow) | Out-Null
+        $vmiDataFlows.Add($ServiceMapDataFlow) | Out-Null
     }
     return $vmiDataFlows
 }
@@ -119,7 +122,7 @@ function Get-VmiDcrArmTemplate
             "description" = "Data collection rule for VM Insights.";
             "dataSources" = $vmiDataSources;
             "destinations" = $vmiDataDestinations;
-            "dataFlows" = $vmiDataFlows;
+            "dataFlows" = @($vmiDataFlows);
          }
     }) 
     $vmiDcrTemplate =
