@@ -102,12 +102,19 @@ function Get-DCRFromWorkspace
         $linuxDCRArmTemplate | Out-File "$($FolderPath)/dcr_linux_arm_template_$currentDateTime.json"
     }
 
-    if (Find-IfVmiEnabled -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName){
+    if (Find-IfVmiEnabled -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName)
+    {
         Get-VmiDcrArmTemplate -ProcessAndDependencies $true -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location | Out-File "$($FolderPath)/MSVMI-PerfandDa-$DCRName.json"
-        Get-VmiDcrBaseArmTemplateParams -DCRName $DcrName | Out-File "$($FolderPath)/MSVMI-PerfandDa-$DCRName.parameters.json"
+        Get-VmiDcrBaseArmTemplateParams -ProcessAndDependencies $true -DCRName $DcrName | Out-File "$($FolderPath)/MSVMI-PerfandDa-$DCRName.parameters.json"
         Get-VmiDcrArmTemplate -ProcessAndDependencies $false -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location | Out-File "$($FolderPath)/MSVMI-Perf-$DCRName.json"
-        Get-VmiDcrBaseArmTemplateParams -DCRName $DcrName | Out-File "$($FolderPath)/MSVMI-Perf-$DCRName.parameters.json"
+        Get-VmiDcrBaseArmTemplateParams -ProcessAndDependencies $false -DCRName $DcrName | Out-File "$($FolderPath)/MSVMI-Perf-$DCRName.parameters.json"
+        if ($GetDcrPayload)
+        {
+            Get-VmiDcrPayload -ProcessAndDependencies $true -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName | Out-File "$($FolderPath)/MSVMI-PerfandDa-$DCRName-payload.json"
+            Get-VmiDcrPayload -ProcessAndDependencies $false -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName | Out-File "$($FolderPath)/MSVMI-Perf-$DCRName-payload.json"
+        } 
     }
+
 }
 
 function Get-DCRArmTemplate

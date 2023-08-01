@@ -1,3 +1,4 @@
+
 function Find-IfVmiEnabled
 {
     param (
@@ -21,7 +22,6 @@ function Get-VmiDataSources
     $vmiPerfCounter = [ordered]@{
         "name" = "VMInsightsPerfCounters";
         "streams" = @("Microsoft-InsightsMetrics");
-        "scheduledTransferPeriod" = "PT1M";
         "samplingFrequencyInSeconds" = 60;
         "counterSpecifiers" = @("\VmInsights\DetailedMetrics");
     }
@@ -52,6 +52,7 @@ function Get-VmiDestinations
     $laDest =
     [ordered]@{
         "workspaceResourceId" = $workspace.ResourceId;
+        "workspaceId" = $workspace.CustomerId; 
         "name" = "VMInsightsPerf-Logs-Dest";
     }
     $vmiDestinations = 
@@ -83,6 +84,28 @@ function Get-VmiDataFlows
         $vmiDataFlows.Add($serviceMapDataFlow) | Out-Null
     }
     return $vmiDataFlows
+}
+
+function Get-VmiDcrPayload
+{
+  param (
+        [Parameter(Mandatory=$true)][bool] $ProcessAndDependencies,
+        [Parameter(Mandatory=$true)][string] $ResourceGroupName,
+        [Parameter(Mandatory=$true)][string] $WorkspaceName
+    )
+
+    $vmiDataSources = Get-VmiDataSources -ProcessAndDependencies $ProcessAndDependencies
+    $vmiDataDestinations = Get-VmiDestinations -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+    $vmiDataFlows = Get-VmiDataFlows -ProcessAndDependencies $ProcessAndDependencies
+    $vmiDcrPayload = [ordered]@{
+        "properties" = [ordered]@{
+                "dataSources" = $vmiDataSources;
+                "destinations" = $vmiDataDestinations;
+                "dataFlows" = @($vmiDataFlows);
+        }
+    }
+    $result = ConvertTo-Json -InputObject $vmiDcrPayload -Depth 100
+    return $result
 }
 
 function Get-VmiDcrArmTemplate
@@ -141,22 +164,30 @@ function Get-VmiDcrArmTemplate
 function Get-VmiDcrBaseArmTemplateParams
 {
     param (
+        [Parameter(Mandatory=$true)][bool] $ProcessAndDependencies,
         [Parameter(Mandatory=$true)][string] $DcrName
     )
     #ARM Template Parameters File
     $schema = "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
     $contentVersion = "1.0.0.0"
     $paramName = "dataCollectionRules_name"
-    $parameters = @{
-        "$($paramName)" = $DcrName;
+    
+    if ($ProcessAndDependencies) {
+        $vmiDcrName = "MSVMI-PerfandDa-$DcrName-dcr"
+    } else {
+        $vmiDcrName = "MSVMI-Perf-$DcrName-dcr"
     }
 
-    $dcrTemplateParams = 
+    $parameters = @{
+        "$($paramName)" = $vmiDcrName;
+    }
+
+    $vmiDcrTemplateParams = 
     [ordered]@{
         "`$schema" = $schema;
         "contentVersion" = $contentVersion;
         "parameters" = $parameters
     }
 
-    return ConvertTo-Json -InputObject $vmiDcrTemplate -Depth 100
+    return ConvertTo-Json -InputObject $vmiDcrTemplateParams -Depth 100
 }
