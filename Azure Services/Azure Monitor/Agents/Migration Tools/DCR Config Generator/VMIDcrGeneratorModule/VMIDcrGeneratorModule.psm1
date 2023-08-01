@@ -6,11 +6,12 @@ function Find-IfVmiEnabled
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
     
-    if ((Get-AzOperationalInsightsIntelligencePack -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName | Where-Object {$_.name -match ".*VMInsights*" }).Length -eq 0) {
-        return $False
+    $result = Get-AzOperationalInsightsIntelligencePack -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName | Where-Object {$_.name -match ".*VMInsights*" }
+    if ($result -and $result.Enabled -eq "True") {
+       $True
     }
-
-    return $True
+    
+    return $False
 }
 
 function Get-VmiDataSources
