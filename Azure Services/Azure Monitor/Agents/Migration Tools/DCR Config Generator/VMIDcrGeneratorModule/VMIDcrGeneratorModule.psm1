@@ -23,7 +23,7 @@ function Get-VmiDataSources
         "streams" = @("Microsoft-InsightsMetrics");
         "scheduledTransferPeriod" = "PT1M";
         "samplingFrequencyInSeconds" = 60;
-        "counterSpecifiers" = @("\\VmInsights\\DetailedMetrics");
+        "counterSpecifiers" = @("\VmInsights\DetailedMetrics");
     }
     $vmiPerfCounters = @($vmiPerfCounter)
     $vmiDataSources = [ordered]@{
@@ -68,19 +68,19 @@ function Get-VmiDataFlows
     )
 
     $vmiDataFlows = [System.Collections.ArrayList]::new()
-    $InsightDataFlow =
+    $insightDataFlow =
     [ordered]@{
         "streams" = @("Microsoft-InsightsMetrics");
         "destinations" = @("VMInsightsPerf-Logs-Dest");
     }
-    $ServiceMapDataFlow =
+    $serviceMapDataFlow =
     [ordered]@{
         "streams" = @("Microsoft-ServiceMap");
         "destinations" = @("VMInsightsPerf-Logs-Dest");
     }
-    $vmiDataFlows.Add($InsightDataFlow) | Out-Null
+    $vmiDataFlows.Add($insightDataFlow) | Out-Null
     if ($ProcessAndDependencies) {
-        $vmiDataFlows.Add($ServiceMapDataFlow) | Out-Null
+        $vmiDataFlows.Add($serviceMapDataFlow) | Out-Null
     }
     return $vmiDataFlows
 }
