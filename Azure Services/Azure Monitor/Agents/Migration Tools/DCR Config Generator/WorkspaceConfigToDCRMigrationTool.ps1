@@ -253,7 +253,7 @@ function Get-DataSources
         $perfCounterDataSources = Get-LinuxPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $linuxSyslogDataSources = Get-LinuxSyslogInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
 
-        if(($linuxSyslogDataSources -ne $null))
+        if(($null -ne $linuxSyslogDataSources))
         {
             $linuxSyslogDataSources = [System.Collections.ArrayList]@($linuxSyslogDataSources)
             $dcrDataSources["syslog"] = $linuxSyslogDataSources
@@ -264,14 +264,14 @@ function Get-DataSources
         $perfCounterDataSources = Get-WindowsPerformanceCountersInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
         $windowsEventDataSources = Get-WindowsEventsInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
 
-        if(($windowsEventDataSources -ne $null))
+        if(($null -ne $windowsEventDataSources))
         {
             $windowsEventDataSources = [System.Collections.ArrayList]@($windowsEventDataSources)
             $dcrDataSources["windowsEventLogs"] = $windowsEventDataSources
         }
     }
 
-    if(($perfCounterDataSources -ne $null) -and ($perfCounterDataSources[0].GetType().Name -eq "DCRPerformanceCounter"))
+    if(($null -ne $perfCounterDataSources) -and ($perfCounterDataSources[0].GetType().Name -eq "DCRPerformanceCounter"))
     {
         
         $perfCounterDataSources = [System.Collections.ArrayList]@($perfCounterDataSources)
@@ -528,19 +528,41 @@ function Get-SyslogLevels
         [Parameter(Mandatory=$true)][Microsoft.Azure.Commands.OperationalInsights.Models.PSLinuxSyslogDataSourceProperties] $LinuxSyslogProperties
     )
 
-    $syslogLevels = @()
-    foreach($severity in $LinuxSyslogProperties.SyslogSeverities)
+    # Sorting the severities 
+    # Sometimes the severities from the workpsace may not be in the correct order which is:
+    # Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug
+
+    $sortedSeverities = New-Object string[] 8
+    foreach($sev in $LinuxSyslogProperties.SyslogSeverities)
     {
-        switch($severity.Severity.value__)
+        switch ($sev.Severity.value__) {
+            0 { $sortedSeverities[0] = "Emergency"; Break }
+            1 { $sortedSeverities[1] = "Alert"; Break }
+            2 { $sortedSeverities[2] = "Critical"; Break }
+            3 { $sortedSeverities[3] = "Error"; Break }
+            4 { $sortedSeverities[4] = "Warning"; Break }
+            5 { $sortedSeverities[5] = "Notice"; Break }
+            6 { $sortedSeverities[6] = "Info"; Break }
+            7 { $sortedSeverities[7] = "Debug" }
+        }
+    }
+
+    # Remove the null entries
+    $sortedSeverities = $sortedSeverities | Where-Object { $_ -ne $null }
+
+    $syslogLevels = @()
+    foreach($severity in $sortedSeverities)
+    {
+        switch($severity)
         {
-            0 { $syslogLevels += "Emergency"; Break }
-            1 { $syslogLevels += "Alert"; Break }
-            2 { $syslogLevels += "Critical"; Break }
-            3 { $syslogLevels += "Error"; Break }
-            4 { $syslogLevels += "Warning"; Break }
-            5 { $syslogLevels += "Notice"; Break }
-            6 { $syslogLevels += "Info"; Break }
-            7 { $syslogLevels += "Debug" }
+            Emergency { $syslogLevels += "Emergency"; Break }
+            Alert { $syslogLevels += "Alert"; Break }
+            Critical { $syslogLevels += "Critical"; Break }
+            Error { $syslogLevels += "Error"; Break }
+            Warning { $syslogLevels += "Warning"; Break }
+            Notice { $syslogLevels += "Notice"; Break }
+            Info { $syslogLevels += "Info"; Break }
+            Debug { $syslogLevels += "Debug" }
         }
     }
 
@@ -677,7 +699,7 @@ function ConnectToAz {
 
     $azContext = Get-AzContext
 
-    if ($azContext -ne $null)
+    if ($null -ne $azContext)
     {
         Write-Output "You are already logged into Azure"
 
