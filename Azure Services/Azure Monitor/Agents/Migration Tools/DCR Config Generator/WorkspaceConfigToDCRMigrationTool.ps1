@@ -20,7 +20,10 @@ Param(
     [string]$FolderPath = ".",
 
     [Parameter(Mandatory=$False)]
-    [switch]$GetDcrPayload
+    [switch]$GetDcrPayload,
+
+    [Parameter(Mandatory=$False)]
+    [string]$DCEName = "null"
 )
 
 class DCRPerformanceCounter
@@ -47,6 +50,31 @@ class DCRLinuxSyslog
     [string[]]$logLevels
 }
 
+class DCRCustomLogSettings
+{
+    [DCRCustomLogSettingsText]$text
+}
+
+class DCRCustomLogSettingsText
+{
+    [string]$recordStartTimestampFormat
+}
+
+class DCRCustomLogFiles
+{
+    [string[]]$streams
+    [string[]]$filePatterns
+    [string]$format
+    [DCRCustomLogSettings]$settings
+    [string]$name
+}
+
+class DCRIISLog
+{
+    [string]$name
+    [string[]]$streams
+}
+
 function Get-UserWorkspace
 {
     param (
@@ -65,7 +93,7 @@ function Get-WorkspaceDataSources
     param (
         [Parameter(Mandatory=$true)][string] $ResourceGroupName,
         [Parameter(Mandatory=$true)][string] $WorkspaceName,
-        [ValidateSet("WindowsPerformanceCounter", "WindowsEvent", "LinuxSyslog", "LinuxPerformanceObject")]
+        [ValidateSet("WindowsPerformanceCounter", "WindowsEvent", "LinuxSyslog", "LinuxPerformanceObject", "CustomLog")]
         [Parameter(Mandatory=$true)][string] $DataSourceType
     )
 
@@ -80,14 +108,16 @@ function Get-DCRFromWorkspace
         [Parameter(Mandatory=$true)][string] $WorkspaceName,
         [Parameter(Mandatory=$true)][string] $DCRName,
         [Parameter(Mandatory=$true)][string] $Location,
-        [Parameter(Mandatory=$true)][string] $FolderPath
+        [Parameter(Mandatory=$true)][string] $FolderPath,
+        [Parameter(Mandatory=$true)][string] $SubscriptionId,
+        [Parameter(Mandatory=$true)][string] $DCEName
     )
 
     $windowsDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-windows"
-    $windowsDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Windows" -FolderPath $FolderPath
+    $windowsDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Windows" -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
     
     $linuxDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-linux"
-    $linuxDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Linux" -FolderPath $FolderPath
+    $linuxDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Linux" -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
 
     $currentDateTime = Get-Date -Format "MM-dd-yyyy-HH-mm-ss"
     if($windowsDCRArmTemplate.Count -gt 0)
@@ -125,10 +155,18 @@ function Get-DCRArmTemplate
         [Parameter(Mandatory=$true)][string] $Location,
         [ValidateSet("Linux", "Windows")]
         [Parameter(Mandatory=$true)][string] $PlatformType,
-        [Parameter(Mandatory=$true)][string] $FolderPath
+        [Parameter(Mandatory=$true)][string] $FolderPath,
+        [Parameter(Mandatory=$true)][string] $SubscriptionId,
+        [Parameter(Mandatory=$true)][string] $DCEName
     )
 
     $dcrJson = Get-DCRBaseJson -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
+    
+    $dataCollectionEndpoint = GetOrCreate-DataCollectionEndpoint -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCEName $DCEName
+    if ($dataCollectionEndpoint.id -ne $null)
+    {
+        $dceId = $dataCollectionEndpoint.id
+    }
     
     #ARM Template File
     $schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
@@ -138,8 +176,15 @@ function Get-DCRArmTemplate
         "defaultValue" = "my_default_dcr-$($PlatformType.ToLower())";
         "type" = "String";
     }
+    $dceParamName = "dataCollectionEndpoint_id"
+    $dceParamMetadata = @{
+        "defaultValue" = "$dceId";
+        "type" = "String";
+    }
+
     $parameters = @{
         "$($paramName)" = $paramMetadata;
+        "$($dceParamName)" = $dceParamMetadata;
     }
     $variables = @{}
 
@@ -211,15 +256,18 @@ function Get-DCRBaseJson
 
     $dataSources = Get-DataSources -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
     $destinations = Get-Destinations -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
-    $dataFlows = [System.Collections.ArrayList]@(Get-DataFlows -WorkspaceName $WorkspaceName -PlatformType $PlatformType)
+    $dataFlows = [System.Collections.ArrayList]@(Get-DataFlows -WorkspaceName $WorkspaceName -PlatformType $PlatformType -ResourceGroupName $ResourceGroupName)
+    $streamDeclarations = Get-CustomLogStreamDeclarations -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
 
     if(-not (Get-DataSourceIsEmpty -DataSource $dataSources))
     {
         $properties = 
         [ordered]@{
+            "dataCollectionEndpointId" = "[parameters('dataCollectionEndpoint_id')]";
+            "streamDeclarations" = $streamDeclarations;
             "dataSources" = $dataSources;
             "destinations" = $destinations;
-            "dataFlows" = $dataFlows
+            "dataFlows" = $dataFlows;
         }
 
         $dcrJson.Add('properties', $properties)
@@ -276,6 +324,20 @@ function Get-DataSources
         
         $perfCounterDataSources = [System.Collections.ArrayList]@($perfCounterDataSources)
         $dcrDataSources["performanceCounters"] = $perfCounterDataSources
+    }
+
+    $customLogDataSources = Get-CustomLogsInDCRFormat -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+    if(($customLogDataSources -ne $null))
+    {
+        $customLogDataSources = [System.Collections.ArrayList]@($customLogDataSources)
+        $dcrDataSources["logFiles"] = $customLogDataSources
+    }
+
+    $iisLogs = Get-IisLogsInDCRFormat
+    if (($iisLogs -ne $null))
+    {
+        $iisLogs = [System.Collections.ArrayList]@($iisLogs)
+        $dcrDataSources["iisLogs"] = $iisLogs
     }
 
     return $dcrDataSources
@@ -475,6 +537,77 @@ function Get-XPathQueryKey
     return "[System[($($eventTypeStr))]]"
 }
 
+function Get-CustomLogsInDCRFormat
+{
+    param (
+        [Parameter(Mandatory=$true)][string] $ResourceGroupName,
+        [Parameter(Mandatory=$true)][string] $WorkspaceName
+    )
+
+    $dataSourceType = "CustomLog"
+    $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
+
+    $dcrCustomLogs = New-Object DCRCustomLogFiles
+    $dcrCustomLogSettings = New-Object DCRCustomLogSettings
+    $dcrCustomLogSettings.text = New-Object DCRCustomLogSettingsText
+    $dcrCustomLogs.settings = $dcrCustomLogSettings
+
+    foreach($dataSource in $workspaceDataSourceList)
+    {    
+        if ($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null -and $dataSource.Properties.inputs -ne $null)
+        {
+            $properties = $dataSource.Properties
+            $tableName = $properties.customLogName
+
+            foreach($input in $properties.inputs)
+            {
+                if($input.location -ne $null -and $input.location.fileSystemLocations -ne $null)
+                {
+                    $filePatterns = $null
+                    if($input.location.fileSystemLocations.linuxFileTypeLogPaths -ne $null)
+                    {
+                        $filePatterns = $input.location.fileSystemLocations.linuxFileTypeLogPaths
+                    }
+                    elseif($input.location.fileSystemLocations.windowsFileTypeLogPaths -ne $null)
+                    {
+                        $filePatterns = $input.location.fileSystemLocations.windowsFileTypeLogPaths
+                    }
+
+                    $dcrCustomLogs.filePatterns += $filePatterns
+                }
+                else 
+                {
+                    Write-Output "Error: Custom log Data Source does not contain location information."    
+                }
+            }
+            
+            $dcrCustomLogs.streams += $tableName
+            $dcrCustomLogs.name = $dataSource.Name
+            $dcrCustomLogs.settings.text = @{
+                "recordStartTimestampFormat" = "ISO 8601"
+            }
+            $dcrCustomLogs.format = "text"
+        }
+        else 
+        {
+            Write-Output "Error: Custom log Data Source does not contain properties information."
+        }
+    }
+    return $dcrCustomLogs
+}
+
+function Get-IisLogsInDCRFormat
+{
+    $dataSourceType = "iisLog"
+    $dcrIisLogStream = Get-DCRStream -DataSourceType $dataSourceType
+
+    $newIisLog = New-Object DCRIISLog
+    $newIisLog.name = "DS_IISLogs"
+    $newIisLog.streams = $dcrIisLogStream
+
+    return $newIisLog
+}
+
 function Get-LinuxSyslogInDCRFormat
 {
     param (
@@ -635,8 +768,10 @@ function Get-Destinations
 function Get-DCRStream
 {
     param (
-        [ValidateSet("WindowsPerformanceCounter", "WindowsEvent", "LinuxSyslog", "LinuxPerformanceObject")]
-        [Parameter(Mandatory=$true)][string] $DataSourceType
+        [ValidateSet("WindowsPerformanceCounter", "WindowsEvent", "LinuxSyslog", "LinuxPerformanceObject", "CustomLog", "iisLog")]
+        [Parameter(Mandatory=$true)][string] $DataSourceType,
+        [Parameter(Mandatory=$false)][string] $WorkspaceName,
+        [Parameter(Mandatory=$false)][string] $ResourceGroupName
     )
     
     $stream = @()
@@ -645,10 +780,50 @@ function Get-DCRStream
         "WindowsPerformanceCounter" { $stream += "Microsoft-Perf"; Break }
         "LinuxPerformanceObject" { $stream += "Microsoft-Perf"; Break }
         "WindowsEvent" { $stream += "Microsoft-Event"; Break }
-        "LinuxSyslog" { $stream += "Microsoft-Syslog" }
+        "LinuxSyslog" { $stream += "Microsoft-Syslog"; Break }
+        "CustomLog" 
+        {
+            $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
+            foreach($dataSource in $workspaceDataSourceList)
+            {
+                if ($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null)
+                {
+                    $stream += "Custom-" + $dataSource.Properties.customLogName
+                }
+            }
+            Break
+        }
+
+        "IISLog" { $stream += "Microsoft-W3CIISLog"; Break }
     }
 
     return $stream
+}
+
+function GetOrCreate-DataCollectionEndpoint
+{
+    param (
+        [Parameter(Mandatory=$true)][string] $SubscriptionId,
+        [Parameter(Mandatory=$true)][string] $ResourceGroupName,
+        [Parameter(Mandatory=$true)][string] $WorkspaceName,
+        [Parameter(Mandatory=$true)][string] $DCEName
+    )
+
+    if ($DCEName -eq "null")
+    {
+        $DCEName = $SubscriptionId + "-dce"
+    }
+    
+    # If DCE does not exist, it will create a new one. If it does exists, it will return the existing one
+    $dce = az monitor data-collection endpoint create --name $dceName --public-network-access "Enabled" --resource-group $ResourceGroupName
+    if ($dce.Count -gt 0)
+    {
+        return $dce | ConvertFrom-Json
+    }
+    else {
+        Write-Host "Error: Unable to get or create a Data Collection Endpoint."
+        return $null
+    }
 }
 
 function Get-DataFlows
@@ -656,7 +831,8 @@ function Get-DataFlows
     param (
         [Parameter(Mandatory=$true)][string] $WorkspaceName,
         [ValidateSet("Linux", "Windows")]
-        [Parameter(Mandatory=$true)][string] $PlatformType
+        [Parameter(Mandatory=$true)][string] $PlatformType,
+        [Parameter(Mandatory=$true)][string] $ResourceGroupName
     )
 
     if($PlatformType -eq "Linux")
@@ -680,6 +856,9 @@ function Get-DataFlows
         $streams = @($perfCountersStream, $windowsEventsStream)
     }
 
+    $streams += Get-DCRStream -DataSourceType CustomLog -WorkspaceName $WorkspaceName -ResourceGroupName $ResourceGroupName
+    $streams += Get-DCRStream -DataSourceType IISLog
+
     $destinations = @($WorkspaceName)
     $workspaceDataFlow = 
     [ordered]@{
@@ -689,6 +868,42 @@ function Get-DataFlows
     
     $dataFlows = @($workspaceDataFlow)
     return $dataFlows
+}
+
+function Get-CustomLogStreamDeclarations
+{
+    param (
+        [Parameter(Mandatory=$true)][string] $ResourceGroupName,
+        [Parameter(Mandatory=$true)][string] $WorkspaceName
+    )
+
+    $dataSourceType = "CustomLog"
+    $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
+    $streamDeclarations = @{}
+
+    foreach($dataSource in $workspaceDataSourceList)
+    {
+        if($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null)
+        {
+            $streamName = "Custom-" + $dataSource.Properties.customLogName
+            $streamDeclarations[$streamName] = @{
+                "columns" = @(
+                    @{
+                        "name" = "TimeGenerated";
+                        "type" = "datetime";
+                    },
+                    @{
+                        "name" = "RawData";
+                        "type" = "string";
+                    }
+                )
+            }
+        }
+        else {
+            Write-Host "Error: Unable to get stream name for Custom Log data source."
+        }
+    }
+    return $streamDeclarations
 }
 
 function ConnectToAz {
@@ -753,7 +968,7 @@ $WarningPreference = 'SilentlyContinue'
 ConnectToAz -SubscriptionId $SubscriptionId
 
 # Entry point of the script
-Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath
+Get-DCRFromWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCRName $DCRName -Location $Location -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
 
 # End of script
 Write-Output ""
