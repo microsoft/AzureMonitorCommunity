@@ -8,6 +8,6 @@
 ADFTriggerRun    
 | where Status != 'Running' and Status != 'Waiting' and Status != 'WaitingOnDependency'
 | where TriggerFailureType != 'UserError'
-| summarize availability = 100.00 - (100.00*countif(Status != 'Succeeded') / count())  by bin(TimeGenerated, 1h)), _ResourceId
+| summarize availability = 100.00 - (100.00*countif(Status != 'Succeeded') / count())  by bin(TimeGenerated, 1h), _ResourceId
 | order by TimeGenerated asc
 | render timechart
