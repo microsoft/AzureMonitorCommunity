@@ -1,0 +1,390 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Virtual Machine uptime #"
+      },
+      "name": "WorkbookName"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "parameters": [
+          {
+            "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "label": "Subscription(s)",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| project value = id, label = name, selected = true",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "059d186f-6c07-46f8-abe0-2d355fadc51c",
+            "version": "KqlParameterItem/1.0",
+            "name": "WSsubs",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| distinct subscriptionId\r\n| project value = subscriptionId, label = subscriptionId, selected = true",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| project value = id, label = name, selected = true",
+            "crossComponentResources": [
+              "{WSsubs}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "b672f960-bf26-4368-b002-e1e6e9a8990d",
+            "version": "KqlParameterItem/1.0",
+            "name": "IsAzureActivityEnabled",
+            "type": 2,
+            "isRequired": true,
+            "query": "AzureActivity\r\n| take 1\r\n| summarize count()\r\n| project value = count_, label = count_, selected = true",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "3f3a75cc-17b1-49b7-a3ec-264301546011",
+            "version": "KqlParameterItem/1.0",
+            "name": "Servers",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\"\r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| distinct Resource\r\n| order by Resource asc",
+            "crossComponentResources": [
+              "{Workspaces}"
+            ],
+            "value": null,
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ]
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "911abda1-5320-4472-b13b-1e844849c1ea",
+            "version": "KqlParameterItem/1.0",
+            "name": "Help",
+            "label": "Show Help",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n  { \"value\": \"Yes\", \"label\": \"Yes\"},\r\n  { \"value\": \"No\", \"label\": \"No\", \"selected\":true },\r\n  { \"value\": \"ChangeLog\", \"label\": \"Change Log\"}\r\n]"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "ParameterSection-1"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": ">** Author **\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com)\r\n>\r\n>** Special Thanks **\r\n>Special thanks to [Evgeny Ternovsky](mailto:Evgeny.Ternovsky@microsoft.com) from the product group >for his great help and suggestions.\r\n>\r\n>** Version 1.5 **\r\n>2020-12-10\r\n>* Added the Show Help parameter. You can select if you wish to see help for initial configuration (Get Started part) or if you wich to see the this Change Log.\r\n>* Added GetStarted section with documentation to follow to enable Diagnostic Settings for log collection.\r\n>\r\n>** Version 1.4 **\r\n>2020-09-24\r\n>- Added default selected value to Subscription, Workspace and Server parameters.\r\n>\r\n>** Version 1.3 **\r\n>2020-05-21\r\n>- Revisited parameter section to avoid null selection and error messages.\r\n>- Added guidance to configure storage of Azure Activity log into a workspace if necessary.\r\n>\r\n>** Version 1.2 **\r\n>2020-03-09\r\n>- Changed the server parameter query to filter out non Virtual Machine items such as extension, Disks and so on\r\n>- Refined queries to use _ResourceId which is using a consistent case\r\n>\r\n>** Version 1.1**\r\n>2020-03-05\r\n> - Fixed time range issue in the {Servers} parameter.\r\n> - Changed notes text for running virtual machine.\r\n>\r\n>** Version 1.0 **\r\n>2020-02-21\r\n> - Initial version."
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "ChangeLog"
+      },
+      "customWidth": "66",
+      "name": "changeLog",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "# Get Started #\r\n\r\n-------------------------\r\n\r\nWelcome to the Virtual Machine Uptime workbook. This workbook is designed to ease the reporting on virtual machine uptime by VM, by Day and using a list of VM in the given time frame. You can select single or multiple virtual machine, subscriptions and workspaces. You can also select a time range with the most common pattern or custom interval.\r\n\r\n## Requirements ##\r\n\r\n* A [Log Analytics workspace.](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)\r\n\r\n* Integration of Azure Activity into a Log analytics workspace. If you are unfamiliar with how to [Collect and analyze Azure activity logs in Log Analytics workspace in Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/activity-log-collect)\r\n\r\nIf you're unfamiliar with Azure Activity, see [Azure Activity log](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/activity-log)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Help",
+        "comparison": "isEqualTo",
+        "value": "Yes"
+      },
+      "name": "getStarted"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "<br>\r\n### Data from Azure Activity, which is necessary for this workbook to work properly, was not found in none of the selected workspace(s).\r\n---\r\n\r\nPlease select another workspace or check out the detailed documentation on how to collect Azure Activity logs in Azure Monitor at [this](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/activity-log-collect#collecting-activity-log) link.",
+        "style": "warning"
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsAzureActivityEnabled",
+        "comparison": "isEqualTo",
+        "value": "0"
+      },
+      "name": "AzureActivityNotEnabled"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let _now = toscalar(now());\r\nlet defaultStopVM = AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\"\r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| distinct _ResourceId\r\n| extend stopTime=_now;\r\nlet startVM=AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\"\r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers}) \r\n| where OperationName startswith \"start virtual\" \r\n| where ActivityStatusValue == \"Succeeded\"\r\n| project startTime=TimeGenerated, Resource, _ResourceId;\r\nlet stopVM=AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\" \r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| where OperationName startswith \"deallocate virtual\" \r\n| where ActivityStatusValue == \"Succeeded\"\r\n| project stopTime=TimeGenerated, Resource, _ResourceId\r\n| union defaultStopVM;\r\nstartVM\r\n| join kind=leftouter (stopVM) on $left._ResourceId == $right._ResourceId\r\n| extend isAfterStart = iff(startTime > stopTime, 0, 1)\r\n| where isAfterStart == 1\r\n| summarize arg_min(stopTime, *) by startTime, Resource\r\n| summarize arg_min(startTime, *) by stopTime, Resource\r\n| order by Resource desc, startTime desc\r\n| project Resource, uptimeMins = datetime_diff('minute',stopTime,startTime)//, uptimeHours = datetime_diff('hour',stopTime,startTime)\r\n//| summarize totUptimeMinByVM = sum(uptimeHours) by Resource\r\n| summarize totUptimeMinByVM = sum(uptimeMins) by Resource",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Total uptime in minutes by Virtual Machine ",
+              "noDataMessage": "No data for the selected time range or resource",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "barchart"
+            },
+            "showPin": true,
+            "name": "totalUptimeByVM",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let _now = toscalar(now());\r\nlet defaultStopVM = AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\"\r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| distinct _ResourceId\r\n| extend stopTime=_now;\r\nlet startVM=AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\"\r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers}) \r\n| where OperationName startswith \"start virtual\" \r\n| where ActivityStatusValue == \"Succeeded\"\r\n| project startTime=TimeGenerated, Resource, _ResourceId;\r\nlet stopVM=AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\" \r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| where OperationName startswith \"deallocate virtual\" \r\n| where ActivityStatusValue == \"Succeeded\"\r\n| project stopTime=TimeGenerated, Resource, _ResourceId\r\n| union defaultStopVM;\r\nstartVM\r\n| join kind=leftouter (stopVM) on $left._ResourceId == $right._ResourceId\r\n| extend isAfterStart = iff(startTime > stopTime, 0, 1)\r\n| where isAfterStart == 1\r\n| summarize arg_min(stopTime, *) by startTime, Resource\r\n| summarize arg_min(startTime, *) by stopTime, Resource\r\n| order by Resource desc, startTime desc\r\n| project Resource, startTime, stopTime, uptimeMins = datetime_diff('minute',stopTime,startTime)//, uptimeHours = datetime_diff('hour',stopTime,startTime)\r\n| extend u = range(bin(startTime, 1min), bin(stopTime, 1min), 1min)\r\n| mv-expand u to typeof(datetime)\r\n| summarize count() by Resource, bin(u, 1d)\r\n| render columnchart with (series= Resource)\r\n\r\n//| extend numDays = datetime_diff('Day', stopTime, startTime) \r\n//| extend daysArr = range(startofday(startTime), endofday(stopTime), 1d) \r\n//| extend firstDayMins = pack_array(iff(numDays==0, datetime_diff('Minute', stopTime, startTime), datetime_diff('Minute', endofday(startTime), startTime)))\r\n//| extend middleDaysMins = repeat(1440, max_of(numDays-1,0))\r\n//| extend lastDayMins = pack_array(datetime_diff('Minute', stopTime, startofday(stopTime)))\r\n//| extend minsArr = iff(numDays==0,firstDayMins,array_concat(firstDayMins, middleDaysMins, lastDayMins))\r\n//| mvexpand daysArr to typeof(datetime), minsArr to typeof(int)\r\n//| project Resource, startTime = daysArr, uptimeMins = minsArr",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Total uptime in minutes by Day",
+              "noDataMessage": "No data for the selected time range or resource",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "visualization": "categoricalbar"
+            },
+            "showPin": true,
+            "name": "totalUptimeByDay",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let _now = toscalar(now());\r\nlet defaultStopVM = AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\"\r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| distinct _ResourceId\r\n| extend stopTime=_now;\r\nlet startVM=AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\" \r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| where OperationName startswith \"start virtual\" \r\n| where ActivityStatusValue == \"Succeeded\"\r\n| project startTime=TimeGenerated, Resource, _ResourceId;\r\nlet stopVM=AzureActivity\r\n| where ResourceProvider == \"Microsoft.Compute\"\r\n| where _ResourceId contains \"Microsoft.Compute/virtualMachines\" \r\n| where (indexof(_ResourceId,\"/\",0,-1,9)) == -1\r\n| where Resource in ({Servers})\r\n| where OperationName startswith \"deallocate virtual\" \r\n| where ActivityStatusValue == \"Succeeded\"\r\n| project stopTime=TimeGenerated, Resource, _ResourceId\r\n| union defaultStopVM;\r\nstartVM\r\n| join kind=leftouter (stopVM) on $left._ResourceId == $right._ResourceId\r\n| extend isAfterStart = iff(startTime > stopTime, 0, 1)\r\n| where isAfterStart == 1\r\n| summarize arg_min(stopTime, *) by startTime, Resource\r\n| summarize arg_min(startTime, *) by stopTime, Resource\r\n| order by Resource desc, startTime desc\r\n| project Resource, startTime, stopTime, uptimeMins=datetime_diff('minute',stopTime,startTime), uptimeHours=datetime_diff('hour',stopTime,startTime), notes = iif(stopTime ==_now, \"Currently running\", \"\")\r\n| extend stopTime = iif(stopTime ==_now, datetime(null), stopTime)",
+              "size": 0,
+              "showAnalytics": true,
+              "title": "Virtual Machine uptime - Table",
+              "noDataMessage": "No data for the selected time range or resource",
+              "timeContextFromParameter": "TimeRange",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspaces}"
+              ],
+              "gridSettings": {
+                "filter": true,
+                "sortBy": [
+                  {
+                    "itemKey": "notes",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "Resource",
+                    "label": "Virtual Machine Name"
+                  },
+                  {
+                    "columnId": "startTime",
+                    "label": "Start Time"
+                  },
+                  {
+                    "columnId": "stopTime",
+                    "label": "Stop Time"
+                  },
+                  {
+                    "columnId": "uptimeMins",
+                    "label": "Uptime in minutes"
+                  },
+                  {
+                    "columnId": "uptimeHours",
+                    "label": "Uptime in hours"
+                  },
+                  {
+                    "columnId": "notes",
+                    "label": "Notes"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "notes",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "showPin": true,
+            "name": "uptimeTable",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "IsAzureActivityEnabled",
+        "comparison": "isNotEqualTo",
+        "value": "0"
+      },
+      "name": "WorkbookContent"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

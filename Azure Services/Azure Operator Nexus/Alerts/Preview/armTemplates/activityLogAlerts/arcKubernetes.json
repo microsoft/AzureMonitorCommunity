@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Arc Kubernetes Disconnected"
+    },
+    "alertDescription": {
+      "value": "Kubernetes cluster is disconnected from Arc"
+    },
+    "resourceType": {
+      "value": "microsoft.kubernetes/connectedclusters"
+    }
+  }
+}
