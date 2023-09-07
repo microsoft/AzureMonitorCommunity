@@ -1,0 +1,13 @@
+// Author: aliyoussefi
+// Display name: Display types of flows used over a span of time
+// Description: Summary of Power Automate flows by name over timespan.
+// Categories: Power Platform
+// Resource types: Power Automate
+// Topic:  Usage Analytics
+
+requests
+| where timestamp > ago(1h)
+| extend requestData = todynamic(tostring(customDimensions.Data))
+| join kind=leftouter (dependencies | where type == "Cloud Flow/Cloud flow triggers" | project TriggerName = name, target) on $left.name == $right.target
+| summarize FlowDisplayNameRuns = count() by tostring(requestData.FlowDisplayName), TriggerName, tostring(requestData.FlowDisplayName), tostring(requestData.tags.createdBy)
+| project TriggerName,  tostring(requestData_FlowDisplayName), FlowDisplayNameRuns, requestData_tags_createdBy

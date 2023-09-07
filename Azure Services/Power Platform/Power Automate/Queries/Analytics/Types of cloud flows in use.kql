@@ -1,0 +1,11 @@
+// Author: aliyoussefi
+// Display name: Display types of triggers used over a span of time
+// Description: Summary of Power Automate triggers by trigger type over timespan.
+// Categories: Power Platform
+// Resource types: Power Automate
+// Topic:  Usage Analytics
+
+dependencies
+| where timestamp {_TimeRange:value}
+| where type == "Cloud Flow/Cloud flow triggers"
+| summarize count() by name
