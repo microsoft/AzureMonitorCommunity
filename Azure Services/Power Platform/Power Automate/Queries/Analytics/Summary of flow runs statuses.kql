@@ -1,0 +1,16 @@
+// Author: Alok Sriwastaw
+// Display name: Display cloud flow runs with grouped by statuses
+// Description: Summary of Power Automate flow runs grouped into total runs, success and failures over timespan.
+// Categories: Power Platform
+// Resource types: Power Automate
+// Topic:  Usage Analytics
+
+requests
+| extend cd = parse_json(customDimensions)
+| where cd.resourceProvider has "Cloud Flow"
+| extend data = parse_json(tostring(cd.Data))
+| extend FlowName = tostring(data.FlowDisplayName)
+|summarize nRun = count(), nFailed = countif(success==false) by FlowName
+| extend nSuccess = nRun-toint(nFailed)
+| project FlowName, nRun,nSuccess,nFailed
+| order by toint(nRun) desc
