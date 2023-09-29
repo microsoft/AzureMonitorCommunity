@@ -18,6 +18,7 @@ These instructions will help you get started with running the Migration Tool scr
 - Primarily uses Az Powershell module to pull workspace agent configuration information
 - User will need Read access for the specified workspace resource
 - Connect-AzAccount and Select-AzSubscription will be used to set the context for the script to run so proper Azure credentials will be needed
+- User will need to download the powershell module VMIDcrGeneratorModule and include its location in $env:PSModulePath
 
 ## Running the application
 
