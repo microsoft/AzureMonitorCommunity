@@ -1,4 +1,17 @@
-# Migration Tooling Script
+<#
+File: 
+Author: Azure Monitor Control Service
+Email: amcsdev@microsoft.com
+Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configuration
+
+License: MIT License
+
+Copyright (c) 2023 Microsoft
+#>
+
+###################################
+# Log Anaylitcs Workspace Functions
+###################################
 
 Param(
     [Parameter(Mandatory=$True)]
@@ -82,6 +95,8 @@ function Get-UserWorkspace
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
 
+    Write-Host 'Fetching the Log Analytics workspace information'
+
     # The $Workspace Name in this context in case insensitive
     $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName
 
@@ -98,6 +113,9 @@ function Get-WorkspaceDataSources
     )
 
     $dataSources = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $DataSourceType
+    
+    Write-Host 'Fetching workspace data sources'
+
     return $dataSources
 }
 
@@ -113,11 +131,15 @@ function Get-DCRFromWorkspace
         [Parameter(Mandatory=$true)][string] $DCEName
     )
 
+    Write-Host '1. Generating Windows templates'
     $windowsDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-windows"
     $windowsDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Windows" -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
     
+    Write-Host '2. Generating Linux templates'
     $linuxDCRTemplateParams = Get-DCRBaseArmTemplateParams -DCRName "$($DCRName)-linux"
     $linuxDCRArmTemplate = Get-DCRArmTemplate -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Location $Location -PlatformType "Linux" -FolderPath $FolderPath -SubscriptionId $SubscriptionId -DCEName $DCEName
+
+    Write-Host 'Outputting template files and parameter files\n\n'
 
     $currentDateTime = Get-Date -Format "MM-dd-yyyy-HH-mm-ss"
     if($windowsDCRArmTemplate.Count -gt 0)
@@ -160,14 +182,17 @@ function Get-DCRArmTemplate
         [Parameter(Mandatory=$true)][string] $DCEName
     )
 
+    Write-Host 'Getting the DCR base JSON'
     $dcrJson = Get-DCRBaseJson -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
     
+    Write-Host 'Provisionning DCE ...'
     $dataCollectionEndpoint = GetOrCreate-DataCollectionEndpoint -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -DCEName $DCEName
     if ($dataCollectionEndpoint.id -ne $null)
     {
         $dceId = $dataCollectionEndpoint.id
     }
-    
+    Write-Host 'DCE provisioning complete'
+
     #ARM Template File
     $schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
     $contentVersion = "1.0.0.0"
@@ -208,12 +233,13 @@ function Get-DCRArmTemplate
             "contentVersion" = $contentVersion;
             "parameters" = $parameters;
             "variables" = $variables;
-            "resources" = $resources
+            "resources" = $resources;
         }
         
         $result = ConvertTo-Json -InputObject $dcrTemplate -Depth 20
     }
 
+    Write-Host 'DCR base JSON ready'
     return $result
 }
 
@@ -254,10 +280,12 @@ function Get-DCRBaseJson
     
     $dcrJson = @{}
 
+    Write-Host 'Preparing the DCR payload ...'
     $dataSources = Get-DataSources -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -PlatformType $PlatformType
     $destinations = Get-Destinations -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
     $dataFlows = [System.Collections.ArrayList]@(Get-DataFlows -WorkspaceName $WorkspaceName -PlatformType $PlatformType -ResourceGroupName $ResourceGroupName)
     $streamDeclarations = Get-CustomLogStreamDeclarations -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+    Write-Host 'DCR payload ready'
 
     if(-not (Get-DataSourceIsEmpty -DataSource $dataSources))
     {
@@ -291,6 +319,7 @@ function Get-DataSources
         [Parameter(Mandatory=$true)][string] $PlatformType
     )
 
+    Write-Host 'Getting data sources'
     # Data sources are platform dependent
     # For Windows: perfCounters (WindowsPerfCounters), windowsEventLogs
     # For Linux: perfCounters (LinuxPerformanceObject), sysLog (LinuxSysLogs)
@@ -746,6 +775,8 @@ function Get-Destinations
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
 
+    Write-Host 'Preparing Destinations'
+
     $workspace = Get-UserWorkspace -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
 
     $laDest = 
@@ -761,6 +792,8 @@ function Get-Destinations
         "logAnalytics" = $logAnalytics;
     }
     
+    Write-Host 'Destinations Ready'
+
     return $destinations
 
 }
@@ -835,6 +868,7 @@ function Get-DataFlows
         [Parameter(Mandatory=$true)][string] $ResourceGroupName
     )
 
+    Write-Host 'Getting the Data Flows'
     if($PlatformType -eq "Linux")
     {
         $perfCountersStream = Get-DCRStream -DataSourceType LinuxPerformanceObject
@@ -867,6 +901,7 @@ function Get-DataFlows
     }
     
     $dataFlows = @($workspaceDataFlow)
+    Write-Host 'Data Flows Ready'
     return $dataFlows
 }
 
@@ -876,6 +911,8 @@ function Get-CustomLogStreamDeclarations
         [Parameter(Mandatory=$true)][string] $ResourceGroupName,
         [Parameter(Mandatory=$true)][string] $WorkspaceName
     )
+
+    Write-Host 'Fetching Custom Log Stream Declarations'
 
     $dataSourceType = "CustomLog"
     $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
@@ -903,6 +940,8 @@ function Get-CustomLogStreamDeclarations
             Write-Host "Error: Unable to get stream name for Custom Log data source."
         }
     }
+
+    Write-Host 'Custom Log Stream Declarations Ready'
     return $streamDeclarations
 }
 
