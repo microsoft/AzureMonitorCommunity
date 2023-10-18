@@ -51,57 +51,6 @@ class DCRWindowsEventLogDataSource
     [string[]]$xPathQueries
 }
 
-class DCRSyslogDataSource
-{
-    [string]$name
-    [string[]]$streams
-    [string[]]$facilityNames
-    [string[]]$logLevels
-}
-
-class DCRExtensionDataSource
-{
-    [string]$name
-    [string[]]$streams
-    [string]$extensionName
-    [System.Object]$extensionSettings
-    [string[]]$inputDataSources
-}
-
-class DCRIISLogDataSource
-{
-    [string]$name
-    [string[]]$streams
-    [string[]]$logDirectories
-}
-
-class DCRLogFileDataSource
-{
-    [string]$name
-    [string[]]$streams
-    [string[]]$filePatterns
-    [string]$format
-    [DCRLogFileDataSourceLogFileSettings]$settings
-}
-
-class DCRLogFileDataSourceLogFileSettings
-{
-    [DCRLogFileDataSourceLogFileTextSettings]$text
-}
-
-class DCRLogFileDataSourceLogFileTextSettings
-{
-    [string]$recordStartTimestampFormat
-}
-
-# 2. Destinations
-class DCRLogAnalyticsWorkspaceDestination
-{
-    [string]$name
-    [string]$workspaceResourceId
-    [string]$worskpaceId
-}
-
 #endregion
 
 #region Utility functions
@@ -165,14 +114,8 @@ function Get-BaseArmTemplate
         "properties" = [ordered]@{
             "description" = "A Data Collection Rule"
             "dataCollectionEndpointId" = $null
-            "streamDeclarations" = @{}
             "dataSources" = [ordered]@{
                 "performanceCounters" = @()
-                "windowsEventLogs" = @()
-                "syslog" = @()
-                "extensions" = @()
-                "logFiles" = @()
-                "iisLogs" = $null
             }
             "destinations" = $null
             "dataFlows" = @(
@@ -215,8 +158,9 @@ function Get-UserLogAnalyticsWorkspace
     Write-Host 'Info: Fetching the specified Log Analytics Workspace details' -ForegroundColor Cyan
 
     # The $Workspace Name in this context in case insensitive
-    $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName 
+    $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName
     $workspace | Out-Null 
+
     Write-Host 'Info: Successfully retrieved the LAW details' -ForegroundColor Green
     $state["workspace"] = $workspace
 
@@ -264,6 +208,7 @@ function Get-WindowsPerfCountersDataSource
     }
     else {
         Write-Host "Info: Windows Performance Counters is enabled on the workspace" -ForegroundColor Green
+        $state.dataSourcesCount += 1
 
         $dcrPerfCounterStream = "Microsoft-Perf"
         $dcrWindowsPerfCountersTable = [ordered]@{}
@@ -313,6 +258,7 @@ function Get-LinuxPerfCountersDataSource
     }
     else {
         Write-Host "Info: Linux Performance Counters is enabled on the workspace" -ForegroundColor Green
+        $state.dataSourcesCount += 1
 
         $dcrLinuxPerfCountersTable = [ordered]@{}
         $count = 1
@@ -396,11 +342,14 @@ function Get-WindowsEventLogs
     }
     else {
         Write-Host "Info: Windows Event Logs is enabled on the workspace" -ForegroundColor Green
+        $state.dataSourcesCount += 1
+
+        $state.armTemplate.resources[0].properties.dataSources["windowsEventLogs"] = @()
 
         # Compressing all the workspace events into a single dcr event log
         $dcrWindowsEvent = New-Object DCRWindowsEventLogDataSource
         $dcrWindowsEvent.name = "DS_WindowsEventLogs"
-        $dcrWindowsEvent.streams = @("Microsoft-WindowsEvent")
+        $dcrWindowsEvent.streams = @("Microsoft-Event")
         $dcrWindowsEvent.xPathQueries = @()
 
         $iter_count = 0
@@ -416,7 +365,7 @@ function Get-WindowsEventLogs
             $state.armTemplate.resources[0].properties.dataSources.windowsEventLogs += $dcrWindowsEvent
         }
         
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-WindowsEvent"
+        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-Event"
     }
 }
 
@@ -521,41 +470,44 @@ function Get-LinuxSysLogs
     }
     else {
         Write-Host "Info: Linux SysLogs is enabled on the workspace" -ForegroundColor Green
-    }
+        $state.dataSourcesCount += 1
 
-    $dcrLinuxSyslogsTable = @{}
-    $count = 1
-    foreach($dataSource in $linuxSyslogs)
-    {
-        $properties = $dataSource.Properties
-        if($properties.syslogSeverities.Length -gt 0)
+        $state.armTemplate.resources[0].properties.dataSources["syslog"] = @()
+
+        $dcrLinuxSyslogsTable = @{}
+        $count = 1
+        foreach($dataSource in $linuxSyslogs)
         {
-            $syslogLevels = Get-SyslogLevels -LinuxSyslogProperties $properties
-            $logLevelsKey = $syslogLevels -join "-"
-            if($dcrLinuxSyslogsTable.Contains($logLevelsKey))
+            $properties = $dataSource.Properties
+            if($properties.syslogSeverities.Length -gt 0)
             {
-                $dcrLinuxSyslogsTable[$logLevelsKey].facilityNames += Get-SyslogFacilityName  -mmaFacilityName $properties.syslogName
-            }
-            else
-            {
-                $newLinuxSyslog = New-Object DCRSyslogDataSource
-                $newLinuxSyslog.name = "DS_$("LinuxSyslog")_$($count)"
-                $facilityName = Get-SyslogFacilityName -mmaFacilityName $properties.syslogName
-                $newLinuxSyslog.facilityNames = @($facilityName)
-                $newLinuxSyslog.logLevels = $syslogLevels
-                $newLinuxSyslog.streams = @("Microsoft-Syslog")
-                $dcrLinuxSyslogsTable.Add($logLevelsKey, $newLinuxSyslog)
-                $count += 1
+                $syslogLevels = Get-SyslogLevels -LinuxSyslogProperties $properties
+                $logLevelsKey = $syslogLevels -join "-"
+                if($dcrLinuxSyslogsTable.Contains($logLevelsKey))
+                {
+                    $dcrLinuxSyslogsTable[$logLevelsKey].facilityNames += Get-SyslogFacilityName  -mmaFacilityName $properties.syslogName
+                }
+                else
+                {
+                    $newLinuxSyslog = New-Object DCRSyslogDataSource
+                    $newLinuxSyslog.name = "DS_$("LinuxSyslog")_$($count)"
+                    $facilityName = Get-SyslogFacilityName -mmaFacilityName $properties.syslogName
+                    $newLinuxSyslog.facilityNames = @($facilityName)
+                    $newLinuxSyslog.logLevels = $syslogLevels
+                    $newLinuxSyslog.streams = @("Microsoft-Syslog")
+                    $dcrLinuxSyslogsTable.Add($logLevelsKey, $newLinuxSyslog)
+                    $count += 1
+                }
             }
         }
-    }
 
-    foreach($key in $dcrLinuxSyslogsTable.Keys)
-    {
-        $state.armTemplate.resources[0].properties.dataSources.sysLog += $dcrLinuxSyslogsTable[$key]
-    }
+        foreach($key in $dcrLinuxSyslogsTable.Keys)
+        {
+            $state.armTemplate.resources[0].properties.dataSources.sysLog += $dcrLinuxSyslogsTable[$key]
+        }
 
-    $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-Syslog"
+        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-Syslog"
+    }
 } 
 
 <#
@@ -572,6 +524,9 @@ function Get-ExtensionDataSources
     if ($null -ne $vmInsights -and $vmInsights.enabled -eq $True)
     {
         Write-Host 'Info: VM Insights Extension Data Source is enabled on the workspace' -ForegroundColor Green
+        $state.dataSourcesCount += 1
+
+        $state.armTemplate.resources[0].properties.dataSources["extensions"] = @()
 
         # VM Insights Perf counter
         $vmInsightsPerfCounter = [ordered]@{
@@ -599,6 +554,78 @@ function Get-ExtensionDataSources
     }
     else {
         Write-Host 'Info: VM Insights Extension Data Source is not enabled on the workspace' -ForegroundColor Yellow
+    }
+}
+
+<#
+.DESCRIPTION
+    Makes an ARM call to create a DCE
+#>
+function Get-ProvisionDCE
+{
+    Write-Host "Info: Provisioning a Data Collection Endpoint (DCE) on your behalf" -ForegroundColor Yellow
+    $dceSubId = Read-Host ">>>>> Sub Id"
+    $dceRg = Read-Host ">>>>> Resource Group"
+    $dceName = Read-Host ">>>>> Name"
+    $accessToken = Get-AzAccessToken
+    $accessToken | Out-Null # Shouldn't print this out to the console
+
+    $apiUrl = "https://management.azure.com/subscriptions/$($dceSubId)/resourceGroups/$($dceRg)/providers/Microsoft.Insights/dataCollectionEndpoints/$($dceName)?api-version=2022-06-01"
+    $headers = @{
+        'Authorization' = "Bearer $($accessToken.Token)"
+    }
+
+    $body = @{
+        "location" = $state.armTemplate.parameters.dcrLocation.defaultValue
+        "properties" = @{
+            "description" = "A data Collection Endpoint"
+        }
+    }
+    $bodyData = $body | ConvertTo-Json
+
+    Write-Host "Info: The DCE is being provisioned in the same region as the workspace" -ForegroundColor Yellow
+    $response = Invoke-RestMethod -Uri $apiUrl -Method PUT -Headers $headers -Body $bodyData -ContentType "application/json" # Replace this AMCS PS CMDLET when it's ready
+    $response | Out-Null
+
+    $dceArmId = $response.id
+    Write-Host "Info: The DCE was successfully provisioned: $($dceArmId)" -ForegroundColor Green
+
+    return $dceArmId
+}
+
+<#
+.DESCRIPTION
+    Makes sure a Data Collection Endpoint Id is present in the payload whenever necessary
+#>
+function Set-FulfillDCERequirement
+{
+    if ($null -ne $state.armTemplate.resources[0].properties.dataCollectionEndpointId)
+    {
+        Write-Host "Info: DCE requirement already fulfilled" -ForegroundColor Green
+    }
+    else{
+        $provisionDCE = Read-Host "Do you want us to automatically provision a DCE for you? (y/n)"
+        $provisionDCE = $provisionDCE.Trim().ToLower()
+
+        $dceArmId = "/subscriptions/{subId}/resourceGroups/{resourceGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/{dceName}"
+
+        if ("y" -eq $provisionDCE)
+        {
+            $dceArmId = Get-ProvisionDCE
+        }
+        else{
+            Write-Host "Action Required !!!: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
+        }
+        
+        $state.armTemplate.parameters["dceArmId"] = [ordered]@{
+            "type" = "string"
+            "defaultValue" = $dceArmId
+            "metadata" = [ordered]@{
+                "description" = "The ARM Id of the Data Collection Endpoint being associated to this DCR"
+            }
+        }
+
+        $state.armTemplate.resources[0].properties.dataCollectionEndpointId = "[parameters('dceArmId')]"
     }
 }
 
@@ -644,9 +671,13 @@ function Get-CustomLogs
     }
     else {
         Write-Host "Info: Custom Logs is enabled on the workspace" -ForegroundColor Green
+        $state.dataSourcesCount += 1
+
         Write-Host "Info IMPORTANT  !!!: The script is unable to get the exact schema for each custom table" -ForegroundColor Yellow
         Write-Host "Action Required !!!: You will need to update the `streamDeclarations` section of the DCR to make sure each stream declaration columns definition matches the output table in LAW" -ForegroundColor DarkYellow
         
+        $state.armTemplate.resources[0].properties["streamDeclarations"] = @{}
+        $state.armTemplate.resources[0].properties.dataSources["logFiles"] = @()
         foreach($customLog in $customLogs)
         {
             $customTableName = $customLog.Properties.customLogName
@@ -686,55 +717,8 @@ function Get-CustomLogs
         ########################################################
         # DCE required for custom logs
         Write-Host "Info IMPORTANT  !!!: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor Yellow
-        $dceArmId = "/subscriptions/{subId}/resourceGroups/{resourceGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/{dceName}"
 
-        # Option1: We provision a DCE on behalf of the customer
-        $provisionDCE = Read-Host "Do you want us to automatically provision a DCE for you? (y/n)"
-        $provisionDCE = $provisionDCE.Trim().ToLower()
-
-        if ("y" -eq $provisionDCE)
-        {
-            Write-Host "Info: Provisioning a Data Collection Endpoint (DCE) on your behalf" -ForegroundColor Yellow
-            $dceSubId = Read-Host ">>>>> Sub Id"
-            $dceRg = Read-Host ">>>>> Resource Group"
-            $dceName = Read-Host ">>>>> Name"
-            
-            $accessToken = Get-AzAccessToken
-            $accessToken | Out-Null # Shouldn't print this out to the console
-
-            $apiUrl = "https://management.azure.com/subscriptions/$($dceSubId)/resourceGroups/$($dceRg)/providers/Microsoft.Insights/dataCollectionEndpoints/$($dceName)?api-version=2022-06-01"
-            $headers = @{
-                'Authorization' = "Bearer $($accessToken.Token)"
-            }
-
-            $body = @{
-                "location" = $state.armTemplate.parameters.dcrLocation.defaultValue
-                "properties" = @{
-                    "description" = "A data Collection Endpoint"
-                }
-            }
-            $bodyData = $body | ConvertTo-Json
-
-            Write-Host "Info: The DCE is being provisioned in the same region as the workspace" -ForegroundColor Yellow
-            $response = Invoke-RestMethod -Uri $apiUrl -Method PUT -Headers $headers -Body $bodyData -ContentType "application/json" # Replace this AMCS PS CMDLET when it's ready
-            $response | Out-Null
-
-            $dceArmId = $response.id
-            Write-Host "Info: The DCE was successfully provisioned: $($dceArmId)" -ForegroundColor Green
-        }
-        else{
-            Write-Host "Action Required !!!: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
-        }
-
-        $state.armTemplate.parameters["dceArmId"] = [ordered]@{
-            "type" = "string"
-            "defaultValue" = $dceArmId
-            "metadata" = [ordered]@{
-                "description" = "The ARM Id of the Data Collection Endpoint being associated to this DCR"
-            }
-        }
-
-        $state.armTemplate.resources[0].properties.dataCollectionEndpointId = "[parameters('dceArmId')]"
+        Set-FulfillDCERequirement
     }
 }
 
@@ -764,6 +748,7 @@ function Get-IsIISLogsDataSourceEnabled
     if ($response.value.Count -ne 0 -and $response.value[0].properties.state -eq "OnPremiseEnabled")
     {
         Write-Host "Info: IIS Logs is enabled on the workspace" -ForegroundColor Green
+        $state.dataSourcesCount += 1
         return $True
     }
     else {
@@ -807,14 +792,17 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     $isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.workspace
     if ($True -eq $isIISLogsEnabled)
     {
-        $iisLogsDataSource = [ordered]@{
-            "iisLogs" = [ordered]@{
+        # DCE required for iis logs
+        Write-Host "Info IMPORTANT  !!!: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor Yellow
+
+        Set-FulfillDCERequirement
+
+        $iisLogsDataSource = @([ordered]@{
                 "name" = "myiislogsdatasource"
                 "streams" = @("Microsoft-W3CIISLog")
                 "logDirectorties" = @() #double check what to pass here. DCR contract has it.
-            } 
-        }
-        $state.armTemplate.resources[0].properties["dataSources"]["iisLogs"] = $iisLogsDataSource.iisLogs
+        })
+        $state.armTemplate.resources[0].properties["dataSources"]["iisLogs"] = $iisLogsDataSource
         $state.armTemplate.resources[0].properties["dataFlows"][0].streams += "Microsoft-W3CIISLog"
     }
 }
@@ -822,7 +810,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
 <#
 .DESCRIPTION
     This function demux the data flow
-    If there are 4 streams in dataFlows[0].streams, we end up with 4 dataFlow objects in dataFlows
+    If there are 4 distincts streams in dataFlows[0].streams, we end up with 4 dataFlow objects in dataFlows
 #>
 function Set-DemuxDataFlows
 {
@@ -830,9 +818,10 @@ function Set-DemuxDataFlows
 
     $state.armTemplate.resources[0].properties.dataFlows = @()
 
-    Write-Host "Info: Building data flows" -ForegroundColor Yellow
+    Write-Host
+    Write-Host "Info: Building data flows" -ForegroundColor Cyan
 
-    foreach ($stream in $dataFlow.streams)
+    foreach ($stream in $dataFlow.streams | Select-Object -Unique)
     {
         $newDataFlow = [ordered]@{
             "streams" = @($stream)
@@ -842,8 +831,35 @@ function Set-DemuxDataFlows
         $state.armTemplate.resources[0].properties.dataFlows += $newDataFlow
     }
 
-    $filePath = "./output.json" # Meaning the current directory
-    $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $filePath
+
+}
+
+function Get-Output
+{
+    Write-Host
+    if ($state.dataSourcesCount -eq 0)
+    {
+        Write-Host 'Info: No supported data sources were found on the workspace.' -ForegroundColor DarkYellow
+        Write-Host 'Info: Terminating the process ...' -ForegroundColor DarkYellow
+        Exit
+    }
+    else{
+        # Do some clean up
+        if ($state.armTemplate.resources[0].properties.dataSources.performanceCounters.Count -eq 0)
+        {
+            $state.armTemplate.resources[0].properties.dataSources.Remove("performanceCounters")
+        }
+
+        if ($null -eq $state.armTemplate.resources[0].properties.dataCollectionEndpointId)
+        {
+            $state.armTemplate.resources[0].properties.Remove("dataCollectionEndpointId")
+        }
+
+        Write-Host 'Info: Generating the output arm template file' -ForegroundColor Cyan
+        $filePath = "./output.json" # Meaning the current directory
+        $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $filePath
+        Write-Host "Info: Done. Check output.json !" -ForegroundColor Green
+    }
 }
 
 #endregion
@@ -854,11 +870,13 @@ $WarningPreference = 'SilentlyContinue'
 Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
 
 ###########################################################
-$global:state = [ordered]@{}
+$global:state = [ordered]@{
+    "dataSourcesCount" = 0
+}
 
 Get-BaseArmTemplate
 Get-UserLogAnalyticsWorkspace 
 Get-UserLogAnalyticsWorkspaceDataSources
 Set-DemuxDataFlows
-Write-Host "Info: Done. Check output.json !" -ForegroundColor Green
+Get-Output
 #endregion
