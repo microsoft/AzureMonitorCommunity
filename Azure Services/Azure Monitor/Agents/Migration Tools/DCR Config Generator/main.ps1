@@ -236,40 +236,6 @@ function Get-UserLogAnalyticsWorkspace
 
 <#
 .DESCRIPTION
-    Cheks whether or not IIS Logs Collection is enabled on the workspace
-#>
-function Get-IsIISLogsDataSourceEnabled
-{
-    param(
-        [Parameter(Mandatory=$true)][System.Object] $workspace
-    )
-    $accessToken = Get-AzAccessToken
-    $accessToken | Out-Null # Shouldn't print this out to the console
-
-    $apiUrl = "https://management.azure.com$($workspace.ResourceId)/dataSources?%24filter=kind%20eq%20'IISLogs'&api-version=2020-08-01"
-    $headers = @{
-        'Authorization' = "Bearer $($accessToken.Token)"
-    }
-
-    $response = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
-    $response | Out-Null
-
-    # response.value is an array
-    # We return false when response.value is empty or response.value[0].properties.state = "OnPremiseDisabled"
-    # We return True other
-    if ($response.value.Count -ne 0 -and $response.value[0].properties.state -eq "OnPremiseEnabled")
-    {
-        Write-Host "Info: IIS Logs is enabled on the workspace" -ForegroundColor Green
-        return $True
-    }
-    else {
-        Write-Host "Info: IIS Logs is not enabled on the workspace" -ForegroundColor Yellow
-        return $False
-    }
-}
-
-<#
-.DESCRIPTION
     Checks and parses the Windows Perf Counters on the workspace
 #>
 function Get-WindowsPerfCountersDataSource
@@ -594,6 +560,50 @@ function Get-LinuxSysLogs
 
 <#
 .DESCRIPTION
+    Fetches and parses any extension data sources present on the workspace
+#>
+function Get-ExtensionDataSources
+{
+    $workspaceExtensions = Get-AzOperationalInsightsIntelligencePack -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+
+    # Case 1: VM Insights
+    $vmInsights = $workspaceExtensions | Where-Object {$_.name -match ".*VMInsights*" }
+
+    if ($null -ne $vmInsights -and $vmInsights.enabled -eq $True)
+    {
+        Write-Host 'Info: VM Insights Extension Data Source is enabled on the workspace' -ForegroundColor Green
+
+        # VM Insights Perf counter
+        $vmInsightsPerfCounter = [ordered]@{
+            "name" = "VMInsightsPerfCounters"
+            "streams" = @("Microsoft-InsightsMetrics")
+            "samplingFrequencyInSeconds" = 60
+            "counterSpecifiers" = @("\VmInsights\DetailedMetrics")
+        }
+
+        $state.armTemplate.resources[0].properties.dataSources.performanceCounters += $vmInsightsPerfCounter
+        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-InsightsMetrics"
+
+        # VM Insights Extension
+        $vmInsightsExtension = [ordered]@{
+            "streams" = @("Microsoft-ServiceMap")
+            "extensionName" = "DependencyAgent"
+            "extensionSettings" = @{}
+            "name" = "DependencyAgentDataSource"
+        }
+
+        Write-Host 'Info: Added Microsoft-InsightsMetrics and Microsoft-ServiceMap streams as part of the VM Insights Extension' -ForegroundColor Yellow
+
+        $state.armTemplate.resources[0].properties.dataSources.extensions += $vmInsightsExtension
+        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-ServiceMap"
+    }
+    else {
+        Write-Host 'Info: VM Insights Extension Data Source is not enabled on the workspace' -ForegroundColor Yellow
+    }
+}
+
+<#
+.DESCRIPTION
     Checks and parses Custom Logs
 #>
 function Get-CustomLogs
@@ -676,11 +686,49 @@ function Get-CustomLogs
         ########################################################
         # DCE required for custom logs
         Write-Host "Info IMPORTANT  !!!: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor Yellow
-        Write-Host "Action Required !!!: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
+        $dceArmId = "/subscriptions/{subId}/resourceGroups/{resourceGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/{dceName}"
+
+        # Option1: We provision a DCE on behalf of the customer
+        $provisionDCE = Read-Host "Do you want us to automatically provision a DCE for you? (y/n)"
+        $provisionDCE = $provisionDCE.Trim().ToLower()
+
+        if ("y" -eq $provisionDCE)
+        {
+            Write-Host "Info: Provisioning a Data Collection Endpoint (DCE) on your behalf" -ForegroundColor Yellow
+            $dceSubId = Read-Host ">>>>> Sub Id"
+            $dceRg = Read-Host ">>>>> Resource Group"
+            $dceName = Read-Host ">>>>> Name"
+            
+            $accessToken = Get-AzAccessToken
+            $accessToken | Out-Null # Shouldn't print this out to the console
+
+            $apiUrl = "https://management.azure.com/subscriptions/$($dceSubId)/resourceGroups/$($dceRg)/providers/Microsoft.Insights/dataCollectionEndpoints/$($dceName)?api-version=2022-06-01"
+            $headers = @{
+                'Authorization' = "Bearer $($accessToken.Token)"
+            }
+
+            $body = @{
+                "location" = $state.armTemplate.parameters.dcrLocation.defaultValue
+                "properties" = @{
+                    "description" = "A data Collection Endpoint"
+                }
+            }
+            $bodyData = $body | ConvertTo-Json
+
+            Write-Host "Info: The DCE is being provisioned in the same region as the workspace" -ForegroundColor Yellow
+            $response = Invoke-RestMethod -Uri $apiUrl -Method PUT -Headers $headers -Body $bodyData -ContentType "application/json" # Replace this AMCS PS CMDLET when it's ready
+            $response | Out-Null
+
+            $dceArmId = $response.id
+            Write-Host "Info: The DCE was successfully provisioned: $($dceArmId)" -ForegroundColor Green
+        }
+        else{
+            Write-Host "Action Required !!!: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
+        }
 
         $state.armTemplate.parameters["dceArmId"] = [ordered]@{
             "type" = "string"
-            "defaultValue" = "/subscriptions/{subId}/resourceGroups/{resourceGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/{dceName}"
+            "defaultValue" = $dceArmId
             "metadata" = [ordered]@{
                 "description" = "The ARM Id of the Data Collection Endpoint being associated to this DCR"
             }
@@ -690,42 +738,37 @@ function Get-CustomLogs
     }
 }
 
-function Get-ExtensionDataSources
+<#
+.DESCRIPTION
+    Cheks whether or not IIS Logs Collection is enabled on the workspace
+#>
+function Get-IsIISLogsDataSourceEnabled
 {
-    $workspaceExtensions = Get-AzOperationalInsightsIntelligencePack -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+    param(
+        [Parameter(Mandatory=$true)][System.Object] $workspace
+    )
+    $accessToken = Get-AzAccessToken
+    $accessToken | Out-Null # Shouldn't print this out to the console
 
-    # Case 1: VM Insights
-    $vmInsights = $workspaceExtensions | Where-Object {$_.name -match ".*VMInsights*" }
+    $apiUrl = "https://management.azure.com$($workspace.ResourceId)/dataSources?%24filter=kind%20eq%20'IISLogs'&api-version=2020-08-01"
+    $headers = @{
+        'Authorization' = "Bearer $($accessToken.Token)"
+    }
 
-    #if ($null -ne $vmInsights -and $vmInsights.enabled -eq $True)
-    if ($True)
+    $response = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
+    $response | Out-Null
+
+    # response.value is an array
+    # We return false when response.value is empty or response.value[0].properties.state = "OnPremiseDisabled"
+    # We return True other
+    if ($response.value.Count -ne 0 -and $response.value[0].properties.state -eq "OnPremiseEnabled")
     {
-        Write-Host 'Info: VM Insights Extension Data Source is enabled on the workspace' -ForegroundColor Green
-
-        # VM Insights Perf counter
-        $vmInsightsPerfCounter = [ordered]@{
-            "name" = "VMInsightsPerfCounters"
-            "streams" = @("Microsoft-InsightsMetrics")
-            "samplingFrequencyInSeconds" = 60
-            "counterSpecifiers" = @("\VmInsights\DetailedMetrics")
-        }
-
-        $state.armTemplate.resources[0].properties.dataSources.performanceCounters += $vmInsightsPerfCounter
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-InsightsMetrics"
-
-        # VM Insights Extension
-        $vmInsightsExtension = [ordered]@{
-            "streams" = @("Microsoft-ServiceMap")
-            "extensionName" = "DependencyAgent"
-            "extensionSettings" = @{}
-            "name" = "DependencyAgentDataSource"
-        }
-
-        $state.armTemplate.resources[0].properties.dataSources.extensions += $vmInsightsExtension
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-ServiceMap"
+        Write-Host "Info: IIS Logs is enabled on the workspace" -ForegroundColor Green
+        return $True
     }
     else {
-        Write-Host 'Info: VM Insights Extension Data Source is not enabled on the workspace' -ForegroundColor Yellow
+        Write-Host "Info: IIS Logs is not enabled on the workspace" -ForegroundColor Yellow
+        return $False
     }
 }
 
@@ -743,16 +786,16 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     Write-Host 'Info: Fetching the Log Analytics Workspace data sources' -ForegroundColor Cyan
 
     # Windows Performance Counters
-    #Get-WindowsPerfCountersDataSource
+    Get-WindowsPerfCountersDataSource
 
     # Linux Performance Counters
-    #Get-LinuxPerfCountersDataSource
+    Get-LinuxPerfCountersDataSource
 
     # Windows Event Logs
-    #Get-WindowsEventLogs
+    Get-WindowsEventLogs
 
     # Linux Syslogs
-    #Get-LinuxSysLogs
+    Get-LinuxSysLogs
 
     # Extensions Data Sources
     Get-ExtensionDataSources 
@@ -761,7 +804,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     Get-CustomLogs
 
     # IIS Logs
-    #$isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.workspace
+    $isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.workspace
     if ($True -eq $isIISLogsEnabled)
     {
         $iisLogsDataSource = [ordered]@{
@@ -774,18 +817,33 @@ function Get-UserLogAnalyticsWorkspaceDataSources
         $state.armTemplate.resources[0].properties["dataSources"]["iisLogs"] = $iisLogsDataSource.iisLogs
         $state.armTemplate.resources[0].properties["dataFlows"][0].streams += "Microsoft-W3CIISLog"
     }
-
-    $filePath = "./output.json" # Meaning the current directory
-    $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $filePath
 }
 
 <#
 .DESCRIPTION
-    This function generates the Outputs files
+    This function demux the data flow
+    If there are 4 streams in dataFlows[0].streams, we end up with 4 dataFlow objects in dataFlows
 #>
-function Get-Outputs
+function Set-DemuxDataFlows
 {
+    $dataFlow = $state.armTemplate.resources[0].properties.dataFlows[0]
 
+    $state.armTemplate.resources[0].properties.dataFlows = @()
+
+    Write-Host "Info: Building data flows" -ForegroundColor Yellow
+
+    foreach ($stream in $dataFlow.streams)
+    {
+        $newDataFlow = [ordered]@{
+            "streams" = @($stream)
+            "destinations" = @($dataFlow.destinations)
+        }
+
+        $state.armTemplate.resources[0].properties.dataFlows += $newDataFlow
+    }
+
+    $filePath = "./output.json" # Meaning the current directory
+    $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $filePath
 }
 
 #endregion
@@ -801,6 +859,6 @@ $global:state = [ordered]@{}
 Get-BaseArmTemplate
 Get-UserLogAnalyticsWorkspace 
 Get-UserLogAnalyticsWorkspaceDataSources
-Get-Outputs
-
+Set-DemuxDataFlows
+Write-Host "Info: Done. Check output.json !" -ForegroundColor Green
 #endregion
