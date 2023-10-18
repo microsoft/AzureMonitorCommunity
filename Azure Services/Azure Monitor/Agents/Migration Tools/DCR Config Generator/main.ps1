@@ -102,33 +102,6 @@ class DCRLogAnalyticsWorkspaceDestination
     [string]$worskpaceId
 }
 
-# 3. Custom Logs
-class DCRStreamDeclaration
-{
-    [ColumnDefinition[]]$columns
-}
-
-class ColumnDefinition
-{
-    [string]$name
-    [string]$type
-}
-
-# 4. Data Flows
-class DCRDataFlow
-{
-    [string[]]$streams
-    [string[]]$destinations
-    [string]$transformKql
-    [string]$outputStream
-    [string]$builtinTransform
-}
-
-# 5. Log Analytics Workspace
-class LogAnalyticsWorkspace
-{
-    [string]$name
-}
 #endregion
 
 #region Utility functions
@@ -188,7 +161,7 @@ function Get-BaseArmTemplate
         "type" = "Microsoft.Insights/dataCollectionRules"
         "apiVersion" = "2022-06-01" # Using the latest api version
         "name" = "[parameters('dcrName')]"
-        "location" = "[parmaters('dcrLocation')]"
+        "location" = "[parameters('dcrLocation')]"
         "properties" = [ordered]@{
             "description" = "A Data Collection Rule"
             "dataCollectionEndpointId" = $null
@@ -197,6 +170,7 @@ function Get-BaseArmTemplate
                 "performanceCounters" = @()
                 "windowsEventLogs" = @()
                 "syslog" = @()
+                "extensions" = @()
                 "logFiles" = @()
                 "iisLogs" = $null
             }
@@ -204,7 +178,7 @@ function Get-BaseArmTemplate
             "dataFlows" = @(
                 [ordered]@{
                     "streams" = @()
-                    "destinations" = "myloganalyticsworkspace"
+                    "destinations" = @("myloganalyticsworkspace")
                 }
             )
         }
@@ -248,11 +222,11 @@ function Get-UserLogAnalyticsWorkspace
 
     # Populate `Destinations` (This will be the only destination in the DCR)
     $state.armTemplate.resources[0].properties.destinations = [ordered]@{
-        "logAnalytics" = [ordered]@{
+        "logAnalytics" = @([ordered]@{
             "workspaceResourceId" = $workspace.ResourceId
             "workspaceId" = $workspace.CustomerId
             "name" = "myloganalyticsworkspace"
-        }
+        })
     }
 
     # Update the DCR Location
@@ -716,6 +690,45 @@ function Get-CustomLogs
     }
 }
 
+function Get-ExtensionDataSources
+{
+    $workspaceExtensions = Get-AzOperationalInsightsIntelligencePack -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName
+
+    # Case 1: VM Insights
+    $vmInsights = $workspaceExtensions | Where-Object {$_.name -match ".*VMInsights*" }
+
+    #if ($null -ne $vmInsights -and $vmInsights.enabled -eq $True)
+    if ($True)
+    {
+        Write-Host 'Info: VM Insights Extension Data Source is enabled on the workspace' -ForegroundColor Green
+
+        # VM Insights Perf counter
+        $vmInsightsPerfCounter = [ordered]@{
+            "name" = "VMInsightsPerfCounters"
+            "streams" = @("Microsoft-InsightsMetrics")
+            "samplingFrequencyInSeconds" = 60
+            "counterSpecifiers" = @("\VmInsights\DetailedMetrics")
+        }
+
+        $state.armTemplate.resources[0].properties.dataSources.performanceCounters += $vmInsightsPerfCounter
+        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-InsightsMetrics"
+
+        # VM Insights Extension
+        $vmInsightsExtension = [ordered]@{
+            "streams" = @("Microsoft-ServiceMap")
+            "extensionName" = "DependencyAgent"
+            "extensionSettings" = @{}
+            "name" = "DependencyAgentDataSource"
+        }
+
+        $state.armTemplate.resources[0].properties.dataSources.extensions += $vmInsightsExtension
+        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-ServiceMap"
+    }
+    else {
+        Write-Host 'Info: VM Insights Extension Data Source is not enabled on the workspace' -ForegroundColor Yellow
+    }
+}
+
 function Get-UserLogAnalyticsWorkspaceDataSources
 {
     # Query the workspaces data sources
@@ -730,22 +743,25 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     Write-Host 'Info: Fetching the Log Analytics Workspace data sources' -ForegroundColor Cyan
 
     # Windows Performance Counters
-    Get-WindowsPerfCountersDataSource
+    #Get-WindowsPerfCountersDataSource
 
     # Linux Performance Counters
-    Get-LinuxPerfCountersDataSource
+    #Get-LinuxPerfCountersDataSource
 
     # Windows Event Logs
-    Get-WindowsEventLogs
+    #Get-WindowsEventLogs
 
     # Linux Syslogs
-    Get-LinuxSysLogs
+    #Get-LinuxSysLogs
+
+    # Extensions Data Sources
+    Get-ExtensionDataSources 
 
     # Custom Logs
     Get-CustomLogs
 
     # IIS Logs
-    $isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.workspace
+    #$isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.workspace
     if ($True -eq $isIISLogsEnabled)
     {
         $iisLogsDataSource = [ordered]@{
@@ -769,7 +785,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
 #>
 function Get-Outputs
 {
-    
+
 }
 
 #endregion
