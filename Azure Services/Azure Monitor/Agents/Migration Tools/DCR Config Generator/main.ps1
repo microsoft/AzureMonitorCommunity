@@ -998,9 +998,11 @@ function Get-Output
         $correctedOutputFolder = $state.outputFolder
 
         # Generating the outputs
-        Write-Host 'Info: Generating the main arm template file' -ForegroundColor Cyan
-        $dcrArmTemplateFilePath = $correctedOutputFolder + "\main_dcr_arm_template.json"
-        $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $dcrArmTemplateFilePath
+        Write-Host 'Info: Generating the main DCR arm template file' -ForegroundColor Cyan
+        $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\main_dcr_arm_template.json"
+
+        Write-Host 'Info: Generating the DCR payload file' -ForegroundColor Cyan
+        $state.armTemplate.resources[0].properties | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\dcr_payload.json"
 
         Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Green
         Write-Host
