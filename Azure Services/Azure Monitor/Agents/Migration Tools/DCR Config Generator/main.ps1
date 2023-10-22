@@ -22,16 +22,7 @@ param(
     [string]$DCRName,
 
     [Parameter(Mandatory=$False)]
-    [string]$Location,
-
-    [Parameter(Mandatory=$False)]
-    [string]$FolderPath = ".",
-
-    [Parameter(Mandatory=$False)]
-    [switch]$GetDcrPayload,
-
-    [Parameter(Mandatory=$False)]
-    [string]$DCEName = "null"
+    [switch]$GetDcrPayload
 )
 
 #region Custom Type Definitions
@@ -114,10 +105,18 @@ function Get-BaseArmTemplate
         "properties" = [ordered]@{
             "description" = "A Data Collection Rule"
             "dataCollectionEndpointId" = $null
+            "streamDeclarations" = @{}
             "dataSources" = [ordered]@{
                 "performanceCounters" = @()
             }
-            "destinations" = $null
+            "destinations" = [ordered]@{
+                "logAnalytics" = @(
+                    [ordered]@{
+                        "workspaceResourceId" = "[parameters('logAnalyticsWorkspaceArmId')]"
+                        "name" = "myloganalyticsworkspace"
+                    }
+                )
+            }
             "dataFlows" = @(
                 [ordered]@{
                     "streams" = @()
@@ -145,6 +144,13 @@ function Get-BaseArmTemplate
                     "description" = "The location of the DCR. DCR is a regional resource."
                 }
             }
+            "logAnalyticsWorkspaceArmId" = [ordered]@{
+                "type" = "string"
+                "defaultValue" = "/subscriptions/$($SubscriptionId)/resourcegroups/$($ResourceGroupName)/providers/microsoft.operationalinsights/workspaces/$($WorkspaceName)"
+                "metadata" = [ordered]@{
+                    "description" = "The ARM Id of the log analytics workspace destination"
+                }
+            }
         }
         "resources" = @($dcrResourceDef)
     }
@@ -164,17 +170,7 @@ function Get-UserLogAnalyticsWorkspace
     Write-Host 'Info: Successfully retrieved the LAW details' -ForegroundColor Green
     $state["workspace"] = $workspace
 
-    # Populate `Destinations` (This will be the only destination in the DCR)
-    $state.armTemplate.resources[0].properties.destinations = [ordered]@{
-        "logAnalytics" = @([ordered]@{
-            "workspaceResourceId" = $workspace.ResourceId
-            "workspaceId" = $workspace.CustomerId
-            "name" = "myloganalyticsworkspace"
-        })
-    }
-
     # Update the DCR Location
-    Write-Host "Info: The DCR location is being set to the Log Analytics Workspace location: $($workspace.Location)" -ForegroundColor Cyan
     $state.armTemplate.parameters.dcrLocation.defaultValue = $workspace.Location
 }
 
@@ -629,6 +625,63 @@ function Set-FulfillDCERequirement
     }
 }
 
+function Set-MigrateMMABasedCustomTable
+{
+    param(
+        [Parameter(Mandatory=$True)]
+        [string]$tableName
+    )
+
+    $accessToken = Get-AzAccessToken
+    $accessToken | Out-Null # Shouldn't print this out to the console
+
+    $apiUrl = "https://management.azure.com/$($state.workspace.ResourceId)/tables/$($tableName)/migrate?api-version=2021-12-01-preview"
+    $headers = @{
+        'Authorization' = "Bearer $($accessToken.Token)"
+    }
+
+    $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers
+    $response | Out-Null
+
+    Write-Host "Info: The table $($tableName) has been successfully migrated. Now, both MMA and AMA will be able to ingest custom logs into it." -ForegroundColor Green
+}
+
+<#
+.DESCRIPTION
+    Refer to this article https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration
+    This function migrates a MMA Custom text log table so it can be used as a destination for a new AMA custom text logs DCR.
+    This is only for customers who want to preserve data
+#>
+function Set-MigrateMMACustomLogTableToAMACustomLogTable
+{
+    param(
+        [Parameter(Mandatory=$True)]
+        [string]$tableName
+    )
+
+    Write-Host
+    $migrated = Read-Host "Has $($tableName) been migrated yet (y/n)?"
+    $migrated = $migrated.Trim().ToLower()
+
+    if ("y" -eq $migrated)
+    {
+        Write-Host "Info: No further action required. AMA will be able to ingest custom logs into this table: $($tableName)" -ForegroundColor Green
+    }
+    else {
+        $migrate = Read-Host "Do you want us to migrate $($tableName) on your behalf (y/n)?"
+        $migrate = $migrate.Trim().ToLower()
+
+        if ("y" -eq $migrate)
+        {
+            Set-MigrateMMABasedCustomTable -tableName $tableName
+            Write-Host "Info: No further action required. AMA will be able to ingest custom logs into this table: $($tableName)" -ForegroundColor Green
+        }
+        else {
+            Write-Host "Info IMPORTANT !!!: Custom Logs Ingestion into $($tableName) requires steps from you" -ForegroundColor DarkYellow
+        }
+    }
+}
+
 <#
 .DESCRIPTION
     Checks and parses Custom Logs
@@ -651,19 +704,30 @@ function Get-CustomLogs
         {
             if($null -ne $input.location.fileSystemLocations.linuxFileTypeLogPaths)
             {
-                $filePatterns += $input.location.fileSystemLocations.linuxFileTypeLogPaths
+                foreach ($linuxPath in $input.location.fileSystemLocations.linuxFileTypeLogPaths)
+                {
+                    $filePatterns += $linuxPath
+                }
             }
 
             if($null -ne $input.location.fileSystemLocations.windowsFileTypeLogPaths)
             {
-                $filePatterns += $input.location.fileSystemLocations.windowsFileTypeLogPaths
+                foreach ($windowsPath in $input.location.fileSystemLocations.windowsFileTypeLogPaths)
+                {
+                    $windowsPathCorrected = $windowsPath.Replace("\\", "\")
+                    $filePatterns += $windowsPathCorrected
+                }    
             }
         }
 
         return $filePatterns 
     }
 
+    # This returns MMA based custom tables or MMA based custom tables that have been migrated to Manual Schema Management
+    # For MMA based custom tables that haven't been migrated yet, the customer needs to perform the migration for the custom logs ingestion via AMA to work
+    # Another alternative will be to create a new custom table. Refer to this article https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal
     $customLogs = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind "CustomLog"
+    #$state.armTemplate["customLogs"] = $customLogs
 
     if ($null -eq $customLogs)
     {
@@ -673,16 +737,17 @@ function Get-CustomLogs
         Write-Host "Info: Custom Logs is enabled on the workspace" -ForegroundColor Green
         $state.dataSourcesCount += 1
 
-        Write-Host "Info IMPORTANT  !!!: The script is unable to get the exact schema for each custom table" -ForegroundColor Yellow
-        Write-Host "Action Required !!!: You will need to update the `streamDeclarations` section of the DCR to make sure each stream declaration columns definition matches the output table in LAW" -ForegroundColor DarkYellow
+        Write-Host "Info: IMPORTANT !!!: For each classic custom table below that hasn't been migrated, you will need to either migrate it or create a new AMA based custom table (in case you don't care about preserving data)" -ForegroundColor DarkYellow
+        Write-Host "Info: Migrate a classic MMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration" -ForegroundColor Cyan
+        Write-Host "Info: Create a new AMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal" -ForegroundColor Cyan
         
-        $state.armTemplate.resources[0].properties["streamDeclarations"] = @{}
         $state.armTemplate.resources[0].properties.dataSources["logFiles"] = @()
+        $iter_count = 1
+
         foreach($customLog in $customLogs)
         {
-            $customTableName = $customLog.Properties.customLogName
             # This name should be unique among all the stream declarations
-            $streamDeclarationName = "Custom_$($customTableName)_Stream"
+            $customStreamName = "Custom-$($customLog.Properties.customLogName)"
             $streamDeclaration = [ordered]@{
                     "columns" = @(
                         @{
@@ -695,12 +760,12 @@ function Get-CustomLogs
                         }
                     )
                 } 
-            $state.armTemplate.resources[0].properties.streamDeclarations[$streamDeclarationName] = $streamDeclaration
+            $state.armTemplate.resources[0].properties.streamDeclarations[$customStreamName] = $streamDeclaration
             #####################################################################
             $fPatterns = @(Get-FilePatterns -customLog $customLog)
             $customLogDataSource = [ordered]@{
-                "name" = $customLog.Name
-                "streams" = @($streamDeclarationName)
+                "name" = "customLogFile_DS_$($iter_count)"
+                "streams" = @($customStreamName)
                 "filePatterns" = $fPatterns
                 "format" = "text"
                 "settings" = [ordered]@{
@@ -711,12 +776,20 @@ function Get-CustomLogs
             }
 
             $state.armTemplate.resources[0].properties.dataSources.logFiles += ($customLogDataSource)
-            $state.armTemplate.resources[0].properties.dataFlows[0].streams += ($streamDeclarationName)
+            $state.armTemplate.resources[0].properties.dataFlows[0].streams += ($customStreamName)
+
+            $iter_count += 1
+            ######################################################################
+            Set-MigrateMMACustomLogTableToAMACustomLogTable -tableName $customLog.Properties.customLogName
         }
 
         ########################################################
+        Write-Host "Info IMPORTANT !!!: The script is unable to get the exact schema for each custom classic (migrated or not migrated) table" -ForegroundColor DarkYellow
+        Write-Host "Info IMPORTANT !!!: You will need to update the `streamDeclarations` section of the DCR to make sure each stream declaration columns definition matches the corresponding output table in the workspace" -ForegroundColor DarkYellow
+
+        ########################################################
         # DCE required for custom logs
-        Write-Host "Info IMPORTANT  !!!: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor Yellow
+        Write-Host "Info IMPORTANT !!!: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor DarkYellow
 
         Set-FulfillDCERequirement
     }
@@ -793,7 +866,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     if ($True -eq $isIISLogsEnabled)
     {
         # DCE required for iis logs
-        Write-Host "Info IMPORTANT  !!!: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor Yellow
+        Write-Host "Info IMPORTANT !!!: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor DarkYellow
 
         Set-FulfillDCERequirement
 
@@ -818,7 +891,6 @@ function Set-DemuxDataFlows
 
     $state.armTemplate.resources[0].properties.dataFlows = @()
 
-    Write-Host
     Write-Host "Info: Building data flows" -ForegroundColor Cyan
 
     foreach ($stream in $dataFlow.streams | Select-Object -Unique)
@@ -830,8 +902,6 @@ function Set-DemuxDataFlows
 
         $state.armTemplate.resources[0].properties.dataFlows += $newDataFlow
     }
-
-
 }
 
 function Get-Output
@@ -840,10 +910,14 @@ function Get-Output
     if ($state.dataSourcesCount -eq 0)
     {
         Write-Host 'Info: No supported data sources were found on the workspace.' -ForegroundColor DarkYellow
-        Write-Host 'Info: Terminating the process ...' -ForegroundColor DarkYellow
+        Write-Host 'Info: No output file(s) will be generated. Terminating the process.' -ForegroundColor DarkYellow
+        Write-Host
         Exit
     }
     else{
+        # Build data flows
+        Set-DemuxDataFlows
+
         # Do some clean up
         if ($state.armTemplate.resources[0].properties.dataSources.performanceCounters.Count -eq 0)
         {
@@ -855,10 +929,16 @@ function Get-Output
             $state.armTemplate.resources[0].properties.Remove("dataCollectionEndpointId")
         }
 
+        if ($null -eq $state.armTemplate.resources[0].properties.streamDeclarations)
+        {
+            $state.armTemplate.resources[0].properties.Remove("streamDeclarations")
+        }
+
         Write-Host 'Info: Generating the output arm template file' -ForegroundColor Cyan
         $filePath = "./output.json" # Meaning the current directory
         $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $filePath
         Write-Host "Info: Done. Check output.json !" -ForegroundColor Green
+        Write-Host
     }
 }
 
@@ -877,6 +957,6 @@ $global:state = [ordered]@{
 Get-BaseArmTemplate
 Get-UserLogAnalyticsWorkspace 
 Get-UserLogAnalyticsWorkspaceDataSources
-Set-DemuxDataFlows
 Get-Output
+
 #endregion
