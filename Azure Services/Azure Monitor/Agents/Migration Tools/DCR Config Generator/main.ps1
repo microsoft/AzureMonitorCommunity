@@ -1,5 +1,5 @@
 <#
-File: 
+File: main.ps1
 Author: Azure Monitor Control Service
 Email: amcsdev@microsoft.com
 Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configuration
@@ -19,7 +19,10 @@ param(
     [string]$WorkspaceName,
 
     [Parameter(Mandatory=$True)]
-    [string]$DCRName,
+    [string]$DcrName,
+
+    [Parameter(Mandatory=$False)]
+    [string]$OutputFolder = "./",
 
     [Parameter(Mandatory=$False)]
     [switch]$GetDcrPayload
@@ -40,6 +43,14 @@ class DCRWindowsEventLogDataSource
     [string]$name
     [string[]]$streams
     [string[]]$xPathQueries
+}
+
+class DCRSyslogDataSource
+{
+    [string]$name
+    [string[]]$streams
+    [string[]]$facilityNames
+    [string[]]$logLevels
 }
 
 #endregion
@@ -68,10 +79,19 @@ function Set-AzSubscriptionContext {
 
         if($currentAzContextSubId -ne $SubscriptionId)
         {
-            Write-Host "Info: Switching to a different subscription context" -ForegroundColor Yellow
+            Write-Host "Info: Switching to a different subscription context" -ForegroundColor Cyan
+            
+            try {
+                Set-AzContext -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+            }
+            catch {
+                Write-Host "Error in setting the new Az Context: $PSItem" -ForegroundColor Red
+                Write-Host
+                Exit
+            }
+
             Write-Host "Old subscription Id: $($currentAzContextSubId)"
             Write-Host "New Subscription Id: $($SubscriptionId)" -ForegroundColor Green
-            Set-AzContext -Subscription $SubscriptionId | Out-Null
         }
     }
     else 
@@ -132,7 +152,7 @@ function Get-BaseArmTemplate
         "parameters" = [ordered]@{
             "dcrName" = [ordered]@{
                 "type" = "string"
-                "defaultValue" = $DCRName
+                "defaultValue" = $DcrName
                 "metadata" = [ordered]@{
                     "description" = "The name of the Data Collection Rule as it will appear in the portal."
                 }
@@ -164,9 +184,16 @@ function Get-UserLogAnalyticsWorkspace
     Write-Host 'Info: Fetching the specified Log Analytics Workspace details' -ForegroundColor Cyan
 
     # The $Workspace Name in this context in case insensitive
-    $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName
-    $workspace | Out-Null 
-
+    try {
+        $workspace = Get-AzOperationalInsightsWorkspace -ResourceGroupName $ResourceGroupName -Name $WorkspaceName -ErrorAction Stop
+        $workspace | Out-Null
+    }
+    catch {
+        Write-Host "$PSItem" -ForegroundColor Red
+        Write-Host
+        Exit
+    }
+    
     Write-Host 'Info: Successfully retrieved the LAW details' -ForegroundColor Green
     $state["workspace"] = $workspace
 
@@ -435,7 +462,7 @@ function Get-LinuxSysLogs
             "authpriv" { $amaFacilityName = "authpriv"; Break }
             "cron"     { $amaFacilityName = "cron"; Break }
             "daemon"   { $amaFacilityName = "daemon"; Break }
-            "ftp"      { $amaFacilityName = "mark"; Break } # ftp resolves to mark going from MMA to AMA
+            "ftp"      { $amaFacilityName = "ftp"; Break }
             "kern"     { $amaFacilityName = "kern"; Break }
             "local0"   { $amaFacilityName = "local0"; Break }
             "local1"   { $amaFacilityName = "local1"; Break }
@@ -563,6 +590,7 @@ function Get-ProvisionDCE
     $dceSubId = Read-Host ">>>>> Sub Id"
     $dceRg = Read-Host ">>>>> Resource Group"
     $dceName = Read-Host ">>>>> Name"
+    Write-Host ">>>>> Location: $($state.armTemplate.parameters.dcrLocation.defaultValue)"
     $accessToken = Get-AzAccessToken
     $accessToken | Out-Null # Shouldn't print this out to the console
 
@@ -579,9 +607,16 @@ function Get-ProvisionDCE
     }
     $bodyData = $body | ConvertTo-Json
 
-    Write-Host "Info: The DCE is being provisioned in the same region as the workspace" -ForegroundColor Yellow
-    $response = Invoke-RestMethod -Uri $apiUrl -Method PUT -Headers $headers -Body $bodyData -ContentType "application/json" # Replace this AMCS PS CMDLET when it's ready
-    $response | Out-Null
+    try {
+        # Replace this AMCS PS CMDLET when it's ready
+        $response = Invoke-RestMethod -Uri $apiUrl -Method PUT -Headers $headers -Body $bodyData -ContentType "application/json"
+        $response | Out-Null 
+    }
+    catch {
+        Write-Host "Error in provisioning the DCE: $PSItem" -ForegroundColor Red
+        Write-Host
+        Exit
+    }
 
     $dceArmId = $response.id
     Write-Host "Info: The DCE was successfully provisioned: $($dceArmId)" -ForegroundColor Green
@@ -600,6 +635,7 @@ function Set-FulfillDCERequirement
         Write-Host "Info: DCE requirement already fulfilled" -ForegroundColor Green
     }
     else{
+        Write-Host
         $provisionDCE = Read-Host "Do you want us to automatically provision a DCE for you? (y/n)"
         $provisionDCE = $provisionDCE.Trim().ToLower()
 
@@ -910,7 +946,7 @@ function Get-Output
     if ($state.dataSourcesCount -eq 0)
     {
         Write-Host 'Info: No supported data sources were found on the workspace.' -ForegroundColor DarkYellow
-        Write-Host 'Info: No output file(s) will be generated. Terminating the process.' -ForegroundColor DarkYellow
+        Write-Host 'Info: No output file(s) will be generated.' -ForegroundColor DarkYellow
         Write-Host
         Exit
     }
@@ -929,15 +965,17 @@ function Get-Output
             $state.armTemplate.resources[0].properties.Remove("dataCollectionEndpointId")
         }
 
-        if ($null -eq $state.armTemplate.resources[0].properties.streamDeclarations)
+        if ($state.armTemplate.resources[0].properties.streamDeclarations.Count -eq 0)
         {
             $state.armTemplate.resources[0].properties.Remove("streamDeclarations")
         }
 
-        Write-Host 'Info: Generating the output arm template file' -ForegroundColor Cyan
-        $filePath = "./output.json" # Meaning the current directory
-        $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $filePath
-        Write-Host "Info: Done. Check output.json !" -ForegroundColor Green
+        # Generating the outputs
+        Write-Host 'Info: Generating the main arm template file' -ForegroundColor Cyan
+        $dcrArmTemplateFilePath = $OutputFolder + "main_dcr_arm_template.json"
+        $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $dcrArmTemplateFilePath
+
+        Write-Host "Info: Done. Check your output folder ($($OutputFolder)) for all the generated files!" -ForegroundColor Green
         Write-Host
     }
 }
@@ -945,7 +983,7 @@ function Get-Output
 #endregion
 
 #region Logic
-
+#$ErrorActionPreference = "SilentlyContinue"
 $WarningPreference = 'SilentlyContinue'
 Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
 
