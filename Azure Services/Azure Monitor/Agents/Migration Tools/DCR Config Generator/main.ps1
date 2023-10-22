@@ -22,10 +22,7 @@ param(
     [string]$DcrName,
 
     [Parameter(Mandatory=$False)]
-    [string]$OutputFolder = "./",
-
-    [Parameter(Mandatory=$False)]
-    [switch]$GetDcrPayload
+    [string]$OutputFolder
 )
 
 #region Custom Type Definitions
@@ -56,6 +53,32 @@ class DCRSyslogDataSource
 #endregion
 
 #region Utility functions
+
+<#
+.DESCRIPTION
+    This function ensures the output folder provided by the user is valid
+#>
+function Set-ValidateOutputFolder
+{
+    Write-Host
+    if ("" -eq $OutputFolder)
+    {
+        $OutputFolder = $PWD.Path
+        Write-Host "Info: No output folder provided. Defaulting to the current working directory: $OutputFolder" -ForegroundColor DarkYellow
+        $state["outputFolder"] = $OutputFolder
+    }
+    else {
+        try {
+            $OutputFolder = Convert-Path $OutputFolder -ErrorAction Stop
+            $state["outputFolder"] = $OutputFolder
+        }
+        catch {
+            Write-Host "Invalid output folder: $PSItem. Please try again" -ForegroundColor Red
+            Write-Host
+            Exit
+        }
+    }
+}
 
 <#
 .DESCRIPTION
@@ -586,7 +609,7 @@ function Get-ExtensionDataSources
 #>
 function Get-ProvisionDCE
 {
-    Write-Host "Info: Provisioning a Data Collection Endpoint (DCE) on your behalf" -ForegroundColor Yellow
+    Write-Host "Info: Provisioning a Data Collection Endpoint (DCE) on your behalf" -ForegroundColor Cyan
     $dceSubId = Read-Host ">>>>> Sub Id"
     $dceRg = Read-Host ">>>>> Resource Group"
     $dceName = Read-Host ">>>>> Name"
@@ -646,7 +669,8 @@ function Set-FulfillDCERequirement
             $dceArmId = Get-ProvisionDCE
         }
         else{
-            Write-Host "Action Required !!!: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
+            Write-Host "Info: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
+            Write-Host
         }
         
         $state.armTemplate.parameters["dceArmId"] = [ordered]@{
@@ -713,7 +737,8 @@ function Set-MigrateMMACustomLogTableToAMACustomLogTable
             Write-Host "Info: No further action required. AMA will be able to ingest custom logs into this table: $($tableName)" -ForegroundColor Green
         }
         else {
-            Write-Host "Info IMPORTANT !!!: Custom Logs Ingestion into $($tableName) requires steps from you" -ForegroundColor DarkYellow
+            Write-Host "Info: Custom Logs Ingestion into $($tableName) requires steps from you" -ForegroundColor DarkYellow
+            Write-Host
         }
     }
 }
@@ -773,7 +798,7 @@ function Get-CustomLogs
         Write-Host "Info: Custom Logs is enabled on the workspace" -ForegroundColor Green
         $state.dataSourcesCount += 1
 
-        Write-Host "Info: IMPORTANT !!!: For each classic custom table below that hasn't been migrated, you will need to either migrate it or create a new AMA based custom table (in case you don't care about preserving data)" -ForegroundColor DarkYellow
+        Write-Host "Info: For each classic custom table below that hasn't been migrated, you will need to either migrate it or create a new AMA based custom table (in case you don't care about preserving data)" -ForegroundColor DarkYellow
         Write-Host "Info: Migrate a classic MMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration" -ForegroundColor Cyan
         Write-Host "Info: Create a new AMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal" -ForegroundColor Cyan
         
@@ -820,12 +845,12 @@ function Get-CustomLogs
         }
 
         ########################################################
-        Write-Host "Info IMPORTANT !!!: The script is unable to get the exact schema for each custom classic (migrated or not migrated) table" -ForegroundColor DarkYellow
-        Write-Host "Info IMPORTANT !!!: You will need to update the `streamDeclarations` section of the DCR to make sure each stream declaration columns definition matches the corresponding output table in the workspace" -ForegroundColor DarkYellow
-
+        Write-Host "Info: The script is unable to get the exact schema for each custom classic (migrated or not migrated) table" -ForegroundColor DarkYellow
+        Write-Host "Info: You will need to update the `streamDeclarations` section of the DCR to make sure each stream declaration columns definition matches the corresponding output table in the workspace" -ForegroundColor DarkYellow
+        Write-Host
         ########################################################
         # DCE required for custom logs
-        Write-Host "Info IMPORTANT !!!: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor DarkYellow
+        Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor DarkYellow
 
         Set-FulfillDCERequirement
     }
@@ -902,7 +927,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     if ($True -eq $isIISLogsEnabled)
     {
         # DCE required for iis logs
-        Write-Host "Info IMPORTANT !!!: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor DarkYellow
+        Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor DarkYellow
 
         Set-FulfillDCERequirement
 
@@ -970,12 +995,14 @@ function Get-Output
             $state.armTemplate.resources[0].properties.Remove("streamDeclarations")
         }
 
+        $correctedOutputFolder = $state.outputFolder
+
         # Generating the outputs
         Write-Host 'Info: Generating the main arm template file' -ForegroundColor Cyan
-        $dcrArmTemplateFilePath = $OutputFolder + "main_dcr_arm_template.json"
+        $dcrArmTemplateFilePath = $correctedOutputFolder + "\main_dcr_arm_template.json"
         $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath $dcrArmTemplateFilePath
 
-        Write-Host "Info: Done. Check your output folder ($($OutputFolder)) for all the generated files!" -ForegroundColor Green
+        Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Green
         Write-Host
     }
 }
@@ -983,18 +1010,21 @@ function Get-Output
 #endregion
 
 #region Logic
-#$ErrorActionPreference = "SilentlyContinue"
-$WarningPreference = 'SilentlyContinue'
-Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
 
-###########################################################
 $global:state = [ordered]@{
     "dataSourcesCount" = 0
 }
+###########################################################
+Set-ValidateOutputFolder
+
+$WarningPreference = 'SilentlyContinue'
+Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
+$WarningPreference = 'Continue'
 
 Get-BaseArmTemplate
 Get-UserLogAnalyticsWorkspace 
 Get-UserLogAnalyticsWorkspaceDataSources
+
 Get-Output
 
 #endregion
