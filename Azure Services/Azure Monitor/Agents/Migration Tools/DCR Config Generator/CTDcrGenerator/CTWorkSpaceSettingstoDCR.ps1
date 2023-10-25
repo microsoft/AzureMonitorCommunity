@@ -153,11 +153,11 @@ function GetDcrArmTemplate {
         [Parameter(Mandatory = $true)][string] $paramWorkspaceId,
         [Parameter(Mandatory = $true)][string] $paramWorkspaceLocation
     )
-    $schema = "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+    $schema = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
     $contentVersion = "1.0.0.0"
     $dcrTemplate =
     [ordered]@{
-        schema         = "$schema"
+        "`$schema" = $schema;
         contentVersion = "$contentVersion"
         parameters     = [ordered]@{
             dataCollectionRuleName = [ordered]@{
