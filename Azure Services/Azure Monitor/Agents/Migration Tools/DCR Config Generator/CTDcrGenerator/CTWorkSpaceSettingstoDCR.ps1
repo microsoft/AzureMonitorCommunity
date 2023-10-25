@@ -305,7 +305,13 @@ GetLinuxFileSettings
 GetDataTypeConfiguration
 
 # Convert the custom object to JSON
-$dcrJson = ConvertTo-Json -InputObject $ctv2JsonObject -Depth 32
+$dcrJson = ConvertTo-Json -InputObject $ctv2JsonObject -Depth 32 | %{
+    [Regex]::Replace($_, 
+        "\\u(?<Value>[a-zA-Z0-9]{4})", {
+            param($m) ([char]([int]::Parse($m.Groups['Value'].Value,
+                [System.Globalization.NumberStyles]::HexNumber))).ToString() } )} #https://stackoverflow.com/questions/47779157/convertto-json-and-convertfrom-json-with-special-characters/47779605#47779605
+
+
 
 # Save the JSON content to a file at a given path
 Set-Content -Path "${OutputDCRTemplateFolderPath}/output.json" -Value $dcrJson
