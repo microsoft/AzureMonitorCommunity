@@ -186,7 +186,7 @@ function GetDcrArmTemplate {
         resources      = @(
             [ordered]@{
                 type       = "Microsoft.Insights/dataCollectionRules"
-                apiVersion = "2021-04-01"
+                apiVersion = "2022-06-01"
                 name       = "[parameters('dataCollectionRuleName')]"
                 location   = "[parameters('workspaceLocation')]"
                 properties = [ordered]@{
