@@ -297,6 +297,9 @@ $headers = @{
 # creating DCR arm template pscustom object
 $ctv2JsonObject = GetDcrArmTemplate -paramDCRName $OutputDCRName -paramWorkspaceId $OutputWorkspaceResourceId -paramWorkspaceLocation $OutputDCRLocation
 
+
+try 
+{
 #parsing and migrating settings from LA workspace to DCR
 GetWindowsRegistorySettings
 GetWindowsFileSetting
@@ -322,3 +325,8 @@ $pathtype = TestPathType -Path $OutputDCRTemplateFolderPath
 # End of script
 Write-Host "`nSuccess!" -ForegroundColor green
 Write-Output "Check your output folder! ($($pathtype):  $($OutputDCRTemplateFolderPath))"
+}
+catch 
+{
+Write-Host "Error: $($_.Exception.Message)" -ForegroundColor red
+}
