@@ -29,7 +29,7 @@ These instructions will help you get started with running the Migration Tool scr
 	| `OutputDCRTemplateFolderPath` | Yes | Path in which to save the ARM template files and JSON files (optional). >By default . can be given to use current directory. |  
 	
 - Instructions to Run the Script
-	- Running the script is straightforward.  Use the script location along with at least the 5 required parameters.
+	- Running the script is straightforward.  Use the script location along with 5 required parameters.
 
 
 - Output for the Script
