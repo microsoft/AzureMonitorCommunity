@@ -1,0 +1,250 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Microsoft Power Automate Analytics Runs Workbook\n---\n\nWelcome to your new workbook.  This area will display text formatted as markdown.\n\n\nWe've included a basic analytics query to get you started. Use the `Edit` button below each section to configure it or add more sections."
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "51e7ca98-4218-498d-8e70-7d902d64a151",
+            "version": "KqlParameterItem/1.0",
+            "name": "_TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "isGlobal": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 2592000000
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "97be2b55-08bf-4fec-b04e-20268b5fc0bc",
+            "version": "KqlParameterItem/1.0",
+            "name": "_environmentName",
+            "label": "Environment Name",
+            "type": 2,
+            "isGlobal": true,
+            "query": "requests\r\n| where timestamp {_TimeRange:value}\r\n| extend data = todynamic(tostring(customDimensions.Data))\r\n| distinct tostring(data.tags.environmentName)",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.insights/components",
+            "value": "10195613-f7d0-4d8e-bc74-f8f6bf1fe7d4"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Showing data for {_environmentName:value} for the last {_TimeRange:value}"
+      },
+      "name": "text - 1"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Cloud Flows",
+        "expandable": true,
+        "expanded": true,
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "requests \n| where timestamp {_TimeRange:value}\n| where customDimensions.resourceProvider == 'Cloud Flow'\n| extend data = todynamic(tostring(customDimensions.Data))\n| summarize count() by resultCode, bin(timestamp, 1d)\n| render columnchart",
+              "size": 1,
+              "showAnalytics": true,
+              "title": "Daily Runs",
+              "showRefreshButton": true,
+              "exportedParameters": [
+                {
+                  "fieldName": "operation_Id",
+                  "parameterName": "operationId",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "data_tags_xrmWorkflowId",
+                  "parameterName": "xrmWorkflowId",
+                  "parameterType": 1
+                },
+                {
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "data_FlowDisplayName",
+                  "parameterName": "flowDisplayName",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "directlink",
+                  "parameterName": "directLink",
+                  "parameterType": 1
+                }
+              ],
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "timestamp"
+              }
+            },
+            "name": "Daily Runs",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "requests \r\n| where timestamp {_TimeRange:value}\r\n| where customDimensions.resourceProvider == 'Cloud Flow'\r\n| extend data = todynamic(tostring(customDimensions.Data))\r\n| summarize count() by resultCode, bin(timestamp, 7d)\r\n| render columnchart",
+              "size": 0,
+              "title": "Weekly runs",
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components"
+            },
+            "name": "query - 1",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "requests \r\n| where timestamp {_TimeRange:value}\r\n| where customDimensions.resourceProvider == 'Cloud Flow'\r\n| extend data = todynamic(tostring(customDimensions.Data))\r\n| summarize count() by resultCode, bin(timestamp, 30d)\r\n| render columnchart",
+              "size": 0,
+              "title": "Monthly runs",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "chartSettings": {
+                "xAxis": "timestamp",
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Error",
+                    "color": "redBright"
+                  }
+                ]
+              }
+            },
+            "name": "query - 2",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ],
+        "exportParameters": true
+      },
+      "conditionalVisibility": {
+        "parameterName": "_flowDisplayName",
+        "comparison": "isEqualTo",
+        "value": ""
+      },
+      "name": "grpCloudFlowRuns",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Desktop Flows",
+        "expandable": true,
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## Displaying Performance Metrics for \r\n### {flowDisplayName:value}\r\n\r\n### Direct Link: {directLink:value}"
+            },
+            "name": "text - 0"
+          }
+        ],
+        "exportParameters": true
+      },
+      "name": "grpSpecificPowerAutomate",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/2c9d01b4-7faa-42e4-adc3-197f6c9027c5/resourceGroups/rg-PowerPlatform-alyousse-001/providers/microsoft.insights/components/ai-PowerAutomate-alyousse-001"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
