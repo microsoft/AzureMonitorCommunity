@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Controller Health"
+    },
+    "alertDescription": {
+      "value": "PureFA controller health alert checks for health of each component and reports the alarm if any controller is unhealthy."
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/storageappliances"
+    },
+    "metricName": {
+      "value": "PurefaHardwareComponentHealth"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": 1
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/storageAppliances"
+    },
+    "timeAggregation": {
+      "value": "Minimum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Controller",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}
