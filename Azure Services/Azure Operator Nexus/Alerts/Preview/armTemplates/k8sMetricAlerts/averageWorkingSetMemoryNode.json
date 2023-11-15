@@ -3,47 +3,39 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job status failed"
+      "value": "Average working set memory - Node"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "average working set (physical + virtual) memory % used for server/node"
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "Insights.Container/nodes"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "memoryWorkingSetPercentage"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
-    },
-    "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": 85
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Average"
     },
     "windowSize": {
       "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT5M"
+      "value": "PT1M"
     },
     "dimensions": {
       "value": [
         {
-          "name": "Job",
-          "operator": "Include",
-          "values": ["*"]
-        },
-        {
-          "name": "Namespace",
+          "name": "host",
           "operator": "Include",
           "values": ["*"]
         }

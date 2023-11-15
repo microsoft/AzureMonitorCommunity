@@ -3,28 +3,25 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job status failed"
+      "value": "Out of Memory (OOM) Killed Containers"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "number of OOM killed containers."
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "Insights.Container/pods"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "oomKilledContainerCount"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
       "value": 0
-    },
-    "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
     },
     "timeAggregation": {
       "value": "Maximum"
@@ -33,21 +30,10 @@
       "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT5M"
+      "value": "PT1M"
     },
     "dimensions": {
-      "value": [
-        {
-          "name": "Job",
-          "operator": "Include",
-          "values": ["*"]
-        },
-        {
-          "name": "Namespace",
-          "operator": "Include",
-          "values": ["*"]
-        }
-      ]
+      "value": []
     }
   }
 }

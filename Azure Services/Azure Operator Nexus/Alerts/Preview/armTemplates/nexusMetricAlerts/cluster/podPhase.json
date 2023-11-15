@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job status failed"
+      "value": "Pod Phase"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when pod is not in running or succeeded"
     },
     "alertSeverity": {
       "value": 3
@@ -15,7 +15,7 @@
       "value": "microsoft.networkcloud/clusters"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "KubePodStatusPhase"
     },
     "operator": {
       "value": "GreaterThan"
@@ -38,7 +38,7 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
+          "name": "Pod",
           "operator": "Include",
           "values": ["*"]
         },
@@ -46,6 +46,11 @@
           "name": "Namespace",
           "operator": "Include",
           "values": ["*"]
+        },
+        {
+          "name": "Phase",
+          "operator": "Include",
+          "values": ["Failed", "Unknown"]
         }
       ]
     }
