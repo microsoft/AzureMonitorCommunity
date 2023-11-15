@@ -6,7 +6,7 @@
       "value": "Pod terminating status"
     },
     "alertDescription": {
-      "value": "Pod status is terminating for more than 5 mins usually due to not enough resources"
+      "value": "This alert will trigger when pod status is terminating for more than 5 mins usually due to not enough resources"
     },
     "alertSeverity": {
       "value": 3
@@ -37,6 +37,16 @@
     },
     "dimensions": {
       "value": [
+        {
+          "name": "Pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Namespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
         {
           "name": "Reason",
           "operator": "Include",

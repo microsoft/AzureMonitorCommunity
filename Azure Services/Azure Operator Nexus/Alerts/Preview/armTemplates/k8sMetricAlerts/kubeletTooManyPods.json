@@ -3,28 +3,25 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job status failed"
+      "value": "Kubelet Too Many Pods"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "the pod count as a % pod limit"
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "Insights.Container/pods"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "podCount"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
-    },
-    "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": 225
     },
     "timeAggregation": {
       "value": "Maximum"
@@ -33,17 +30,12 @@
       "value": "PT5M"
     },
     "evaluationFrequency": {
-      "value": "PT5M"
+      "value": "PT1M"
     },
     "dimensions": {
       "value": [
         {
-          "name": "Job",
-          "operator": "Include",
-          "values": ["*"]
-        },
-        {
-          "name": "Namespace",
+          "name": "node",
           "operator": "Include",
           "values": ["*"]
         }

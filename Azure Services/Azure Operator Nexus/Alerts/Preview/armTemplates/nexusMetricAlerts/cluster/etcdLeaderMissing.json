@@ -6,7 +6,7 @@
       "value": "etcd leader missing"
     },
     "alertDescription": {
-      "value": "Alert when member is not a leader"
+      "value": "This alert will trigger when member is not a leader"
     },
     "alertSeverity": {
       "value": 3
