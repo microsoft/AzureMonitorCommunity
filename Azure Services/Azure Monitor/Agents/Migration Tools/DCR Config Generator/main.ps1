@@ -348,7 +348,7 @@ function Get-WindowsEventLogs
             }
             elseif($type.eventType.ToString() -eq "Information")
             {
-                $eventTypeStr += "Level=4"
+                $eventTypeStr += "Level=4 or Level=0"
             }
         }
 
@@ -1023,13 +1023,13 @@ function Get-Output
             if ($state.runtime.dcrTypesEnabled[$type] -eq $true)
             {
                 Write-Host "Info: Generating the $type rule arm template file ($($type)_dcr_arm_template.json)" -ForegroundColor Cyan
-                $state.outputs[$type] | ConvertTo-Json -Depth 100
-                    | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )} 
+                $state.outputs[$type] | ConvertTo-Json -Depth 100 `
+                    | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )} `
                     | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
 
                 Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
-                $state.outputs[$type].resources[0].properties | ConvertTo-Json -Depth 100 
-                    | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )}
+                $state.outputs[$type].resources[0].properties | ConvertTo-Json -Depth 100 `
+                    | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )} `
                     | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
             }
         }
