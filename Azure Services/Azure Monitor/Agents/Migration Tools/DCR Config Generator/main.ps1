@@ -1023,7 +1023,7 @@ function Get-Output
             if ($state.runtime.dcrTypesEnabled[$type] -eq $true)
             {
                 Write-Host "Info: Generating the $type rule arm template file" -ForegroundColor Cyan
-                $state.outputs[$type] | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\($type)_dcr_arm_template.json"
+                $state.outputs[$type] | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
             }
         }
 
