@@ -271,7 +271,7 @@ function Get-WindowsPerfCountersDataSource
         $state.runtime.dcrTypesEnabled.windows = $true
 
         # Windows DCR output updates
-        $state.outputs.windows.parameters.dcrName.defaultValue += "-windows"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-windows"
         $state.outputs.windows.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.windows.resources[0].properties.description = "Azure monitor migration script generated windows rule"
         $state.outputs.windows.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -367,7 +367,7 @@ function Get-WindowsEventLogs
         $state.runtime.dcrTypesEnabled.windows = $true
 
         # Windows DCR output updates
-        $state.outputs.windows.parameters.dcrName.defaultValue += "-windows"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-windows"
         $state.outputs.windows.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.windows.resources[0].properties.description = "Azure monitor migration script generated windows rule"
         $state.outputs.windows.resources[0].properties.dataSources["windowsEventLogs"] = @()
@@ -412,7 +412,7 @@ function Get-LinuxPerfCountersDataSource
         $state.runtime.dcrTypesEnabled.linux = $true
 
         # Linux DCR output updates
-        $state.outputs.linux.parameters.dcrName.defaultValue += "-linux"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-linux"
         $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
         $state.outputs.linux.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -552,7 +552,7 @@ function Get-LinuxSysLogs
         $state.runtime.dcrTypesEnabled.linux = $true
 
         # Linux DCR output updates
-        $state.outputs.linux.parameters.dcrName.defaultValue += "-linux"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-linux"
         $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
         $state.outputs.linux.resources[0].properties.dataSources["syslog"] = @()
@@ -611,7 +611,7 @@ function Get-ExtensionDataSources
         $state.runtime.dcrTypesEnabled.extensions = $true
 
         # Extensions DCR output updates
-        $state.outputs.extensions.parameters.dcrName.defaultValue += "extensions"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-extensions"
         $state.outputs.extensions.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.extensions.resources[0].properties.description = "Azure monitor migration script generated extensions rule"
         $state.outputs.extensions.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -845,7 +845,7 @@ function Get-CustomLogs
         $state.runtime.dcrTypesEnabled.customLogs = $true
 
         # Custom Logs DCR outputs updates
-        $state.outputs.customLogs.parameters.dcrName.defaultValue += "-customlogs"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-customlogs"
         $state.outputs.customLogs.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.customLogs.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
         $state.outupts.customLogs.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
@@ -994,7 +994,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
                 "logDirectorties" = @() #double check what to pass here. DCR contract has it.
         })
 
-        $state.outputs.iis.parameters.dcrName.defaultValue += "-iis"
+        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-iis"
         $state.outputs.iis.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.iis.properties["dceArmId"] = $state.runtime.dce
         $state.outputs.iis.resources[0].properties.description = "Azure monitor migration script generated iis logs rule"
@@ -1022,9 +1022,9 @@ function Get-Output
         {
             if ($state.runtime.dcrTypesEnabled[$type] -eq $true)
             {
-                Write-Host "Info: Generating the $type rule arm template file" -ForegroundColor Cyan
+                Write-Host "Info: Generating the $type rule arm template file ($($type)_dcr_arm_template.json)" -ForegroundColor Cyan
                 $state.outputs[$type] | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
-                Write-Host "Info: Generating the $type rule payload file" -ForegroundColor Cyan
+                Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
                 $state.outputs[$type].resources[0].properties | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
             }
         }
@@ -1037,25 +1037,34 @@ function Get-Output
 function Set-DeployOutputOnAzure
 {
     Write-Host
-    $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of the generated ARM template? (y/n)"
-    $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
-    Write-Host
 
-    if ('y' -eq $deployGeneratedArmTemplate)
+    while ($true)
     {
-        $azConetxt = Get-AzContext
-        Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
-        $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
-        $armTemplateFile = Read-Host ">>>> ARM template file"
-
-        New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.outputFolder)\$armTemplateFile" -ErrorAction Stop
-
-        Write-Host "Info: Deployment done! Check your resource group in Azure for the newly created DCR." -ForegroundColor Green
-    }
-    else {
-        Write-Host "Info: No worries. You can always do it later" -ForegroundColor Yellow
-        Write-Host "Info: Note that a deployment of the generated DCR Arm template is the only way to validate the end to end migration" -ForegroundColor DarkYellow
+        $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated ARM templates? (y/n)"
+        $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
         Write-Host
+
+        if ('y' -eq $deployGeneratedArmTemplate)
+        {
+            $azConetxt = Get-AzContext
+            Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
+            $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
+            $armTemplateFile = Read-Host ">>>> ARM template file name   "
+
+            try 
+            {
+                New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.runtime.outputFolder)\$armTemplateFile" -ErrorAction Stop
+                Write-Host "Info: Deployment done! Check your resource group in Azure for the newly created DCR." -ForegroundColor Green
+                Write-Host
+            } catch {
+                Write-Host "Error while deploying: $PSItem. Please try again" -ForegroundColor Red
+            }
+        }
+        else {
+            Write-Host "Info: No worries. You can always do it later" -ForegroundColor Yellow
+            Write-Host "Info: Note that a deployment of the generated DCR Arm template is the only way to validate the end to end migration" -ForegroundColor DarkYellow
+            break
+        }
     }
 }
 
