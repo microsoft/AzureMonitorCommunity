@@ -1024,6 +1024,8 @@ function Get-Output
             {
                 Write-Host "Info: Generating the $type rule arm template file" -ForegroundColor Cyan
                 $state.outputs[$type] | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
+                Write-Host "Info: Generating the $type rule payload file" -ForegroundColor Cyan
+                $state.outputs[$type].resources[0].properties | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
             }
         }
 
@@ -1044,14 +1046,16 @@ function Set-DeployOutputOnAzure
         $azConetxt = Get-AzContext
         Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
         $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
+        $armTemplateFile = Read-Host ">>>> ARM template file"
 
-        New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.outputFolder)\main_dcr_arm_template.json" -ErrorAction Stop
+        New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.outputFolder)\$armTemplateFile" -ErrorAction Stop
 
         Write-Host "Info: Deployment done! Check your resource group in Azure for the newly created DCR." -ForegroundColor Green
     }
     else {
         Write-Host "Info: No worries. You can always do it later" -ForegroundColor Yellow
-        Write-Host "Info: Note that, a deployment of the generated DCR Arm template is the only way to validate that the migration worked end to end!" -ForegroundColor DarkYellow
+        Write-Host "Info: Note that a deployment of the generated DCR Arm template is the only way to validate the end to end migration" -ForegroundColor DarkYellow
+        Write-Host
     }
 }
 
@@ -1080,6 +1084,7 @@ $WarningPreference = 'Continue'
 Set-InitializeOutputs
 Get-UserLogAnalyticsWorkspace 
 Get-UserLogAnalyticsWorkspaceDataSources
-
 Get-Output
+
+Set-DeployOutputOnAzure
 #endregion
