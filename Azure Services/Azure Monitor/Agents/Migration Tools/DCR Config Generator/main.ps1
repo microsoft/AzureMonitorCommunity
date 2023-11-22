@@ -207,8 +207,8 @@ function Set-InitializeOutputs
         "windows" = Get-BaseArmTemplate
         "linux" = Get-BaseArmTemplate
         "extensions" = Get-BaseArmTemplate
-        "customLogs" = Get-BaseArmTemplate
         "iis" = Get-BaseArmTemplate
+        "cls" = Get-BaseArmTemplate
     }
 }
 
@@ -656,7 +656,7 @@ function Get-ProvisionDCE
     $dceSubId = Read-Host ">>>>> Sub Id"
     $dceRg = Read-Host ">>>>> Resource Group"
     $dceName = Read-Host ">>>>> Name"
-    Write-Host ">>>>> Location: $($state.armTemplate.parameters.dcrLocation.defaultValue)"
+    Write-Host ">>>>> Location: $($state.runtime.dcrLocation)"
     $accessToken = Get-AzAccessToken
     $accessToken | Out-Null # Shouldn't print this out to the console
 
@@ -666,7 +666,7 @@ function Get-ProvisionDCE
     }
 
     $body = @{
-        "location" = $state.armTemplate.parameters.dcrLocation.defaultValue
+        "location" = $state.runtime.dcrLocation
         "properties" = @{
             "description" = "A data Collection Endpoint"
         }
@@ -833,7 +833,6 @@ function Get-CustomLogs
     # For MMA based custom tables that haven't been migrated yet, the customer needs to perform the migration for the custom logs ingestion via AMA to work
     # Another alternative will be to create a new custom table. Refer to this article https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal
     $customLogs = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind "CustomLog"
-    #$state.armTemplate["customLogs"] = $customLogs
 
     if ($null -eq $customLogs)
     {
@@ -842,15 +841,15 @@ function Get-CustomLogs
     else {
         Write-Host "Info: Custom Logs is enabled on the workspace" -ForegroundColor Green
         $state.runtime.dataSourcesCount += 1
-        $state.runtime.dcrTypesEnabled.customLogs = $true
+        $state.runtime.dcrTypesEnabled.cls = $true
 
         # Custom Logs DCR outputs updates
-        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-customlogs"
-        $state.outputs.customLogs.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
-        $state.outputs.customLogs.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
-        $state.outupts.customLogs.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
-        $state.outputs.customLogs.resources[0].properties["streamDeclarations"] = [ordered]@{}
-        $state.outputs.customLogs.resources[0].properties.dataSources["logFiles"] = @()
+        $state.outputs.cls.parameters.dcrName.defaultValue = $DcrName + "-customlogs"
+        $state.outputs.cls.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.cls.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
+        $state.outputs.cls.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
+        $state.outputs.cls.resources[0].properties["streamDeclarations"] = @{}
+        $state.outputs.cls.resources[0].properties.dataSources["logFiles"] = @()
 
         Write-Host "Info: For each classic custom table below that hasn't been migrated, you will need to either migrate it or create a new AMA based custom table (in case you don't care about preserving data)" -ForegroundColor DarkYellow
         Write-Host "Info: Migrate a classic MMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration" -ForegroundColor Cyan
@@ -874,7 +873,7 @@ function Get-CustomLogs
                         }
                     )
                 } 
-            $state.outupts.customLogs.resources[0].properties.streamDeclarations[$customStreamName] = $streamDeclaration
+            $state.outputs.cls.resources[0].properties.streamDeclarations[$customStreamName] = $streamDeclaration
             #####################################################################
             $fPatterns = @(Get-FilePatterns -customLog $customLog)
             $customLogDataSource = [ordered]@{
@@ -889,8 +888,8 @@ function Get-CustomLogs
                 }
             }
 
-            $state.outupts.customLogs.resources[0].properties.dataSources.logFiles += ($customLogDataSource)
-            $state.outupts.customLogs.resources[0].properties.dataFlows[0].streams += ($customStreamName)
+            $state.outputs.cls.resources[0].properties.dataSources.logFiles += ($customLogDataSource)
+            $state.outputs.cls.resources[0].properties.dataFlows[0].streams += ($customStreamName)
 
             $iter_count += 1
             ######################################################################
@@ -906,7 +905,7 @@ function Get-CustomLogs
         Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor DarkYellow
 
         Set-FulfillDCERequirement
-        $state.outupts.customLogs.properties["dceArmId"] = $state.runtime.dce
+        $state.outputs.cls.parameters.dceArmId = $state.runtime.dce
     }
 }
 
@@ -936,8 +935,6 @@ function Get-IsIISLogsDataSourceEnabled
     if ($response.value.Count -ne 0 -and $response.value[0].properties.state -eq "OnPremiseEnabled")
     {
         Write-Host "Info: IIS Logs is enabled on the workspace" -ForegroundColor Green
-        $state.dataSourcesCount += 1
-        $state.runtimeChecks.iis = $true
         return $True
     }
     else {
@@ -982,6 +979,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     if ($True -eq $isIISLogsEnabled)
     {
         $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.iis = $true
 
         # DCE required for iis logs
         Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor DarkYellow
@@ -994,9 +992,9 @@ function Get-UserLogAnalyticsWorkspaceDataSources
                 "logDirectorties" = @() #double check what to pass here. DCR contract has it.
         })
 
-        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-iis"
+        $state.outputs.iis.parameters.dcrName.defaultValue = $DcrName + "-iis"
         $state.outputs.iis.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
-        $state.outputs.iis.properties["dceArmId"] = $state.runtime.dce
+        $state.outputs.iis.parameters["dceArmId"] = $state.runtime.dce
         $state.outputs.iis.resources[0].properties.description = "Azure monitor migration script generated iis logs rule"
         $state.outputs.iis.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
         $state.outputs.iis.resources[0].properties.dataSources["iisLogs"] = $iisLogsDataSource
@@ -1017,7 +1015,7 @@ function Get-Output
     else{
         $correctedOutputFolder = $state.runtime.outputFolder
 
-        $dcrTypes = @("windows", "linux", "extensions", "customLogs", "iis")
+        $dcrTypes = @("windows", "linux", "extensions", "cls", "iis")
         foreach ($type in $dcrTypes)
         {
             if ($state.runtime.dcrTypesEnabled[$type] -eq $true)
@@ -1028,7 +1026,7 @@ function Get-Output
                     | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
 
                 Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
-                $state.outputs[$type].resources[0].properties | ConvertTo-Json -Depth 100 `
+                $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 `
                     | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )} `
                     | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
             }
@@ -1082,7 +1080,7 @@ $global:state = [ordered]@{
             "windows" = $false
             "linux" = $false
             "extensions" = $false
-            "customLogs" = $false
+            "cls" = $false
             "iis" = $false 
         }
         "dataSourcesCount" = 0
