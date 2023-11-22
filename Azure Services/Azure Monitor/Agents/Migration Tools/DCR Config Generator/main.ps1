@@ -197,6 +197,10 @@ function Get-BaseArmTemplate
     return $armTemplate
 }
 
+<#
+.DESCRIPTION
+    Generates empty DCR arm templated for each output type
+#>
 function Set-InitializeOutputs
 {
     $state["outputs"] = @{
@@ -208,6 +212,11 @@ function Set-InitializeOutputs
     }
 }
 
+<#
+.DESCRIPTION
+    Does a get call on the Log Analytics workspace provided by the user
+    Information retrieved will be used later
+#>
 function Get-UserLogAnalyticsWorkspace
 {
     Write-Host
@@ -262,6 +271,7 @@ function Get-WindowsPerfCountersDataSource
         $state.runtime.dcrTypesEnabled.windows = $true
 
         # Windows DCR output updates
+        $state.outputs.windows.parameters.dcrName.defaultValue += "-windows"
         $state.outputs.windows.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.windows.resources[0].properties.description = "Azure monitor migration script generated windows rule"
         $state.outputs.windows.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -357,6 +367,7 @@ function Get-WindowsEventLogs
         $state.runtime.dcrTypesEnabled.windows = $true
 
         # Windows DCR output updates
+        $state.outputs.windows.parameters.dcrName.defaultValue += "-windows"
         $state.outputs.windows.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.windows.resources[0].properties.description = "Azure monitor migration script generated windows rule"
         $state.outputs.windows.resources[0].properties.dataSources["windowsEventLogs"] = @()
@@ -401,6 +412,7 @@ function Get-LinuxPerfCountersDataSource
         $state.runtime.dcrTypesEnabled.linux = $true
 
         # Linux DCR output updates
+        $state.outputs.linux.parameters.dcrName.defaultValue += "-linux"
         $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
         $state.outputs.linux.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -540,6 +552,7 @@ function Get-LinuxSysLogs
         $state.runtime.dcrTypesEnabled.linux = $true
 
         # Linux DCR output updates
+        $state.outputs.linux.parameters.dcrName.defaultValue += "-linux"
         $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
         $state.outputs.linux.resources[0].properties.dataSources["syslog"] = @()
@@ -598,6 +611,7 @@ function Get-ExtensionDataSources
         $state.runtime.dcrTypesEnabled.extensions = $true
 
         # Extensions DCR output updates
+        $state.outputs.extensions.parameters.dcrName.defaultValue += "extensions"
         $state.outputs.extensions.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.extensions.resources[0].properties.description = "Azure monitor migration script generated extensions rule"
         $state.outputs.extensions.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -712,6 +726,10 @@ function Set-FulfillDCERequirement
     }
 }
 
+<#
+.DESCRIPTION
+    This function does the laworkspaceTableMigrate Post call
+#>
 function Set-MigrateMMABasedCustomTable
 {
     param(
@@ -827,6 +845,7 @@ function Get-CustomLogs
         $state.runtime.dcrTypesEnabled.customLogs = $true
 
         # Custom Logs DCR outputs updates
+        $state.outputs.customLogs.parameters.dcrName.defaultValue += "-customlogs"
         $state.outputs.customLogs.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.customLogs.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
         $state.outupts.customLogs.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
@@ -975,7 +994,8 @@ function Get-UserLogAnalyticsWorkspaceDataSources
                 "logDirectorties" = @() #double check what to pass here. DCR contract has it.
         })
 
-        $state.outputs.iis.parameters.dcrLocation = $state.runtime.dcrLocation
+        $state.outputs.iis.parameters.dcrName.defaultValue += "-iis"
+        $state.outputs.iis.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.iis.properties["dceArmId"] = $state.runtime.dce
         $state.outputs.iis.resources[0].properties.description = "Azure monitor migration script generated iis logs rule"
         $state.outputs.iis.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
@@ -997,12 +1017,14 @@ function Get-Output
     else{
         $correctedOutputFolder = $state.runtime.outputFolder
 
-        $state | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\state.json"
-
-        if ($state.runtime.dcrTypesEnabled.windows -eq $true)
+        $dcrTypes = @("windows", "linux", "extensions", "customLogs", "iis")
+        foreach ($type in $dcrTypes)
         {
-            Write-Host 'Info: Generating the Windows rule arm template file' -ForegroundColor Cyan
-            $state.outputs.windows | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\windows_dcr_arm_template.json"
+            if ($state.runtime.dcrTypesEnabled[$type] -eq $true)
+            {
+                Write-Host "Info: Generating the $type rule arm template file" -ForegroundColor Cyan
+                $state.outputs[$type] | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\($type)_dcr_arm_template.json"
+            }
         }
 
         Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Green
