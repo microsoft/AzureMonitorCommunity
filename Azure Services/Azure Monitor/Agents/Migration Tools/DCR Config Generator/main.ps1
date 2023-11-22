@@ -34,7 +34,6 @@ class DCRPerfCounterDataSource
     [int]$samplingFrequencyInSeconds
     [string[]]$counterSpecifiers
 }
-
 class DCRWindowsEventLogDataSource
 {
     [string]$name
@@ -65,12 +64,12 @@ function Set-ValidateOutputFolder
     {
         $OutputFolder = $PWD.Path
         Write-Host "Info: No output folder provided. Defaulting to the current working directory: $OutputFolder" -ForegroundColor DarkYellow
-        $state["outputFolder"] = $OutputFolder
+        $state.runtime["outputFolder"] = $OutputFolder
     }
     else {
         try {
             $OutputFolder = Convert-Path $OutputFolder -ErrorAction Stop
-            $state["outputFolder"] = $OutputFolder
+            $state.runtime["outputFolder"] = $OutputFolder
         }
         catch {
             Write-Host "Invalid output folder: $PSItem. Please try again" -ForegroundColor Red
@@ -147,10 +146,7 @@ function Get-BaseArmTemplate
         "location" = "[parameters('dcrLocation')]"
         "properties" = [ordered]@{
             "description" = "A Data Collection Rule"
-            "dataCollectionEndpointId" = $null
-            "streamDeclarations" = @{}
             "dataSources" = [ordered]@{
-                "performanceCounters" = @()
             }
             "destinations" = [ordered]@{
                 "logAnalytics" = @(
@@ -198,7 +194,18 @@ function Get-BaseArmTemplate
         "resources" = @($dcrResourceDef)
     }
 
-    $state["armTemplate"] = $armTemplate
+    return $armTemplate
+}
+
+function Set-InitializeOutputs
+{
+    $state["outputs"] = @{
+        "windows" = Get-BaseArmTemplate
+        "linux" = Get-BaseArmTemplate
+        "extensions" = Get-BaseArmTemplate
+        "customLogs" = Get-BaseArmTemplate
+        "iis" = Get-BaseArmTemplate
+    }
 }
 
 function Get-UserLogAnalyticsWorkspace
@@ -218,10 +225,8 @@ function Get-UserLogAnalyticsWorkspace
     }
     
     Write-Host 'Info: Successfully retrieved the LAW details' -ForegroundColor Green
-    $state["workspace"] = $workspace
-
-    # Update the DCR Location
-    $state.armTemplate.parameters.dcrLocation.defaultValue = $workspace.Location
+    $state.runtime["workspace"] = $workspace
+    $state.runtime["dcrLocation"] = $workspace.Location
 }
 
 <#
@@ -247,14 +252,19 @@ function Get-WindowsPerfCountersDataSource
     }
 
     $windowsPerfCounters = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind "WindowsPerformanceCounter"
-    $state.armTemplate.dummy1
     if ($null -eq $windowsPerfCounters)
     {
         Write-Host "Info: Windows Performance Counters is not enabled on the workspace" -ForegroundColor Yellow
     }
     else {
         Write-Host "Info: Windows Performance Counters is enabled on the workspace" -ForegroundColor Green
-        $state.dataSourcesCount += 1
+        $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.windows = $true
+
+        # Windows DCR output updates
+        $state.outputs.windows.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.windows.resources[0].properties.description = "Azure monitor migration script generated windows rule"
+        $state.outputs.windows.resources[0].properties.dataSources["performanceCounters"] = @()
 
         $dcrPerfCounterStream = "Microsoft-Perf"
         $dcrWindowsPerfCountersTable = [ordered]@{}
@@ -284,55 +294,10 @@ function Get-WindowsPerfCountersDataSource
 
         foreach($key in $dcrWindowsPerfCountersTable.Keys)
         {
-            $state.armTemplate.resources[0].properties["dataSources"]["performanceCounters"] += $dcrWindowsPerfCountersTable[$key]
+            $state.outputs.windows.resources[0].properties.dataSources.performanceCounters += $dcrWindowsPerfCountersTable[$key]
         }
 
-        $state.armTemplate.resources[0].properties["dataFlows"][0].streams += "Microsoft-Perf"
-    }
-}
-
-<#
-.DESCRIPTION
-    Checks and parses the Linux Perf Counters on the workspace
-#>
-function Get-LinuxPerfCountersDataSource
-{
-    $linuxPerfCounters = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind "LinuxPerformanceObject"
-    if ($null -eq $linuxPerfCounters)
-    {
-        Write-Host "Info: Linux Performance Counters is not enabled on the workspace" -ForegroundColor Yellow
-    }
-    else {
-        Write-Host "Info: Linux Performance Counters is enabled on the workspace" -ForegroundColor Green
-        $state.dataSourcesCount += 1
-
-        $dcrLinuxPerfCountersTable = [ordered]@{}
-        $count = 1
-        foreach($dataSource in $linuxPerfCounters)
-        {
-            $properties = $dataSource.Properties
-            $currentKey = "$($properties.objectName)-$($properties.intervalSeconds)"
-            $newPerfCounter = New-Object DCRPerfCounterDataSource
-            $newPerfCounter.name = "DS_$("LinuxPerformanceCounter")_$($count)"
-            $newPerfCounter.counterSpecifiers = @()
-            $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
-            $newPerfCounter.streams = @("Microsoft-Perf")
-            
-            foreach($counter in $properties.performanceCounters)
-            {
-                $newPerfCounter.counterSpecifiers += "\$($properties.objectName)($($properties.instanceName))\$($counter.counterName)"
-            }
-
-            $dcrLinuxPerfCountersTable.Add($currentKey, $newPerfCounter)
-            $count += 1
-        }
-
-        foreach($key in $dcrLinuxPerfCountersTable.Keys)
-        {
-            $state.armTemplate.resources[0].properties.dataSources.performanceCounters += $dcrLinuxPerfCountersTable[$key]
-        }
-
-        $state.armTemplate.resources[0].properties["dataFlows"][0].streams += "Microsoft-Perf"
+        $state.outputs.windows.resources[0].properties.dataFlows[0].streams += "Microsoft-Perf"
     }
 }
 
@@ -388,9 +353,13 @@ function Get-WindowsEventLogs
     }
     else {
         Write-Host "Info: Windows Event Logs is enabled on the workspace" -ForegroundColor Green
-        $state.dataSourcesCount += 1
+        $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.windows = $true
 
-        $state.armTemplate.resources[0].properties.dataSources["windowsEventLogs"] = @()
+        # Windows DCR output updates
+        $state.outputs.windows.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.windows.resources[0].properties.description = "Azure monitor migration script generated windows rule"
+        $state.outputs.windows.resources[0].properties.dataSources["windowsEventLogs"] = @()
 
         # Compressing all the workspace events into a single dcr event log
         $dcrWindowsEvent = New-Object DCRWindowsEventLogDataSource
@@ -408,10 +377,61 @@ function Get-WindowsEventLogs
 
         if ($iter_count -ne 0)
         {
-            $state.armTemplate.resources[0].properties.dataSources.windowsEventLogs += $dcrWindowsEvent
+            $state.outputs.windows.resources[0].properties.dataSources.windowsEventLogs += $dcrWindowsEvent
         }
         
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-Event"
+        $state.outputs.windows.resources[0].properties.dataFlows[0].streams += "Microsoft-Event"
+    }
+}
+
+<#
+.DESCRIPTION
+    Checks and parses the Linux Perf Counters on the workspace
+#>
+function Get-LinuxPerfCountersDataSource
+{
+    $linuxPerfCounters = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind "LinuxPerformanceObject"
+    if ($null -eq $linuxPerfCounters)
+    {
+        Write-Host "Info: Linux Performance Counters is not enabled on the workspace" -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "Info: Linux Performance Counters is enabled on the workspace" -ForegroundColor Green
+        $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.linux = $true
+
+        # Linux DCR output updates
+        $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
+        $state.outputs.linux.resources[0].properties.dataSources["performanceCounters"] = @()
+
+        $dcrLinuxPerfCountersTable = [ordered]@{}
+        $count = 1
+        foreach($dataSource in $linuxPerfCounters)
+        {
+            $properties = $dataSource.Properties
+            $currentKey = "$($properties.objectName)-$($properties.intervalSeconds)"
+            $newPerfCounter = New-Object DCRPerfCounterDataSource
+            $newPerfCounter.name = "DS_$("LinuxPerformanceCounter")_$($count)"
+            $newPerfCounter.counterSpecifiers = @()
+            $newPerfCounter.samplingFrequencyInSeconds = $properties.intervalSeconds
+            $newPerfCounter.streams = @("Microsoft-Perf")
+            
+            foreach($counter in $properties.performanceCounters)
+            {
+                $newPerfCounter.counterSpecifiers += "\$($properties.objectName)($($properties.instanceName))\$($counter.counterName)"
+            }
+
+            $dcrLinuxPerfCountersTable.Add($currentKey, $newPerfCounter)
+            $count += 1
+        }
+
+        foreach($key in $dcrLinuxPerfCountersTable.Keys)
+        {
+            $state.outputs.linux.resources[0].properties.dataSources.performanceCounters += $dcrLinuxPerfCountersTable[$key]
+        }
+
+        $state.outputs.linux.resources[0].properties.dataFlows[0].streams += "Microsoft-Perf"
     }
 }
 
@@ -516,9 +536,13 @@ function Get-LinuxSysLogs
     }
     else {
         Write-Host "Info: Linux SysLogs is enabled on the workspace" -ForegroundColor Green
-        $state.dataSourcesCount += 1
+        $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.linux = $true
 
-        $state.armTemplate.resources[0].properties.dataSources["syslog"] = @()
+        # Linux DCR output updates
+        $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
+        $state.outputs.linux.resources[0].properties.dataSources["syslog"] = @()
 
         $dcrLinuxSyslogsTable = @{}
         $count = 1
@@ -549,10 +573,10 @@ function Get-LinuxSysLogs
 
         foreach($key in $dcrLinuxSyslogsTable.Keys)
         {
-            $state.armTemplate.resources[0].properties.dataSources.sysLog += $dcrLinuxSyslogsTable[$key]
+            $state.outputs.linux.resources[0].properties.dataSources.sysLog += $dcrLinuxSyslogsTable[$key]
         }
 
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-Syslog"
+        $state.outputs.linux.resources[0].properties.dataFlows[0].streams += "Microsoft-Syslog"
     }
 } 
 
@@ -570,9 +594,14 @@ function Get-ExtensionDataSources
     if ($null -ne $vmInsights -and $vmInsights.enabled -eq $True)
     {
         Write-Host 'Info: VM Insights Extension Data Source is enabled on the workspace' -ForegroundColor Green
-        $state.dataSourcesCount += 1
+        $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.extensions = $true
 
-        $state.armTemplate.resources[0].properties.dataSources["extensions"] = @()
+        # Extensions DCR output updates
+        $state.outputs.extensions.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.extensions.resources[0].properties.description = "Azure monitor migration script generated extensions rule"
+        $state.outputs.extensions.resources[0].properties.dataSources["performanceCounters"] = @()
+        $state.outputs.extensions.resources[0].properties.dataSources["extensions"] = @()
 
         # VM Insights Perf counter
         $vmInsightsPerfCounter = [ordered]@{
@@ -582,8 +611,8 @@ function Get-ExtensionDataSources
             "counterSpecifiers" = @("\VmInsights\DetailedMetrics")
         }
 
-        $state.armTemplate.resources[0].properties.dataSources.performanceCounters += $vmInsightsPerfCounter
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-InsightsMetrics"
+        $state.outputs.extensions.resources[0].properties.dataSources.performanceCounters += $vmInsightsPerfCounter
+        $state.outputs.extensions.resources[0].properties.dataFlows[0].streams += "Microsoft-InsightsMetrics"
 
         # VM Insights Extension
         $vmInsightsExtension = [ordered]@{
@@ -595,8 +624,8 @@ function Get-ExtensionDataSources
 
         Write-Host 'Info: Added Microsoft-InsightsMetrics and Microsoft-ServiceMap streams as part of the VM Insights Extension' -ForegroundColor Yellow
 
-        $state.armTemplate.resources[0].properties.dataSources.extensions += $vmInsightsExtension
-        $state.armTemplate.resources[0].properties.dataFlows[0].streams += "Microsoft-ServiceMap"
+        $state.outputs.extensions.resources[0].properties.dataSources.extensions += $vmInsightsExtension
+        $state.outputs.extensions.resources[0].properties.dataFlows[0].streams += "Microsoft-ServiceMap"
     }
     else {
         Write-Host 'Info: VM Insights Extension Data Source is not enabled on the workspace' -ForegroundColor Yellow
@@ -653,7 +682,7 @@ function Get-ProvisionDCE
 #>
 function Set-FulfillDCERequirement
 {
-    if ($null -ne $state.armTemplate.resources[0].properties.dataCollectionEndpointId)
+    if ($null -ne $state.runtime.dce)
     {
         Write-Host "Info: DCE requirement already fulfilled" -ForegroundColor Green
     }
@@ -673,15 +702,13 @@ function Set-FulfillDCERequirement
             Write-Host
         }
         
-        $state.armTemplate.parameters["dceArmId"] = [ordered]@{
+        $state.runtime["dce"] = [ordered]@{
             "type" = "string"
             "defaultValue" = $dceArmId
             "metadata" = [ordered]@{
                 "description" = "The ARM Id of the Data Collection Endpoint being associated to this DCR"
             }
         }
-
-        $state.armTemplate.resources[0].properties.dataCollectionEndpointId = "[parameters('dceArmId')]"
     }
 }
 
@@ -796,13 +823,20 @@ function Get-CustomLogs
     }
     else {
         Write-Host "Info: Custom Logs is enabled on the workspace" -ForegroundColor Green
-        $state.dataSourcesCount += 1
+        $state.runtime.dataSourcesCount += 1
+        $state.runtime.dcrTypesEnabled.customLogs = $true
+
+        # Custom Logs DCR outputs updates
+        $state.outputs.customLogs.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+        $state.outputs.customLogs.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
+        $state.outupts.customLogs.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
+        $state.outputs.customLogs.resources[0].properties["streamDeclarations"] = [ordered]@{}
+        $state.outputs.customLogs.resources[0].properties.dataSources["logFiles"] = @()
 
         Write-Host "Info: For each classic custom table below that hasn't been migrated, you will need to either migrate it or create a new AMA based custom table (in case you don't care about preserving data)" -ForegroundColor DarkYellow
         Write-Host "Info: Migrate a classic MMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration" -ForegroundColor Cyan
         Write-Host "Info: Create a new AMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal" -ForegroundColor Cyan
         
-        $state.armTemplate.resources[0].properties.dataSources["logFiles"] = @()
         $iter_count = 1
 
         foreach($customLog in $customLogs)
@@ -821,7 +855,7 @@ function Get-CustomLogs
                         }
                     )
                 } 
-            $state.armTemplate.resources[0].properties.streamDeclarations[$customStreamName] = $streamDeclaration
+            $state.outupts.customLogs.resources[0].properties.streamDeclarations[$customStreamName] = $streamDeclaration
             #####################################################################
             $fPatterns = @(Get-FilePatterns -customLog $customLog)
             $customLogDataSource = [ordered]@{
@@ -836,8 +870,8 @@ function Get-CustomLogs
                 }
             }
 
-            $state.armTemplate.resources[0].properties.dataSources.logFiles += ($customLogDataSource)
-            $state.armTemplate.resources[0].properties.dataFlows[0].streams += ($customStreamName)
+            $state.outupts.customLogs.resources[0].properties.dataSources.logFiles += ($customLogDataSource)
+            $state.outupts.customLogs.resources[0].properties.dataFlows[0].streams += ($customStreamName)
 
             $iter_count += 1
             ######################################################################
@@ -853,6 +887,7 @@ function Get-CustomLogs
         Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor DarkYellow
 
         Set-FulfillDCERequirement
+        $state.outupts.customLogs.properties["dceArmId"] = $state.runtime.dce
     }
 }
 
@@ -883,6 +918,7 @@ function Get-IsIISLogsDataSourceEnabled
     {
         Write-Host "Info: IIS Logs is enabled on the workspace" -ForegroundColor Green
         $state.dataSourcesCount += 1
+        $state.runtimeChecks.iis = $true
         return $True
     }
     else {
@@ -923,9 +959,11 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     Get-CustomLogs
 
     # IIS Logs
-    $isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.workspace
+    $isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.runtime.workspace
     if ($True -eq $isIISLogsEnabled)
     {
+        $state.runtime.dataSourcesCount += 1
+
         # DCE required for iis logs
         Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor DarkYellow
 
@@ -936,39 +974,20 @@ function Get-UserLogAnalyticsWorkspaceDataSources
                 "streams" = @("Microsoft-W3CIISLog")
                 "logDirectorties" = @() #double check what to pass here. DCR contract has it.
         })
-        $state.armTemplate.resources[0].properties["dataSources"]["iisLogs"] = $iisLogsDataSource
-        $state.armTemplate.resources[0].properties["dataFlows"][0].streams += "Microsoft-W3CIISLog"
-    }
-}
 
-<#
-.DESCRIPTION
-    This function demux the data flow
-    If there are 4 distincts streams in dataFlows[0].streams, we end up with 4 dataFlow objects in dataFlows
-#>
-function Set-DemuxDataFlows
-{
-    $dataFlow = $state.armTemplate.resources[0].properties.dataFlows[0]
-
-    $state.armTemplate.resources[0].properties.dataFlows = @()
-
-    Write-Host "Info: Building data flows" -ForegroundColor Cyan
-
-    foreach ($stream in $dataFlow.streams | Select-Object -Unique)
-    {
-        $newDataFlow = [ordered]@{
-            "streams" = @($stream)
-            "destinations" = @($dataFlow.destinations)
-        }
-
-        $state.armTemplate.resources[0].properties.dataFlows += $newDataFlow
+        $state.outputs.iis.parameters.dcrLocation = $state.runtime.dcrLocation
+        $state.outputs.iis.properties["dceArmId"] = $state.runtime.dce
+        $state.outputs.iis.resources[0].properties.description = "Azure monitor migration script generated iis logs rule"
+        $state.outputs.iis.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
+        $state.outputs.iis.resources[0].properties.dataSources["iisLogs"] = $iisLogsDataSource
+        $state.outputs.iis.resources[0].properties.dataFlows[0].streams += "Microsoft-W3CIISLog"
     }
 }
 
 function Get-Output
 {
     Write-Host
-    if ($state.dataSourcesCount -eq 0)
+    if ($state.runtime.dataSourcesCount -eq 0)
     {
         Write-Host 'Info: No supported data sources were found on the workspace.' -ForegroundColor DarkYellow
         Write-Host 'Info: No output file(s) will be generated.' -ForegroundColor DarkYellow
@@ -976,45 +995,58 @@ function Get-Output
         Exit
     }
     else{
-        # Build data flows
-        Set-DemuxDataFlows
+        $correctedOutputFolder = $state.runtime.outputFolder
 
-        # Do some clean up
-        if ($state.armTemplate.resources[0].properties.dataSources.performanceCounters.Count -eq 0)
+        $state | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\state.json"
+
+        if ($state.runtime.dcrTypesEnabled.windows -eq $true)
         {
-            $state.armTemplate.resources[0].properties.dataSources.Remove("performanceCounters")
+            Write-Host 'Info: Generating the Windows rule arm template file' -ForegroundColor Cyan
+            $state.outputs.windows | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\windows_dcr_arm_template.json"
         }
-
-        if ($null -eq $state.armTemplate.resources[0].properties.dataCollectionEndpointId)
-        {
-            $state.armTemplate.resources[0].properties.Remove("dataCollectionEndpointId")
-        }
-
-        if ($state.armTemplate.resources[0].properties.streamDeclarations.Count -eq 0)
-        {
-            $state.armTemplate.resources[0].properties.Remove("streamDeclarations")
-        }
-
-        $correctedOutputFolder = $state.outputFolder
-
-        # Generating the outputs
-        Write-Host 'Info: Generating the main DCR arm template file' -ForegroundColor Cyan
-        $state.armTemplate | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\main_dcr_arm_template.json"
-
-        Write-Host 'Info: Generating the DCR payload file' -ForegroundColor Cyan
-        $state.armTemplate.resources[0].properties | ConvertTo-Json -Depth 100 | Out-File -FilePath "$correctedOutputFolder\dcr_payload.json"
 
         Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Green
         Write-Host
     }
 }
 
+function Set-DeployOutputOnAzure
+{
+    Write-Host
+    $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of the generated ARM template? (y/n)"
+    $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
+    Write-Host
+
+    if ('y' -eq $deployGeneratedArmTemplate)
+    {
+        $azConetxt = Get-AzContext
+        Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
+        $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
+
+        New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.outputFolder)\main_dcr_arm_template.json" -ErrorAction Stop
+
+        Write-Host "Info: Deployment done! Check your resource group in Azure for the newly created DCR." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Info: No worries. You can always do it later" -ForegroundColor Yellow
+        Write-Host "Info: Note that, a deployment of the generated DCR Arm template is the only way to validate that the migration worked end to end!" -ForegroundColor DarkYellow
+    }
+}
+
 #endregion
 
 #region Logic
-
 $global:state = [ordered]@{
-    "dataSourcesCount" = 0
+    "runtime" = [ordered]@{
+        "dcrTypesEnabled" = [ordered]@{ # Used for final output
+            "windows" = $false
+            "linux" = $false
+            "extensions" = $false
+            "customLogs" = $false
+            "iis" = $false 
+        }
+        "dataSourcesCount" = 0
+    }
 }
 ###########################################################
 Set-ValidateOutputFolder
@@ -1023,10 +1055,9 @@ $WarningPreference = 'SilentlyContinue'
 Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
 $WarningPreference = 'Continue'
 
-Get-BaseArmTemplate
+Set-InitializeOutputs
 Get-UserLogAnalyticsWorkspace 
 Get-UserLogAnalyticsWorkspaceDataSources
 
 Get-Output
-
 #endregion
