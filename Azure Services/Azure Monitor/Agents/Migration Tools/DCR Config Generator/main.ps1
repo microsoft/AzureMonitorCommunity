@@ -4,7 +4,7 @@ Author: Azure Monitor Control Service
 Email: amcsdev@microsoft.com
 Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configuration
 
-Copyright (c) 2023 Microsoft
+Copyright (c) November 2023 Microsoft
 #>
 
 # All the following variables are global
