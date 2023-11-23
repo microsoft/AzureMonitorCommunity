@@ -23,8 +23,6 @@ It is a standalone script and doesn't require the installation of any additional
 	.\WorkspaceConfigToDCRMigrationTool.ps1 -SubscriptionId $subId -ResourceGroupName $rgName -WorkspaceName $workspaceName -DCRName $dcrName -OutputFolder $outputFolderPath
 ```
 
-2. Arguments:
-
 | Name                    | Required  | Description                                                                   |
 | ----------------------- |:---------:|:-----------------------------------------------------------------------------:|
 | `SubscriptionId`        | YES       | This is the subscription ID of the workspace                                  |
@@ -34,17 +32,16 @@ It is a standalone script and doesn't require the installation of any additional
 | `OutputFolder`          | NO        | The output folder path. If not provided, the working directory path is used   |
 
 3. Outputs:
- 1. For each supported `DCR type`, the script produces a DCR ARM template (ready to be deployed) and a DCR payload (for users that don't need the arm template)
+ -  For each supported `DCR type`, the script produces a DCR ARM template (ready to be deployed) and a DCR payload (for users that don't need the arm template)
 
- 2. This is the list of currently supported DCR types:
+ - This is the list of currently supported DCR types:
   1. **Windows** contains `WindowsPerfCounters` and `WindowsEventLogs` data sources only
   2. **Linux** contains `LinuxPerfCounters` and `Syslog` data sources only
   3. **Custom Logs** contains `logFiles` data sources only
   4. **IIS Logs** contains `iisLogs` data sources only
   5. **Extensions** contains `extensions` data sources only along with any associated perfCounters data sources
-    1. `VMInsights` 
-
-    If you would like to add support for a new extension type, please reach out to us.
+    - `VMInsights` 
+    - PS: If you would like to add support for a new extension type, please reach out to us.
 
 # Contacts
 
