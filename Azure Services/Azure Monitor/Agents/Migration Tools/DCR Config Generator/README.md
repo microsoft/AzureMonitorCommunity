@@ -17,7 +17,7 @@ It is a standalone script and doesn't require the installation of any additional
 
 ## Running the script
 
-1. Download the script from Github and run it:
+1. Download the script and run it:
 
 ```powershell
 	.\WorkspaceConfigToDCRMigrationTool.ps1 -SubscriptionId $subId -ResourceGroupName $rgName -WorkspaceName $workspaceName -DCRName $dcrName -OutputFolder $outputFolderPath
@@ -35,14 +35,13 @@ It is a standalone script and doesn't require the installation of any additional
  -  For each supported `DCR type`, the script produces a DCR ARM template (ready to be deployed) and a DCR payload (for users that don't need the arm template)
 
  - This is the list of currently supported DCR types:
-  1. **Windows** contains `WindowsPerfCounters` and `WindowsEventLogs` data sources only
-  2. **Linux** contains `LinuxPerfCounters` and `Syslog` data sources only
-  3. **Custom Logs** contains `logFiles` data sources only
-  4. **IIS Logs** contains `iisLogs` data sources only
-  5. **Extensions** contains `extensions` data sources only along with any associated perfCounters data sources
+  - **Windows** contains `WindowsPerfCounters` and `WindowsEventLogs` data sources only
+  - **Linux** contains `LinuxPerfCounters` and `Syslog` data sources only
+  - **Custom Logs** contains `logFiles` data sources only
+  - **IIS Logs** contains `iisLogs` data sources only
+  - **Extensions** contains `extensions` data sources only along with any associated perfCounters data sources
     - `VMInsights` 
     - PS: If you would like to add support for a new extension type, please reach out to us.
 
 # Contacts
-
 For any issues, please contact us at `amcsdev@microsoft.com`
