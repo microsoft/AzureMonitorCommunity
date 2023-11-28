@@ -195,7 +195,7 @@ function Get-DCRArmTemplate
         $resources = @(
         [ordered]@{
             "type" = "Microsoft.Insights/dataCollectionRules";
-            "apiVersion" = "2021-04-01";
+            "apiVersion" = "2022-06-02";
             "name" = "[parameters('$($paramName)')]";
             "location" = $Location;
             "kind" = $PlatformType;
