@@ -412,7 +412,7 @@ function Get-LinuxPerfCountersDataSource
         $state.runtime.dcrTypesEnabled.linux = $true
 
         # Linux DCR output updates
-        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-linux"
+        $state.outputs.linux.parameters.dcrName.defaultValue = $DcrName + "-linux"
         $state.outputs.linux.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.linux.resources[0].properties.description = "Azure monitor migration script generated linux rule"
         $state.outputs.linux.resources[0].properties.dataSources["performanceCounters"] = @()
