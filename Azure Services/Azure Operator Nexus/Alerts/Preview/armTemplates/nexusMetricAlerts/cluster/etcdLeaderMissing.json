@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "etcd leader missing"
+    },
+    "alertDescription": {
+      "value": "This alert will trigger when member is not a leader"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/clusters"
+    },
+    "metricName": {
+      "value": "EtcdServerIsLeader"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": 1
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/clusters"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": []
+    }
+  }
+}

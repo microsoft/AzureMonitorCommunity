@@ -1,0 +1,12 @@
+// Author: aliyoussefi
+// Display name: Display cloud flow runs with direct link
+// Description: Display all cloud flow runs with a direct link to the cloud flow run for troubleshooting
+// Categories: Power Platform
+// Resource types: Power Automate
+// Topic:  Troubleshooting
+
+requests 
+| where customDimensions.resourceProvider == 'Cloud Flow'
+| extend data = todynamic(tostring(customDimensions.Data))
+| project timestamp, operation_Id,  operation_ParentId, duration, customDimensions.signalCategory, name, data.FlowDisplayName, data.tags.xrmWorkflowId , data.tags.createdBy, 
+data, customDimensions, directlink=strcat("https://make.powerautomate.com/environments/", data.tags.environmentName, "/flows/",  name, "/runs/", operation_Id)

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Pod terminating status"
+    },
+    "alertDescription": {
+      "value": "This alert will trigger when pod status is terminating for more than 5 mins usually due to not enough resources"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/clusters"
+    },
+    "metricName": {
+      "value": "KubePodStatusReason"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": 0
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/clusters"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Namespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Reason",
+          "operator": "Include",
+          "values": ["NodeLost"]
+        }
+      ]
+    }
+  }
+}

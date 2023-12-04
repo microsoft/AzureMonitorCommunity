@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Pod Phase"
+    },
+    "alertDescription": {
+      "value": "This alert will trigger when pod is not in running or succeeded"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/clusters"
+    },
+    "metricName": {
+      "value": "KubePodStatusPhase"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": 0
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/clusters"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Namespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Phase",
+          "operator": "Include",
+          "values": ["Failed", "Unknown"]
+        }
+      ]
+    }
+  }
+}
