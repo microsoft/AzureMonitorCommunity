@@ -195,7 +195,7 @@ function Get-DCRArmTemplate
         $resources = @(
         [ordered]@{
             "type" = "Microsoft.Insights/dataCollectionRules";
-            "apiVersion" = "2021-04-01";
+            "apiVersion" = "2022-06-02";
             "name" = "[parameters('$($paramName)')]";
             "location" = $Location;
             "kind" = $PlatformType;
@@ -554,21 +554,21 @@ function Get-CustomLogsInDCRFormat
 
     foreach($dataSource in $workspaceDataSourceList)
     {    
-        if ($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null -and $dataSource.Properties.inputs -ne $null)
+        if ($null -ne $dataSource.Properties -and $null -ne $dataSource.Properties.customLogName -and $null -ne $dataSource.Properties.inputs)
         {
             $properties = $dataSource.Properties
             $tableName = $properties.customLogName
 
             foreach($input in $properties.inputs)
             {
-                if($input.location -ne $null -and $input.location.fileSystemLocations -ne $null)
+                if($null -ne $input.location -and $null -ne $input.location.fileSystemLocations)
                 {
                     $filePatterns = $null
-                    if($input.location.fileSystemLocations.linuxFileTypeLogPaths -ne $null)
+                    if($null -ne $input.location.fileSystemLocations.linuxFileTypeLogPaths)
                     {
                         $filePatterns = $input.location.fileSystemLocations.linuxFileTypeLogPaths
                     }
-                    elseif($input.location.fileSystemLocations.windowsFileTypeLogPaths -ne $null)
+                    elseif($null -ne $input.location.fileSystemLocations.windowsFileTypeLogPaths)
                     {
                         $filePatterns = $input.location.fileSystemLocations.windowsFileTypeLogPaths
                     }
@@ -581,7 +581,7 @@ function Get-CustomLogsInDCRFormat
                 }
             }
             
-            $dcrCustomLogs.streams += $tableName
+            $dcrCustomLogs.streams += "Custom-" + $tableName
             $dcrCustomLogs.name = $dataSource.Name
             $dcrCustomLogs.settings.text = @{
                 "recordStartTimestampFormat" = "ISO 8601"
@@ -786,7 +786,7 @@ function Get-DCRStream
             $workspaceDataSourceList = Get-AzOperationalInsightsDataSource -ResourceGroupName $ResourceGroupName -WorkspaceName $WorkspaceName -Kind $dataSourceType
             foreach($dataSource in $workspaceDataSourceList)
             {
-                if ($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null)
+                if ($null -ne $dataSource.Properties -and $null -ne $dataSource.Properties.customLogName)
                 {
                     $stream += "Custom-" + $dataSource.Properties.customLogName
                 }
@@ -883,7 +883,7 @@ function Get-CustomLogStreamDeclarations
 
     foreach($dataSource in $workspaceDataSourceList)
     {
-        if($dataSource.Properties -ne $null -and $dataSource.Properties.customLogName -ne $null)
+        if($null -ne $dataSource.Properties -and $null -ne $dataSource.Properties.customLogName)
         {
             $streamName = "Custom-" + $dataSource.Properties.customLogName
             $streamDeclarations[$streamName] = @{
