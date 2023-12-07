@@ -846,8 +846,8 @@ function Get-CustomLogs
 
             $customStreamName = "Custom-Input-$($customLog.Properties.customLogName)"
             $outputStreamName = "Custom-$($customLog.Properties.customLogName)"
-            $clArmTemplate.resources[0].properties["streamDeclarations"] = @{
-                $customStreamName = [ordered]@{
+            $clArmTemplate.resources[0].properties["streamDeclarations"] = @{ 
+                $customStreamName = [ordered]@{ #Usinfg the default schema - Cx should update this to fit their use case
                     "columns" = @(
                         @{
                             "name" = "TimeGenerated";
