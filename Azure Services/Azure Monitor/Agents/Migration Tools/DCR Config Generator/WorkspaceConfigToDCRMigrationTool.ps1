@@ -2,7 +2,8 @@
 File: WorkspaceConfigToDCRMigrationTool.ps1
 Author: Azure Monitor Control Service
 Email: amcsdev@microsoft.com
-Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configuration
+Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configurations (DCR)
+Version: 1.0.0
 
 Copyright (c) November 2023 Microsoft
 #>
@@ -63,7 +64,7 @@ function Set-ValidateOutputFolder
     if ("" -eq $OutputFolder)
     {
         $OutputFolder = $PWD.Path
-        Write-Host "Info: No output folder provided. Defaulting to the current working directory: $OutputFolder" -ForegroundColor DarkYellow
+        Write-Host "Info: No output folder provided. Defaulting to the current working directory: $OutputFolder" -ForegroundColor Cyan
         $state.runtime["outputFolder"] = $OutputFolder
     }
     else {
@@ -112,7 +113,7 @@ function Set-AzSubscriptionContext {
                 Exit
             }
 
-            Write-Host "Old subscription Id: $($currentAzContextSubId)"
+            Write-Host "Old subscription Id: $($currentAzContextSubId)" -ForegroundColor Cyan
             Write-Host "New Subscription Id: $($SubscriptionId)" -ForegroundColor Green
         }
     }
@@ -120,14 +121,14 @@ function Set-AzSubscriptionContext {
     {
         try 
         {
-            Write-Host "Connecting to Azure..."
+            Write-Host "Connecting to Azure..." -ForegroundColor DarkYellow
             Connect-AzAccount | Out-Null
             Set-AzContext -Subscription $SubscriptionId | Out-Null
-            Write-Host "Successfully connected to Azure"
+            Write-Host "Successfully connected to Azure" - ForegroundColor Green
         }
         catch 
         {
-            Write-Host "Error connection to Azure. Please try again!"
+            Write-Host "Error connection to Azure. Please try again!" -ForegroundColor Red
             Exit
         }
     }
@@ -208,7 +209,7 @@ function Set-InitializeOutputs
         "linux" = Get-BaseArmTemplate
         "extensions" = Get-BaseArmTemplate
         "iis" = Get-BaseArmTemplate
-        "cls" = Get-BaseArmTemplate
+        "cls" = @() # An array of Custom Logs DCR Arm templates
     }
 }
 
@@ -701,8 +702,7 @@ function Set-FulfillDCERequirement
         Write-Host "Info: DCE requirement already fulfilled" -ForegroundColor Green
     }
     else{
-        Write-Host
-        $provisionDCE = Read-Host "Do you want us to automatically provision a DCE for you? (y/n)"
+        $provisionDCE = Read-Host "Do you want us to provision a DCE for you (in case you don't have one)? (y/n)"
         $provisionDCE = $provisionDCE.Trim().ToLower()
 
         $dceArmId = "/subscriptions/{subId}/resourceGroups/{resourceGroup}/providers/Microsoft.Insights/dataCollectionEndpoints/{dceName}"
@@ -712,8 +712,18 @@ function Set-FulfillDCERequirement
             $dceArmId = Get-ProvisionDCE
         }
         else{
-            Write-Host "Info: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
-            Write-Host
+            $cxDce = Read-Host "Please provide the full ARM ID of the DCE to use"
+            $cxDce = $cxDce.Trim().ToLower()
+
+            if ($null -eq $cxDce -or "" -eq $cxDce)
+            {
+                Write-Host "Info: You will need to provide a valid Data Collection Endpoint Id in the parameters section of the DCR" -ForegroundColor DarkYellow
+                Write-Host
+            }
+            else {
+                $dceArmId = $cxDce
+                Write-Host "Info: The following DCE will be used in the data collection rule: $($dceArmId)" -ForegroundColor Cyan
+            }
         }
         
         $state.runtime["dce"] = [ordered]@{
@@ -728,7 +738,9 @@ function Set-FulfillDCERequirement
 
 <#
 .DESCRIPTION
-    This function does the laworkspaceTableMigrate Post call
+    Refer to this article https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration
+    This function migrates a MMA Custom text log table so it can be used as a destination for a new AMA custom text logs DCR.
+    This is only for customers who want to preserve data
 #>
 function Set-MigrateMMABasedCustomTable
 {
@@ -740,7 +752,7 @@ function Set-MigrateMMABasedCustomTable
     $accessToken = Get-AzAccessToken
     $accessToken | Out-Null # Shouldn't print this out to the console
 
-    $apiUrl = "https://management.azure.com/$($state.workspace.ResourceId)/tables/$($tableName)/migrate?api-version=2021-12-01-preview"
+    $apiUrl = "https://management.azure.com/$($state.runtime.workspace.ResourceId)/tables/$($tableName)/migrate?api-version=2021-12-01-preview"
     $headers = @{
         'Authorization' = "Bearer $($accessToken.Token)"
     }
@@ -748,44 +760,7 @@ function Set-MigrateMMABasedCustomTable
     $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers
     $response | Out-Null
 
-    Write-Host "Info: The table $($tableName) has been successfully migrated. Now, both MMA and AMA will be able to ingest custom logs into it." -ForegroundColor Green
-}
-
-<#
-.DESCRIPTION
-    Refer to this article https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration
-    This function migrates a MMA Custom text log table so it can be used as a destination for a new AMA custom text logs DCR.
-    This is only for customers who want to preserve data
-#>
-function Set-MigrateMMACustomLogTableToAMACustomLogTable
-{
-    param(
-        [Parameter(Mandatory=$True)]
-        [string]$tableName
-    )
-
-    Write-Host
-    $migrated = Read-Host "Has $($tableName) been migrated yet (y/n)?"
-    $migrated = $migrated.Trim().ToLower()
-
-    if ("y" -eq $migrated)
-    {
-        Write-Host "Info: No further action required. AMA will be able to ingest custom logs into this table: $($tableName)" -ForegroundColor Green
-    }
-    else {
-        $migrate = Read-Host "Do you want us to migrate $($tableName) on your behalf (y/n)?"
-        $migrate = $migrate.Trim().ToLower()
-
-        if ("y" -eq $migrate)
-        {
-            Set-MigrateMMABasedCustomTable -tableName $tableName
-            Write-Host "Info: No further action required. AMA will be able to ingest custom logs into this table: $($tableName)" -ForegroundColor Green
-        }
-        else {
-            Write-Host "Info: Custom Logs Ingestion into $($tableName) requires steps from you" -ForegroundColor DarkYellow
-            Write-Host
-        }
-    }
+    Write-Host "Info: The table $($tableName) has been successfully migrated. Both AMA and MMA will be able to ingest custom logs into it." -ForegroundColor Green
 }
 
 <#
@@ -840,28 +815,39 @@ function Get-CustomLogs
     }
     else {
         Write-Host "Info: Custom Logs is enabled on the workspace" -ForegroundColor Green
+        Write-Host
         $state.runtime.dataSourcesCount += 1
         $state.runtime.dcrTypesEnabled.cls = $true
 
-        # Custom Logs DCR outputs updates
-        $state.outputs.cls.parameters.dcrName.defaultValue = $DcrName + "-customlogs"
-        $state.outputs.cls.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
-        $state.outputs.cls.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
-        $state.outputs.cls.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
-        $state.outputs.cls.resources[0].properties["streamDeclarations"] = @{}
-        $state.outputs.cls.resources[0].properties.dataSources["logFiles"] = @()
+        Write-Host "Info: We will migrate each MMA based custom classic table that hasn't yet been migrated" -ForegroundColor Cyan
+        Write-Host "Info: Learn more about migrating MMA based custom tables here >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration" -ForegroundColor Cyan
 
-        Write-Host "Info: For each classic custom table below that hasn't been migrated, you will need to either migrate it or create a new AMA based custom table (in case you don't care about preserving data)" -ForegroundColor DarkYellow
-        Write-Host "Info: Migrate a classic MMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-custom-text-log-migration" -ForegroundColor Cyan
-        Write-Host "Info: Create a new AMA based custom table >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal" -ForegroundColor Cyan
-        
+        Write-Host "Info: In case you don't want to preserve data and create new AMA/DCR based custom tables, you will have to manually update the arm templates with the new table names" -ForegroundColor Cyan
+        Write-Host "Info: Learn more about AMA Custom Logs here >> https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-collection-text-log?tabs=portal" -ForegroundColor Cyan
+
+        ########################################################
+        # DCE required for custom logs
+        Write-Host
+        Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor Cyan
+        Set-FulfillDCERequirement
+
         $iter_count = 1
 
         foreach($customLog in $customLogs)
         {
-            # This name should be unique among all the stream declarations
-            $customStreamName = "Custom-$($customLog.Properties.customLogName)"
-            $streamDeclaration = [ordered]@{
+            $clArmTemplate = Get-BaseArmTemplate
+            $clArmTemplate.parameters.dcrName.defaultValue = "$($customLog.Properties.customLogName)_dcr"
+            $clArmTemplate.parameters.dcrName.defaultValue = $clArmTemplate.parameters.dcrName.defaultValue.ToLower()
+            $clArmTemplate.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
+            $clArmTemplate.parameters.dceArmId = $state.runtime.dce
+
+            $clArmTemplate.resources[0].properties.description = "Azure monitor migration script generated custom logs rule"
+            $clArmTemplate.resources[0].properties["dataCollectionEndpointId"] = "[parameters('dceArmId')]"
+
+            $customStreamName = "Custom-Input-$($customLog.Properties.customLogName)"
+            $outputStreamName = "Custom-$($customLog.Properties.customLogName)"
+            $clArmTemplate.resources[0].properties["streamDeclarations"] = @{
+                $customStreamName = [ordered]@{
                     "columns" = @(
                         @{
                             "name" = "TimeGenerated";
@@ -872,9 +858,9 @@ function Get-CustomLogs
                             "type" = "string";
                         }
                     )
-                } 
-            $state.outputs.cls.resources[0].properties.streamDeclarations[$customStreamName] = $streamDeclaration
-            #####################################################################
+                }
+            }
+
             $fPatterns = @(Get-FilePatterns -customLog $customLog)
             $customLogDataSource = [ordered]@{
                 "name" = "customLogFile_DS_$($iter_count)"
@@ -888,24 +874,20 @@ function Get-CustomLogs
                 }
             }
 
-            $state.outputs.cls.resources[0].properties.dataSources.logFiles += ($customLogDataSource)
-            $state.outputs.cls.resources[0].properties.dataFlows[0].streams += ($customStreamName)
+            $clArmTemplate.resources[0].properties.dataSources["logFiles"] = @($customLogDataSource)
+            $clArmTemplate.resources[0].properties.dataFlows[0].streams += ($customStreamName)
+            $clArmTemplate.resources[0].properties.dataFlows[0]["outputStream"] = $outputStreamName
+            $clArmTemplate.resources[0].properties.dataFlows[0]["kqlTransform"] = "source"
+
+            ######################################################################
+            # Automatically migrate the MMA based custom table
+            # TO DO: if this fails, don't add this custom log definition to the output DCR
+            Set-MigrateMMABasedCustomTable -tableName $customLog.Properties.customLogName
 
             $iter_count += 1
-            ######################################################################
-            Set-MigrateMMACustomLogTableToAMACustomLogTable -tableName $customLog.Properties.customLogName
+
+            $state.outputs.cls += $clArmTemplate
         }
-
-        ########################################################
-        Write-Host "Info: The script is unable to get the exact schema for each custom classic (migrated or not migrated) table" -ForegroundColor DarkYellow
-        Write-Host "Info: You will need to update the `streamDeclarations` section of the DCR to make sure each stream declaration columns definition matches the corresponding output table in the workspace" -ForegroundColor DarkYellow
-        Write-Host
-        ########################################################
-        # DCE required for custom logs
-        Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of Custom Logs via DCR" -ForegroundColor DarkYellow
-
-        Set-FulfillDCERequirement
-        $state.outputs.cls.parameters.dceArmId = $state.runtime.dce
     }
 }
 
@@ -943,38 +925,12 @@ function Get-IsIISLogsDataSourceEnabled
     }
 }
 
-function Get-UserLogAnalyticsWorkspaceDataSources
+<#
+.DESCRIPTION
+    Checks and parses IIS Logs
+#>
+function Get-IISLogs 
 {
-    # Query the workspaces data sources
-    # All the data source types
-    # 1. Windows Perf Counters: WindowsPerformanceCounter
-    # 2. Linux Perf Counters: LinuxPerformanceObject
-    # 3. Windows Event Logs: WindowsEvent
-    # 4. Syslogs: LinuxSyslog
-    # 5. Custom Logs: CustomLog
-    # 6. IIS logs: IISLogs (This check is done via HTTP Rest)
-    Write-Host
-    Write-Host 'Info: Fetching the Log Analytics Workspace data sources' -ForegroundColor Cyan
-
-    # Windows Performance Counters
-    Get-WindowsPerfCountersDataSource
-
-    # Linux Performance Counters
-    Get-LinuxPerfCountersDataSource
-
-    # Windows Event Logs
-    Get-WindowsEventLogs
-
-    # Linux Syslogs
-    Get-LinuxSysLogs
-
-    # Extensions Data Sources
-    Get-ExtensionDataSources 
-
-    # Custom Logs
-    Get-CustomLogs
-
-    # IIS Logs
     $isIISLogsEnabled = Get-IsIISLogsDataSourceEnabled -workspace $state.runtime.workspace
     if ($True -eq $isIISLogsEnabled)
     {
@@ -982,8 +938,7 @@ function Get-UserLogAnalyticsWorkspaceDataSources
         $state.runtime.dcrTypesEnabled.iis = $true
 
         # DCE required for iis logs
-        Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor DarkYellow
-
+        Write-Host "Info: A Data Collection Endpoint is required for the Ingestion of IIS Logs via DCR" -ForegroundColor Cyan
         Set-FulfillDCERequirement
 
         $iisLogsDataSource = @([ordered]@{
@@ -1002,6 +957,68 @@ function Get-UserLogAnalyticsWorkspaceDataSources
     }
 }
 
+<#
+.DESCRIPTION
+    Fetches and parses all the supported data sources
+#>
+function Get-UserLogAnalyticsWorkspaceDataSources
+{
+    # Query the workspaces data sources
+    # All the data source types
+    # 1. Windows Perf Counters: WindowsPerformanceCounter
+    # 2. Linux Perf Counters: LinuxPerformanceObject
+    # 3. Windows Event Logs: WindowsEvent
+    # 4. Syslogs: LinuxSyslog
+    # 5. Custom Logs: CustomLog
+    # 6. IIS logs: IISLogs (This check is done via HTTP Rest)
+    Write-Host
+    Write-Host 'Info: Fetching the Log Analytics Workspace data sources' -ForegroundColor Cyan
+    Write-Host
+
+    # Windows Performance Counters
+    Get-WindowsPerfCountersDataSource
+    Write-Host
+
+    # Linux Performance Counters
+    Get-LinuxPerfCountersDataSource
+    Write-Host
+
+    # Windows Event Logs
+    Get-WindowsEventLogs
+    Write-Host
+
+    # Linux Syslogs
+    Get-LinuxSysLogs
+    Write-Host
+
+    # Extensions Data Sources
+    Get-ExtensionDataSources 
+    Write-Host
+
+    # Custom Logs
+    Get-CustomLogs
+    Write-Host
+
+    # IIS Logs
+    Get-IISLogs
+    Write-Host
+}
+
+<#
+.DESCRIPTION
+    Utility function to handle single quote characters in the json string
+#>
+function ConvertTo-ReplaceSepcialChars
+{
+    process {
+        $_ -replace '\\u0027', "'"
+    }
+}
+
+<#
+.DESCRIPTION
+    Generates all the output files
+#>
 function Get-Output
 {
     Write-Host
@@ -1020,15 +1037,30 @@ function Get-Output
         {
             if ($state.runtime.dcrTypesEnabled[$type] -eq $true)
             {
-                Write-Host "Info: Generating the $type rule arm template file ($($type)_dcr_arm_template.json)" -ForegroundColor Cyan
-                $state.outputs[$type] | ConvertTo-Json -Depth 100 `
-                    | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )} `
-                    | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
+                if ("cls" -eq $type) #Special handling for custom logs DCRs
+                {
+                    $counter = 0
+                    foreach ($cl in $state.outputs.cls)
+                    {
+                        $fileName = $cl.parameters.dcrName.defaultValue
 
-                Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
-                $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 `
-                    | ForEach-Object{[Regex]::Replace($_, "\\u(?<Value>[a-zA-Z0-9]{4})", {param($m) ([char]([int]::Parse($m.Groups['Value'].Value,[System.Globalization.NumberStyles]::HexNumber))).ToString() } )} `
-                    | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
+                        Write-Host "Info: Generating the $type rule arm template file $counter ($($fileName)_arm_template.json)" -ForegroundColor Cyan
+                        $cl | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_arm_template.json"
+        
+                        Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
+                        $cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
+
+                        $counter += 1
+                    }
+                }
+                else {
+                    Write-Host "Info: Generating the $type rule arm template file ($($type)_dcr_arm_template.json)" -ForegroundColor Cyan
+                    $state.outputs[$type] | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
+    
+                    Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
+                    $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
+
+                }
             }
         }
 
@@ -1037,6 +1069,10 @@ function Get-Output
     }
 }
 
+<#
+.DESCRIPTION
+    Runs test deployment of the generated arm templates
+#>
 function Set-DeployOutputOnAzure
 {
     Write-Host
@@ -1064,7 +1100,6 @@ function Set-DeployOutputOnAzure
             }
         }
         else {
-            Write-Host "Info: No worries. You can always do it later" -ForegroundColor Yellow
             Write-Host "Info: Note that a deployment of the generated DCR Arm template is the only way to validate the end to end migration" -ForegroundColor DarkYellow
             break
         }
