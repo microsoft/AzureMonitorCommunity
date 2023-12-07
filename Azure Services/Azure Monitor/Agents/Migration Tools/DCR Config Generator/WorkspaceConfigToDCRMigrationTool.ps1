@@ -1071,38 +1071,31 @@ function Get-Output
 
 <#
 .DESCRIPTION
-    Runs test deployment of the generated arm templates
+    Runs test deployments of the generated arm templates
 #>
 function Set-DeployOutputOnAzure
 {
+    $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated DCR ARM templates? (y/n)"
+    $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
     Write-Host
 
-    while ($true)
+    while ("y" -eq $deployGeneratedArmTemplate)
     {
-        $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated ARM templates? (y/n)"
-        $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
-        Write-Host
-
-        if ('y' -eq $deployGeneratedArmTemplate)
+        $azConetxt = Get-AzContext
+        Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
+        $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
+        $armTemplateFile = Read-Host ">>>> ARM template file name   "
+        try 
         {
-            $azConetxt = Get-AzContext
-            Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
-            $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
-            $armTemplateFile = Read-Host ">>>> ARM template file name   "
+            New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.runtime.outputFolder)\$armTemplateFile" -ErrorAction Stop
+            Write-Host "Info: Deployment done! Check your resource group in Azure for the newly created DCR." -ForegroundColor Green
+            Write-Host
+        } catch {
+            Write-Host "Error while deploying: $PSItem" -ForegroundColor Red
+        }
 
-            try 
-            {
-                New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.runtime.outputFolder)\$armTemplateFile" -ErrorAction Stop
-                Write-Host "Info: Deployment done! Check your resource group in Azure for the newly created DCR." -ForegroundColor Green
-                Write-Host
-            } catch {
-                Write-Host "Error while deploying: $PSItem. Please try again" -ForegroundColor Red
-            }
-        }
-        else {
-            Write-Host "Info: Note that a deployment of the generated DCR Arm template is the only way to validate the end to end migration" -ForegroundColor DarkYellow
-            break
-        }
+        $deployGeneratedArmTemplate = Read-Host "Do you want to run another deployment? (y/n)"
+        $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
     }
 }
 
