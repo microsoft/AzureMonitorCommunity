@@ -1,0 +1,1080 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "0e85e0e4-a7e8-4ea8-b291-e444c317843a",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceTypes",
+            "label": "Resource types",
+            "type": 7,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "microsoft.netapp/netappaccounts"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "includeAll": true
+            }
+          },
+          {
+            "id": "1f74ed9a-e3ed-498d-bd5b-f68f3836a117",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "label": "Subscriptions",
+            "type": 6,
+            "description": "All subscriptions with Storage accounts",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type in~ ({ResourceTypes})\r\n| summarize Count = count() by subscriptionId\r\n| order by Count desc\r\n| extend Rank = row_number()\r\n| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "b616a3a3-4271-4208-b1a9-a92a78efed08",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceGroups",
+            "label": "Resource groups",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type in~ ({ResourceTypes})\r\n| summarize Count = count() by subscriptionId, resourceGroup\r\n| order by Count desc\r\n| extend Rank = row_number()\r\n| project value = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup), label = resourceGroup, selected = false",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*"
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "f60ea0a0-3703-44ca-a59b-df0246423f41",
+            "version": "KqlParameterItem/1.0",
+            "name": "NetAppAccounts",
+            "label": "NetApp accounts",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type in~({ResourceTypes})\r\n| extend resourceGroupId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup)\r\n| where resourceGroupId in~({ResourceGroups}) or '*' in~({ResourceGroups})\r\n| order by name asc\r\n| extend Rank = row_number()\r\n| project value = id, label = name, selected = Rank <= 10, group = resourceGroup",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "version": "KqlParameterItem/1.0",
+            "name": "CapacityPools",
+            "label": "Capacity pools",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type == \"microsoft.netapp/netappaccounts/capacitypools\"\r\n| extend netappAccountName = split(name, '/')[0]\r\n| extend netappAccountId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netAppAccounts/', netappAccountName)\r\n| where netappAccountId in~({NetAppAccounts}) or '*' in~({NetAppAccounts})\r\n| order by name asc\r\n| extend Rank = row_number()\r\n| project value = id, label = name, selected = Rank <= 10, group = resourceGroup",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "id": "24683d7f-3310-49fb-9cec-871342e72732",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "0edb1979-1818-4aed-b8f6-b72d9e4c7c7a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Volumes",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type == \"microsoft.netapp/netappaccounts/capacitypools/volumes\"\r\n| extend netappAccountName = split(name, '/')[0]\r\n| extend capacityPoolName = split(name, '/')[1]\r\n| extend capacityPoolId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netAppAccounts/', netappAccountName, '/capacityPools/', capacityPoolName)\r\n| where capacityPoolId in~({CapacityPools}) or '*' in~({CapacityPools})\r\n| order by name asc\r\n| extend Rank = row_number()\r\n| project value = id, label = name, selected = Rank <= 10, group = resourceGroup",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "f679427a-6ba6-4f94-9ca7-15d404209fec",
+            "version": "KqlParameterItem/1.0",
+            "name": "showHidden",
+            "label": "Show hidden panels?",
+            "type": 10,
+            "isRequired": true,
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\"false\",\"true\"]",
+            "value": "false"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "parameters - 0"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "NetApp accounts",
+        "expandable": true,
+        "expanded": true,
+        "loadType": "always",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where id in~ ({NetAppAccounts})\r\n| project ['NetApp account'] = id, Subscription = subscriptionId, ['Resource group'] = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup), Location = location",
+              "size": 3,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Resource group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "25ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Resource",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true
+              }
+            },
+            "showPin": false,
+            "name": "NetAppAccountSummary"
+          }
+        ]
+      },
+      "name": "NetAppAccountsGroup"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Capacity pools",
+        "expandable": true,
+        "expanded": true,
+        "loadType": "always",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n    | where id in~({CapacityPools})\r\n    | extend netappAccountName = split(name, '/')[0]\r\n    | extend capacityPoolName = split(name, '/')[1]\r\n    | extend netappAccountId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName)\r\n    | project ['Capacity pool'] = capacityPoolName, ['NetApp account'] = netappAccountName, Location = location, ['Service level'] = properties.serviceLevel,  ['QoS type'] = properties.qosType, Encryption = properties.encryptionType, ['Cool access'] = properties.coolAccess, capacityPoolId = id, netappAccountId = netappAccountId, name = name",
+              "size": 3,
+              "title": "Capacity pool summary",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Volumes}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Capacity pool",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "capacityPoolId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "NetApp account",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "netappAccountId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17
+                  },
+                  {
+                    "columnMatch": "Service level",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Size (TiB)",
+                    "formatter": 2
+                  },
+                  {
+                    "columnMatch": "QoS type",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Encryption",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Cool access",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "capacityPoolId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "netappAccountId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Pool",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "linkColumn": "ResourceId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Location",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Size (TiB)",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "showHidden",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "CapacityPoolSummary"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookafae4c77-df5d-45a4-98e5-09cf7d93de24",
+              "version": "MetricsItem/2.0",
+              "size": 3,
+              "chartType": 0,
+              "resourceType": "microsoft.netapp/netappaccounts/capacitypools",
+              "metricScope": 0,
+              "resourceParameter": "CapacityPools",
+              "resourceIds": [
+                "{CapacityPools}"
+              ],
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "timeGrain": "PT5M",
+              "metrics": [
+                {
+                  "namespace": "microsoft.netapp/netappaccounts/capacitypools",
+                  "metric": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.netapp/netappaccounts/capacitypools",
+                  "metric": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed",
+                  "aggregation": 4
+                }
+              ],
+              "title": "Pool allocated to volumes",
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 2,
+                "topContent": {
+                  "columnMatch": "Subscription",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 0,
+                    "options": {
+                      "style": "percent"
+                    }
+                  }
+                },
+                "centerContent": {
+                  "columnMatch": "Value",
+                  "formatter": 1,
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                },
+                "nodeIdField": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize Timeline",
+                "graphOrientation": 3,
+                "showOrientationToggles": false,
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": null,
+                "hivesMargin": 5,
+                "edgeColorSettings": null
+              },
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": null
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolTotalLogicalSize Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolTotalLogicalSize",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": null
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize",
+                    "label": "Pool Allocated Size (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize Timeline",
+                    "label": "Pool Allocated Size Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed",
+                    "label": "Pool Allocated To Volume Size (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed Timeline",
+                    "label": "Pool Allocated To Volume Size Timeline"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "showHidden",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "PoolAllocatedToVolumes"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"71667e1a-644b-4979-8dde-aaffeb943130\",\"mergeType\":\"outer\",\"leftTable\":\"CapacityPoolSummary\",\"rightTable\":\"PoolAllocatedToVolumes\",\"leftColumn\":\"capacityPoolId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[CapacityPoolSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[PoolAllocatedToVolumes].microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize\",\"mergedName\":\"Pool allocated size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[PoolAllocatedToVolumes].microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed\",\"mergedName\":\"Allocated to volume size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Percent allocated\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"Pool allocated size\",\"operator\":\">=\",\"rightValType\":\"static\",\"rightVal\":\"0\",\"resultValType\":\"expression\",\"resultVal\":\"1-(([\\\"Pool allocated size\\\"] - [\\\"Allocated to volume size\\\"])/[\\\"Pool allocated size\\\"])\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\"}}]},{\"originalName\":\"[CapacityPoolSummary].QoS type\",\"mergedName\":\"QoS type\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].Encryption\",\"mergedName\":\"Encryption\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[CapacityPoolSummary].name\",\"mergedName\":\"name\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[PoolAllocatedToVolumes].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[PoolAllocatedToVolumes].Name\",\"mergedName\":\"Name\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[PoolAllocatedToVolumes].microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedSize Timeline\",\"mergedName\":\"Pool allocated size timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"},{\"originalName\":\"[PoolAllocatedToVolumes].microsoft.netapp/netappaccounts/capacitypools--VolumePoolAllocatedUsed Timeline\",\"mergedName\":\"Allocated to volume size timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb943130\"}]}",
+              "size": 3,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Capacity pool",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "capacityPoolId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "NetApp account",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "netappAccountId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "25ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Service level",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Pool allocated size",
+                    "formatter": 2,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Allocated to volume size",
+                    "formatter": 2,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Percent allocated",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "percent",
+                        "useGrouping": false,
+                        "minimumFractionDigits": 0,
+                        "maximumFractionDigits": 0
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "QoS type",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Encryption",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Cool access",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "capacityPoolId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "netappAccountId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Pool allocated size timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Allocated to volume size timeline",
+                    "formatter": 5,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "showPin": false,
+            "name": "CapacityPoolMerge"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n    | where id in~({CapacityPools})\r\n    | extend netappAccountName = split(name, '/')[0]\r\n    | extend capacityPoolName = split(name, '/')[1]\r\n    | extend netappAccountId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName)\r\n    | project ['Capacity pool'] = capacityPoolName, ['NetApp account'] = netappAccountName, Location = location, ['Service level'] = properties.serviceLevel, ['Size (TiB)'] = properties.size/1024/1024/1024/1024, ['QoS type'] = properties.qosType, Encryption = properties.encryptionType, ['Cool access'] = properties.coolAccess, capacityPoolId = id, netappAccountId = netappAccountId",
+              "size": 3,
+              "title": "Capacity by region",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Volumes}"
+              ],
+              "visualization": "map",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Capacity pool",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "capacityPoolId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "NetApp account",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "netappAccountId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17
+                  },
+                  {
+                    "columnMatch": "Service level",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Size (TiB)",
+                    "formatter": 2
+                  },
+                  {
+                    "columnMatch": "QoS type",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Encryption",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Cool access",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "capacityPoolId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "netappAccountId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Pool",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "linkColumn": "ResourceId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ]
+              },
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Location",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Size (TiB)",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              },
+              "mapSettings": {
+                "locInfo": "AzureLoc",
+                "locInfoColumn": "Location",
+                "sizeSettings": "Size (TiB)",
+                "sizeAggregation": "Sum",
+                "labelSettings": "Location",
+                "legendMetric": "Size (TiB)",
+                "legendAggregation": "Sum",
+                "itemColorSettings": {
+                  "nodeColorField": "Size (TiB)",
+                  "colorAggregation": "Sum",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed"
+                },
+                "numberFormatSettings": {
+                  "unit": 6,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              }
+            },
+            "name": "CapacityPoolMap"
+          }
+        ]
+      },
+      "name": "CapacityPoolGroup"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Volumes",
+        "expandable": true,
+        "expanded": true,
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n    | where id in~({Volumes})\r\n    | extend netappAccountName = split(name, '/')[0]\r\n    | extend capacityPoolName = split(name, '/')[1]\r\n    | extend volumeName = split(name, '/')[2]\r\n    | extend netappAccountId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName)\r\n    | extend capacityPoolId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName, '/capacityPools/', capacityPoolName)\r\n    | extend volumeId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName, '/capacityPools/', capacityPoolName, '/volumes/', volumeName)\r\n    | extend protocols = properties.protocolTypes\r\n    | project Volume = volumeName, ['Capacity pool'] = capacityPoolName, ['NetApp account'] = netappAccountName, Location = location, ['Service level'] = properties.serviceLevel, ['Size (GiB)'] = properties.usageThreshold/1024/1024/1024, ['Protocol(s)'] = protocols, ['Cool access'] = properties.coolAccess, volumeId = volumeId, capacityPoolId = id, netappAccountId = netappAccountId",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "value::all"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Volume",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "volumeId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Capacity pool",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "capacityPoolId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "NetApp account",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "netappAccountId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17
+                  },
+                  {
+                    "columnMatch": "Service level",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Size (GiB)",
+                    "formatter": 2
+                  },
+                  {
+                    "columnMatch": "Protocol(s)",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Cool access",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "volumeId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "capacityPoolId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "netappAccountId",
+                    "formatter": 5
+                  }
+                ],
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_link_NetApp account_2",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_link_NetApp account_2",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "showHidden",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "VolumeSummary"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook2aac02b4-716c-438d-aa4b-f5bdb11dafbd",
+              "version": "MetricsItem/2.0",
+              "size": 3,
+              "chartType": 0,
+              "resourceType": "microsoft.netapp/netappaccounts/capacitypools/volumes",
+              "metricScope": 0,
+              "resourceParameter": "Volumes",
+              "resourceIds": [
+                "{Volumes}"
+              ],
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.netapp/netappaccounts/capacitypools/volumes",
+                  "metric": "microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage",
+                  "aggregation": 4
+                }
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage",
+                    "label": "Percentage Volume Consumed Size (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage Timeline",
+                    "label": "Percentage Volume Consumed Size Timeline"
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "showHidden",
+              "comparison": "isEqualTo",
+              "value": "true"
+            },
+            "name": "VolumePercentConsumed"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\",\"mergeType\":\"inner\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePercentConsumed\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Size (GiB)\",\"mergedName\":\"Size (GiB)\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage\",\"mergedName\":\"Percent consumed\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage Timeline\",\"mergedName\":\"% consumed timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Name\",\"mergedName\":\"Name\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"}]}",
+              "size": 0,
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Volume",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "volumeId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Size (GiB)",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Percent consumed",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "minimumIntegerDigits": 1,
+                        "minimumFractionDigits": 0,
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "% consumed timeline",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "Capacity pool",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "capacityPoolId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "NetApp account",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "netappAccountId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "25ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "Service level",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Protocol(s)",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Cool access",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "volumeId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "capacityPoolId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "netappAccountId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "showPin": false,
+            "name": "VolumeSummaryAllocatedPercentMerge"
+          }
+        ]
+      },
+      "name": "VolumeGroup"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "💡 [Click here to learn more about Azure NetApp Files workbooks](https://github.com/microsoft/AzureMonitorCommunity/tree/master/Azure%20Services/Azure%20NetApp%20Files/Workbooks)"
+      },
+      "name": "Help message",
+      "styleSettings": {
+        "margin": "20px 0 0 0"
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "fromTemplateId": "community-Workbooks/Azure Monitor - Getting Started/Resource Picker",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
