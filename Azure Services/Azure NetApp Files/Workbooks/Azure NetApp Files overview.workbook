@@ -186,7 +186,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "Resources\r\n| where id in~ ({NetAppAccounts})\r\n| project ['NetApp account'] = id, Subscription = subscriptionId, ['Resource group'] = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup), Location = location",
+              "query": "Resources\r\n| where id in~ ({NetAppAccounts})\r\n| extend encryptionKeySource = iff((properties.encryption.keySource == 'Microsoft.NetApp'),\"Microsoft managed\", \"Customer managed\")\r\n| project ['NetApp account'] = id, Subscription = subscriptionId, ['Resource group'] = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup), Location = location, ['AD domain'] = properties.activeDirectories[0].domain, ['DNS server'] = properties.activeDirectories[0].dns, ['Encryption'] = encryptionKeySource",
               "size": 3,
               "queryType": 1,
               "resourceType": "microsoft.resourcegraph/resources",
@@ -786,7 +786,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "resources\r\n    | where id in~({Volumes})\r\n    | extend netappAccountName = split(name, '/')[0]\r\n    | extend capacityPoolName = split(name, '/')[1]\r\n    | extend volumeName = split(name, '/')[2]\r\n    | extend netappAccountId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName)\r\n    | extend capacityPoolId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName, '/capacityPools/', capacityPoolName)\r\n    | extend volumeId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName, '/capacityPools/', capacityPoolName, '/volumes/', volumeName)\r\n    | extend protocols = properties.protocolTypes\r\n    | extend snapshotPolicyId = properties.dataProtection.snapshot.snapshotPolicyId\r\n    | extend snapshotPolicyName = split(properties.dataProtection.snapshot.snapshotPolicyId, '/')[10]\r\n    | extend replicationEndpointType = properties.dataProtection.replication.endpointType\r\n    | extend replicationRemoteVolumeResourceId = properties.dataProtection.replication.remoteVolumeResourceId\r\n    | extend replicationEndpointTypeReadable = iff(replicationEndpointType == \"Dst\",\"Destination\",iff(replicationEndpointType == \"Src\",\"Source\", \"\"))\r\n    | project Volume = volumeName, ['Capacity pool'] = capacityPoolName, ['NetApp account'] = netappAccountName, Location = location, ['Service level'] = properties.serviceLevel, ['Size'] = properties.usageThreshold, ['Protocol(s)'] = protocols, ['Cool access'] = properties.coolAccess, volumeId = volumeId, capacityPoolId = id, netappAccountId = netappAccountId, ['Large volume'] = properties.isLargeVolume, ['Snapshot policy'] = snapshotPolicyName, snapshotPolicyId, ['Replication'] = replicationEndpointTypeReadable, ['Remote resource Id'] = replicationRemoteVolumeResourceId",
+              "query": "resources\r\n    | where id in~({Volumes})\r\n    | extend netappAccountName = split(name, '/')[0]\r\n    | extend capacityPoolName = split(name, '/')[1]\r\n    | extend volumeName = split(name, '/')[2]\r\n    | extend netappAccountId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName)\r\n    | extend capacityPoolId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName, '/capacityPools/', capacityPoolName)\r\n    | extend volumeId = strcat('/subscriptions/', subscriptionId, '/resourceGroups/', resourceGroup, '/providers/microsoft.netapp/netappAccounts/', netappAccountName, '/capacityPools/', capacityPoolName, '/volumes/', volumeName)\r\n    | extend protocols = properties.protocolTypes\r\n    | extend snapshotPolicyId = properties.dataProtection.snapshot.snapshotPolicyId\r\n    | extend snapshotPolicyName = split(properties.dataProtection.snapshot.snapshotPolicyId, '/')[10]\r\n    | extend zone = zones[0]\r\n    | extend replicationEndpointType = properties.dataProtection.replication.endpointType\r\n    | extend replicationRemoteVolumeResourceId = properties.dataProtection.replication.remoteVolumeResourceId\r\n    | extend replicationRemoteVolumeRegion = properties.dataProtection.replication.remoteVolumeRegion\r\n    | extend replicationType = iff((replicationRemoteVolumeRegion == location), \"CZR\", iff((replicationRemoteVolumeRegion == \"\"),\"n/a\",\"CRR\"))\r\n    | extend replicationEndpointTypeReadable = iff(replicationEndpointType == \"Dst\",\"Destination\",iff(replicationEndpointType == \"Src\",\"Source\", \"\"))\r\n    | project Volume = volumeName, ['Capacity pool'] = capacityPoolName, ['NetApp account'] = netappAccountName, Location = location, ['Service level'] = properties.serviceLevel, ['Size'] = properties.usageThreshold, ['Protocol(s)'] = protocols, ['Cool access'] = properties.coolAccess, volumeId = volumeId, capacityPoolId = id, netappAccountId = netappAccountId, ['Large volume'] = properties.isLargeVolume, ['Snapshot policy'] = snapshotPolicyName, snapshotPolicyId, ['Replication'] = replicationEndpointTypeReadable, ['Remote resource Id'] = replicationRemoteVolumeResourceId, ['Remote volume region'] = replicationRemoteVolumeRegion, ['Replication type'] = replicationType, zone",
               "size": 0,
               "queryType": 1,
               "resourceType": "microsoft.resourcegraph/resources",
@@ -1112,8 +1112,9 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\",\"mergeType\":\"inner\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePercentConsumed\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeLogicalSize\",\"mergedName\":\"Consumed size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage\",\"mergedName\":\"Percent consumed\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Zone\",\"mergedName\":\"Zone\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Name\",\"mergedName\":\"Name\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage Timeline\",\"mergedName\":\"Percentage Volume Consumed Size Timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeLogicalSize Timeline\",\"mergedName\":\"Volume Consumed Size Timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"unknown\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Replication healthy?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"replicationMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"leftOperand\":\"replicationMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"replicationMetric\"}}]},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"unknown\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Backup enabled?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"backupEnabledMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"leftOperand\":\"backupEnabledMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"backupEnabledMetric\"}}]},{\"originalName\":\"[Added column]\",\"mergedName\":\"Backup suspended?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"backupActiveMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"leftOperand\":\"backupActiveMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"backupActiveMetric\"}}]},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Replication\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].replicationRemoteVolumeResourceId\",\"mergedName\":\"replicationRemoteVolumeResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeProtected\",\"mergedName\":\"backupEnabledMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeBackupActive\",\"mergedName\":\"backupActiveMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--XregionReplicationHealthy\",\"mergedName\":\"replicationMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--XregionReplicationHealthy Timeline\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeBackupActive Timeline\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeProtected Timeline\"}]}",
-              "size": 0,
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\",\"mergeType\":\"inner\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePercentConsumed\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeLogicalSize\",\"mergedName\":\"Consumed size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage\",\"mergedName\":\"Percent consumed\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].zone\",\"mergedName\":\"AZ\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Zone\",\"mergedName\":\"Zone\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Name\",\"mergedName\":\"Name\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage Timeline\",\"mergedName\":\"Percentage Volume Consumed Size Timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeLogicalSize Timeline\",\"mergedName\":\"Volume Consumed Size Timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"unknown\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Replication healthy?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"replicationMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"leftOperand\":\"replicationMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"replicationMetric\"}}]},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"unknown\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Backup enabled?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"backupEnabledMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"leftOperand\":\"backupEnabledMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"backupEnabledMetric\"}}]},{\"originalName\":\"[Added column]\",\"mergedName\":\"Backup suspended?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"backupActiveMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"leftOperand\":\"backupActiveMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"backupActiveMetric\"}}]},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Replication\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].replicationRemoteVolumeResourceId\",\"mergedName\":\"replicationRemoteVolumeResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeProtected\",\"mergedName\":\"backupEnabledMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeBackupActive\",\"mergedName\":\"backupActiveMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--XregionReplicationHealthy\",\"mergedName\":\"replicationMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Remote volume region\",\"mergedName\":\"Remote volume region\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Replication type\",\"mergedName\":\"Replication type\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--XregionReplicationHealthy Timeline\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeBackupActive Timeline\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeProtected Timeline\"}]}",
+              "size": 3,
+              "title": "Volume overview",
               "queryType": 7,
               "gridSettings": {
                 "formatters": [
@@ -1190,6 +1191,10 @@
                     }
                   },
                   {
+                    "columnMatch": "AZ",
+                    "formatter": 1
+                  },
+                  {
                     "columnMatch": "Service level",
                     "formatter": 1
                   },
@@ -1234,17 +1239,36 @@
                     "formatter": 5
                   },
                   {
+                    "columnMatch": "Snapshot policy",
+                    "formatter": 5
+                  },
+                  {
                     "columnMatch": "snapshotPolicyId",
                     "formatter": 5
                   },
                   {
                     "columnMatch": "Remote resource Id",
-                    "formatter": 13,
+                    "formatter": 5,
                     "formatOptions": {
                       "linkTarget": "Resource",
-                      "linkIsContextBlade": true,
-                      "showIcon": false
+                      "linkIsContextBlade": true
                     }
+                  },
+                  {
+                    "columnMatch": "Replication healthy?",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Replication",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Backup enabled?",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Backup suspended?",
+                    "formatter": 5
                   },
                   {
                     "columnMatch": "backupEnabledMetric",
@@ -1259,6 +1283,14 @@
                     "formatter": 5
                   },
                   {
+                    "columnMatch": "Remote volume region",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Availability zone",
+                    "formatter": 1
+                  },
+                  {
                     "columnMatch": "Zone",
                     "formatter": 1
                   }
@@ -1268,6 +1300,186 @@
             },
             "showPin": false,
             "name": "VolumeSummaryAllocatedPercentMerge"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\",\"mergeType\":\"inner\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePercentConsumed\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeLogicalSize\",\"mergedName\":\"Consumed size\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage\",\"mergedName\":\"Percent consumed\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Zone\",\"mergedName\":\"Zone\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].zone\",\"mergedName\":\"AZ\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].Name\",\"mergedName\":\"Name\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeConsumedSizePercentage Timeline\",\"mergedName\":\"Percentage Volume Consumed Size Timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--VolumeLogicalSize Timeline\",\"mergedName\":\"Volume Consumed Size Timeline\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Replication type\",\"mergedName\":\"Replication type\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Remote volume region\",\"mergedName\":\"Remote region\",\"fromId\":\"unknown\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Replication healthy?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"replicationMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"leftOperand\":\"replicationMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"replicationMetric\"}}]},{\"originalName\":\"[Added column]\",\"mergedName\":\"Backup enabled?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"backupEnabledMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"leftOperand\":\"backupEnabledMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"backupEnabledMetric\"}}]},{\"originalName\":\"[Added column]\",\"mergedName\":\"Backup suspended?\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"leftOperand\":\"backupActiveMetric\",\"operator\":\"==\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"false\"}},{\"criteriaContext\":{\"leftOperand\":\"backupActiveMetric\",\"operator\":\"<\",\"rightValType\":\"static\",\"rightVal\":\"1\",\"resultValType\":\"static\",\"resultVal\":\"true\"}},{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"column\",\"resultVal\":\"backupActiveMetric\"}}]},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Endpoint type\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].replicationRemoteVolumeResourceId\",\"mergedName\":\"replicationRemoteVolumeResourceId\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeProtected\",\"mergedName\":\"backupEnabledMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeBackupActive\",\"mergedName\":\"backupActiveMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--XregionReplicationHealthy\",\"mergedName\":\"replicationMetric\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"71667e1a-644b-4979-8dde-aaffeb9431ac\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--XregionReplicationHealthy Timeline\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeBackupActive Timeline\"},{\"originalName\":\"[VolumePercentConsumed].microsoft.netapp/netappaccounts/capacitypools/volumes--CbsVolumeProtected Timeline\"}]}",
+              "size": 3,
+              "title": "Volume data protection",
+              "queryType": 7,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Volume",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkColumn": "volumeId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "Size",
+                    "formatter": 5,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": false,
+                        "minimumFractionDigits": 4,
+                        "maximumFractionDigits": 4,
+                        "minimumSignificantDigits": 1,
+                        "maximumSignificantDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Consumed size",
+                    "formatter": 5,
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Percent consumed",
+                    "formatter": 5,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "Location",
+                    "formatter": 17,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "20ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "AZ",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Service level",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Protocol(s)",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Cool access",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "volumeId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "capacityPoolId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "netappAccountId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Large volume",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Percentage Volume Consumed Size Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Volume Consumed Size Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Replication type",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "snapshotPolicyId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Remote region",
+                    "formatter": 17
+                  },
+                  {
+                    "columnMatch": "backupEnabledMetric",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "backupActiveMetric",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "replicationMetric",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Remote resource Id",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": false
+                    }
+                  },
+                  {
+                    "columnMatch": "Capacity pool",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "linkColumn": "capacityPoolId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "NetApp account",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "linkColumn": "netappAccountId",
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Availability zone",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "Remote volume region",
+                    "formatter": 17
+                  },
+                  {
+                    "columnMatch": "Zone",
+                    "formatter": 1
+                  }
+                ],
+                "filter": true
+              }
+            },
+            "showPin": false,
+            "name": "VolumeSummaryDataProtection"
           },
           {
             "type": 10,
@@ -1610,7 +1822,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\",\"mergeType\":\"innerunique\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePerformancePeak24hMetrics\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Replication\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Name\",\"mergedName\":\"Name\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput\",\"mergedName\":\"Total throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput Timeline\",\"mergedName\":\"Total throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops\",\"mergedName\":\"Total iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops Timeline\",\"mergedName\":\"Total iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput\",\"mergedName\":\"Read throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput Timeline\",\"mergedName\":\"Read throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops\",\"mergedName\":\"Read iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops Timeline\",\"mergedName\":\"Read iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput\",\"mergedName\":\"Write throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput Timeline\",\"mergedName\":\"Write throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops\",\"mergedName\":\"Write iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops Timeline\",\"mergedName\":\"Write iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops\",\"mergedName\":\"Read iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops Timeline\",\"mergedName\":\"Read iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput\",\"mergedName\":\"Other throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput Timeline\",\"mergedName\":\"Other throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops\",\"mergedName\":\"Total iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops Timeline\",\"mergedName\":\"Total iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops\",\"mergedName\":\"Other iops\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops Timeline\",\"mergedName\":\"OtherIops Timeline\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency Timeline\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency Timeline\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline\",\"fromId\":\"unknown\"}]}",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\",\"mergeType\":\"innerunique\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePerformancePeak24hMetrics\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Replication\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Name\",\"mergedName\":\"Name\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput\",\"mergedName\":\"Total throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput Timeline\",\"mergedName\":\"Total throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops\",\"mergedName\":\"Total iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops Timeline\",\"mergedName\":\"Total iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput\",\"mergedName\":\"Read throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput Timeline\",\"mergedName\":\"Read throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops\",\"mergedName\":\"Read iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops Timeline\",\"mergedName\":\"Read iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput\",\"mergedName\":\"Write throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput Timeline\",\"mergedName\":\"Write throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops\",\"mergedName\":\"Write iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops Timeline\",\"mergedName\":\"Write iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops\",\"mergedName\":\"Read iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops Timeline\",\"mergedName\":\"Read iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput\",\"mergedName\":\"Other throughput\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput Timeline\",\"mergedName\":\"Other throughput Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops\",\"mergedName\":\"Total iops\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops Timeline\",\"mergedName\":\"Total iops Timeline\",\"fromId\":\"667113f5-c9f3-492a-ba31-cd965d7ab305\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops\",\"mergedName\":\"Other iops\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops Timeline\",\"mergedName\":\"OtherIops Timeline\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency Timeline\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency Timeline\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline\",\"mergedName\":\"microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Remote volume region\",\"mergedName\":\"Remote volume region\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Replication type\",\"mergedName\":\"Replication type\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].zone\",\"mergedName\":\"zone\",\"fromId\":\"unknown\"}]}",
               "size": 3,
               "title": "Volume peak performance (24 hours)",
               "queryType": 7,
@@ -1854,6 +2066,14 @@
                   {
                     "columnMatch": "microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline",
                     "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Remote volume region",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "zone",
+                    "formatter": 5
                   }
                 ]
               }
@@ -1865,7 +2085,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\",\"mergeType\":\"innerunique\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePerformancePeak24hMetrics\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Replication\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Name\",\"mergedName\":\"Name\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput\",\"mergedName\":\"Total throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput Timeline\",\"mergedName\":\"Total throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops\",\"mergedName\":\"Total iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops Timeline\",\"mergedName\":\"Total iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput\",\"mergedName\":\"Read throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput Timeline\",\"mergedName\":\"Read throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops\",\"mergedName\":\"Read iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops Timeline\",\"mergedName\":\"Read iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput\",\"mergedName\":\"Write throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput Timeline\",\"mergedName\":\"Write throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops\",\"mergedName\":\"Write iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops Timeline\",\"mergedName\":\"Write iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput\",\"mergedName\":\"Other throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput Timeline\",\"mergedName\":\"Other throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops\",\"mergedName\":\"Other iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops Timeline\",\"mergedName\":\"Other iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency\",\"mergedName\":\"Read latency\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency Timeline\",\"mergedName\":\"Average read latency Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency\",\"mergedName\":\"Write latency\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline\",\"mergedName\":\"Average write latency Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"}]}",
+              "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\",\"mergeType\":\"innerunique\",\"leftTable\":\"VolumeSummary\",\"rightTable\":\"VolumePerformancePeak24hMetrics\",\"leftColumn\":\"volumeId\",\"rightColumn\":\"Name\"}],\"projectRename\":[{\"originalName\":\"[VolumeSummary].Volume\",\"mergedName\":\"Volume\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Capacity pool\",\"mergedName\":\"Capacity pool\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].NetApp account\",\"mergedName\":\"NetApp account\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Location\",\"mergedName\":\"Location\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Service level\",\"mergedName\":\"Service level\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Size\",\"mergedName\":\"Size\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Protocol(s)\",\"mergedName\":\"Protocol(s)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Cool access\",\"mergedName\":\"Cool access\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].volumeId\",\"mergedName\":\"volumeId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].capacityPoolId\",\"mergedName\":\"capacityPoolId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].netappAccountId\",\"mergedName\":\"netappAccountId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Large volume\",\"mergedName\":\"Large volume\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Snapshot policy\",\"mergedName\":\"Snapshot policy\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].snapshotPolicyId\",\"mergedName\":\"snapshotPolicyId\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Replication\",\"mergedName\":\"Replication\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Remote resource Id\",\"mergedName\":\"Remote resource Id\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Subscription\",\"mergedName\":\"Subscription\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].Name\",\"mergedName\":\"Name\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput\",\"mergedName\":\"Total throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalThroughput Timeline\",\"mergedName\":\"Total throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops\",\"mergedName\":\"Total iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--TotalIops Timeline\",\"mergedName\":\"Total iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput\",\"mergedName\":\"Read throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadThroughput Timeline\",\"mergedName\":\"Read throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops\",\"mergedName\":\"Read iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--ReadIops Timeline\",\"mergedName\":\"Read iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput\",\"mergedName\":\"Write throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteThroughput Timeline\",\"mergedName\":\"Write throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops\",\"mergedName\":\"Write iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--WriteIops Timeline\",\"mergedName\":\"Write iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput\",\"mergedName\":\"Other throughput (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherThroughput Timeline\",\"mergedName\":\"Other throughput Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops\",\"mergedName\":\"Other iops (Average)\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--OtherIops Timeline\",\"mergedName\":\"Other iops Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency\",\"mergedName\":\"Read latency\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageReadLatency Timeline\",\"mergedName\":\"Average read latency Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency\",\"mergedName\":\"Write latency\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumePerformancePeak24hMetrics].microsoft.netapp/netappaccounts/capacitypools/volumes--AverageWriteLatency Timeline\",\"mergedName\":\"Average write latency Timeline\",\"fromId\":\"8a253e5a-fb08-4324-a931-29f7ece192f4\"},{\"originalName\":\"[VolumeSummary].Remote volume region\",\"mergedName\":\"Remote volume region\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].Replication type\",\"mergedName\":\"Replication type\",\"fromId\":\"unknown\"},{\"originalName\":\"[VolumeSummary].zone\",\"mergedName\":\"zone\",\"fromId\":\"unknown\"}]}",
               "size": 3,
               "title": "Volume peak latency (24 hours)",
               "queryType": 7,
@@ -2013,14 +2233,6 @@
                     "formatter": 5
                   },
                   {
-                    "columnMatch": "Average read latency Timeline",
-                    "formatter": 5
-                  },
-                  {
-                    "columnMatch": "Average write latency Timeline",
-                    "formatter": 5
-                  },
-                  {
                     "columnMatch": "Read latency",
                     "formatter": 0,
                     "numberFormat": {
@@ -2031,6 +2243,10 @@
                     }
                   },
                   {
+                    "columnMatch": "Average read latency Timeline",
+                    "formatter": 5
+                  },
+                  {
                     "columnMatch": "Write latency",
                     "formatter": 0,
                     "numberFormat": {
@@ -2039,6 +2255,18 @@
                         "style": "decimal"
                       }
                     }
+                  },
+                  {
+                    "columnMatch": "Average write latency Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Remote volume region",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "zone",
+                    "formatter": 5
                   }
                 ]
               }
