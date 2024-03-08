@@ -2,7 +2,7 @@
 // Display name: Privileged Identity Management activations and approvals
 // Description: View Privileged Identity Management role activations and approvals
 // Categories: Audit
-// Resource types: Azure Entra ID
+// Resource types: Microsoft Entra ID
 // Topic: Audit
 
 AuditLogs
