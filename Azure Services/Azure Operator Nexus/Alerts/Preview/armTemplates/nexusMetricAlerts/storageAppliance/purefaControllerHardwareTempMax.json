@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "PureFA Controller Hardware Maximum Temperature Check"
+      "value": "PureFA Controller Hardware Maximum Temperature"
     },
     "alertDescription": {
-      "value": "PureFA Controller Hardware Temperature will parse the maximum hardware temperature and extract index of the controller and each of it's sensors. Alarming when a sensor reports a temperature above 50C"
+      "value": "This alert will trigger when a controller sensor reports a temperature above 50C"
     },
     "alertSeverity": {
       "value": 3
@@ -15,7 +15,7 @@
       "value": "microsoft.networkcloud/storageappliances"
     },
     "metricName": {
-      "value": "PurefaHardwareTemperatureCelsius"
+      "value": "PurefaHardwareTemperatureCelsiusByController"
     },
     "operator": {
       "value": "GreaterThan"
@@ -27,7 +27,7 @@
       "value": "Microsoft.NetworkCloud/storageAppliances"
     },
     "timeAggregation": {
-      "value": "Average"
+      "value": "Maximum"
     },
     "windowSize": {
       "value": "PT5M"
