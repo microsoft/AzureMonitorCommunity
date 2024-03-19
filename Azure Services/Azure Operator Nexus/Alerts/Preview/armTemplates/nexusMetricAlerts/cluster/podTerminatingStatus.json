@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Pod terminating status"
+      "value": "Pod Terminating Status"
     },
     "alertDescription": {
       "value": "This alert will trigger when pod status is terminating for more than 5 mins usually due to not enough resources"

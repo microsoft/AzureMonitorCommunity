@@ -6,7 +6,7 @@
       "value": "PureFA Chassis Health"
     },
     "alertDescription": {
-      "value": "PureFA chassis health alert checks for health of each component and reports the alarm if any chassis is unhealthy."
+      "value": "This alert will trigger when any chassis is unhealthy"
     },
     "alertSeverity": {
       "value": 3
@@ -15,7 +15,7 @@
       "value": "microsoft.networkcloud/storageappliances"
     },
     "metricName": {
-      "value": "PurefaHardwareComponentHealth"
+      "value": "PurefaHardwareChassisHealth"
     },
     "operator": {
       "value": "LessThan"
@@ -36,13 +36,7 @@
       "value": "PT5M"
     },
     "dimensions": {
-      "value": [
-        {
-          "name": "Chassis",
-          "operator": "Include",
-          "values": ["*"]
-        }
-      ]
+      "value": []
     }
   }
 }

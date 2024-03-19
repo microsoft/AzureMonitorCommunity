@@ -3,31 +3,31 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "PureFA Volume Latency"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when latency for the operations surpasses 10 milliseconds"
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "microsoft.networkcloud/storageappliances"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "PurefaVolumePerformanceLatencyMs"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
+      "value": 10
     },
     "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": "Microsoft.NetworkCloud/storageAppliances"
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Average"
     },
     "windowSize": {
       "value": "PT5M"
@@ -38,12 +38,12 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
+          "name": "Volume",
           "operator": "Include",
           "values": ["*"]
         },
         {
-          "name": "Namespace",
+          "name": "Dimension",
           "operator": "Include",
           "values": ["*"]
         }

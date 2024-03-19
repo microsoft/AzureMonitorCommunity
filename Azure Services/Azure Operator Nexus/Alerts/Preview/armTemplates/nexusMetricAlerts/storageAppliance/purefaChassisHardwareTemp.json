@@ -3,28 +3,28 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "PureFA Chassis Hardware Temperature"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when a chassis sensor reports a temperature above 50C"
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "microsoft.networkcloud/storageappliances"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "PurefaHardwareTemperatureCelsiusByChassis"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
+      "value": 50
     },
     "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": "Microsoft.NetworkCloud/storageAppliances"
     },
     "timeAggregation": {
       "value": "Maximum"
@@ -38,12 +38,12 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
+          "name": "Chassis",
           "operator": "Include",
           "values": ["*"]
         },
         {
-          "name": "Namespace",
+          "name": "Sensor",
           "operator": "Include",
           "values": ["*"]
         }

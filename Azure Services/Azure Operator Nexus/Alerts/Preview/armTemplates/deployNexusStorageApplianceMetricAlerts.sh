@@ -84,3 +84,20 @@ for alert in "$script_dir"/nexusMetricAlerts/storageAppliance/*.json; do
     echo "Alert deployment $(basename "${alert}" .json) failed for $SA_NAME"
   fi
 done
+
+echo "====== VALIDATING DEPLOYED ALERTS ======="
+for alert in "$script_dir"/nexusMetricAlerts/storageAppliance/*.json; do
+  az deployment group wait --created \
+    --subscription "$SUBSCRIPTION" \
+    --name "$(basename "${alert}" .json)_alert" \
+    --resource-group "$ALERT_RG" \
+    --interval 10 --timeout 120
+
+  exit_code=$?
+
+  if [[ $exit_code == 0 ]]; then
+    echo "Alert deployment $(basename "${alert}" .json) validated for $SA_NAME"
+  else
+    echo "Alert deployment $(basename "${alert}" .json) not validated for $SA_NAME"
+  fi
+done

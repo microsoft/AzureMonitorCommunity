@@ -145,14 +145,29 @@ Similarly `deployNexusStorageApplianceMetricAlerts.sh` can be used to deploy met
 
 You can run the script from the alert rules folder. The script will prompt for values required by the script.
 
+Below script will deploy alerts for a Nexus Cluster resource.
+
 ```sh
   ./deployNexusClusterMetricAlerts.sh
 ```
-OR
+Below script will deploy alerts for a Nexus StorageAppliance resource.
 
 ```sh
   ./deployNexusStorageApplianceMetricAlerts.sh
 ```
+
+You can apply metric alert rules to any subscription having Nexus resources that emits metrics that the alert rules monitor.
+Currently with the `deployNexusBareMetalMachineMetricAlerts.sh` script provided, alert rules can be applied only for Nexus BareMetalMachine resources.
+If need be, existing script for Nexus Cluster & StorageAppliance (`deployNexusClusterMetricAlerts.sh` and `deployNexusStorageApplianceMetricAlerts.sh`)
+be tweaked to deploy metric alerts across subscription.
+
+Below script will deploy alerts for all Nexus BareMetalMachine resources under a subscription.
+You can run the script from the alert rules folder. The script will prompt for values required by the script.
+
+```sh
+  ./deployNexusBareMetalMachineMetricAlerts.sh
+```
+
 #### **Resource Health Alert Rules**
 
 You can apply Resource health alert rules to an Arc-Connected K8s Cluster.
