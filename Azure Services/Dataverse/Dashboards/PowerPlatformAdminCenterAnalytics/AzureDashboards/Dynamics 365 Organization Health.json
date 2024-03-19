@@ -1,0 +1,892 @@
+{
+  "properties": {
+    "lenses": {
+      "0": {
+        "order": 0,
+        "parts": {
+          "0": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "33d81c80-fb32-4b0e-9127-921365119e57",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "requests\n| count\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "API Calls",
+                "subtitle": "Count of API calls over a given amount of time"
+              }
+            }
+          },
+          "1": {
+            "position": {
+              "x": 2,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "654b6d9d-eee4-4c6a-b123-d6d51e101f90",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "requests\n| summarize CountFailed = countif(success == false), Count = count()\n| project round(100.0 * (Count - CountFailed) / Count, 2)\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "API Pass Rate",
+                "subtitle": "Percentage of API successfulness over a given amount of time"
+              }
+            }
+          },
+          "2": {
+            "position": {
+              "x": 4,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "9573aeed-16a5-40ae-9783-5ac1c36b31ef",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "dependencies\n| where type == \"Plugin\"\n| count\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "Plug-In Executions",
+                "subtitle": "Count of Plug-in executions over a given amount of time"
+              }
+            }
+          },
+          "3": {
+            "position": {
+              "x": 13,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [],
+              "type": "Extension/HubsExtension/PartType/ClockPart",
+              "settings": {
+                "content": {
+                  "timezoneId": "UTC",
+                  "timeFormat": "HH:mm",
+                  "version": 1
+                }
+              }
+            }
+          },
+          "4": {
+            "position": {
+              "x": 0,
+              "y": 2,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "64c209e5-d589-45ea-b146-3f5f74110f38",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "dependencies\n| where user_Id != \"00000000-0000-0000-0000-000000000000\"\n| where isempty(operation_SyntheticSource)\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n| summarize sumDimension = count() by user_Id, type\n| top 10 by sumDimension\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "Most active users performing operations",
+                "subtitle": "Most active users performing CRUD operations over a given amount of time"
+              }
+            }
+          },
+          "5": {
+            "position": {
+              "x": 6,
+              "y": 2,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "1143e7c9-4296-4130-9d81-76ba5c4d7049",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "dependencies\n| where user_Id != \"00000000-0000-0000-0000-000000000000\"\n| where isempty(operation_SyntheticSource)\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n| summarize sumDimension = count() by name, type\n| top 10 by sumDimension\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "Total Operations by Entity",
+                "subtitle": "This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database grouped by table over the specified time"
+              }
+            }
+          },
+          "6": {
+            "position": {
+              "x": 13,
+              "y": 2,
+              "colSpan": 2,
+              "rowSpan": 2
+            },
+            "metadata": {
+              "inputs": [],
+              "type": "Extension/HubsExtension/PartType/ClockPart",
+              "settings": {
+                "content": {
+                  "timezoneId": "Central Standard Time",
+                  "timeFormat": "HH:mm",
+                  "version": 1
+                }
+              }
+            }
+          },
+          "7": {
+            "position": {
+              "x": 0,
+              "y": 6,
+              "colSpan": 4,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "136e9914-1326-4e01-ac58-8e044c315bc0",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "value": "P1D",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "dependencies\n| where type == \"Plugin\"\n| extend cd = parse_json(customDimensions)\n| summarize PerceivedErrors = countif(success==\"False\") by name\n| top 10 by name\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": false,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "Top plug-ins by failures",
+                "subtitle": "Top plug-ins with failures over a given amount of time"
+              }
+            }
+          },
+          "8": {
+            "position": {
+              "x": 4,
+              "y": 6,
+              "colSpan": 10,
+              "rowSpan": 5
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "1080e28d-118a-4ea7-8b15-ea8b04381fbd",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "dependencies\n| where type in  (\"SDKCreate\", \"SDKUpdate\", \"SDKRetrieve\", \"SDKDelete\")\n    | where user_Id != \"00000000-0000-0000-0000-000000000000\"\n    | where isempty(operation_SyntheticSource)\n| make-series \nRequests = count() default = 0 on timestamp in range(ago(24h), now(), 1h) by type\n| mvexpand timestamp to typeof(datetime), Requests to typeof(long) | render columnchart \n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "FrameControlChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "value": "StackedColumn",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "value": {
+                    "xAxis": {
+                      "name": "timestamp",
+                      "type": "datetime"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "Requests",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [
+                      {
+                        "name": "type",
+                        "type": "string"
+                      }
+                    ],
+                    "aggregation": "Sum"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "value": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": true,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "Total Operations",
+                "subtitle": "This chart shows how many operations (create, update, deletes, reads) have occurred in the environment with a Dataverse database over the specified time"
+              }
+            }
+          },
+          "9": {
+            "position": {
+              "x": 0,
+              "y": 11,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "/subscriptions/a33d4240-86b3-48c8-a6bd-03568a03c8db/resourceGroups/rg-dataverse-telemetry-workshop/providers/microsoft.insights/components/ai-dataverse-telemetry-workshop"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "value": "144b92b9-15f7-4a37-a3b5-e4464832b16d",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "exceptions\n| where timestamp >= ago(1d)\n| where outerMessage has \"timeout\"\n| extend Table= tostring(customDimensions.entityName)\n//| where Table == 'enter Table'\n//| where userId == 'enter UserId'\n| project timestamp, user_Id, Table, customDimensions.correlationId\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "value": "Analytics",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "value": "D365-Telemetry-Insights",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": true,
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {},
+              "partHeader": {
+                "title": "timeout correlation id's by table",
+                "subtitle": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "model": {
+        "timeRange": {
+          "value": {
+            "relative": {
+              "duration": 24,
+              "timeUnit": 1
+            }
+          },
+          "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+        },
+        "filterLocale": {
+          "value": "en-us"
+        },
+        "filters": {
+          "value": {
+            "MsPortalFx_TimeRange": {
+              "model": {
+                "format": "utc",
+                "granularity": "auto",
+                "relative": "1h"
+              },
+              "displayCache": {
+                "name": "UTC Time",
+                "value": "Past hour"
+              },
+              "filteredPartIds": [
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e41f",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e421",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e423",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e427",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e429",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e42d",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e42f",
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e431"
+              ]
+            },
+            "dynamicFilter_Table": {
+              "model": {
+                "operator": "equals",
+                "selectAllState": "all"
+              },
+              "displayCache": {
+                "name": "Table",
+                "value": "all"
+              },
+              "filteredPartIds": [
+                "StartboardPart-LogsDashboardPart-0e6305a9-4d70-4152-8f4c-15bda2e9e431"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "name": "Dynamics 365 Organization Health",
+  "type": "Microsoft.Portal/dashboards",
+  "location": "INSERT LOCATION",
+  "tags": {
+    "hidden-title": "Dynamics 365 Organization Health"
+  },
+  "apiVersion": "2015-08-01-preview"
+}
