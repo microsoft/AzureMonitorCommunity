@@ -713,6 +713,7 @@ function Set-FulfillDCERequirement
         }
         else{
             $cxDce = Read-Host "Please provide the full ARM ID of the DCE to use"
+            # TO DO: Validate DCE string (should be statically a valid DCE ARM ID)
             $cxDce = $cxDce.Trim().ToLower()
 
             if ($null -eq $cxDce -or "" -eq $cxDce)
@@ -1030,7 +1031,10 @@ function Get-Output
         Exit
     }
     else{
+        Write-Host "Info: Generating the arm template files" -ForegroundColor Cyan
+
         $correctedOutputFolder = $state.runtime.outputFolder
+        $outputArmTemplateFileCounter = 0
 
         $dcrTypes = @("windows", "linux", "extensions", "cls", "iis")
         foreach ($type in $dcrTypes)
@@ -1044,29 +1048,49 @@ function Get-Output
                     {
                         $fileName = $cl.parameters.dcrName.defaultValue
 
-                        Write-Host "Info: Generating the $type rule arm template file $counter ($($fileName)_arm_template.json)" -ForegroundColor Cyan
+                        Write-Host "[$outputArmTemplateFileCounter]: $($fileName)_arm_template.json" -ForegroundColor Green
                         $cl | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_arm_template.json"
-        
-                        Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
+                        $outputArmTemplateFileCounter += 1
+                        $state.runtime.outputArmTemplateFiles += "$($fileName)_arm_template.json"
+
+                        #Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
                         $cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
 
                         $counter += 1
                     }
                 }
                 else {
-                    Write-Host "Info: Generating the $type rule arm template file ($($type)_dcr_arm_template.json)" -ForegroundColor Cyan
+                    Write-Host "[$outputArmTemplateFileCounter]: $($type)_dcr_arm_template.json" -ForegroundColor Green
                     $state.outputs[$type] | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
-    
-                    Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
+                    $outputArmTemplateFileCounter += 1
+                    $state.runtime.outputArmTemplateFiles += "$($type)_dcr_arm_template.json"
+
+                    #Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
                     $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
 
                 }
             }
         }
 
-        Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Green
+        Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Cyan
         Write-Host
     }
+}
+
+<#
+.DESCRIPTION
+    Displays an output ARM template file selection menu
+#>
+function Get-ListOfAvailableOutputArmTemplateFiles 
+{
+    $counter = 0
+    Write-Host "List of all the generated arm template files" -ForegroundColor Cyan
+    foreach ($fileName in $state.runtime.outputArmTemplateFiles)
+    {
+        Write-Host "    [$counter]: $filename" -ForegroundColor Cyan
+        $counter += 1
+    }
+    Write-Host
 }
 
 <#
@@ -1081,10 +1105,13 @@ function Set-DeployOutputOnAzure
 
     while ("y" -eq $deployGeneratedArmTemplate)
     {
+        Get-ListOfAvailableOutputArmTemplateFiles
+
         $azConetxt = Get-AzContext
-        Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
-        $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
-        $armTemplateFile = Read-Host ">>>> ARM template file name   "
+        Write-Host  ">>>> Deployment Subscription                : $($azConetxt.Subscription.Id)"
+        $resourceGroupName = Read-Host  ">>>> Deployment Resource Group              "
+        $armTemplateFile = Read-Host ">>>> File Name (choose from above list)     " 
+
         try 
         {
             New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.runtime.outputFolder)\$armTemplateFile" -ErrorAction Stop
@@ -1096,6 +1123,7 @@ function Set-DeployOutputOnAzure
 
         $deployGeneratedArmTemplate = Read-Host "Do you want to run another deployment? (y/n)"
         $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
+        Write-Host
     }
 }
 
@@ -1112,6 +1140,7 @@ $global:state = [ordered]@{
             "iis" = $false 
         }
         "dataSourcesCount" = 0
+        "outputArmTemplateFiles" = @()
     }
 }
 ###########################################################
