@@ -21,3 +21,9 @@ You can deploy the DCR by clicking on the buttons below:<br />
 You can deploy the workbook by clicking on the buttons below:<br />
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Security-Center%2Fmaster%2FWorkbooks%2FGuestConfiguration%20Result%2FarmTemplate.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton"/></a>
 <a href="https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Security-Center%2Fmaster%2FWorkbooks%2FGuestConfiguration%20Result%2FarmTemplate.json" target="_blank"><img src="https://aka.ms/deploytoazuregovbutton"/></a>
+
+<br /><br />
+### Parameters to deploy DCR
+** **
+![Log Analytics ResID and Location](./picture/LogAnalytics.png)
+** **
