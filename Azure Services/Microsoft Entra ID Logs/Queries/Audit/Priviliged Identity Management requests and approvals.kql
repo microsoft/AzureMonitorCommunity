@@ -6,8 +6,9 @@
 // Topic: Audit
 
 AuditLogs
+| where TimeGenerated > ago(30d)
 | where LoggedByService == "PIM"
-| where AADOperationType == "ActivateRole"
+| where OperationName == "Add member to role completed (PIM activation)"
 | project 
     TimeGenerated, 
     Reason = ResultReason, 
@@ -22,8 +23,9 @@ AuditLogs
     CorrelationId
 | join kind=leftouter  (
     AuditLogs
+        | where TimeGenerated > ago(30d)
         | where LoggedByService == "PIM"
-        | where AADOperationType == "ApproveRoleActivation"
-        | project CorrelationId, ApprovalMessage = ResultDescription, Approver = Identity, Approved = Result) 
+        | where OperationName == "Add member to role request approved (PIM activation)"
+        | project CorrelationId, Approval = ResultDescription, Approver = Identity, Approved = Result) 
     on CorrelationId
-| distinct TimeGenerated, Requestor, Reason, Approver, ApprovalMessage, Category, Role, ResourceName, ResourceType, Start, End
+| distinct TimeGenerated, Requestor, Reason, Approver, Approval, Category, Role, ResourceName, ResourceType, Start, End
