@@ -4,18 +4,32 @@
 // Categories: Azure Resources
 // Resource types: Dataverse
 // Topic: Page performance
+// Revision: ddevine-msft 5/24/2024 
+
+let start = datetime(2023-12-13 00:00);
+let end = datetime(2024-2-23 23:59);
+let table = dynamic(['lead', 'contact', 'account','dse_newpattern','dse_antipattern']); // Enter Tables to Evaluate
 
 pageViews
-|where timestamp between(ago(30d).. now())
-| extend cd = parse_json(customDimensions)
-| where cd.isBoot == 'false'
-|summarize
-    WarmPageCounts=countif(tostring(cd.loadType)=="1"),
-    ColdPageCounts=countif(tostring(cd.loadType)=="0"),
-    Mobile=countif(tostring(cd.hostType) == "MobileApplication"),
-    PageLoadCount = count(), 
-    UserCount = dcount(user_AuthenticatedId), 
-    (P50,P75,P95)=percentiles(duration,50,75,95) by bin(timestamp,1d)
-|project startTime = timestamp ,P50, P75,P95,PageLoadCount, Mobile, UserCount, WarmPageCounts, ColdPageCounts
-|order by startTime asc nulls last
-|render columnchart 
+| where timestamp between(start..end)
+| where name startswith "EditForm Load"
+| extend LoadType = todouble(customDimensions.loadType)
+| extend LoadTypeName = case( LoadType in (0,1), 'Cold', LoadType in (2,3) , 'Warm', 'Other')
+| extend syncRequestTime = todouble(customDimensions.syncRequestTime)
+| extend Table = tostring(customDimensions.entityName)
+| where Table in (table)
+| where LoadTypeName == 'Warm'
+| summarize ['Warm Loads']=count(LoadTypeName=='Warm'), ['Warm Avg MS']=round(avg(duration)), ['Warm P90 MS']=round(percentile(duration,90)),['Avg Warm Sync Request MS']=round(avg(syncRequestTime)) by Table
+|join kind = fullouter 
+(pageViews
+| where timestamp between(start..end) 
+| where name startswith "EditForm Load"
+| extend LoadType = todouble(customDimensions.loadType)
+| extend LoadTypeName = case( LoadType in (0,1), 'Cold', LoadType in (2,3) , 'Warm', 'Other')
+| extend syncRequestTime = todouble(customDimensions.syncRequestTime)
+| extend Table = tostring(customDimensions.entityName)
+| where Table in (table)
+| where LoadTypeName == 'Cold'
+| summarize ['Cold Loads']=count(), ['Cold Avg MS']=round(avg(duration)), ['Cold P90 MS']=round(percentile(duration,90)), ['Avg Cold Sync Request MS']=round(avg(syncRequestTime)) by Table) 
+on Table
+| project ['Table Name']= coalesce(Table,Table1),['Warm Loads'], ['Cold Loads'], ['Warm Avg MS'], ['Cold Avg MS'], ['Warm P90 MS'], ['Cold P90 MS'],['Avg Cold Sync Request MS'],['Avg Warm Sync Request MS']  
