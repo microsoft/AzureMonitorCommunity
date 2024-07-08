@@ -44,7 +44,7 @@
                                 "Microsoft-Event"
                             ],
                             "xPathQueries": [
-                                "\"Microsoft-Windows-CodeIntegrity/Operational\">*[System[(EventID=3076 or EventID=3077 or EventID=3089 or EventID=3099)]]</!*"
+                                "\"Microsoft-Windows-CodeIntegrity/Operational!*[System[(EventID=3076 or EventID=3077 or EventID=3089 or EventID=3099)]]"
                             ],
                             "name": "eventLogsDataSource"
                         }
