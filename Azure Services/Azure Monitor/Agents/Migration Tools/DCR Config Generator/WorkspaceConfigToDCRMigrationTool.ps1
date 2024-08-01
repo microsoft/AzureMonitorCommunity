@@ -3,7 +3,7 @@ File: WorkspaceConfigToDCRMigrationTool.ps1
 Author: Azure Monitor Control Service
 Email: amcsdev@microsoft.com
 Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configurations (DCR)
-Version: 1.0.0
+Version: 1.0.1
 
 Copyright (c) April 2024 Microsoft
 #>
@@ -160,7 +160,7 @@ function Get-BaseArmTemplate
 {
     $dcrResourceDef = [ordered]@{
         "type" = "Microsoft.Insights/dataCollectionRules"
-        "apiVersion" = "2022-06-01" # Using the latest api version
+        "apiVersion" = "2023-03-11"
         "name" = "[parameters('dcrName')]"
         "location" = "[parameters('dcrLocation')]"
         "properties" = [ordered]@{
@@ -1142,7 +1142,7 @@ function Set-DeployOutputOnAzure
 {
     while ($true)
     {
-        $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated DCR ARM templates? (y/n)"
+        $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated DCR ARM templates by creating a DCR in Azure portal via DCR ARM Template? (y/n)"
         $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
         Write-Host
 
