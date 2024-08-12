@@ -5,7 +5,7 @@ Email: amcsdev@microsoft.com
 Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configurations (DCR)
 Version: 1.0.1
 
-Copyright (c) April 2024 Microsoft
+Copyright (c) August 2024 Microsoft
 #>
 
 # All the following variables are global
@@ -65,7 +65,7 @@ function Get-Greetings
 ####        where we help you step into the world of AMA and DCR      ####
 ####                                                                  ####
 ####                                                                  ####
-####             Azure Monitor Control Plane, April 2024              ####
+####             Azure Monitor Control Plane, August 2024             ####
 ##########################################################################
 
 "@
@@ -1051,7 +1051,7 @@ function Get-Output
         Write-Host "Info: Generating the arm template files" -ForegroundColor Cyan
 
         $correctedOutputFolder = $state.runtime.outputFolder
-        $outputArmTemplateFileCounter = 0
+        $outputArmTemplateFileCounter = 1
 
         $dcrTypes = @("windows", "linux", "extensions", "cls", "iis")
         foreach ($type in $dcrTypes)
@@ -1071,7 +1071,7 @@ function Get-Output
                         $state.runtime.outputArmTemplateFiles += "$($fileName)_arm_template.json"
 
                         #Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
-                        $cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
+                        #$cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
 
                         $counter += 1
                     }
@@ -1083,7 +1083,7 @@ function Get-Output
                     $state.runtime.outputArmTemplateFiles += "$($type)_dcr_arm_template.json"
 
                     #Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
-                    $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
+                    #$state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
 
                 }
             }
@@ -1100,7 +1100,7 @@ function Get-Output
 #>
 function Get-ListOfAvailableOutputArmTemplateFiles 
 {
-    $counter = 0
+    $counter = 1
     Write-Host "Below is the list of all the generated arm template files" -ForegroundColor Cyan
     foreach ($fileName in $state.runtime.outputArmTemplateFiles)
     {
@@ -1127,8 +1127,9 @@ function Get-ArmTemplateFileNameFromIndexSelection
 
     $maxNumber = $state.runtime.outputArmTemplateFiles.Length
 
-    if ($parseSuccess -and ($parsedInteger -lt $maxNumber -and $parsedInteger -ge 0)) {
-        return $state.runtime.outputArmTemplateFiles[$parsedInteger]
+    if ($parseSuccess -and ($parsedInteger -le $maxNumber -and $parsedInteger -ge 1)) {
+        # Readjusting the parsed integer to match the array index
+        return $state.runtime.outputArmTemplateFiles[$parsedInteger-1]
     } else {
         return "InvalidSelection"
     }
@@ -1181,6 +1182,22 @@ function Set-DeployOutputOnAzure
     }
 }
 
+function Get-GoodbyeMessage
+{
+    Write-Host @"
+
+##########################################################################################################################
+####                                                                                                                  ####
+####                         Thank you for using the DCR Config Generator PowerShell script!                          ####                                    
+####                          We've successfully generated DCRs for your inputted workspace                           ####  
+####   If you need to create additional DCRs for another workspace, simply run the script again with the new inputs   ####
+####                                                 Have a great day                                                 ####
+####                                                                                                                  ####
+##########################################################################################################################
+
+"@
+}
+
 #endregion
 
 #region Logic
@@ -1203,7 +1220,6 @@ Set-ValidateOutputFolder
 
 $WarningPreference = 'SilentlyContinue'
 Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
-$WarningPreference = 'Continue'
 
 Set-InitializeOutputs
 Get-UserLogAnalyticsWorkspace 
@@ -1211,4 +1227,5 @@ Get-UserLogAnalyticsWorkspaceDataSources
 Get-Output
 
 Set-DeployOutputOnAzure
+Get-GoodbyeMessage
 #endregion
