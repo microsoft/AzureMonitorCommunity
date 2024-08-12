@@ -1128,7 +1128,8 @@ function Get-ArmTemplateFileNameFromIndexSelection
     $maxNumber = $state.runtime.outputArmTemplateFiles.Length
 
     if ($parseSuccess -and ($parsedInteger -le $maxNumber -and $parsedInteger -ge 1)) {
-        return $state.runtime.outputArmTemplateFiles[$parsedInteger]
+        # Readjusting the parsed integer to match the array index
+        return $state.runtime.outputArmTemplateFiles[$parsedInteger-1]
     } else {
         return "InvalidSelection"
     }
