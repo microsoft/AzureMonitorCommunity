@@ -1071,7 +1071,7 @@ function Get-Output
                         $state.runtime.outputArmTemplateFiles += "$($fileName)_arm_template.json"
 
                         #Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
-                        $cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
+                        #$cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
 
                         $counter += 1
                     }
@@ -1083,7 +1083,7 @@ function Get-Output
                     $state.runtime.outputArmTemplateFiles += "$($type)_dcr_arm_template.json"
 
                     #Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
-                    $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
+                    #$state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
 
                 }
             }
@@ -1181,6 +1181,21 @@ function Set-DeployOutputOnAzure
     }
 }
 
+function Get-GoodbyeMessage
+{
+    Write-Host @"
+
+########################################################################################################################################################################################
+####                                                                                                                                                                                ####
+####                                              Thank you for using the DCR Config Generator PowerShell script!                                                                   ####
+####  We've successfully generated DCRs for your inputted workspace. If you need to create additional DCRs for another workspace, simply run the script again with the new inputs.  ####
+####                                                                   Have a great day                                                                                             ####
+####                                                                                                                                                                                ####
+########################################################################################################################################################################################
+
+"@
+}
+
 #endregion
 
 #region Logic
@@ -1211,4 +1226,5 @@ Get-UserLogAnalyticsWorkspaceDataSources
 Get-Output
 
 Set-DeployOutputOnAzure
+Get-GoodbyeMessage
 #endregion
