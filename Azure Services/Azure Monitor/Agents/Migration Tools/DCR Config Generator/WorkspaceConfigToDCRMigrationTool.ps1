@@ -1143,7 +1143,7 @@ function Set-DeployOutputOnAzure
 {
     while ($true)
     {
-        $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated DCR ARM templates by creating a DCR in Azure portal via DCR ARM Template? (y/n)"
+        $deployGeneratedArmTemplate = Read-Host "Would you like to proceed with selecting a template file to deploy your DCR ARM template to your subscription? (y/n)"
         $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
         Write-Host
 
