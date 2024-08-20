@@ -630,7 +630,7 @@ function Get-ExtensionDataSources
         $state.runtime.dcrTypesEnabled.extensions = $true
 
         # Extensions DCR output updates
-        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-extensions"
+        $state.outputs.extensions.parameters.dcrName.defaultValue = $DcrName + "-extensions"
         $state.outputs.extensions.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.extensions.resources[0].properties.description = "Azure monitor migration script generated extensions rule"
         $state.outputs.extensions.resources[0].properties.dataSources["performanceCounters"] = @()
