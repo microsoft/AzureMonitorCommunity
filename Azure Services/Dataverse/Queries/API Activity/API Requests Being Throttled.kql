@@ -1,10 +1,10 @@
 // Author: aliyoussefi
-// Display name: Power Platform Admin Center Analytics - API Calls
+// Display name: API Requests Being Throttled
 // Description: Count of API calls over a given amount of time. Variables are of type datetime
-// Categories: Power Platform Admin Center Analytics
+// Categories: Dataverse
 // Resource types: Dataverse
-// Topic: API
+// Topic: API, Health, Resiliency
 
-requests
+requests 
 | where timestamp between (_fromStartTime .. _toEndTime) //datetime
-| count
+| where resultCode == "429" and success == "False"

@@ -3,7 +3,7 @@
 // Description: This chart shows the API pass rate as percentage of total API calls that were made in the environment with a Dataverse database over the specified time.
 // Categories: Dataverse
 // Resource types: Dataverse
-// Topic: Performance
+// Topic: Performance, Health, Resiliency
 
 requests
 | where timestamp between (_fromStartTime .. _toEndTime)

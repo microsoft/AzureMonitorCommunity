@@ -1,0 +1,13 @@
+// Author: Sam Danesis
+// Display name: Summarization of dependencies latency by country or region
+// Description: Summarization of dependencies latency by country or region 
+// Categories: Dataverse
+// Resource types: Dataverse
+// Topic: Dependency Diagnostics
+
+dependencies
+| extend cd = parse_json(customDimensions)
+| project stall = cd["stall"], client_CountryOrRegion, download = cd["download"], Duration = cd["duration"]
+| extend downloadstall = todouble(stall),DDL = todouble(download), DDuration = todouble(Duration)
+| extend total = downloadstall + DDL + DDuration
+| summarize percentile(total),90) by client_CountryOrRegion
