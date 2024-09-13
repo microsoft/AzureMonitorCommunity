@@ -4,37 +4,34 @@
 // Categories: Azure Resources
 // Resource types: Dataverse
 // Topic: Page performance
+// Revision: ddevine-msft 5/24/2024 
 
 // warm and cold form Load data by Table
-let start = datetime(2021-12-13 00:00);
-let end = datetime(2021-12-13 23:59);
-let table = 'opportunity'; // Enter Table
+let start = datetime('2024-5-1 00:00'); //Enter Start Date
+let end = datetime('2024-5-30 23:59'); //Enter End Date
+let table = dynamic(['lead', 'contact', 'account','opportunity']); // Enter list of tables to evaluate
 pageViews
 | where timestamp between(start..end) //>= ago(1d)
 | where name startswith "EditForm Load"
 | extend LoadType = todouble(customDimensions.loadType)
 | extend LoadTypeName = case( LoadType in (0,1), 'Cold', LoadType in (2,3) , 'Warm', 'Other')
-| extend warmLatency = todouble(customDimensions.warmLatency)
-| extend warmThroughput = todouble(customDimensions.warmThroughput)
-| extend syncRequestTime = tostring(customDimensions.syncRequestTime)
-| extend isBoot = tostring(customDimensions.isBoot)
+| extend syncRequestTime = todouble(customDimensions.syncRequestTime)
 | extend Table = tostring(customDimensions.entityName)
-| where Table == table
+| where Table in (table)
 | where LoadTypeName == 'Warm'
-| summarize ['Warm Loads']=count(LoadTypeName=='Warm'), ['Warm Avg MS']=round(avg(duration)), ['Warm P90 MS']=round(percentile(duration,90)) by Table
-|join kind = inner
+| extend  ['Host Type'] = tostring(customDimensions.hostType)
+| summarize ['Warm Loads']=count(), ['Warm Avg MS']=round(avg(duration)), ['Warm P90 MS']=round(percentile(duration,90)),['Avg Warm Sync Request MS']=round(avg(syncRequestTime)) by Table
+|join kind = fullouter 
 (pageViews
-| where timestamp between(start..end) //>= ago(1d)
+| where timestamp between(start..end) 
 | where name startswith "EditForm Load"
 | extend LoadType = todouble(customDimensions.loadType)
 | extend LoadTypeName = case( LoadType in (0,1), 'Cold', LoadType in (2,3) , 'Warm', 'Other')
-| extend warmLatency = todouble(customDimensions.warmLatency)
-| extend warmThroughput = todouble(customDimensions.warmThroughput)
-| extend syncRequestTime = tostring(customDimensions.syncRequestTime)
-| extend isBoot = tostring(customDimensions.isBoot)
+| extend syncRequestTime = todouble(customDimensions.syncRequestTime)
 | extend Table = tostring(customDimensions.entityName)
-| where Table == table
+| where Table in (table)
 | where LoadTypeName == 'Cold'
-| summarize ['Cold Loads']=count(), ['Cold Avg MS']=round(avg(duration)), ['Cold P90 MS']=round(percentile(duration,90)) by Table) 
+| extend  ['Host Type'] = tostring(customDimensions.hostType)
+| summarize ['Cold Loads']=count(), ['Cold Avg MS']=round(avg(duration)), ['Cold P90 MS']=round(percentile(duration,90)), ['Avg Cold Sync Request MS']=round(avg(syncRequestTime)) by Table) 
 on Table
-| project Table,['Warm Loads'], ['Cold Loads'], ['Warm Avg MS'], ['Cold Avg MS'], ['Warm P90 MS'], ['Cold P90 MS']
+| project ['Table Name']= coalesce(Table,Table1),['Warm Loads'], ['Cold Loads'], ['Warm Avg MS'], ['Cold Avg MS'], ['Warm P90 MS'], ['Cold P90 MS'],['Avg Cold Sync Request MS'],['Avg Warm Sync Request MS']
