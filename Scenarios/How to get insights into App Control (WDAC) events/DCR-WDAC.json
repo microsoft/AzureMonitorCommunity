@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ruleName": {
+            "defaultValue": "DCR-WDAC",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the data collection rule to create."
+            }
+        },
+        "workspaceResourceId": {
+            "type": "String",
+            "metadata": {
+                "description": "The specification of destinations."
+            }
+        },
+        "WorkspaceLocation": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the location in which to create the data collection rule."
+            }
+        },
+        "apiVersion": {
+            "defaultValue": "2022-06-01",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the api version to use when deploying data collection rule template."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "apiVersion": "[parameters('apiVersion')]",
+            "name": "[parameters('ruleName')]",
+            "location": "[parameters('WorkspaceLocation')]",
+            "kind": "Windows",
+            "properties": {
+                "dataSources": {
+                    "windowsEventLogs": [
+                        {
+                            "streams": [
+                                "Microsoft-Event"
+                            ],
+                            "scheduledTransferPeriod": "PT5M",
+                            "xPathQueries": [
+                            "Microsoft-Windows-CodeIntegrity/Operational!*[System[(EventID=3076 or EventID=3077 or EventID=3089 or EventID=3099)]]"
+                            ],
+                            "name": "eventLogsDataSource"
+                        }
+                    ]
+                },
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('workspaceResourceId')]",
+                            "name": "LogAnalyticsDestination"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "Microsoft-Event"
+                        ],
+                        "destinations": [
+                            "LogAnalyticsDestination"
+                        ]
+                    }
+                ],
+                "streamDeclarations": {}
+            }
+        }
+    ]
+}

@@ -3,31 +3,31 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "Filespace Mount Usage"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when disk usage by filesystem is greater than 80 %."
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "microsoft.networkcloud/baremetalmachines"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "HostFilesystemUsage"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
+      "value": 80
     },
     "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": "Microsoft.NetworkCloud/bareMetalMachines"
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Average"
     },
     "windowSize": {
       "value": "PT5M"
@@ -38,12 +38,7 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
-          "operator": "Include",
-          "values": ["*"]
-        },
-        {
-          "name": "Namespace",
+          "name": "Host",
           "operator": "Include",
           "values": ["*"]
         }

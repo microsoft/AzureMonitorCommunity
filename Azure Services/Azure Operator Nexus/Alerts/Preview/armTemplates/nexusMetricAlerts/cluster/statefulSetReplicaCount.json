@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "Statefulset Replicas Mismatch"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when the current number of statefulset replicas don't match upto the desired number of replicas."
     },
     "alertSeverity": {
       "value": 3
@@ -15,7 +15,7 @@
       "value": "microsoft.networkcloud/clusters"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "KubeStatefulsetStatusReplicaDifference"
     },
     "operator": {
       "value": "GreaterThan"
@@ -27,7 +27,7 @@
       "value": "Microsoft.NetworkCloud/clusters"
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Average"
     },
     "windowSize": {
       "value": "PT5M"
@@ -38,12 +38,12 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
+          "name": "Namespace",
           "operator": "Include",
           "values": ["*"]
         },
         {
-          "name": "Namespace",
+          "name": "Statefulset",
           "operator": "Include",
           "values": ["*"]
         }

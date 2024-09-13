@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "Daemonset not Scheduled"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when the number of daemonsets is less than desired"
     },
     "alertSeverity": {
       "value": 3
@@ -15,7 +15,7 @@
       "value": "microsoft.networkcloud/clusters"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "KubeDaemonsetStatusNotScheduled"
     },
     "operator": {
       "value": "GreaterThan"
@@ -27,7 +27,7 @@
       "value": "Microsoft.NetworkCloud/clusters"
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Average"
     },
     "windowSize": {
       "value": "PT5M"
@@ -38,7 +38,7 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
+          "name": "Daemonset",
           "operator": "Include",
           "values": ["*"]
         },

@@ -3,31 +3,31 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "PureFA Array Space Used - 90 Percent"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when space usage on array surpasses 90 percent"
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "microsoft.networkcloud/storageappliances"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "PurefaArraySpaceUsage"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
+      "value": 90
     },
     "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": "Microsoft.NetworkCloud/storageAppliances"
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Average"
     },
     "windowSize": {
       "value": "PT5M"
@@ -36,18 +36,7 @@
       "value": "PT5M"
     },
     "dimensions": {
-      "value": [
-        {
-          "name": "Job",
-          "operator": "Include",
-          "values": ["*"]
-        },
-        {
-          "name": "Namespace",
-          "operator": "Include",
-          "values": ["*"]
-        }
-      ]
+      "value": []
     }
   }
 }

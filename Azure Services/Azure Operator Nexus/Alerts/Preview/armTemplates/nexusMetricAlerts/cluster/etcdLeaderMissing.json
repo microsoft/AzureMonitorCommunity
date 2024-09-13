@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "etcd leader missing"
+      "value": "Etcd Leader Missing"
     },
     "alertDescription": {
       "value": "This alert will trigger when member is not a leader"
