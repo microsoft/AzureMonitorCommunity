@@ -1,0 +1,1025 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "parameters": [
+          {
+            "id": "679870c3-3f4e-4b5d-b525-184cd820ebbc",
+            "version": "KqlParameterItem/1.0",
+            "name": "ExpressRouteCircuit",
+            "label": "ExpressRoute Circuit",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\n| where type == 'microsoft.network/expressroutecircuits'\n| project id, location",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.network/expressroutecircuits": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "c3a4c244-1738-4165-8359-3f6766fe4051",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "value": {
+              "durationMs": 172800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ],
+              "allowCustom": true
+            }
+          },
+          {
+            "id": "9cb59013-e850-4c57-817a-0602e0656aa8",
+            "version": "KqlParameterItem/1.0",
+            "name": "ERGateway",
+            "label": "ExpressRoute Gateway",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where type == \"microsoft.network/virtualnetworkgateways\" and properties.gatewayType == \"ExpressRoute\"",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "f2f61d28-947f-4d77-8d0a-ef0f34b60788",
+            "version": "KqlParameterItem/1.0",
+            "name": "AzFirewalls",
+            "label": "Azure Firewall",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == 'microsoft.network/azurefirewalls'",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.network/azurefirewalls": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameters - Filters"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "### This report provides all circuits in the environment based on Azure permissions.",
+        "style": "info"
+      },
+      "name": "text - 10"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"AzureHealthQuery/1.0\",\"queryType\":\"Detailed\"}",
+        "size": 0,
+        "title": "ExpressRoute Circuit Status",
+        "queryType": 4,
+        "resourceType": "microsoft.network/expressroutecircuits",
+        "crossComponentResources": [
+          "{ExpressRouteCircuit}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Detailed status",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Reason chronicity",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Reason type",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Title",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Resource group",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Subscription",
+              "formatter": 5
+            }
+          ],
+          "sortBy": [
+            {
+              "itemKey": "Availability state",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "Availability state",
+            "sortOrder": 1
+          }
+        ]
+      },
+      "customWidth": "100",
+      "name": "ExpressRoute Circuit Status"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "72008d32-d7c8-492d-949b-25bb6d4c2724",
+            "cellValue": "TabSelected",
+            "linkTarget": "parameter",
+            "linkLabel": "Availability",
+            "subTarget": "1",
+            "style": "link"
+          },
+          {
+            "id": "2e990bfa-afef-4051-b30a-32d851c8a739",
+            "cellValue": "TabSelected",
+            "linkTarget": "parameter",
+            "linkLabel": "Throughput",
+            "subTarget": "2",
+            "style": "link"
+          },
+          {
+            "id": "b8a3d3fa-d823-4762-8bae-395666fa640d",
+            "cellValue": "TabSelected",
+            "linkTarget": "parameter",
+            "linkLabel": "Packet Drops",
+            "subTarget": "3",
+            "style": "link"
+          },
+          {
+            "id": "b197bea8-fc98-4c11-a904-d5cfa57d4f2c",
+            "cellValue": "TabSelected",
+            "linkTarget": "parameter",
+            "linkLabel": "Gateway Metrics",
+            "subTarget": "4",
+            "style": "link"
+          },
+          {
+            "id": "bb6ee9ed-b34f-4df2-ba3e-0331bc9129b6",
+            "cellValue": "TabSelected",
+            "linkTarget": "parameter",
+            "linkLabel": "Route Advertisement",
+            "subTarget": "5",
+            "style": "link"
+          },
+          {
+            "id": "75c43209-5790-49ca-84d0-65f644485565",
+            "cellValue": "TabSelected",
+            "linkTarget": "parameter",
+            "linkLabel": "Azure Firewall",
+            "subTarget": "6",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "Metric Navigation Tabs"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### SNAT Exhaustion reaching 100% can cause performance degredation. ",
+              "style": "warning"
+            },
+            "name": "text - 2"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbooka41cb529-69ff-4e82-8ab7-6fcc998757c9",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/azurefirewalls",
+              "metricScope": 0,
+              "resourceParameter": "AzFirewalls",
+              "resourceIds": [
+                "{AzFirewalls}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/azurefirewalls",
+                  "metric": "microsoft.network/azurefirewalls--SNATPortUtilization",
+                  "aggregation": 3,
+                  "splitBy": null,
+                  "columnName": "SNAT (Max)"
+                }
+              ],
+              "title": "SNAT Exhaustion Max",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 0"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "### Azure Firewall can scale between 30Gbps up to 100Gbps based on SKU.",
+              "style": "info"
+            },
+            "name": "text - 3"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookf5a0c182-c705-42c2-90d5-510ac2633a0e",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/azurefirewalls",
+              "metricScope": 0,
+              "resourceParameter": "AzFirewalls",
+              "resourceIds": [
+                "{AzFirewalls}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/azurefirewalls",
+                  "metric": "microsoft.network/azurefirewalls--Throughput",
+                  "aggregation": 4,
+                  "splitBy": null
+                }
+              ],
+              "title": "Azure Firewall Throughput",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 14"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TabSelected",
+        "comparison": "isEqualTo",
+        "value": "6"
+      },
+      "name": "Azure Firewall"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Azure Route Advertisements",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "# BGP Advertisesments from Azure to Azure Hub with a limit of 1000 address spaces. This is a break glass limit that should be closely monitored. \r\n",
+              "style": "warning"
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook406e6c5a-ab16-4629-a5b2-4ef1e597d9bf",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": -1,
+              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "metricScope": 0,
+              "resourceParameter": "ERGateway",
+              "resourceIds": [
+                "{ERGateway}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/virtualnetworkgateways",
+                  "metric": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
+                  "aggregation": 3
+                }
+              ],
+              "gridFormatType": 1,
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "showIcon": true
+                  }
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                },
+                "showBorder": false,
+                "sortCriteriaField": "Value",
+                "sortOrderField": 2
+              },
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
+                    "label": "Count Of Routes Advertised to Peer (Max)"
+                  },
+                  {
+                    "columnId": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer Timeline",
+                    "label": "Count Of Routes Advertised to Peer Timeline"
+                  }
+                ]
+              }
+            },
+            "name": "metric - 0"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "# BGP Advertisesments from your On-Prem BGP Peer to Azure has a limit of 4000 per hub. This is a break glass limit that should be closely monitored.\r\n",
+              "style": "warning"
+            },
+            "name": "text - 15"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook40de96a8-d8a3-4269-8820-72b0d6c172cd",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": -1,
+              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "metricScope": 0,
+              "resourceParameter": "ERGateway",
+              "resourceIds": [
+                "{ERGateway}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/virtualnetworkgateways",
+                  "metric": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesLearnedFromPeer",
+                  "aggregation": 3
+                }
+              ],
+              "gridFormatType": 1,
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "showIcon": true
+                  }
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                },
+                "showBorder": false,
+                "sortCriteriaField": "Value",
+                "sortOrderField": 2
+              },
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "metric - 15"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TabSelected",
+        "comparison": "isEqualTo",
+        "value": "5"
+      },
+      "name": "Azure Route Advertisements"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### BGP Availability refers to connections being relayed over the connection pair. Both connections passing data over both connections shows as 100%. 1 connection not passing traffic shows as 50%. Both connection not passing traffic shows as 0%.",
+              "style": "info"
+            },
+            "name": "text - 3"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookcbf7a82f-e84f-496e-b57a-d38ab754c67a",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": -1,
+              "resourceType": "microsoft.network/expressroutecircuits",
+              "metricScope": 0,
+              "resourceParameter": "ExpressRouteCircuit",
+              "resourceIds": [
+                "{ExpressRouteCircuit}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Availability-BgpAvailability",
+                  "aggregation": 4
+                }
+              ],
+              "title": "BGP Availability",
+              "gridFormatType": 1,
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkColumn": "Name",
+                    "linkTarget": "Resource",
+                    "showIcon": true
+                  }
+                },
+                "leftContent": {
+                  "columnMatch": "Value",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "min": 0,
+                    "max": 100,
+                    "palette": "redGreen"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "style": "decimal",
+                      "maximumFractionDigits": 2,
+                      "maximumSignificantDigits": 3
+                    }
+                  }
+                },
+                "showBorder": false,
+                "sortCriteriaField": "Value",
+                "sortOrderField": 2
+              },
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "1"
+            },
+            "name": "BGP Availability"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook96d693a1-5fb8-4a9a-8327-f56d0d4248d3",
+              "version": "MetricsItem/2.0",
+              "size": 3,
+              "chartType": 2,
+              "resourceType": "microsoft.network/expressroutecircuits",
+              "metricScope": 0,
+              "resourceParameter": "ExpressRouteCircuit",
+              "resourceIds": [
+                "{ExpressRouteCircuit}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Availability-BgpAvailability",
+                  "aggregation": 4,
+                  "columnName": "BGP - Primary",
+                  "filters": [
+                    {
+                      "key": "Peer",
+                      "operator": 0,
+                      "values": [
+                        "Primary-IPv4"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "title": "BGP Availability",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "100",
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "1"
+            },
+            "name": "Primary Connection availability"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TabSelected",
+        "comparison": "isEqualTo",
+        "value": "1"
+      },
+      "name": "Availability"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Express Route Throughput can be provisioned at up to 10Gbps for Non-Express Route Direct circuits. This does provide a pair of 10Gbps that can burst temporarily up to 10+Gbps if traffic is spread across the tunnels appropriately. As they are a redundant pair, you should not rely on the overprovisioning to be available.",
+              "style": "info"
+            },
+            "name": "text - 3"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "### Graphs burst as needed.",
+              "style": "upsell"
+            },
+            "name": "text - 10"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook899a0cf0-3bf6-42e9-b7a0-9cc601354712",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/expressroutecircuits",
+              "metricScope": 0,
+              "resourceParameter": "ExpressRouteCircuit",
+              "resourceIds": [
+                "{ExpressRouteCircuit}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 172800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Traffic-BitsInPerSecond",
+                  "aggregation": 3
+                },
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Traffic-BitsOutPerSecond",
+                  "aggregation": 3
+                }
+              ],
+              "title": "Total Throughput",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "Total Throughput"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook19f9cf84-113b-4af2-8556-6201c32a36ec",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/expressroutecircuits",
+              "metricScope": 0,
+              "resourceParameter": "ExpressRouteCircuit",
+              "resourceIds": [
+                "{ExpressRouteCircuit}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 172800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Traffic-BitsInPerSecond",
+                  "aggregation": 3
+                },
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Traffic-BitsOutPerSecond",
+                  "aggregation": 3
+                }
+              ],
+              "title": "Primary Connection traffic  (Peer 1)",
+              "filters": [
+                {
+                  "id": "1",
+                  "key": "DeviceRole",
+                  "operator": 0,
+                  "values": [
+                    "Primary"
+                  ]
+                }
+              ],
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "Primary Connection traffic "
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookca3e1c87-41cc-4bde-aa92-ab3bd0a54290",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/expressroutecircuits",
+              "metricScope": 0,
+              "resourceParameter": "ExpressRouteCircuit",
+              "resourceIds": [
+                "{ExpressRouteCircuit}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 172800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Traffic-BitsInPerSecond",
+                  "aggregation": 3
+                },
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Traffic-BitsOutPerSecond",
+                  "aggregation": 3
+                }
+              ],
+              "title": "Secondary Connection traffic (Peer 2)",
+              "filters": [
+                {
+                  "id": "2",
+                  "key": "DeviceRole",
+                  "operator": 0,
+                  "values": [
+                    "secondary"
+                  ]
+                }
+              ],
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "customWidth": "50",
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "2"
+            },
+            "name": "Secondary Connection traffic"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TabSelected",
+        "comparison": "isEqualTo",
+        "value": "2"
+      },
+      "name": "Throughput"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "# Packets dropped from Gateway. Should be near 0. ",
+              "style": "warning"
+            },
+            "name": "text - 1"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbooke20f8946-66e3-4760-972d-9384a019ee49",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/expressroutecircuits",
+              "metricScope": 0,
+              "resourceParameter": "ExpressRouteCircuit",
+              "resourceIds": [
+                "{ExpressRouteCircuit}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 172800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Qos-QosDropBitsInPerSecond",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.network/expressroutecircuits",
+                  "metric": "microsoft.network/expressroutecircuits-Circuit Qos-QosDropBitsOutPerSecond",
+                  "aggregation": 4
+                }
+              ],
+              "title": "Dropped Bits",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "3"
+            },
+            "name": "Dropped Bits"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TabSelected",
+        "comparison": "isEqualTo",
+        "value": "3"
+      },
+      "name": "Packet Drops"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## Average CPU per Gateway - Not per instance. This causes performance degredation as it nears 100%. ",
+              "style": "info"
+            },
+            "name": "text - 2"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook42e364a9-4e49-4431-bd8b-3af72cfdc3a4",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "metricScope": 0,
+              "resourceParameter": "ERGateway",
+              "resourceIds": [
+                "{ERGateway}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/virtualnetworkgateways",
+                  "metric": "microsoft.network/virtualnetworkgateways-Performance-ExpressRouteGatewayCpuUtilization",
+                  "aggregation": 3,
+                  "splitBy": null
+                }
+              ],
+              "title": "Gateway CPU Utilization (Max)",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "4"
+            },
+            "name": "Gateway CPU Utilization (Max)"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "## Max Throughput per Gateway. This causes performance degredation if exceeded. ",
+              "style": "info"
+            },
+            "name": "text - 3"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook42e364a9-4e49-4431-bd8b-3af72cfdc3a4",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 2,
+              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "metricScope": 0,
+              "resourceParameter": "ERGateway",
+              "resourceIds": [
+                "{ERGateway}"
+              ],
+              "timeContextFromParameter": "TimeRange",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.network/virtualnetworkgateways",
+                  "metric": "microsoft.network/virtualnetworkgateways-Performance-ExpressRouteGatewayPacketsPerSecond",
+                  "aggregation": 3,
+                  "splitBy": null
+                }
+              ],
+              "title": "Gateway Throughput - Packets per second (Max)",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "TabSelected",
+              "comparison": "isEqualTo",
+              "value": "4"
+            },
+            "name": "Gateway Throughput - Packets per second (Max)"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TabSelected",
+        "comparison": "isEqualTo",
+        "value": "4"
+      },
+      "name": "Gateway"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "fromTemplateId": "community-Workbooks/Network Insights/ExpressRouteCircuits/ExpressRouteCircuitMetrics",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

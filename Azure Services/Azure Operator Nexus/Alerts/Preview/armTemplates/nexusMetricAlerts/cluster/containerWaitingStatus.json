@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Container Waiting Status"
+    },
+    "alertDescription": {
+      "value": "This alert will trigger when a container is in waiting status for more than 5 mins"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/clusters"
+    },
+    "metricName": {
+      "value": "KubePodContainerStatusWaitingReason"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": 0
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/clusters"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Namespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Container",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Reason",
+          "operator": "Include",
+          "values": ["ErrImagePull", "CrashLoopBackOff", "ImagePullBackOff"]
+        }
+      ]
+    }
+  }
+}

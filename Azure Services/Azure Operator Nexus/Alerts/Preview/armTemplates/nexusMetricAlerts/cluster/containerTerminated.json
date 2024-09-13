@@ -1,0 +1,70 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "Container Terminated"
+    },
+    "alertDescription": {
+      "value": "This alert will trigger when container status is one these OOMKilled|Error|ContainerCannotRun|DeadlineExceeded|Evicted|Unknown"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/clusters"
+    },
+    "metricName": {
+      "value": "KubePodContainerStatusTerminatedReason"
+    },
+    "operator": {
+      "value": "GreaterThan"
+    },
+    "threshold": {
+      "value": 0
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/clusters"
+    },
+    "timeAggregation": {
+      "value": "Maximum"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Namespace",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Pod",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Container",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Reason",
+          "operator": "Include",
+          "values": [
+            "OOMKilled",
+            "error",
+            "ContainerCannotRun",
+            "DeadlineExceeded",
+            "Evicted",
+            "Unknown"
+          ]
+        }
+      ]
+    }
+  }
+}

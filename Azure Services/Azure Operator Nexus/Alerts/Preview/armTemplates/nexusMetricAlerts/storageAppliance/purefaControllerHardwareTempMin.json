@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "alertName": {
+      "value": "PureFA Controller Hardware Minimum Temperature Check"
+    },
+    "alertDescription": {
+      "value": "PureFA Controller Hardware Temperature will parse the minimum hardware temperature and extract index of the controller and each of it's sensors. Alarming when a sensor reports a temperature below 25C"
+    },
+    "alertSeverity": {
+      "value": 3
+    },
+    "metricNamespace": {
+      "value": "microsoft.networkcloud/storageappliances"
+    },
+    "metricName": {
+      "value": "PurefaHardwareTemperatureCelsius"
+    },
+    "operator": {
+      "value": "LessThan"
+    },
+    "threshold": {
+      "value": 25
+    },
+    "targetResourceType": {
+      "value": "Microsoft.NetworkCloud/storageAppliances"
+    },
+    "timeAggregation": {
+      "value": "Average"
+    },
+    "windowSize": {
+      "value": "PT5M"
+    },
+    "evaluationFrequency": {
+      "value": "PT5M"
+    },
+    "dimensions": {
+      "value": [
+        {
+          "name": "Controller",
+          "operator": "Include",
+          "values": ["*"]
+        },
+        {
+          "name": "Sensor",
+          "operator": "Include",
+          "values": ["*"]
+        }
+      ]
+    }
+  }
+}
