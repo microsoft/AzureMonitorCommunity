@@ -1045,7 +1045,7 @@
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources",
                   "value": [
-                    "AMBA Notification Assets - Suppression Alert Processing Rule for maintenance period for Subscription"
+                    "value::all"
                   ],
                   "id": "0f60b6de-d46f-4654-958b-6eec143d4820"
                 }
