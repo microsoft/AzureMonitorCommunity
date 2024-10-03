@@ -147,7 +147,7 @@
     {
       "type": 1,
       "content": {
-        "json": "># Change Log #\r\n>\r\n>**Author**\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com) & [James Dumont le Douarec](https://github.com/JamesDLD)\r\n>\r\n>**Version 1.4**\r\n>2021-10-02\r\n>- Add an 'Alert processing rules' panel which allows you to see their status and change them through their hyperlink.\r\n>\r\n>**Version 1.3**\r\n>2021-11-29\r\n>- Fixed a bug that was preventing the correct filtering based on time on other tiles\r\n>\r\n>**Version 1.2**\r\n>2021-11-22\r\n>- Fixed a bug that was preventing the correct filtering based on time\r\n>\r\n>**Version 1.1**\r\n>2020-12-04\r\n>- Added the 'Show Help' parameters which allows you to see the 'Get Started' page or this 'Change Log'.\r\n>- Fixed Affected Object for some Azure Service Health Alerts\r\n>\r\n>**Version 1.0**\r\n>2020-12-02\r\n>- Initial version"
+        "json": "># Change Log #\r\n>\r\n>**Author**\r\n>[Bruno Gabrielli](mailto:bruno.gabrielli@microsoft.com) & [James Dumont le Douarec](https://github.com/JamesDLD)\r\n>\r\n>**Version 1.4**\r\n>2021-10-03\r\n>- Add an 'Alert processing rules' panel which allows you to see their status and change them through their hyperlink.\r\n>\r\n>**Version 1.3**\r\n>2021-11-29\r\n>- Fixed a bug that was preventing the correct filtering based on time on other tiles\r\n>\r\n>**Version 1.2**\r\n>2021-11-22\r\n>- Fixed a bug that was preventing the correct filtering based on time\r\n>\r\n>**Version 1.1**\r\n>2020-12-04\r\n>- Added the 'Show Help' parameters which allows you to see the 'Get Started' page or this 'Change Log'.\r\n>- Fixed Affected Object for some Azure Service Health Alerts\r\n>\r\n>**Version 1.0**\r\n>2020-12-02\r\n>- Initial version"
       },
       "conditionalVisibility": {
         "parameterName": "Help",
@@ -995,7 +995,6 @@
                   ]
                 },
                 {
-                  "id": "fee2a868-c7ce-4a01-afdb-471567f1123c",
                   "version": "KqlParameterItem/1.0",
                   "name": "status",
                   "label": "Status",
@@ -1017,10 +1016,10 @@
                   "defaultValue": "value::all",
                   "value": [
                     "value::all"
-                  ]
+                  ],
+                  "id": "b5f29ea9-d6b3-4737-b2f1-f35a538bf9a8"
                 },
                 {
-                  "id": "fee2a868-c7ce-4a01-afdb-471567f1123c",
                   "version": "KqlParameterItem/1.0",
                   "name": "description",
                   "label": "Description",
@@ -1046,8 +1045,9 @@
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources",
                   "value": [
-                    "AMBA Notification Assets - Suppression Alert Processing Rule for maintenance period for Subscription"
-                  ]
+                    "value::all"
+                  ],
+                  "id": "0f60b6de-d46f-4654-958b-6eec143d4820"
                 }
               ],
               "style": "pills",
@@ -1105,6 +1105,11 @@
             "name": "query - 0"
           }
         ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "SelectedTab",
+        "comparison": "isEqualTo",
+        "value": "AlertProcessingRules"
       },
       "name": "group - Alert processing rules"
     }
