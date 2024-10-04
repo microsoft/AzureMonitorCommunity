@@ -8,7 +8,7 @@
 //required: Need to export SigninLogs of Entra ID to Log Analytics to have the Display Name (Name and Surname)
 DevCenterBillingEventLogs
 | where UsageType == "Compute" 
-| summarize QTD = sum(Quantity) by UserId
+| summarize HoursConsumed = sum(Quantity) by UserId
 | join kind=leftouter (SigninLogs | where ConditionalAccessStatus =="success" | distinct UserId, Identity) on UserId
-| project Identity, QTD
+| project Identity, HoursConsumed
 | render columnchart 
