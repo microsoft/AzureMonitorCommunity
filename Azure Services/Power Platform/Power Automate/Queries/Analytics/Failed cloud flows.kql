@@ -1,0 +1,22 @@
+// Author: aliyoussefi
+// Display name: Display unsuccessful cloud flow runs with direct link
+// Description: Display unsuccessful cloud flow runs with a direct link to the cloud flow run for troubleshooting
+// Categories: Power Platform
+// Resource types: Power Automate
+// Topic:  Troubleshooting
+dependencies 
+| where success == false
+| extend error = todynamic(tostring(customDimensions.error))
+| extend tags = todynamic(tostring(customDimensions.tags))
+| project 
+    timestamp, 
+    target, 
+    operation_Id, 
+    operation_ParentId, 
+    name, 
+    error.code, 
+    error.message, 
+    customDimensions.signalCategory,
+    tags.capabilities,
+    tags.environmentName,
+    directlink=strcat("https://make.powerautomate.com/environments/", tags.environmentName, "/flows/",  target, "/runs/", operation_ParentId)

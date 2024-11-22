@@ -8,5 +8,5 @@
 requests 
 | where customDimensions.resourceProvider == 'Cloud Flow'
 | extend data = todynamic(tostring(customDimensions.Data))
-| project timestamp, operation_Id,  operation_ParentId, duration, customDimensions.signalCategory, name, data.FlowDisplayName, data.tags.xrmWorkflowId , data.tags.createdBy, 
+| project timestamp, operation_Id,  operation_ParentId, success, duration, customDimensions.signalCategory, name, data.FlowDisplayName, data.tags.xrmWorkflowId , data.tags.createdBy, 
 data, customDimensions, directlink=strcat("https://make.powerautomate.com/environments/", data.tags.environmentName, "/flows/",  name, "/runs/", operation_Id)

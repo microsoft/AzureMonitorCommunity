@@ -3,9 +3,9 @@ File: WorkspaceConfigToDCRMigrationTool.ps1
 Author: Azure Monitor Control Service
 Email: amcsdev@microsoft.com
 Description: This module contains code to help our customers migrate from MMA based configurations to AMA based configurations (DCR)
-Version: 1.0.0
+Version: 1.0.1
 
-Copyright (c) November 2023 Microsoft
+Copyright (c) August 2024 Microsoft
 #>
 
 # All the following variables are global
@@ -53,6 +53,24 @@ class DCRSyslogDataSource
 #endregion
 
 #region Utility functions
+
+function Get-Greetings
+{
+    Write-Host @"
+
+##########################################################################
+####                                                                  ####            
+####        Welcome to the Data Collection Rule (DCR) Generator       ####
+####                                                                  ####
+####        where we help you step into the world of AMA and DCR      ####
+####                                                                  ####
+####                                                                  ####
+####             Azure Monitor Control Plane, August 2024             ####
+##########################################################################
+
+"@
+}
+
 
 <#
 .DESCRIPTION
@@ -142,7 +160,7 @@ function Get-BaseArmTemplate
 {
     $dcrResourceDef = [ordered]@{
         "type" = "Microsoft.Insights/dataCollectionRules"
-        "apiVersion" = "2022-06-01" # Using the latest api version
+        "apiVersion" = "2023-03-11"
         "name" = "[parameters('dcrName')]"
         "location" = "[parameters('dcrLocation')]"
         "properties" = [ordered]@{
@@ -612,7 +630,7 @@ function Get-ExtensionDataSources
         $state.runtime.dcrTypesEnabled.extensions = $true
 
         # Extensions DCR output updates
-        $state.outputs.windows.parameters.dcrName.defaultValue = $DcrName + "-extensions"
+        $state.outputs.extensions.parameters.dcrName.defaultValue = $DcrName + "-extensions"
         $state.outputs.extensions.parameters.dcrLocation.defaultValue = $state.runtime.dcrLocation
         $state.outputs.extensions.resources[0].properties.description = "Azure monitor migration script generated extensions rule"
         $state.outputs.extensions.resources[0].properties.dataSources["performanceCounters"] = @()
@@ -654,10 +672,10 @@ function Get-ExtensionDataSources
 function Get-ProvisionDCE
 {
     Write-Host "Info: Provisioning a Data Collection Endpoint (DCE) on your behalf" -ForegroundColor Cyan
-    $dceSubId = Read-Host ">>>>> Sub Id"
-    $dceRg = Read-Host ">>>>> Resource Group"
-    $dceName = Read-Host ">>>>> Name"
-    Write-Host ">>>>> Location: $($state.runtime.dcrLocation)"
+    $dceSubId = Read-Host       ">>>>> Subscription Id     "
+    $dceRg = Read-Host          ">>>>> Resource Group      "
+    $dceName = Read-Host        ">>>>> Name of the DCE     "
+    Write-Host                  ">>>>> Location of the DCE : $($state.runtime.dcrLocation)"
     $accessToken = Get-AzAccessToken
     $accessToken | Out-Null # Shouldn't print this out to the console
 
@@ -712,7 +730,8 @@ function Set-FulfillDCERequirement
             $dceArmId = Get-ProvisionDCE
         }
         else{
-            $cxDce = Read-Host "Please provide the full ARM ID of the DCE to use"
+            $cxDce = Read-Host "Please provide the resource ID of the DCE to use"
+            # TO DO: Validate DCE string (should be statically a valid DCE ARM ID)
             $cxDce = $cxDce.Trim().ToLower()
 
             if ($null -eq $cxDce -or "" -eq $cxDce)
@@ -1021,7 +1040,6 @@ function ConvertTo-ReplaceSepcialChars
 #>
 function Get-Output
 {
-    Write-Host
     if ($state.runtime.dataSourcesCount -eq 0)
     {
         Write-Host 'Info: No supported data sources were found on the workspace.' -ForegroundColor DarkYellow
@@ -1030,7 +1048,10 @@ function Get-Output
         Exit
     }
     else{
+        Write-Host "Info: Generating the arm template files" -ForegroundColor Cyan
+
         $correctedOutputFolder = $state.runtime.outputFolder
+        $outputArmTemplateFileCounter = 1
 
         $dcrTypes = @("windows", "linux", "extensions", "cls", "iis")
         foreach ($type in $dcrTypes)
@@ -1044,28 +1065,73 @@ function Get-Output
                     {
                         $fileName = $cl.parameters.dcrName.defaultValue
 
-                        Write-Host "Info: Generating the $type rule arm template file $counter ($($fileName)_arm_template.json)" -ForegroundColor Cyan
+                        Write-Host "[$outputArmTemplateFileCounter]: $($fileName)_arm_template.json" -ForegroundColor Green
                         $cl | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_arm_template.json"
-        
-                        Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
-                        $cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
+                        $outputArmTemplateFileCounter += 1
+                        $state.runtime.outputArmTemplateFiles += "$($fileName)_arm_template.json"
+
+                        #Write-Host "Info: Generating the $type rule payload file $counter ($($fileName)_payload.json)" -ForegroundColor Cyan
+                        #$cl["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($fileName)_payload.json"
 
                         $counter += 1
                     }
                 }
                 else {
-                    Write-Host "Info: Generating the $type rule arm template file ($($type)_dcr_arm_template.json)" -ForegroundColor Cyan
+                    Write-Host "[$outputArmTemplateFileCounter]: $($type)_dcr_arm_template.json" -ForegroundColor Green
                     $state.outputs[$type] | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_arm_template.json"
-    
-                    Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
-                    $state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
+                    $outputArmTemplateFileCounter += 1
+                    $state.runtime.outputArmTemplateFiles += "$($type)_dcr_arm_template.json"
+
+                    #Write-Host "Info: Generating the $type rule payload file ($($type)_dcr_payload.json)" -ForegroundColor Cyan
+                    #$state.outputs[$type]["resources"][0].properties | ConvertTo-Json -Depth 100 | ConvertTo-ReplaceSepcialChars | Out-File -FilePath "$correctedOutputFolder\$($type)_dcr_payload.json"
 
                 }
             }
         }
 
-        Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Green
+        Write-Host "Info: Done. Check your output folder ($($correctedOutputFolder)) for all the generated files!" -ForegroundColor Cyan
         Write-Host
+    }
+}
+
+<#
+.DESCRIPTION
+    Displays an output ARM template file selection menu
+#>
+function Get-ListOfAvailableOutputArmTemplateFiles 
+{
+    $counter = 1
+    Write-Host "Below is the list of all the generated arm template files" -ForegroundColor Cyan
+    foreach ($fileName in $state.runtime.outputArmTemplateFiles)
+    {
+        Write-Host "    [$counter]: $filename" -ForegroundColor Cyan
+        $counter += 1
+    }
+    Write-Host
+}
+
+<#
+.DESCRIPTION
+    Get the corresponding filename to the index
+#>
+function Get-ArmTemplateFileNameFromIndexSelection 
+{
+    param (
+        [Parameter(Mandatory=$True)]
+        [string]$inputString
+    )
+
+    # Attempt to parse the input string as an integer
+    $parsedInteger = 0
+    $parseSuccess = [int]::TryParse($inputString, [ref]$parsedInteger)
+
+    $maxNumber = $state.runtime.outputArmTemplateFiles.Length
+
+    if ($parseSuccess -and ($parsedInteger -le $maxNumber -and $parsedInteger -ge 1)) {
+        # Readjusting the parsed integer to match the array index
+        return $state.runtime.outputArmTemplateFiles[$parsedInteger-1]
+    } else {
+        return "InvalidSelection"
     }
 }
 
@@ -1075,16 +1141,36 @@ function Get-Output
 #>
 function Set-DeployOutputOnAzure
 {
-    $deployGeneratedArmTemplate = Read-Host "Do you want to run a test deployment of one of the generated DCR ARM templates? (y/n)"
-    $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
-    Write-Host
-
-    while ("y" -eq $deployGeneratedArmTemplate)
+    while ($true)
     {
+        $deployGeneratedArmTemplate = Read-Host "Would you like to proceed with selecting a template file to deploy your DCR ARM template to your subscription? (y/n)"
+        $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
+        Write-Host
+
+        if ("y" -ne $deployGeneratedArmTemplate)
+        {
+            break
+        }
+
+        Get-ListOfAvailableOutputArmTemplateFiles
+
         $azConetxt = Get-AzContext
-        Write-Host ">>>> Deployment Subscription:   $($azConetxt.Subscription.Id)"
-        $resourceGroupName = Read-Host ">>>> Deployment Resource Group"
-        $armTemplateFile = Read-Host ">>>> ARM template file name   "
+        Write-Host                          ">>>> Deployment Subscription Id                            : $($azConetxt.Subscription.Id)"
+        $resourceGroupName = Read-Host      ">>>> Deployment Resource Group                             "
+        $armTemplateFileIndex = Read-Host        ">>>> Select the # of the template file from the list above "
+
+        try {
+            $armTemplateFile = Get-ArmTemplateFileNameFromIndexSelection -inputString $armTemplateFileIndex -ErrorAction Stop
+            if ("InvalidSelection" -eq $armTemplateFile)
+            {
+                Write-Host "Invalid file selection. Please make sure to choose a number from the list above." -ForegroundColor Red
+                continue
+            }
+        } catch {
+            Write-Host "Invalid Selection. Please make sure to choose a number from the list above." -ForegroundColor Red
+            continue
+        }
+        
         try 
         {
             New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile "$($state.runtime.outputFolder)\$armTemplateFile" -ErrorAction Stop
@@ -1093,10 +1179,23 @@ function Set-DeployOutputOnAzure
         } catch {
             Write-Host "Error while deploying: $PSItem" -ForegroundColor Red
         }
-
-        $deployGeneratedArmTemplate = Read-Host "Do you want to run another deployment? (y/n)"
-        $deployGeneratedArmTemplate = $deployGeneratedArmTemplate.Trim().ToLower()
     }
+}
+
+function Get-GoodbyeMessage
+{
+    Write-Host @"
+
+##########################################################################################################################
+####                                                                                                                  ####
+####                         Thank you for using the DCR Config Generator PowerShell script!                          ####                                    
+####                          We've successfully generated DCRs for your inputted workspace                           ####  
+####   If you need to create additional DCRs for another workspace, simply run the script again with the new inputs   ####
+####                                                 Have a great day                                                 ####
+####                                                                                                                  ####
+##########################################################################################################################
+
+"@
 }
 
 #endregion
@@ -1112,14 +1211,15 @@ $global:state = [ordered]@{
             "iis" = $false 
         }
         "dataSourcesCount" = 0
+        "outputArmTemplateFiles" = @()
     }
 }
 ###########################################################
+Get-Greetings
 Set-ValidateOutputFolder
 
 $WarningPreference = 'SilentlyContinue'
 Set-AzSubscriptionContext -SubscriptionId $SubscriptionId
-$WarningPreference = 'Continue'
 
 Set-InitializeOutputs
 Get-UserLogAnalyticsWorkspace 
@@ -1127,4 +1227,5 @@ Get-UserLogAnalyticsWorkspaceDataSources
 Get-Output
 
 Set-DeployOutputOnAzure
+Get-GoodbyeMessage
 #endregion

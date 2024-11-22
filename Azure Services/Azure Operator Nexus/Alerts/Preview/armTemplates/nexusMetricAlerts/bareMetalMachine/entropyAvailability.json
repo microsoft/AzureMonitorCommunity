@@ -3,31 +3,31 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "Entropy Availability"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when available bits in node entropy is less than 160."
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "microsoft.networkcloud/baremetalmachines"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "HostEntropyAvailableBits"
     },
     "operator": {
-      "value": "GreaterThan"
+      "value": "LessThan"
     },
     "threshold": {
-      "value": 0
+      "value": 160
     },
     "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": "Microsoft.NetworkCloud/bareMetalMachines"
     },
     "timeAggregation": {
-      "value": "Maximum"
+      "value": "Minimum"
     },
     "windowSize": {
       "value": "PT5M"
@@ -38,12 +38,7 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
-          "operator": "Include",
-          "values": ["*"]
-        },
-        {
-          "name": "Namespace",
+          "name": "Host",
           "operator": "Include",
           "values": ["*"]
         }

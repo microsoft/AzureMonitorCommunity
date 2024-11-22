@@ -3,7 +3,7 @@
 // Description: Percentage of API successfulness over a given amount of time. Variables are datetime
 // Categories: Power Platform Admin Center Analytics
 // Resource types: Dataverse
-// Topic: API
+// Topic: API, Health, Resiliency
 requests
 | where timestamp between (_fromStartTime .. _toEndTime) //datetime
 | summarize CountFailed = countif(success == false), Count = count()

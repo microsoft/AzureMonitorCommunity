@@ -3,28 +3,28 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "alertName": {
-      "value": "Job Status Failed"
+      "value": "Zombie Process Count"
     },
     "alertDescription": {
-      "value": "This alert will trigger when  job status failed"
+      "value": "This alert will trigger when zombie process state is greater than 10."
     },
     "alertSeverity": {
       "value": 3
     },
     "metricNamespace": {
-      "value": "microsoft.networkcloud/clusters"
+      "value": "microsoft.networkcloud/baremetalmachines"
     },
     "metricName": {
-      "value": "KubeJobStatusFailed"
+      "value": "NodeProcessState"
     },
     "operator": {
       "value": "GreaterThan"
     },
     "threshold": {
-      "value": 0
+      "value": 10
     },
     "targetResourceType": {
-      "value": "Microsoft.NetworkCloud/clusters"
+      "value": "Microsoft.NetworkCloud/bareMetalMachines"
     },
     "timeAggregation": {
       "value": "Maximum"
@@ -38,14 +38,14 @@
     "dimensions": {
       "value": [
         {
-          "name": "Job",
+          "name": "Host",
           "operator": "Include",
           "values": ["*"]
         },
         {
-          "name": "Namespace",
+          "name": "State",
           "operator": "Include",
-          "values": ["*"]
+          "values": ["D"]
         }
       ]
     }
