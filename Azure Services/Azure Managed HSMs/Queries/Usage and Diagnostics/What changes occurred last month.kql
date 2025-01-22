@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: What changes occurred last month?
+// Description: Lists all update and patch requests from the last 30 days.
+// Categories: Security
+// Resource types: Azure Key Vault Managed HSMs
+// Topic: Usage and Diagnostics
+
+// MHSM pool diagnostic currently stores logs in AzureDiagnostics table which stores logs for multiple services.
+// Filter on ResourceProvider for logs specific to a service.
+AzureDiagnostics
+| where TimeGenerated > ago(30d) // Time range specified in the query. Overrides time picker in portal.
+| where ResourceProvider =="MICROSOFT.KEYVAULT"
+| where ResourceType == "MANAGEDHSMS"
+| where OperationName == "ManagedHsmPut" or OperationName == "ManagedHsmPatch"
+| sort by TimeGenerated desc
