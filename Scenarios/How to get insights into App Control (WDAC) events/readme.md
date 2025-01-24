@@ -30,7 +30,7 @@ The Data Collection Rule (DCR) leveraged by the Azure Monitor Agent (AMA) will c
 You can deploy the DCR by clicking on the buttons below:<br />
 <a 
 href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzureMonitorCommunity%2Fmaster%2FScenarios%2FHow%2520to%2520get%2520insights%2520into%2520App%2520Control%2520(WDAC)%2520events%2FDCR-WDAC.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton"/></a>
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzureMonitorCommunity%2Fmaster%2FScenarios%2FHow%2520to%2520get%2520insights%2520into%2520App%2520Control%2520(WDAC)%2520events%2FDCR-WDAC.json" target="_blank"><img src="https://aka.ms/deploytoazuregovbutton"/></a>
+<a href="https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzureMonitorCommunity%2Fmaster%2FScenarios%2FHow%2520to%2520get%2520insights%2520into%2520App%2520Control%2520(WDAC)%2520events%2FDCR-WDAC.json" target="_blank"><img src="https://aka.ms/deploytoazuregovbutton"/></a>
 
 ### Deploy Workbook
 
@@ -39,7 +39,7 @@ The Azure Workbook which visualize data collected by the Azure Monitoring Agent 
 <br />
 You can deploy the workbook by clicking on the buttons below:<br />
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzureMonitorCommunity%2Fmaster%2FScenarios%2FHow%2520to%2520get%2520insights%2520into%2520App%2520Control%2520(WDAC)%2520events%2Fworkbook.json" target="_blank"><img src="https://aka.ms/deploytoazurebutton"/></a>
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzureMonitorCommunity%2Fmaster%2FScenarios%2FHow%2520to%2520get%2520insights%2520into%2520App%2520Control%2520(WDAC)%2520events%2Fworkbook.json" target="_blank"><img src="https://aka.ms/deploytoazuregovbutton"/></a>
+<a href="https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FAzureMonitorCommunity%2Fmaster%2FScenarios%2FHow%2520to%2520get%2520insights%2520into%2520App%2520Control%2520(WDAC)%2520events%2Fworkbook.json" target="_blank"><img src="https://aka.ms/deploytoazuregovbutton"/></a>
 
 <br /><br />
 ### Pre-requisites for using the worbook.
