@@ -20,28 +20,25 @@
             "id": "99cc0623-1cf2-42ee-ae97-0e1321843c9d",
             "version": "KqlParameterItem/1.0",
             "name": "Subscriptions",
+            "label": "Subscription(s)",
             "type": 6,
             "isRequired": true,
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "summarize by subscriptionId\r\n| project value = strcat(\"/subscriptions/\", subscriptionId), label = subscriptionId",
+            "query": "resourcecontainers\r\n| where type == \"microsoft.resources/subscriptions\"\r\n| project value = id, label = name, selected = true",
             "crossComponentResources": [
               "value::selected"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
-                "value::1",
                 "value::all"
               ],
               "showDefault": false
             },
-            "defaultValue": "value::1",
+            "defaultValue": "value::all",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources",
-            "value": [
-              "/subscriptions/270601b0-93f6-432f-814f-7189c4d44fb3"
-            ]
+            "resourceType": "microsoft.resourcegraph/resources"
           },
           {
             "id": "e249244e-b556-4ecb-aae0-36843bc5a5a7",
@@ -58,17 +55,16 @@
             ],
             "typeSettings": {
               "additionalResourceOptions": [
-                "value::1",
                 "value::all"
               ],
               "showDefault": false
             },
             "timeContextFromParameter": "TimeRange",
-            "defaultValue": "value::1",
+            "defaultValue": "value::all",
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources",
             "value": [
-              "/subscriptions/270601b0-93f6-432f-814f-7189c4d44fb3/resourceGroups/POSTE-COMMONS-PRODUZIONE-MONITORING-RG/providers/Microsoft.OperationalInsights/workspaces/POSTE-COMMONS-PRODUZIONE-MONITORING-LA"
+              "value::all"
             ]
           },
           {
@@ -128,7 +124,7 @@
               "allowCustom": true
             },
             "value": {
-              "durationMs": 3600000
+              "durationMs": 2592000000
             }
           },
           {
@@ -144,17 +140,17 @@
             "crossComponentResources": [
               "{Workspaces}"
             ],
-            "value": [
-              "miretedc002.rete.poste"
-            ],
             "typeSettings": {
-              "additionalResourceOptions": [],
+              "additionalResourceOptions": [
+                "value::all"
+              ],
               "showDefault": false
             },
             "timeContext": {
               "durationMs": 0
             },
             "timeContextFromParameter": "TimeRange",
+            "defaultValue": "value::all",
             "queryType": 0,
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
