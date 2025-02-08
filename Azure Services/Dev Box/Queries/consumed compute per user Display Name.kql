@@ -1,0 +1,14 @@
+// Author: Microsoft Azure
+// Display name: Consumed compute per user Display Name
+// Description: Display consumed compute per user in hours
+// Categories: Azure Resources
+// Resource types: Dev Box
+// Topic: Dev Box Billing
+
+//required: Need to export SigninLogs of Entra ID to Log Analytics to have the Display Name (Name and Surname)
+DevCenterBillingEventLogs
+| where UsageType == "Compute" 
+| summarize HoursConsumed = sum(Quantity) by UserId
+| join kind=leftouter (SigninLogs | where ConditionalAccessStatus =="success" | distinct UserId, Identity) on UserId
+| project Identity, HoursConsumed
+| render columnchart 
