@@ -1,0 +1,2278 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Azure Monitor Logs Dedicated Clusters#"
+      },
+      "name": "workbookTitle"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "parameters": [
+          {
+            "id": "716cce6c-19c1-4fc3-b727-5aa8d2f40f01",
+            "version": "KqlParameterItem/1.0",
+            "name": "selectedTab",
+            "type": 1,
+            "isRequired": true,
+            "query": "{\"version\":\"1.0.0\",\"content\":\"[\\r\\n\\t{\\\"value\\\" : \\\"GetStarted\\\", \\\"label\\\" : \\\"Get Started\\\", \\\"selected\\\" : true}\\r\\n]\",\"transformers\":null}",
+            "isHiddenWhenLocked": true,
+            "queryType": 8
+          },
+          {
+            "id": "b9a3b372-d7bd-45ce-a7f8-309ddecb7490",
+            "version": "KqlParameterItem/1.0",
+            "name": "AzMonCluSubs",
+            "label": "Subscription(s)",
+            "type": 6,
+            "description": "List of subscriptions containing Azure Monitor Logs Dedicated Cluster resources",
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| distinct subscriptionId\r\n| project value = subscriptionId, label = subscriptionId, selected = true",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "5e8549d6-22aa-47e0-a84b-bf1848cd44cc",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 2592000000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": false
+            }
+          },
+          {
+            "id": "a2e73434-a48e-4a7f-85a8-420fe44f6712",
+            "version": "KqlParameterItem/1.0",
+            "name": "WSSubs",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| distinct subscriptionId\r\n| project value = subscriptionId, label = subscriptionId, selected = true",
+            "crossComponentResources": [
+              "value::selected"
+            ],
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameters"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "2f4297ec-8809-4696-8a4f-66f18a4c1b57",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Get Started",
+            "subTarget": "GetStarted",
+            "style": "link"
+          },
+          {
+            "id": "31cd7deb-cef6-4c7b-b4fa-5ee9fcccb30a",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Azure Monitor Logs Dedicated Cluster",
+            "subTarget": "LaCluster",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "tabs"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "</br>\r\n>## Change Log\r\n>\r\n>| Version | Date | Description |\r\n>| --------| -----| ------------|\r\n>| v1.5.0 | September 2024, 5th | - Moved to GA |\r\n>| v1.4.0 | February 2024, 12th | - Changed the *Subscription(s)* parameter to only lists subscriptions containing  Azure Monitor Dedicated Clusters </br> - Added note to suggest the correct format for custom price </br> - Corrected the text in the chargeback note to call how the chargeback is estimated in case of custom pricing </br> - Added hint.strategy.shuffle to summarize to optimize workbook performance. |\r\n>| v1.3.0 | October 2023, 6th | - Fixed CMK detection logic |\r\n>| v1.2.0 | September 2023, 27th | - Added CMK version version |\r\n>| v1.1.0 | August 2023, 4th | - Fixed visualization for linked resources to open link in Context pane |\r\n>| v1.0.0 | July 2023, 21st | - Initial version |\r\n>\r\n</br>"
+      },
+      "conditionalVisibility": {
+        "parameterName": "_",
+        "comparison": "isEqualTo",
+        "value": "_"
+      },
+      "name": "changeLog"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "></br>\r\n># Get Started info #\r\n>\r\n>-------------------------\r\n>\r\n>Welcome to the ***Azure Monitor Logs Dedicated Clusters*** workbook. This workbook is designed to provide you with an understanding of:\r\n>\r\n>- The number of Azure Monitor Logs Dedicated Cluster per subscription.\r\n>- The number of Azure Monitor Logs Dedicated Cluster per data tier.\r\n>- The count of associated Log Analytics workspaces by Azure Monitor Logs Dedicated Cluster.\r\n>- The configuration detail for each Azure Monitor Logs Dedicated Cluster.\r\n>- The detail of Log Analytics workspaces associated to the selected Azure Monitor Logs Dedicated Cluster.\r\n>- The ingestion trend over the selected time range for the selected Azure Monitor Logs Dedicated Cluster.\r\n>- An estimation of chargeback for each Log Analytics workspace associated to the selected Azure Monitor Logs Dedicated over the selected time range according to the selected price.\r\n>\r\n>\r\n>***NOTE:***\r\n></br>\r\n>Prices are automatically retrieved based on the region and tier of the selected Azure Monitor Logs Dedicated for the selected currency if **Use public price** parameter is set to **Yes** (default setting) using the public API availabe at [Azure Retail Prices overview](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices). These prices reflect prices documented at [https://azure.microsoft.com/en-us/pricing/details/monitor/](https://azure.microsoft.com/en-us/pricing/details/monitor/). If ***Use public price*** parameter is set to **No** then the enter your custom price in the **Current price (per GB/Day)** parameter using the correct format which include the integer and decimals separated by period (example: ***1.09***).\r\n>\r\n>## Prerequistes ##\r\n>\r\n>- One or more [Log Analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment?WT.mc_id=Portal-fx)(s) linked to an Azure Monitor Logs Dedicated Cluster.\r\n>- One or more [Azure Monitor Logs Dedicated Clusters](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-dedicated-clusters?tabs=cli).\r\n>\r\n></br>"
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "GetStarted"
+      },
+      "name": "getStarted"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "General overview",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| summarize hint.strategy = shuffle count() by subscriptionId\r\n| sort by count_ desc",
+              "size": 0,
+              "title": "Count of Dedicated Clusters by subscription",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{AzMonCluSubs}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "47ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "count_",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "11ch"
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "count_",
+                    "label": "Count"
+                  }
+                ]
+              }
+            },
+            "customWidth": "33",
+            "showPin": true,
+            "name": "clusterBySubscription",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Dedicated Clusters by Data Tier\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| project sku\r\n| extend dataTier = strcat(tostring(sku.capacity), \" GB\")\r\n| summarize hint.strategy = shuffle count() by dataTier\r\n\r\n",
+              "size": 0,
+              "title": "Count of Dedicated Clusters by Data Tier",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{AzMonCluSubs}"
+              ],
+              "visualization": "piechart"
+            },
+            "customWidth": "33",
+            "showPin": true,
+            "name": "clusterByDataTier",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ## Count of Associated workspaces by cluster\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| project id, properties\r\n| mv-expand properties.associatedWorkspaces\r\n| summarize hint.strategy = shuffle count() by id",
+              "size": 0,
+              "title": "Count of associated workspace(s) by cluster",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{AzMonCluSubs}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "id",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "id",
+                    "label": "Cluster name"
+                  },
+                  {
+                    "columnId": "count_",
+                    "label": "Count"
+                  }
+                ]
+              }
+            },
+            "customWidth": "33",
+            "showPin": true,
+            "name": "countOfAssociatedWSByCluster",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "resources\r\n| where type == \"microsoft.operationalinsights/clusters\"\r\n| extend resourceGroup = split(id,\"/provider/\")[0]\r\n| extend propertiesJson = parse_json(properties)\r\n| extend createdOn = propertiesJson.createdDate\r\n| extend billingType = propertiesJson.billingType\r\n| extend lastSkuUpdate = propertiesJson.capacityReservationProperties.lastSkuUpdate\r\n| extend tier = sku.capacity\r\n| extend isAvailabilityZoneEnabled = propertiesJson.isAvailabilityZonesEnabled\r\n//| extend useCmk = propertiesJson.isDoubleEncryptionEnabled\r\n| extend useCmk = iif(isnotempty(propertiesJson.keyVaultProperties.keyName), 'true','False')\r\n| extend keyVaultUri = iff(isnotempty(propertiesJson.keyVaultProperties.keyVaultUri), tostring(propertiesJson.keyVaultProperties.keyVaultUri),\"None\")\r\n| extend keyName = iif(isnotempty(propertiesJson.keyVaultProperties.keyName), tostring(propertiesJson.keyVaultProperties.keyName),\"None\")\r\n| extend keyVersion = iif(isnotempty(propertiesJson.keyVaultProperties.keyVersion), tostring(propertiesJson.keyVaultProperties.keyVersion), iif(isnotempty(propertiesJson.keyVaultProperties.keyName), 'Always use latest', 'None'))\r\n| project subscriptionId, id, billingType, createdOn, toint(tier), lastSkuUpdate, resourceGroup, location, isAvailabilityZoneEnabled, useCmk, keyVaultUri, keyName, keyVersion",
+              "size": 0,
+              "title": "Dedicated Cluster(s) - Configuration details",
+              "showRefreshButton": true,
+              "exportedParameters": [
+                {
+                  "fieldName": "location",
+                  "parameterName": "selectedClusterLocation",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "tier",
+                  "parameterName": "selectedClusterCapacity",
+                  "parameterType": 1
+                },
+                {
+                  "fieldName": "id",
+                  "parameterName": "selectedClusterId",
+                  "parameterType": 1
+                }
+              ],
+              "showExportToExcel": true,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{AzMonCluSubs}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "subscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "billingType",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "createdOn",
+                    "formatter": 6,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "26.4286ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "tier",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "15ch"
+                    },
+                    "numberFormat": {
+                      "unit": 39,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "lastSkuUpdate",
+                    "formatter": 6
+                  },
+                  {
+                    "columnMatch": "resourceGroup",
+                    "formatter": 14,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "linkIsContextBlade": true,
+                      "showIcon": true,
+                      "customColumnWidthSetting": "32.5ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "location",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "16ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "isAvailabilityZoneEnabled",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "false",
+                          "representation": "disabled",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "Enabled"
+                        }
+                      ],
+                      "customColumnWidthSetting": "22.1414ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "useCmk",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "False",
+                          "representation": "more",
+                          "text": "{0}{1}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "success",
+                          "text": "True"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 15,
+                    "formatOptions": {
+                      "linkTarget": null,
+                      "showIcon": true
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "subscriptionId"
+                  ],
+                  "expandTopLevel": true
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "subscriptionId",
+                    "label": "Subscription"
+                  },
+                  {
+                    "columnId": "id",
+                    "label": "Dedicated Cluster Name"
+                  },
+                  {
+                    "columnId": "billingType",
+                    "label": "Billing mode"
+                  },
+                  {
+                    "columnId": "createdOn",
+                    "label": "Created on"
+                  },
+                  {
+                    "columnId": "tier",
+                    "label": "Data tier"
+                  },
+                  {
+                    "columnId": "lastSkuUpdate",
+                    "label": "Last sku update"
+                  },
+                  {
+                    "columnId": "resourceGroup",
+                    "label": "Resource group"
+                  },
+                  {
+                    "columnId": "location",
+                    "label": "Location"
+                  },
+                  {
+                    "columnId": "isAvailabilityZoneEnabled",
+                    "label": "Availability Zone"
+                  },
+                  {
+                    "columnId": "useCmk",
+                    "label": "Use CMK"
+                  },
+                  {
+                    "columnId": "keyVaultUri",
+                    "label": "KeyVault Uri"
+                  },
+                  {
+                    "columnId": "keyName",
+                    "label": "Key Name"
+                  },
+                  {
+                    "columnId": "keyVersion",
+                    "label": "Key Version in use"
+                  }
+                ]
+              }
+            },
+            "showPin": true,
+            "name": "dedicatedClustersInfo",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Select one Azure Monitor Logs Dedicated Cluster from the above list to see more details._"
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedClusterId",
+              "comparison": "isEqualTo"
+            },
+            "name": "selectClusterMsg",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "c6d2e119-4a98-4838-a1ab-21277a6aa1b3",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "ClusterName",
+                  "type": 1,
+                  "isRequired": true,
+                  "isGlobal": true,
+                  "isHiddenWhenLocked": true,
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "param",
+                        "resultVal": "selectedClusterId"
+                      }
+                    }
+                  ],
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "02e77516-d2d9-4b3c-9d51-de85adb0b628",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "armRegion",
+                  "type": 1,
+                  "isRequired": true,
+                  "isGlobal": true,
+                  "isHiddenWhenLocked": true,
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "param",
+                        "resultVal": "selectedClusterLocation"
+                      }
+                    }
+                  ],
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "4590e5d2-a173-46a8-82f3-2db7ce5ca3d5",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "pricingTier",
+                  "type": 1,
+                  "isRequired": true,
+                  "isGlobal": true,
+                  "isHiddenWhenLocked": true,
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "param",
+                        "resultVal": "selectedClusterCapacity"
+                      }
+                    }
+                  ],
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "8664ff72-5db8-43a6-b480-e6ae470503c5",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "retailPriceCurrency",
+                  "label": "Currency",
+                  "type": 2,
+                  "isRequired": true,
+                  "isGlobal": true,
+                  "query": "{\"version\":\"1.0.0\",\"content\":\"[\\r\\n\\t{\\\"value\\\":\\\"USD\\\", \\\"label\\\": \\\"(USD) US dollar\\\", \\\"selected\\\": \\\"true\\\"},\\r\\n\\t{\\\"value\\\":\\\"AUD\\\", \\\"label\\\": \\\"(AUD) Australian dollar\\\"},\\r\\n\\t{\\\"value\\\":\\\"BRL\\\", \\\"label\\\": \\\"(BRL) Brazilian real\\\"},\\r\\n\\t{\\\"value\\\":\\\"CAD\\\", \\\"label\\\": \\\"(CAD) Canadian dollar\\\"},\\r\\n\\t{\\\"value\\\":\\\"CHF\\\", \\\"label\\\": \\\"(CHF) Swiss franc\\\"},\\r\\n\\t{\\\"value\\\":\\\"CNY\\\", \\\"label\\\": \\\"(CNY) Chinese yuan\\\"},\\r\\n\\t{\\\"value\\\":\\\"DKK\\\", \\\"label\\\": \\\"(DKK) Danish krone\\\"},\\r\\n\\t{\\\"value\\\":\\\"EUR\\\", \\\"label\\\": \\\"(EUR) Euro\\\"},\\r\\n\\t{\\\"value\\\":\\\"GBP\\\", \\\"label\\\": \\\"(GBP) British pound\\\"},\\r\\n\\t{\\\"value\\\":\\\"INR\\\", \\\"label\\\": \\\"(INR) Indian rupee\\\"},\\r\\n\\t{\\\"value\\\":\\\"JPY\\\", \\\"label\\\": \\\"(JPY) Japanese yen\\\"},\\r\\n\\t{\\\"value\\\":\\\"KRW\\\", \\\"label\\\": \\\"(KRW) Korean won\\\"},\\r\\n\\t{\\\"value\\\":\\\"NOK\\\", \\\"label\\\": \\\"(NOK) Norwegian krone\\\"},\\r\\n\\t{\\\"value\\\":\\\"NZD\\\", \\\"label\\\": \\\"(NZD) New Zealand dollar\\\"},\\r\\n\\t{\\\"value\\\":\\\"RUB\\\", \\\"label\\\": \\\"(RUB) Russian ruble\\\"},\\r\\n\\t{\\\"value\\\":\\\"SEK\\\", \\\"label\\\": \\\"(SEK) Swedish krona\\\"},\\r\\n\\t{\\\"value\\\":\\\"TWD\\\", \\\"label\\\": \\\"(TWD) Taiwan dollar\\\"}\\r\\n]\",\"transformers\":null}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 8,
+                  "value": "EUR"
+                },
+                {
+                  "id": "5ba5389f-697f-4503-87bd-2b8cb638e5f1",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "dailyRetailPriceRaw",
+                  "type": 1,
+                  "isRequired": true,
+                  "isGlobal": true,
+                  "query": "{\"version\":\"CustomEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"url\":\"https://prices.azure.com/api/retail/prices?$filter=armRegionName eq '{armRegion}' and meterName eq '{pricingTier} GB Commitment Tier Capacity Reservation' and productName eq 'Azure Monitor' and serviceName eq 'Azure Monitor'\",\"contentType\":\"text/plain\",\"urlParams\":[{\"key\":\"currencyCode\",\"value\":\"'{retailPriceCurrency}'\"},{\"key\":\"api-version\",\"value\":\"2023-01-01-preview\"}],\"transformers\":[{\"type\":\"jsonpath\",\"settings\":{\"tablePath\":\"$.Items[0].unitPrice\",\"columns\":[]}}]}",
+                  "isHiddenWhenLocked": true,
+                  "queryType": 10
+                },
+                {
+                  "id": "669ca9ab-6450-4ddf-b026-ee267f219bcc",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "usePublicPrice",
+                  "label": "Use public price?",
+                  "type": 2,
+                  "isRequired": true,
+                  "query": "{\"version\":\"1.0.0\",\"content\":\"[\\r\\n\\t{\\\"value\\\":\\\"Yes\\\", \\\"label\\\":\\\"Yes\\\", \\\"Selected\\\": true},\\r\\n\\t{\\\"value\\\":\\\"No\\\", \\\"label\\\":\\\"No\\\", \\\"Selected\\\": false}\\r\\n]\",\"transformers\":null}",
+                  "typeSettings": {
+                    "additionalResourceOptions": [],
+                    "showDefault": false
+                  },
+                  "queryType": 8
+                },
+                {
+                  "id": "c54d633d-9507-4814-ba28-01898d13893d",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "dailyRetailPrice",
+                  "label": "Current price (per GB/Day)",
+                  "type": 1,
+                  "isRequired": true,
+                  "isGlobal": true,
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "leftOperand": "usePublicPrice",
+                        "operator": "==",
+                        "rightValType": "static",
+                        "rightVal": "No",
+                        "resultValType": "static",
+                        "resultVal": "Enter value here"
+                      }
+                    },
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "expression",
+                        "resultVal": "round({dailyRetailPriceRaw}/1000,2)"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "005003e9-a4ba-49b4-99c8-622f7386bfca",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "billableIngestionQuery",
+                  "type": 1,
+                  "isHiddenWhenLocked": true,
+                  "criteriaData": [
+                    {
+                      "criteriaContext": {
+                        "operator": "Default",
+                        "resultValType": "static",
+                        "resultVal": "Usage | where IsBillable == true | summarize hint.strategy = shuffle ingestedData = sum(Quantity)/1000. "
+                      }
+                    }
+                  ]
+                }
+              ],
+              "style": "pills",
+              "doNotRunWhenHidden": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "35",
+            "conditionalVisibility": {
+              "parameterName": "selectedClusterId",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "paramClusterGrp"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "If not using public price, make sure to enter custom price using the <ins>units and decimals separated by period</ins> format. Any other format is not valid.</br>For example, **1.09** is considered a valid format; ***.75*** or ***1,09*** are not considered valid formats and will result in errors during the calculation or result visualization.",
+              "style": "warning"
+            },
+            "customWidth": "65",
+            "conditionalVisibility": {
+              "parameterName": "selectedClusterId",
+              "comparison": "isNotEqualTo",
+              "value": ""
+            },
+            "name": "noteValidCustomPriceFormat"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "crossComponentResources": [
+                      "{AzMonCluSubs}"
+                    ],
+                    "parameters": [
+                      {
+                        "id": "1764cf7c-c8f1-41f0-ad41-6fe92be76296",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS1",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| project wsResourceId",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "6c2c8a77-1495-4972-a3bc-34e81dfc45c8",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS2",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "2f0fedc6-8771-4bc5-b5e8-65f033384a1b",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS3",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n//| project wsResourceId = iff(isempty(rtDummy), \"NONE\", wsResourceId)\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "e2c4e15b-549e-4ef5-b9ce-ac0846c46a29",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS4",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "41a6b2f8-34e6-46f9-9364-e58a0f3d55aa",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS5",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | where wsResourceId !in ({associatedWS4})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "94ea3eab-2bd9-43d7-87e9-198d71331434",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS6",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | where wsResourceId !in ({associatedWS4})\r\n    | where wsResourceId !in ({associatedWS5})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "d1e59f78-b2ae-45c9-a5c4-d346bfa21e22",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS7",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | where wsResourceId !in ({associatedWS4})\r\n    | where wsResourceId !in ({associatedWS5})\r\n    | where wsResourceId !in ({associatedWS6})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "9cf5cd0c-c249-4514-88a9-d454ccc4cc54",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS8",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | where wsResourceId !in ({associatedWS4})\r\n    | where wsResourceId !in ({associatedWS5})\r\n    | where wsResourceId !in ({associatedWS6})\r\n    | where wsResourceId !in ({associatedWS7})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "3652bcb3-edfa-472b-ae21-110ebf2b39ad",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS9",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | where wsResourceId !in ({associatedWS4})\r\n    | where wsResourceId !in ({associatedWS5})\r\n    | where wsResourceId !in ({associatedWS6})\r\n    | where wsResourceId !in ({associatedWS7})\r\n    | where wsResourceId !in ({associatedWS8})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      },
+                      {
+                        "id": "b6e68d12-f8bc-4b02-ace9-d2b96b7ed919",
+                        "version": "KqlParameterItem/1.0",
+                        "name": "associatedWS10",
+                        "type": 5,
+                        "isRequired": true,
+                        "multiSelect": true,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "// ## Associated workspaces\r\ndatatable(ltDummy:int)\r\n[\r\n    int(1)\r\n]\r\n| join kind=leftouter (\r\n    resources\r\n    | where type == 'microsoft.operationalinsights/clusters'\r\n    | where id in ('{ClusterName}')\r\n    | mv-expand properties.associatedWorkspaces\r\n    | extend wsResourceId = tostring(properties_associatedWorkspaces.resourceId)\r\n    | where wsResourceId !in ({associatedWS1})\r\n    | where wsResourceId !in ({associatedWS2})\r\n    | where wsResourceId !in ({associatedWS3})\r\n    | where wsResourceId !in ({associatedWS4})\r\n    | where wsResourceId !in ({associatedWS5})\r\n    | where wsResourceId !in ({associatedWS6})\r\n    | where wsResourceId !in ({associatedWS7})\r\n    | where wsResourceId !in ({associatedWS8})\r\n    | where wsResourceId !in ({associatedWS9})\r\n    | project wsResourceId\r\n    | top 100 by wsResourceId asc\r\n    | extend rtDummy = int(1)\r\n) on $left.ltDummy == $right.rtDummy\r\n| extend paramValue = {associatedWS1}\r\n| project wsResourceId = iff(isempty(rtDummy), paramValue, wsResourceId)",
+                        "crossComponentResources": [
+                          "{AzMonCluSubs}"
+                        ],
+                        "isHiddenWhenLocked": true,
+                        "typeSettings": {
+                          "additionalResourceOptions": [
+                            "value::all"
+                          ],
+                          "showDefault": false
+                        },
+                        "defaultValue": "value::all",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      }
+                    ],
+                    "style": "above",
+                    "doNotRunWhenHidden": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "name": "grp_LaClusterLinkedWorkspaces"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ## Associated workspaces\r\nresources\r\n| where type == 'microsoft.operationalinsights/clusters'\r\n| where id in ('{ClusterName}')\r\n| project id, properties\r\n| mv-expand properties.associatedWorkspaces\r\n| extend workspaceId = properties_associatedWorkspaces.workspaceId\r\n| extend wsSubscription = split(properties_associatedWorkspaces.resourceId,\"/resourceGroups\")[0]\r\n| extend wsResourceGroup = split(properties_associatedWorkspaces.resourceId,\"/providers\")[0]\r\n| extend details = \"Click here for additional details\"\r\n| project id, workspaceId, properties_associatedWorkspaces.resourceId, wsResourceGroup, wsSubscription, properties_associatedWorkspaces.associatedDate,details",
+                    "size": 0,
+                    "title": "Workspace membership for selected cluster",
+                    "showRefreshButton": true,
+                    "showExportToExcel": true,
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{AzMonCluSubs}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "$gen_group",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "linkIsContextBlade": true,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "35ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "Cluster name",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "linkIsContextBlade": true,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "35ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "id",
+                          "formatter": 5,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "linkIsContextBlade": true
+                          }
+                        },
+                        {
+                          "columnMatch": "workspaceId",
+                          "formatter": 5
+                        },
+                        {
+                          "columnMatch": "properties_associatedWorkspaces_resourceId",
+                          "formatter": 13,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "linkIsContextBlade": true,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "32.5ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "wsResourceGroup",
+                          "formatter": 14,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "linkIsContextBlade": true,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "32.5ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "wsSubscription",
+                          "formatter": 15,
+                          "formatOptions": {
+                            "linkTarget": "Resource",
+                            "linkIsContextBlade": true,
+                            "showIcon": true,
+                            "customColumnWidthSetting": "44.5714ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "properties_associatedWorkspaces_associatedDate",
+                          "formatter": 6,
+                          "formatOptions": {
+                            "customColumnWidthSetting": "25.4286ch"
+                          }
+                        },
+                        {
+                          "columnMatch": "details",
+                          "formatter": 5,
+                          "formatOptions": {
+                            "linkTarget": "GenericDetails",
+                            "linkIsContextBlade": true
+                          }
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": [
+                          "id"
+                        ],
+                        "expandTopLevel": true
+                      },
+                      "labelSettings": [
+                        {
+                          "columnId": "id",
+                          "label": "Cluster name"
+                        },
+                        {
+                          "columnId": "properties_associatedWorkspaces_resourceId",
+                          "label": "Workspace"
+                        },
+                        {
+                          "columnId": "wsResourceGroup",
+                          "label": "Resource Group"
+                        },
+                        {
+                          "columnId": "wsSubscription",
+                          "label": "Subscription"
+                        },
+                        {
+                          "columnId": "properties_associatedWorkspaces_associatedDate",
+                          "label": "Associated on"
+                        },
+                        {
+                          "columnId": "details",
+                          "label": "Details"
+                        }
+                      ]
+                    },
+                    "sortBy": []
+                  },
+                  "showPin": true,
+                  "name": "clusterMembership",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif(isempty(tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster1",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS1}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "ingestedData",
+                                "formatter": 0,
+                                "numberFormat": {
+                                  "unit": 0,
+                                  "options": {
+                                    "style": "decimal",
+                                    "maximumFractionDigits": 2
+                                  }
+                                }
+                              }
+                            ],
+                            "rowLimit": 10000
+                          },
+                          "sortBy": [],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster1",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS2}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster2",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS2}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "ingestedData",
+                                "formatter": 0,
+                                "numberFormat": {
+                                  "unit": 0,
+                                  "options": {
+                                    "style": "decimal",
+                                    "maximumFractionDigits": 2
+                                  }
+                                }
+                              }
+                            ],
+                            "rowLimit": 10000
+                          },
+                          "sortBy": [],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster2",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS3}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster3",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS3}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "ingestedData",
+                                "formatter": 0,
+                                "numberFormat": {
+                                  "unit": 0,
+                                  "options": {
+                                    "style": "decimal",
+                                    "maximumFractionDigits": 2
+                                  }
+                                }
+                              }
+                            ],
+                            "rowLimit": 10000
+                          },
+                          "sortBy": [],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster3",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS4}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster4",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS4}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster4",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS5}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster5",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS5}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster5",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS6}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster6",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS6}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster6",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS7}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster7",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS7}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster7",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS8}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster8",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS8}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster8",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS9}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster9",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS9}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster9",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by bin(TimeGenerated, 1d)\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS10}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| sort by TimeGenerated asc",
+                          "size": 0,
+                          "aggregation": 5,
+                          "showAnalytics": true,
+                          "title": "dataFillingByCluster10",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS10}"
+                          ],
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 0,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "showPin": false,
+                        "name": "dataFillingByCluster10",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"fa4195e2-afb4-42ef-897a-b7e36e26327a\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster2\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb670\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster3\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb885\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster4\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb886\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster5\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb887\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster6\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb888\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster7\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb889\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster8\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb88a\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster9\"},{\"id\":\"527723ff-02a1-45fb-baf0-7dd5be8cb88b\",\"mergeType\":\"union\",\"leftTable\":\"dataFillingByCluster1\",\"rightTable\":\"dataFillingByCluster10\"}]}",
+                          "size": 0,
+                          "aggregation": 5,
+                          "title": "{TimeRange:label} ingestion trend for selected cluster",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 7,
+                          "visualization": "barchart",
+                          "gridSettings": {
+                            "sortBy": [
+                              {
+                                "itemKey": "TimeGenerated",
+                                "sortOrder": 1
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "TimeGenerated",
+                              "sortOrder": 1
+                            }
+                          ],
+                          "chartSettings": {
+                            "seriesLabelSettings": [
+                              {
+                                "seriesName": "ingestedData",
+                                "label": "Ingested data"
+                              },
+                              {
+                                "seriesName": "$_thresholdLine",
+                                "label": "Current data tier",
+                                "color": "green"
+                              }
+                            ],
+                            "customThresholdLine": "{selectedClusterCapacity}",
+                            "ySettings": {
+                              "numberFormatSettings": {
+                                "unit": 39,
+                                "options": {
+                                  "style": "decimal",
+                                  "useGrouping": true,
+                                  "maximumFractionDigits": 2
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "showPin": false,
+                        "name": "unionDataFillingByCluster",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      }
+                    ]
+                  },
+                  "name": "grp_FillingByCluster"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "**NOTE:**\r\nBelow you can find an estimation of chargeback based on the following assumptions:\r\n- If public price is used:\r\n\t- Chargeback is calculated based on the public price for the Committment tier and region in the selected currency,\r\n\t- Public price does not include any discount.\r\n- If custom price is used:\r\n\t- Chargeback is calculated based on the custom price for the Committment tier and region in the selected currenc.\r\n- There is no split for missing ingestion, so the calculation could be less than the total.\r\n \r\n\r\nPlease note that this is not official billing but it is for guidance only. Please check ***Cost Management + Billing*** for official invoice.",
+                    "style": "warning"
+                  },
+                  "name": "noteChargeback"
+                },
+                {
+                  "type": 12,
+                  "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif(isempty(tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster1",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS1}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true,
+                            "labelSettings": [
+                              {
+                                "columnId": "clusterName",
+                                "label": "Cluster name"
+                              },
+                              {
+                                "columnId": "ResourceUri",
+                                "label": "Workspace name"
+                              },
+                              {
+                                "columnId": "ingestedData",
+                                "label": "Ingested data"
+                              },
+                              {
+                                "columnId": "Cost",
+                                "label": "Estimated chargeback"
+                              }
+                            ]
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster1",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS2}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster2",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS2}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster2",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS3}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster3",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS3}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster3",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS4}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster4",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS4}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster4",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS5}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster5",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS5}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster5",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS6}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster6",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS6}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster6",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS7}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster7",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS7}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster7",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS8}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster8",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS8}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster8",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS7}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster9",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS9}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster9",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{billableIngestionQuery:value} by ResourceUri\r\n| extend ingestedData = iif((tostring(dynamic([{associatedWS10}])[0]) == tostring(dynamic([{associatedWS1}])[0])),0.0,ingestedData)\r\n| project clusterName = '{ClusterName}', ResourceUri, ingestedData, Cost = ingestedData*{dailyRetailPrice}\r\n",
+                          "size": 0,
+                          "showAnalytics": true,
+                          "title": "dataIngestionAndCostByCluster10",
+                          "timeContextFromParameter": "TimeRange",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 0,
+                          "resourceType": "microsoft.operationalinsights/workspaces",
+                          "crossComponentResources": [
+                            "{associatedWS10}"
+                          ],
+                          "gridSettings": {
+                            "rowLimit": 10000,
+                            "filter": true
+                          }
+                        },
+                        "customWidth": "33",
+                        "conditionalVisibility": {
+                          "parameterName": "_",
+                          "comparison": "isEqualTo",
+                          "value": "_"
+                        },
+                        "name": "dataIngestionAndCostByCluster10",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      },
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"5804a0f6-393a-4390-8a06-68d195e084f9\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster2\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086f4\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster3\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086f5\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster4\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086fa\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster5\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086fb\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster6\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086fc\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster7\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086fd\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster8\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086fe\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster9\"},{\"id\":\"5804a0f6-393a-4390-8a06-68d195e086ff\",\"mergeType\":\"union\",\"leftTable\":\"dataIngestionAndCostByCluster1\",\"rightTable\":\"dataIngestionAndCostByCluster10\"}],\"projectRename\":[{\"originalName\":\"[dataIngestionAndCostByCluster1].clusterName\",\"mergedName\":\"Cluster name\",\"fromId\":\"5804a0f6-393a-4390-8a06-68d195e084f9\"},{\"originalName\":\"[dataIngestionAndCostByCluster1].ResourceUri\",\"mergedName\":\"ResourceUri\",\"fromId\":\"5804a0f6-393a-4390-8a06-68d195e084f9\"},{\"originalName\":\"[dataIngestionAndCostByCluster1].ingestedData\",\"mergedName\":\"Ingested data\",\"fromId\":\"5804a0f6-393a-4390-8a06-68d195e084f9\"},{\"originalName\":\"[dataIngestionAndCostByCluster1].Cost\",\"mergedName\":\"Chargeback estimation\",\"fromId\":\"5804a0f6-393a-4390-8a06-68d195e084f9\"},{\"originalName\":\"[dataIngestionAndCostByCluster2].clusterName\",\"mergedName\":\"clusterName\",\"fromId\":\"5804a0f6-393a-4390-8a06-68d195e084f9\"},{\"originalName\":\"[dataIngestionAndCostByCluster2].ingestedData\",\"mergedName\":\"ingestedData\",\"fromId\":\"5804a0f6-393a-4390-8a06-68d195e084f9\"},{\"originalName\":\"clusterName\",\"mergedName\":\"clusterName\",\"fromId\":\"unknown\"},{\"originalName\":\"ResourceUri\",\"mergedName\":\"ResourceUri\",\"fromId\":\"unknown\"},{\"originalName\":\"ingestedData\",\"mergedName\":\"ingestedData\",\"fromId\":\"unknown\"},{\"originalName\":\"Cost\",\"mergedName\":\"Cost\",\"fromId\":\"unknown\"},{\"originalName\":\"[Added column]\",\"mergedName\":\"Investigate ingestion\",\"fromId\":null,\"isNewItem\":true,\"newItemData\":[{\"criteriaContext\":{\"operator\":\"Default\",\"rightValType\":\"column\",\"resultValType\":\"static\",\"resultVal\":\"Click here to investigate on ingestion\"}}]}]}",
+                          "size": 0,
+                          "title": "{TimeRange:label} ingestion and estimated chargeback for selected cluster",
+                          "showRefreshButton": true,
+                          "showExportToExcel": true,
+                          "queryType": 7,
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "$gen_group",
+                                "formatter": 13,
+                                "formatOptions": {
+                                  "linkTarget": "Resource",
+                                  "linkIsContextBlade": true,
+                                  "showIcon": true
+                                }
+                              },
+                              {
+                                "columnMatch": "Cluster name",
+                                "formatter": 13,
+                                "formatOptions": {
+                                  "linkTarget": "Resource",
+                                  "linkIsContextBlade": true,
+                                  "showIcon": true
+                                }
+                              },
+                              {
+                                "columnMatch": "clusterName",
+                                "formatter": 5
+                              },
+                              {
+                                "columnMatch": "ResourceUri",
+                                "formatter": 13,
+                                "formatOptions": {
+                                  "linkTarget": "Resource",
+                                  "linkIsContextBlade": true,
+                                  "showIcon": true
+                                }
+                              },
+                              {
+                                "columnMatch": "ingestedData",
+                                "formatter": 0,
+                                "numberFormat": {
+                                  "unit": 39,
+                                  "options": {
+                                    "style": "decimal",
+                                    "maximumFractionDigits": 2
+                                  }
+                                }
+                              },
+                              {
+                                "columnMatch": "Cost",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "colors",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "Default",
+                                      "thresholdValue": null,
+                                      "text": "{0} {retailPriceCurrency}"
+                                    }
+                                  ]
+                                },
+                                "numberFormat": {
+                                  "unit": 0,
+                                  "options": {
+                                    "style": "decimal",
+                                    "maximumFractionDigits": 2
+                                  }
+                                }
+                              },
+                              {
+                                "columnMatch": "Investigate ingestion",
+                                "formatter": 13,
+                                "formatOptions": {
+                                  "linkColumn": "ResourceUri",
+                                  "linkTarget": "Resource",
+                                  "subTarget": "Insights",
+                                  "linkIsContextBlade": true,
+                                  "showIcon": true
+                                }
+                              },
+                              {
+                                "columnMatch": "Group",
+                                "formatter": 13,
+                                "formatOptions": {
+                                  "linkTarget": "Resource",
+                                  "linkIsContextBlade": true,
+                                  "showIcon": true
+                                }
+                              }
+                            ],
+                            "rowLimit": 10000,
+                            "filter": true,
+                            "hierarchySettings": {
+                              "treeType": 1,
+                              "groupBy": [
+                                "clusterName"
+                              ],
+                              "expandTopLevel": true
+                            },
+                            "sortBy": [
+                              {
+                                "itemKey": "$gen_link_ResourceUri_2",
+                                "sortOrder": 1
+                              }
+                            ],
+                            "labelSettings": [
+                              {
+                                "columnId": "clusterName",
+                                "label": "Cluster name"
+                              },
+                              {
+                                "columnId": "ResourceUri",
+                                "label": "Workspace name"
+                              },
+                              {
+                                "columnId": "ingestedData",
+                                "label": "Ingested data"
+                              },
+                              {
+                                "columnId": "Cost",
+                                "label": "Estimated chargeback"
+                              }
+                            ]
+                          },
+                          "sortBy": [
+                            {
+                              "itemKey": "$gen_link_ResourceUri_2",
+                              "sortOrder": 1
+                            }
+                          ]
+                        },
+                        "showPin": false,
+                        "name": "unionDataIngestionAndCostByCluster",
+                        "styleSettings": {
+                          "showBorder": true
+                        }
+                      }
+                    ]
+                  },
+                  "name": "grp_IngestionAndCostChargebackByCluster"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "selectedClusterId",
+              "comparison": "isNotEqualTo",
+              "value": ""
+            },
+            "name": "grp_LaClusterDetails"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "LaCluster"
+      },
+      "name": "grp_LaClusterOverview",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
