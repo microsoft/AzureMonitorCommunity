@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Are there any failures?
+// Description: Count of failed MHSM pool requests by status code.
+// Categories: Security
+// Resource types: Azure Key Vault Managed HSMs
+// Topic: Usage and Diagnostics
+
+AzureDiagnostics
+| where ResourceProvider =="MICROSOFT.KEYVAULT"
+| where ResourceType == "MANAGEDHSMS"
+| where httpStatusCode_d >= 300 and not(OperationName == "Authentication" and httpStatusCode_d == 401)
+| summarize count() by requestUri_s, ResultSignature, _ResourceId
+// ResultSignature contains HTTP status, e.g. "OK" or "Forbidden"
+// httpStatusCode_d contains HTTP status code returned by the request (e.g.  200, 300 or 401)
+// requestUri_s contains the URI of the request

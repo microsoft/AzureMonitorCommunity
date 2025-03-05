@@ -7,6 +7,7 @@
 | ------------- |-----| -----|
 | v1.0|2024-04| first Version, publish DCR and Workbook |
 | v1.1|2024-09| Upgraded Visualizations for File events. Updated Documentation|
+| v1.2|2025-01| Upgraded workbook to handle SHA1 & SHA256 Hashes|
 
 <br />
 
