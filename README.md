@@ -1,7 +1,3 @@
-# Azure Monitor Community
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-
-This public repo serves the Azure Monitor community. It contains log queries, workbooks, and alerts, shared to help Azure Monitor users make the most of it.
 
 ## Contents
 **Queries** - copy and paste queries to your Log Analytics environment, or run on the [Log Analytics Demo Environment](https://portal.loganalytics.io/demo)
