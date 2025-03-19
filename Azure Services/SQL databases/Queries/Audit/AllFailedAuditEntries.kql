@@ -1,0 +1,15 @@
+AzureDiagnostics
+| where Category =~ "SQLSecurityAuditEvents"
+| where succeeded_s == "false"
+| extend additional_information_xml=parse_xml(additional_information_s)
+| extend failure_reason=additional_information_xml.batch_information.failure_reason
+| project    
+    session_server_principal_name_s,
+    statement_s,
+    TimeGenerated,
+    action_name_s,
+    session_id_d,
+    application_name_s,
+    failure_reason,
+    client_ip_s
+| sort by TimeGenerated desc 
