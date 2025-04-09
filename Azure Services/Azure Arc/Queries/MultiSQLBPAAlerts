@@ -1,0 +1,22 @@
+//Modified query to find all Windows SQL server Best Practice Assessment Alerts in a single query
+//Updated by Lee Schuenemeyer Principal Technical Specialist Microsoft Enterprise HPSI
+let timeSpan = toscalar(workbookParameter("TimeRange", "7d"));
+let selectedCategories = dynamic([]);
+let selectedTotSev = dynamic([]);
+SqlAssessment_CL
+| extend asmt = parse_csv(RawData)
+| extend AsmtId=tostring(asmt[1]), CheckId=tostring(asmt[2]), DisplayString=asmt[3], Description=tostring(asmt[4]), HelpLink=asmt[5], TargetType=case(asmt[6] == 1, "Server", asmt[6] == 2, "Database", ""), TargetName=tostring(asmt[7]),
+Severity=case(asmt[8] == 30, "High", asmt[8] == 20, "Medium", asmt[8] == 10, "Low", asmt[8] == 0, "Information", asmt[8] == 1, "Warning", asmt[8] == 2, "Critical", "Passed"), Message=tostring(asmt[9]), TagsArr=split(tostring(asmt[10]), ","), Sev = toint(asmt[8])
+| where (Sev >= 0 and array_length(selectedTotSev) == 0 or Sev in (selectedTotSev))
+| project
+TargetType,
+TargetName,
+Severity,
+Message,
+Tags=strcat_array(array_slice(TagsArr, 1, -1), ','),
+CheckId,
+Description,
+HelpLink = tostring(HelpLink),
+SeverityCode = toint(Sev)
+| order by SeverityCode desc, TargetType desc, TargetName asc
+| project-away SeverityCode
