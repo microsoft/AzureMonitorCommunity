@@ -1,0 +1,3 @@
+AzureMetrics
+| take 100
+| project TimeGenerated, MetricName, Total, Count, Maximum, Minimum, Average, TimeGrain, UnitName
