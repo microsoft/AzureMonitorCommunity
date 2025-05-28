@@ -1,0 +1,15 @@
+// Author: Microsoft Azure
+// Display name: Blocking WAF rules
+// Description: List all WAF rules hits related to blocked requests.
+// Categories: Network
+// Resource types: Application gateways
+// Topic: Alerts
+
+AGWFirewallLogs
+| where TransactionId in (
+   AGWFirewallLogs
+   | where Action == "Blocked"
+   | distinct TransactionId
+)
+| where RuleId != 949110
+| project TransactionId, TimeGenerated, ClientIp, RequestUri, RuleId, Message, DetailedMessage, DetailedData
