@@ -1,0 +1,20 @@
+// Author: Jeroen-VdB
+// Display name: List container logs by container names
+// Description: View container logs of the provided container names.
+// Categories: Containers
+// Resource types: Kubernetes services
+// Solutions: ContainerInsights
+// Topic: Container Logs
+
+
+datatable(ContainerName:string)["my-container-name-1","my-container-name-2"]
+| join kind=innerunique (
+    KubePodInventory
+    | extend ContainerName = tostring(split(ContainerName, '/')[1])
+    | summarize arg_max(TimeGenerated, *) by ContainerName)
+on ContainerName
+| project ContainerID
+| join kind=innerunique (
+    ContainerLog)
+on ContainerID
+| order by TimeGenerated desc
