@@ -1,0 +1,197 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dataCollectionRuleName": {
+      "type": "string",
+      "defaultValue": "otlpDcr",
+      "metadata": { "description": "Name of the Data Collection Rule" }
+    },
+    "dataCollectionEndpointName": {
+      "type": "string",
+      "defaultValue": "otlpDce",
+      "metadata": { "description": "Name of the Data Collection Endpoint" }
+    },
+    "location": {
+      "type": "string",
+      //"defaultValue": "[resourceGroup().location]",
+      "metadata": { "description": "Location for the Data Collection resources" }
+    },
+    "applicationInsightsResourceId": {
+      "type": "string",
+      "metadata": { "description": "Resource ID of the Application Insights instance" }
+    },
+    "azureMonitorWorkspaceResourceId": {
+      "type": "string",
+      "metadata": { "description": "Resource ID of the Azure Monitor Workspace" }
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string",
+      "metadata": { "description": "Resource ID of the Log Analytics Workspace" }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Insights/dataCollectionEndpoints",
+      "apiVersion": "2024-03-11",
+      "name": "[parameters('dataCollectionEndpointName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "description": "Data Collection Endpoint for OTLP telemetry",
+        "networkAcls": {
+          "publicNetworkAccess": "Enabled"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Insights/dataCollectionRules",
+      "apiVersion": "2024-03-11",
+      "name": "[parameters('dataCollectionRuleName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]"
+      ],
+      "properties": {
+        "description": "DCR to ingest OTLP telemetry via AMA (dataSources) or sent directly with OTel Collector (directDataSources)",
+        "dataCollectionEndpointId": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]",
+        "references": {
+          "applicationInsights": [
+            {
+              "resourceId": "[parameters('applicationInsightsResourceId')]",
+              "name": "applicationInsightsResource"
+            }
+          ]
+        },
+        "dataSources": {
+          "otelMetrics": [
+            {
+              "streams": [
+                "Custom-Metrics-Otel"
+              ],
+              "enrichWithResourceAttributes": ["*"],
+              "enrichWithReference": "applicationInsightsResource",
+              "name": "otelMetricsDataSource"
+            }
+          ],
+          "otelLogs": [
+            {
+              "streams": [
+                "Microsoft-OTel-Logs"
+              ],
+              "enrichWithResourceAttributes": ["*"],
+              "enrichWithReference": "applicationInsightsResource",
+              "replaceResourceIdWithReference": true,
+              "name": "otelLogsDataSource"
+            }
+          ],
+          "otelTraces": [
+            {
+              "streams": [
+                "Microsoft-OTel-Traces-Spans",
+                "Microsoft-OTel-Traces-Events",
+                "Microsoft-OTel-Traces-Resources"
+              ],
+              "enrichWithResourceAttributes": ["*"],
+              "enrichWithReference": "applicationInsightsResource",
+              "replaceResourceIdWithReference": true,
+              "name": "otelTracesDataSource"
+            }
+          ]
+        },
+        "directDataSources": {
+          "otelMetrics": [
+            {
+              "streams": [
+                "Custom-Metrics-Otel"
+              ],
+              "enrichWithResourceAttributes": ["*"],
+              "enrichWithReference": "applicationInsightsResource",
+              "name": "otelMetricsDataSourceDirect"
+            }
+          ],
+          "otelLogs": [
+            {
+              "streams": ["Microsoft-OTel-Logs"],
+              "enrichWithResourceAttributes": ["*"],
+              "enrichWithReference": "applicationInsightsResource",
+              "replaceResourceIdWithReference": true,
+              "name": "otelLogsDataSourceDirect"
+            }
+          ],
+          "otelTraces": [
+            {
+              "streams": [
+                "Microsoft-OTel-Traces-Spans",
+                "Microsoft-OTel-Traces-Events",
+                "Microsoft-OTel-Traces-Resources"
+              ],
+              "enrichWithResourceAttributes": ["*"],
+              "enrichWithReference": "applicationInsightsResource",
+              "replaceResourceIdWithReference": true,
+              "name": "otelTracesDataSourceDirect"
+            }
+          ]
+        },
+        "destinations": {
+          "monitoringAccounts": [
+            {
+              "accountResourceId": "[parameters('azureMonitorWorkspaceResourceId')]",
+              "name": "myAMW"
+            }
+          ],
+          "logAnalytics": [
+            {
+              "workspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+              "name": "myLAW"
+            }
+          ]
+        },
+        "dataFlows": [
+          {
+            "streams": [
+              "Custom-Metrics-OTEL"
+            ],
+            "destinations": [
+              "myAMW"
+            ]
+          },
+          {
+            "streams": [
+              "Microsoft-OTel-Logs",
+              "Microsoft-OTel-Traces-Spans",
+              "Microsoft-OTel-Traces-Events",
+              "Microsoft-OTel-Traces-Resources"
+            ],
+            "destinations": [
+              "myLAW"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "dataCollectionEndpointId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]"
+    },
+    "dataCollectionRuleId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Insights/dataCollectionRules', parameters('dataCollectionRuleName'))]"
+    },
+    "dataCollectionRuleImmutableId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionRules', parameters('dataCollectionRuleName')), '2024-03-11', 'full').properties.immutableId]"
+    },
+    "dataCollectionEndpointLogsIngestion": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName')), '2024-03-11', 'full').properties.logsIngestion.endpoint]"
+    },
+    "dataCollectionEndpointMetricsIngestion": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName')), '2024-03-11', 'full').properties.metricsIngestion.endpoint]"
+    }
+  }
+}
+
