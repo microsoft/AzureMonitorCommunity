@@ -1,0 +1,41 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:4317
+      http:
+        endpoint: localhost:4318
+
+processors:
+  batch:
+
+extensions:
+  azureauth/monitor:
+    use_default: true
+    scopes:
+      - https://monitor.azure.com/.default
+
+exporters:
+  otlphttp/azuremonitor:
+    traces_endpoint: PASTE TRACES ENDPOINT HERE
+    logs_endpoint: PASTE LOGS ENDPOINT HERE
+    metrics_endpoint: PASTE METRICS ENDPOINT HERE
+    auth:
+      authenticator: azureauth/monitor
+
+service:
+  extensions:
+    - azureauth/monitor
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/azuremonitor]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/azuremonitor]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/azuremonitor]
