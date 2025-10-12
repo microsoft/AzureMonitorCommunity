@@ -57,3 +57,13 @@ Use [Issues](https://github.com/microsoft/AzureMonitorCommunity/issues) to call 
 
 ## Redistribution
 Upon redistribution of this repo, please be respectful of the readers and authors of this documentation, and include a link to the [original repo master branch](https://github.com/microsoft/AzureMonitorCommunity).
+
+## Restoring Deleted Built-in Queries in Microsoft Sentinel
+
+If you have accidentally deleted a built-in query in Microsoft Sentinel, you can restore it by following these steps:
+
+1. Navigate to the Content Hub in Microsoft Sentinel.
+2. Search for the solution pack that contains the deleted query.
+3. Reinstall the solution pack to restore the deleted query.
+
+By following these steps, you can restore the deleted built-in query 'Adding credentials to legitimate OAuth Applications' and any other queries that may have been accidentally deleted.
