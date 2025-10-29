@@ -151,7 +151,7 @@
       "name": "Operational Metrics",
       "content": {
         "json": "",
-        "title": "Operational Metrics",
+        "title": "Overview Metrics",
         "showViewButton": false
       },
       "styleSettings": {
