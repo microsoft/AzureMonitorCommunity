@@ -17,7 +17,7 @@
             "description": "Select the time range for analysis",
             "isRequired": true,
             "value": {
-              "durationMs": 2592000000
+              "durationMs": 5184000000
             },
             "typeSettings": {
               "selectableValues": [
@@ -524,7 +524,8 @@
             "numberFormat": {
               "unit": 25,
               "options": {
-                "style": "decimal"
+                "style": "decimal",
+                "maximumFractionDigits": 1
               }
             }
           },
@@ -944,7 +945,7 @@
   "styleSettings": {
     "paddingStyle": "standard",
     "spacingStyle": "standard"
-  },  
+  },
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json",
   "workbookPin": ""
 }
