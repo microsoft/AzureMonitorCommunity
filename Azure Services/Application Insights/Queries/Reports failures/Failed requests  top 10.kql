@@ -5,8 +5,8 @@
 // Resource types: Application Insights
 // Topic: Reports failures
 
-AppRequests
-| where Success == false
-| summarize failedCount=sum(ItemCount) by Name
+requests
+| where success == false
+| summarize failedCount=sum(itemCount) by name
 | top 10 by failedCount desc
 | render barchart
