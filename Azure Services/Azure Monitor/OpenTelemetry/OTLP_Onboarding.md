@@ -167,6 +167,36 @@ assign it the Monitor Metrics Publisher role. You can skip ahead to
 If you are using compute platforms outside of Azure, use the [Azure Auth
 Extension for OTel Collector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/azureauthextension) to configure authentication for ingestion to Azure Monitor.
 
+Set up auth between OTel Collector and the DCR:
+ 
+Identify which Entra identity is being used. It could be the default system-assigned managed identity of the VM,a user-assigned identity, a workload or an app registration id.
+ 
+Enter the clientId of that identity into the OtelCollector configuration under extensions -> azureauth/monitor -> managed_identity -> client_id. 
+
+For system-assigned identity leave, managed_identity blank (managed_identity: {})
+
+Note this approach may not work if there are multiples identities available and it's not clear which one to include in the token.
+
+Example
+```
+data:
+  relay: |
+    exporters:
+      otlphttp/azuremonitor:
+        traces_endpoint: "https://<traces_endpoint>/v1/traces"
+        logs_endpoint: "https://<traces_endpoint>/v1/logs"
+        metrics_endpoint: "https://<traces_endpoint>/v1/metrics"
+        auth:
+          authenticator: azureauth/monitor
+    extensions:
+      azureauth/monitor:
+        #managed_identity: {}
+        managed_identity:
+          client_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        scopes:
+          - https://monitor.azure.com/.default
+```
+
 #### Assign permissions to your DCR
 
 The idenity or application you set up for Entra authentication needs to be given permission to the DCR you set up earlier. This will allow your OTel instrumented application, when
