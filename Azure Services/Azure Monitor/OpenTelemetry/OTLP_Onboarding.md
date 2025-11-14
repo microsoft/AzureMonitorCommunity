@@ -44,13 +44,13 @@ With this option, all required Azure artifacts will be automatically created and
 
 Create a new Application Insights resource and ensure that the **Enable OTLP support** check box selected.
 
-[Create new Application Insights Resource]
+![Create new Application Insights Resource](./images/create-app-insights-resource.png)
 
 Navigate to the Overview page of the Application
 Insights resource (thatwas just created) to retrieve the OTLP Connection
 Info as shown below.
 
-[OTLP Connection Info]
+![OTLP Connection Info](./images/otlp-connection-info.png)
 
 Copy the link to the DCR from the screen above. Also copy the endpoint
 URLs, you will need them if you are using OTel Collector. You can now skip
@@ -125,7 +125,7 @@ higher. On Linux, it is **1.37.0** or higher.
 
 #### Set up DCR Associations
 
-Go to the DCR you created with either option inthe [Setup OTLP Collection 
+Go to the DCR you created with either option in the [Setup OTLP Collection 
 step](#set-up-otlp-signal-collection). Follow the instructions here to simply set up the associations
 linking the DCR you created with either option above to the VM/VMSS/Arc
 compute resource(s) that are running the OTel SDK instrumented
@@ -162,7 +162,7 @@ with authentication and the endpoint URLs for metrics, logs and traces.
 Note: If your OTel SDK instrumented application is running on Azure
 VM/VMSS, enable the system assigned identity and
 assign it the Monitor Metrics Publisher role. You can skip ahead to
-[configuring the OTel Collector](#configure-otel-collector).
+[Configuring the OTel Collector](#configure-otel-collector).
 
 If you are using compute platforms outside of Azure, use the [Azure Auth
 Extension for OTel Collector](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/azureauthextension) to configure authentication for ingestion to Azure Monitor.
@@ -175,24 +175,22 @@ new DCR. 
 
 1.  Go to your OTel DCR in the Azure Portal, select **Access Control (IAM)**, and  **Add Role Assignment**. 
 
-[Screenshot that shows adding a custom role assignment to DCR] 
+![Screenshot that shows adding a custom role assignment to DCR](./images/data-collection-rule-access-control.png) 
 
 2.  Select Monitoring Metrics Publisher and select Next.  
 
-
-[Screenshot that shows selecting a role for DCR role assignment] 
+![Screenshot that shows selecting a role for DCR role assignment](./images/role-assignment-metrics-publisher.png) 
 
 3.  Select User, Group, or Service principal for Assign Access to and
     choose Select members. Select the application that you created and
     choose Select. 
 
-[Screenshot that shows selecting members for the DCR role assignment] 
+![Screenshot that shows selecting members for the DCR role assignment](./images/role-assignment-select-members.png) 
 
 4.  Select Review + Assign and verify the details before you save your
     role assignment. 
 
-
-[Screenshot that shows saving the DCR role assignment]
+![Screenshot that shows saving the DCR role assignment](./images/role-assignment-review-assign.png)
 
 #### Craft the URLs
 
@@ -256,4 +254,16 @@ https://\<Logs-DCE-domain>/datacollectionRules/\<dcr-immutableId>/streams/opente
 Here’s a [sample OTel Collector configuration file](https://github.com/microsoft/AzureMonitorCommunity/blob/master/Azure%20Services/Azure%20Monitor/OpenTelemetry/SampleOTelCollectorConfig.yaml)
 
 
+## Limitations
 
+Regions not supported in Preview:
+- North Central US
+- Qatar Central
+- Poland Central
+- New Zealand North
+- Malaysia West
+- Indonesia Central
+- West India
+- Chile Central
+- Mexico Central
+- Austria East
