@@ -1,0 +1,10 @@
+// Author: Ali Youssefi
+// Display name: Display most used topics by agent in Copilot Studio
+// Description: Summary of most used topics displaying the topic name, number of invocations by agent.
+// Categories: Power Platform
+// Resource types: Copilot Studio
+// Topic:  Usage Analytics
+customEvents
+| where name == 'TopicStart'
+| summarize NumOfTopic = count() by tostring(customDimensions.TopicName), cloud_RoleInstance
+| where NumOfTopic > 1
