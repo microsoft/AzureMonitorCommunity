@@ -84,7 +84,7 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "Resources\r\n| where type == \"microsoft.network/virtualnetworkgateways\" and properties.gatewayType == \"ExpressRoute\"",
+            "query": "Resources\r\n| where type == \"microsoft.network/expressroutegateways\"",
             "crossComponentResources": [
               "value::all"
             ],
@@ -374,7 +374,7 @@
               "version": "MetricsItem/2.0",
               "size": 0,
               "chartType": -1,
-              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "resourceType": "microsoft.network/expressroutegateways",
               "metricScope": 0,
               "resourceParameter": "ERGateway",
               "resourceIds": [
@@ -386,8 +386,8 @@
               },
               "metrics": [
                 {
-                  "namespace": "microsoft.network/virtualnetworkgateways",
-                  "metric": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
+                  "namespace": "microsoft.network/expressroutegateways",
+                  "metric": "microsoft.network/expressroutegateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
                   "aggregation": 3
                 }
               ],
@@ -432,11 +432,11 @@
                     }
                   },
                   {
-                    "columnMatch": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer Timeline",
+                    "columnMatch": "microsoft.network/expressroutegateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer Timeline",
                     "formatter": 5
                   },
                   {
-                    "columnMatch": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
+                    "columnMatch": "microsoft.network/expressroutegateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
                     "formatter": 1,
                     "numberFormat": {
                       "unit": 0,
@@ -447,11 +447,11 @@
                 "rowLimit": 10000,
                 "labelSettings": [
                   {
-                    "columnId": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
+                    "columnId": "microsoft.network/expressroutegateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer",
                     "label": "Count Of Routes Advertised to Peer (Max)"
                   },
                   {
-                    "columnId": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer Timeline",
+                    "columnId": "microsoft.network/expressroutegateways-Scalability-ExpressRouteGatewayCountOfRoutesAdvertisedToPeer Timeline",
                     "label": "Count Of Routes Advertised to Peer Timeline"
                   }
                 ]
@@ -474,7 +474,7 @@
               "version": "MetricsItem/2.0",
               "size": 0,
               "chartType": -1,
-              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "resourceType": "microsoft.network/expressroutegateways",
               "metricScope": 0,
               "resourceParameter": "ERGateway",
               "resourceIds": [
@@ -486,8 +486,8 @@
               },
               "metrics": [
                 {
-                  "namespace": "microsoft.network/virtualnetworkgateways",
-                  "metric": "microsoft.network/virtualnetworkgateways-Scalability-ExpressRouteGatewayCountOfRoutesLearnedFromPeer",
+                  "namespace": "microsoft.network/expressroutegateways",
+                  "metric": "microsoft.network/expressroutegateways-Scalability-ExpressRouteGatewayCountOfRoutesLearnedFromPeer",
                   "aggregation": 3
                 }
               ],
@@ -932,7 +932,7 @@
               "version": "MetricsItem/2.0",
               "size": 0,
               "chartType": 2,
-              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "resourceType": "microsoft.network/expressroutegateways",
               "metricScope": 0,
               "resourceParameter": "ERGateway",
               "resourceIds": [
@@ -944,8 +944,8 @@
               },
               "metrics": [
                 {
-                  "namespace": "microsoft.network/virtualnetworkgateways",
-                  "metric": "microsoft.network/virtualnetworkgateways-Performance-ExpressRouteGatewayCpuUtilization",
+                  "namespace": "microsoft.network/expressroutegateways",
+                  "metric": "microsoft.network/expressroutegateways-Performance-ExpressRouteGatewayCpuUtilization",
                   "aggregation": 3,
                   "splitBy": null
                 }
@@ -977,7 +977,7 @@
               "version": "MetricsItem/2.0",
               "size": 0,
               "chartType": 2,
-              "resourceType": "microsoft.network/virtualnetworkgateways",
+              "resourceType": "microsoft.network/expressroutegateways",
               "metricScope": 0,
               "resourceParameter": "ERGateway",
               "resourceIds": [
@@ -989,8 +989,8 @@
               },
               "metrics": [
                 {
-                  "namespace": "microsoft.network/virtualnetworkgateways",
-                  "metric": "microsoft.network/virtualnetworkgateways-Performance-ExpressRouteGatewayPacketsPerSecond",
+                  "namespace": "microsoft.network/expressroutegateways",
+                  "metric": "microsoft.network/expressroutegateways-Performance-ExpressRouteGatewayPacketsPerSecond",
                   "aggregation": 3,
                   "splitBy": null
                 }
