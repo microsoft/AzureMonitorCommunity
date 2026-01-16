@@ -1,0 +1,65 @@
+// Author: fgravato
+// Display name: High Severity Mobile Threats
+// Description: Detects high severity mobile threats from Lookout Mobile Risk API v2 with enhanced threat intelligence, risk scoring, and device context.
+// Categories: Security
+// Resource types: Log Analytics workspaces
+// Topic: Security
+
+LookoutEvents
+| where EventType == "THREAT"
+| where ThreatSeverity in ("CRITICAL", "HIGH")
+| where ThreatAction == "DETECTED"
+| where ThreatStatus in ("OPEN", "ACTIVE")
+| extend 
+    ThreatRiskScore = case(
+        ThreatSeverity == "CRITICAL", 10,
+        ThreatSeverity == "HIGH", 8,
+        ThreatSeverity == "MEDIUM", 5,
+        ThreatSeverity == "LOW", 2,
+        1
+    ),
+    DeviceRiskLevel = case(
+        DeviceSecurityStatus == "THREATS_HIGH", "High",
+        DeviceSecurityStatus == "THREATS_MEDIUM", "Medium",
+        DeviceSecurityStatus == "THREATS_LOW", "Low",
+        "Unknown"
+    ),
+    ThreatCategory = case(
+        ThreatClassifications has "MALWARE", "Malware",
+        ThreatClassifications has "PHISHING", "Phishing", 
+        ThreatClassifications has "SPYWARE", "Spyware",
+        ThreatClassifications has "TROJAN", "Trojan",
+        ThreatClassifications has "ADWARE", "Adware",
+        "Other"
+    )
+| extend ComplianceImpact = case(
+    DeviceComplianceStatus == "Non-Compliant" and ThreatRiskScore >= 8, "Critical",
+    DeviceComplianceStatus == "Non-Compliant" and ThreatRiskScore >= 5, "High", 
+    DeviceComplianceStatus == "Partial" and ThreatRiskScore >= 8, "High",
+    DeviceComplianceStatus == "Partial" and ThreatRiskScore >= 5, "Medium",
+    "Low"
+)
+| project
+    TimeGenerated,
+    ThreatId,
+    ThreatType,
+    ThreatSeverity,
+    ThreatRiskScore,
+    ThreatCategory,
+    ThreatClassifications,
+    ThreatStatus,
+    ThreatDescription,
+    ThreatApplicationName,
+    ThreatPackageName,
+    ThreatPackageSha,
+    DeviceGuid,
+    DevicePlatform,
+    DeviceOSVersion,
+    DeviceManufacturer,
+    DeviceModel,
+    DeviceEmailAddress,
+    DeviceSecurityStatus,
+    DeviceRiskLevel,
+    DeviceComplianceStatus,
+    ComplianceImpact
+| order by ThreatRiskScore desc, TimeGenerated desc

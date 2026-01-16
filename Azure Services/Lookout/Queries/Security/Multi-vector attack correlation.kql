@@ -1,0 +1,53 @@
+// Author: fgravato
+// Display name: Multi-Vector Attack Correlation
+// Description: Identifies devices experiencing multiple threat types within 24 hours, indicating coordinated or sophisticated attacks targeting mobile devices.
+// Categories: Security
+// Resource types: Log Analytics workspaces
+// Topic: Security
+
+let timeWindow = 24h;
+let threatEvents = LookoutEvents
+| where TimeGenerated > ago(timeWindow)
+| where EventType == "THREAT"
+| where ThreatSeverity in ("CRITICAL", "HIGH")
+| summarize 
+    ThreatTypes = make_set(ThreatType),
+    ThreatCount = count(),
+    FirstThreat = min(TimeGenerated),
+    LastThreat = max(TimeGenerated),
+    ThreatClassifications = make_set(ThreatClassifications)
+    by DeviceGuid, DeviceEmailAddress, DevicePlatform;
+let smishingEvents = LookoutEvents
+| where TimeGenerated > ago(timeWindow)
+| where EventType == "SMISHING_ALERT"
+| where SmishingAlertSeverity in ("CRITICAL", "HIGH")
+| summarize 
+    SmishingTypes = make_set(SmishingAlertType),
+    SmishingCount = count(),
+    FirstSmishing = min(TimeGenerated)
+    by DeviceGuid;
+threatEvents
+| join kind=leftouter (smishingEvents) on DeviceGuid
+| where ThreatCount >= 2 or SmishingCount >= 1
+| extend AttackDuration = LastThreat - FirstThreat
+| extend MultiVectorRisk = case(
+    ThreatCount >= 3 and SmishingCount >= 1, "Critical",
+    ThreatCount >= 2 and SmishingCount >= 1, "High", 
+    ThreatCount >= 3, "High",
+    ThreatCount >= 2, "Medium",
+    "Low"
+)
+| project 
+    DeviceGuid, 
+    DeviceEmailAddress, 
+    DevicePlatform,
+    ThreatTypes, 
+    SmishingTypes, 
+    ThreatCount, 
+    SmishingCount, 
+    AttackDuration, 
+    MultiVectorRisk,
+    FirstThreat, 
+    LastThreat, 
+    ThreatClassifications
+| order by MultiVectorRisk desc, ThreatCount desc

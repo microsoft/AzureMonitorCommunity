@@ -1,0 +1,51 @@
+// Author: fgravato
+// Display name: Mobile Threat Summary
+// Description: Provides an overview of mobile security metrics including threat counts, device compliance, and platform distribution for Lookout-managed devices.
+// Categories: Security
+// Resource types: Log Analytics workspaces
+// Topic: Usage
+
+let timeRange = 24h;
+let threatSummary = LookoutEvents
+| where TimeGenerated > ago(timeRange)
+| where EventType == "THREAT"
+| summarize 
+    TotalThreats = count(),
+    CriticalThreats = countif(ThreatSeverity == "CRITICAL"),
+    HighThreats = countif(ThreatSeverity == "HIGH"),
+    MediumThreats = countif(ThreatSeverity == "MEDIUM"),
+    LowThreats = countif(ThreatSeverity == "LOW"),
+    UniqueDevicesWithThreats = dcount(DeviceGuid),
+    ThreatTypes = make_set(ThreatType)
+| extend SummaryType = "Threats";
+let smishingSummary = LookoutEvents
+| where TimeGenerated > ago(timeRange)
+| where EventType == "SMISHING_ALERT"
+| summarize 
+    TotalSmishingAlerts = count(),
+    CriticalSmishing = countif(SmishingAlertSeverity == "CRITICAL"),
+    HighSmishing = countif(SmishingAlertSeverity == "HIGH"),
+    UniqueDevicesWithSmishing = dcount(DeviceGuid),
+    SmishingTypes = make_set(SmishingAlertType)
+| extend SummaryType = "Smishing";
+let deviceSummary = LookoutEvents
+| where TimeGenerated > ago(timeRange)
+| where EventType == "DEVICE"
+| summarize 
+    TotalDevices = dcount(DeviceGuid),
+    ActiveDevices = dcountif(DeviceGuid, DeviceActivationStatus == "ACTIVE"),
+    NonCompliantDevices = dcountif(DeviceGuid, DeviceComplianceStatus == "Non-Compliant"),
+    HighRiskDevices = dcountif(DeviceGuid, DeviceSecurityStatus == "THREATS_HIGH"),
+    AndroidDevices = dcountif(DeviceGuid, DevicePlatform == "ANDROID"),
+    iOSDevices = dcountif(DeviceGuid, DevicePlatform == "IOS")
+| extend SummaryType = "Devices";
+let platformBreakdown = LookoutEvents
+| where TimeGenerated > ago(timeRange)
+| where EventType == "THREAT"
+| summarize ThreatsByPlatform = count() by DevicePlatform
+| extend SummaryType = "PlatformBreakdown";
+union
+    (threatSummary | project SummaryType, TotalThreats, CriticalThreats, HighThreats, MediumThreats, LowThreats, UniqueDevicesWithThreats, ThreatTypes),
+    (smishingSummary | project SummaryType, TotalSmishingAlerts, CriticalSmishing, HighSmishing, UniqueDevicesWithSmishing, SmishingTypes),
+    (deviceSummary | project SummaryType, TotalDevices, ActiveDevices, NonCompliantDevices, HighRiskDevices, AndroidDevices, iOSDevices),
+    (platformBreakdown | project SummaryType, DevicePlatform, ThreatsByPlatform)

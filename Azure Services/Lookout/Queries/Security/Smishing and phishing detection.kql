@@ -1,0 +1,61 @@
+// Author: fgravato
+// Display name: Smishing and Phishing Detection
+// Description: Detects SMS phishing (smishing) and phishing alerts with impersonation analysis, identifying CEO fraud, credential harvesting, and malicious link campaigns.
+// Categories: Security
+// Resource types: Log Analytics workspaces
+// Topic: Security
+
+LookoutEvents
+| where EventType == "SMISHING_ALERT"
+| where SmishingAlertSeverity in ("CRITICAL", "HIGH", "MEDIUM")
+| extend 
+    AlertRiskScore = case(
+        SmishingAlertSeverity == "CRITICAL", 10,
+        SmishingAlertSeverity == "HIGH", 8,
+        SmishingAlertSeverity == "MEDIUM", 5,
+        SmishingAlertSeverity == "LOW", 2,
+        1
+    ),
+    ThreatCategory = case(
+        SmishingAlertType == "PHISHING_DETECTION", "Phishing",
+        SmishingAlertType == "FRAUD_DETECTION", "Fraud",
+        SmishingAlertType == "CREDENTIAL_HARVESTING", "Credential Theft",
+        SmishingAlertType == "MALICIOUS_LINK", "Malicious Link",
+        "Other"
+    ),
+    ImpersonationRisk = case(
+        SmishingAlertDescription has "CEO" or SmishingAlertDescription has "executive", "Executive Impersonation",
+        SmishingAlertDescription has "IT" or SmishingAlertDescription has "support", "IT Support Impersonation", 
+        SmishingAlertDescription has "bank" or SmishingAlertDescription has "financial", "Financial Impersonation",
+        SmishingAlertDescription has "delivery" or SmishingAlertDescription has "package", "Delivery Impersonation",
+        "Generic Phishing"
+    )
+| extend DeviceRiskLevel = case(
+    DeviceSecurityStatus == "THREATS_HIGH", "High",
+    DeviceSecurityStatus == "THREATS_MEDIUM", "Medium", 
+    DeviceSecurityStatus == "THREATS_LOW", "Low",
+    "Unknown"
+)
+| extend CampaignIndicators = case(
+    AlertRiskScore >= 8 and DeviceRiskLevel == "High", "Targeted Campaign",
+    AlertRiskScore >= 6 and ImpersonationRisk != "Generic Phishing", "Sophisticated Attack",
+    AlertRiskScore >= 5, "Coordinated Threat",
+    "Isolated Incident"
+)
+| project
+    TimeGenerated,
+    SmishingAlertId,
+    SmishingAlertType,
+    SmishingAlertSeverity,
+    SmishingAlertDescription,
+    AlertRiskScore,
+    ThreatCategory,
+    ImpersonationRisk,
+    CampaignIndicators,
+    DeviceGuid,
+    DevicePlatform,
+    DeviceOSVersion,
+    DeviceEmailAddress,
+    DeviceSecurityStatus,
+    DeviceRiskLevel
+| order by AlertRiskScore desc, TimeGenerated desc
