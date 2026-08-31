@@ -1,0 +1,11 @@
+// Author: tabasco-dev
+// Display name: Hits by rule collection
+// Description: Counts number of hits by rule collection during specific period of time
+// Categories: Network
+// Resource types: Firewalls
+// Topic: Firewall Logs
+
+AZFWNetworkRule 
+| where TimeGenerated between (datetime('2026-02-10T11:40:00Z') .. datetime('2026-02-10T11:42:00Z'))
+| summarize Hits = count() by Rule, RuleCollection, Action
+| top 20 by Hits desc
