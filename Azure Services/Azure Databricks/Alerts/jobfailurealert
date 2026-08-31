@@ -1,0 +1,20 @@
+// Author: sanjeev prasad
+// Display name: Failed Databricks Jobs Alert
+// Description: Identifies failed jobs in Azure Databricks workspaces.
+// Version: 1.0
+// Query type: Analytics
+// Target version: Kusto 2024-06-01
+// Categories: Azure Resources
+// Resource types: Azure Databricks Services	
+
+DatabricksJobs
+| where OperationName == "Microsoft.Databricks/jobs/runFailed"
+| extend WorkspaceName = tostring(extract(@"workspaces/([^/]+)", 1, _ResourceId))
+| extend rp = parse_json(RequestParams)
+| extend OrgIdFallback = tostring(coalesce(column_ifexists('orgId', ''), rp.orgId))
+| extend WorkspaceKey = iif(isempty(WorkspaceName), OrgIdFallback, WorkspaceName)
+| extend FailureReason = coalesce(tostring(Response), tostring(parse_json(Response).errorMessage), tostring(parse_json(RequestParams).jobId), tostring(ActionName))
+| extend JobID = tostring(parse_json(RequestParams).jobId)
+| extend ErrorMessage = tostring(parse_json(RequestParams).jobTerminalState)
+| summarize FailureCount = count() by WorkspaceKey, FailureReason, JobID, ErrorMessage
+| order by FailureCount desc, WorkspaceKey asc
