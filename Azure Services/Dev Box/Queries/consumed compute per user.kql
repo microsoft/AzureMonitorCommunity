@@ -1,0 +1,11 @@
+// Author: Microsoft Azure
+// Display name: Consumed compute per user
+// Description: Display consumed compute per user in hours
+// Categories: Azure Resources
+// Resource types: Dev Box
+// Topic: Dev Box Billing
+
+DevCenterBillingEventLogs 
+| where UsageType == "Compute"
+| summarize Horas=sum(Quantity) by UserId
+| render columnchart 
