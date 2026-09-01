@@ -1,0 +1,31 @@
+// Author: Expecho
+// Display name: Privileged Identity Management activations and approvals
+// Description: View Privileged Identity Management role activations and approvals
+// Categories: Audit
+// Resource types: Microsoft Entra ID
+// Topic: Audit
+
+AuditLogs
+| where TimeGenerated > ago(30d)
+| where LoggedByService == "PIM"
+| where OperationName == "Add member to role completed (PIM activation)"
+| project 
+    TimeGenerated, 
+    Reason = ResultReason, 
+    Result, 
+    Requestor = Identity, 
+    Category,
+    Role = tostring(TargetResources[0].displayName), 
+    ResourceName = tostring(TargetResources[3].displayName), 
+    ResourceType = tostring(TargetResources[3].type), 
+    Start = iif(Category == "GroupManagement", todatetime(AdditionalDetails[2].value), todatetime(AdditionalDetails[3].value)),
+    End = iif(Category == "GroupManagement", todatetime(AdditionalDetails[3].value), todatetime(AdditionalDetails[4].value)), 
+    CorrelationId
+| join kind=leftouter  (
+    AuditLogs
+        | where TimeGenerated > ago(30d)
+        | where LoggedByService == "PIM"
+        | where OperationName == "Add member to role request approved (PIM activation)"
+        | project CorrelationId, Approval = ResultDescription, Approver = Identity, Approved = Result) 
+    on CorrelationId
+| distinct TimeGenerated, Requestor, Reason, Approver, Approval, Category, Role, ResourceName, ResourceType, Start, End
