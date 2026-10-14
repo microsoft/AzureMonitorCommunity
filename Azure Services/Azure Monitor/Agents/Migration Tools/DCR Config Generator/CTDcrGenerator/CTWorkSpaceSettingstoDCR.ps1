@@ -44,18 +44,40 @@ function TestPathType {
         return "Relative Path"
     }
 }
+# Fetch every workspace data source once and reuse the payload for each conversion step.
+function Get-WorkspaceDataSourceCache {
+    $apiResponse = Invoke-RestMethod "https://management.azure.com$($InputWorkspaceResourceId)/datasources?api-version=2015-11-01-preview" -Method Get -Headers $headers -UseBasicParsing -ContentType "application/json"
+    $cache = @{}
+
+    if ($apiResponse -and $apiResponse.value) {
+        foreach ($dataSource in $apiResponse.value) {
+            $kind = $dataSource.kind
+            if (-not $cache.ContainsKey($kind)) {
+                $cache[$kind] = @()
+            }
+            $cache[$kind] += $dataSource
+        }
+    }
+
+    return $cache
+}
+
 # 1 parse and migrate windows tracking services
 function GetWindowsTrackingServices {
-    $ctv1FileResponse = Invoke-RestMethod "https://management.azure.com$($InputWorkspaceResourceId)/datasources?`$filter=kind+eq+%27ChangeTrackingServices%27&api-version=2015-11-01-preview"-Method Get -Headers $headers -UseBasicParsing -ContentType "application/json"
+    $ctv1FileResponse = @($script:WorkspaceDataSourceCache["ChangeTrackingServices"])
+    if (-not $ctv1FileResponse.Count) { return }
+
     # check if collectionTimeInterval is greater than 600 or not. if not make it 600(10 minutes)
-    $cvtv1CollectionTimeInterval = if ($ctv1FileResponse.value.properties.CollectionTimeInterval -gt 600) { $ctv1FileResponse.value.properties.CollectionTimeInterval } else { 600 }
+    $cvtv1CollectionTimeInterval = if (($ctv1FileResponse[0].properties.CollectionTimeInterval -gt 600)) { $ctv1FileResponse[0].properties.CollectionTimeInterval } else { 600 }
     $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.servicesSettings.serviceCollectionFrequency = $cvtv1CollectionTimeInterval
 }
 # 2 parse and migrate windows file settings
 function GetWindowsFileSetting {
-    $ctv1FileResponse = Invoke-RestMethod "https://management.azure.com$($InputWorkspaceResourceId)/datasources?`$filter=kind+eq+%27ChangeTrackingCustomPath%27&api-version=2015-11-01-preview"-Method Get -Headers $headers -UseBasicParsing -ContentType "application/json"
+    $ctv1FileResponse = @($script:WorkspaceDataSourceCache["ChangeTrackingCustomPath"])
+    if (-not $ctv1FileResponse.Count) { return }
+
     $fileSettingObjectList = New-Object System.Collections.ArrayList
-    foreach ($object in $ctv1FileResponse.value) {
+    foreach ($object in $ctv1FileResponse) {
         foreach ($objectProperties in $object.Properties) {
             $ctv2SettingObject = [PSCustomObject]@{
                 name                  = $object.name
@@ -76,9 +98,11 @@ function GetWindowsFileSetting {
 }
 # 3 parse and migrate windows registory settings
 function GetWindowsRegistorySettings {
-    $ctv1RegistryResponse = Invoke-RestMethod "https://management.azure.com$($InputWorkspaceResourceId)/datasources?`$filter=kind+eq+%27ChangeTrackingDefaultRegistry%27&api-version=2015-11-01-preview"-Method Get -Headers $headers -UseBasicParsing -ContentType "application/json"
+    $ctv1RegistryResponse = @($script:WorkspaceDataSourceCache["ChangeTrackingDefaultRegistry"])
+    if (-not $ctv1RegistryResponse.Count) { return }
+
     $registrySettingsObjectList = New-Object System.Collections.ArrayList
-    foreach ($object in $ctv1RegistryResponse.value) {
+    foreach ($object in $ctv1RegistryResponse) {
         foreach ($objectProperties in $object.Properties) {
             $ctv2SettingObject = [PSCustomObject]@{
                 name        = $object.name
@@ -96,9 +120,11 @@ function GetWindowsRegistorySettings {
 }
 # 4 parse and migrate linux file settings
 function GetLinuxFileSettings {
-    $ctv1LinuxFileResponse = Invoke-RestMethod "https://management.azure.com$($InputWorkspaceResourceId)/datasources?`$filter=kind+eq+%27ChangeTrackingLinuxPath%27&api-version=2015-11-01-preview"-Method Get -Headers $headers -UseBasicParsing -ContentType "application/json"
+    $ctv1LinuxFileResponse = @($script:WorkspaceDataSourceCache["ChangeTrackingLinuxPath"])
+    if (-not $ctv1LinuxFileResponse.Count) { return }
+
     $fileSettingObjectList = New-Object System.Collections.ArrayList
-    foreach ($object in $ctv1LinuxFileResponse.value) {
+    foreach ($object in $ctv1LinuxFileResponse) {
         foreach ($objectProperties in $object.Properties) {
             $ctv2SettingObject = [PSCustomObject]@{
                 name                  = $object.name
@@ -120,29 +146,29 @@ function GetLinuxFileSettings {
 }
 # 5 parse and migrate global settings
 function GetDataTypeConfiguration {
-    $ctv1DatatypeConfigurationResponse = Invoke-RestMethod "https://management.azure.com$($InputWorkspaceResourceId)/datasources?`$filter=kind+eq+%27ChangeTrackingDataTypeConfiguration%27&api-version=2015-11-01-preview"-Method Get -Headers $headers -UseBasicParsing -ContentType "application/json"
-    foreach ($object in $ctv1DatatypeConfigurationResponse.value) {
-        if ($object.properties.DataTypeId -eq "Daemons") {
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableServices = if ($object.Enabled -eq "false") { $false } else { $true }
-        }
-        if ($object.properties.DataTypeId -eq "Files") {
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableFiles = if ($object.Enabled -eq "false") { $false } else { $true }
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableFiles = if ($object.Enabled -eq "false") { $false } else { $true }
-        }
-        if ($object.properties.DataTypeId -eq "Inventory") {
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableInventory = if ($object.Enabled -eq "false") { $false } else { $true }
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableInventory = if ($object.Enabled -eq "false") { $false } else { $true }
-        }
-        if ($object.properties.DataTypeId -eq "Software") {
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableSoftware = if ($object.Enabled -eq "false") { $false } else { $true }
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableSoftware = if ($object.Enabled -eq "false") { $false } else { $true }
-        }
-        if ($object.properties.DataTypeId -eq "Registry") {
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableRegistry = if ($object.Enabled -eq "false") { $false } else { $true }
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableRegistry = $false
-        }
-        if ($object.properties.DataTypeId -eq "WindowsServices") {
-            $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableServices = if ($object.Enabled -eq "false") { $false } else { $true }
+    $ctv1DatatypeConfigurationResponse = @($script:WorkspaceDataSourceCache["ChangeTrackingDataTypeConfiguration"])
+    if (-not $ctv1DatatypeConfigurationResponse.Count) { return }
+
+    foreach ($object in $ctv1DatatypeConfigurationResponse) {
+        switch ($object.properties.DataTypeId) {
+            "Daemons" { $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableServices = if ($object.Enabled -eq "false") { $false } else { $true } }
+            "Files" {
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableFiles = if ($object.Enabled -eq "false") { $false } else { $true }
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableFiles = if ($object.Enabled -eq "false") { $false } else { $true }
+            }
+            "Inventory" {
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableInventory = if ($object.Enabled -eq "false") { $false } else { $true }
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableInventory = if ($object.Enabled -eq "false") { $false } else { $true }
+            }
+            "Software" {
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableSoftware = if ($object.Enabled -eq "false") { $false } else { $true }
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableSoftware = if ($object.Enabled -eq "false") { $false } else { $true }
+            }
+            "Registry" {
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableRegistry = if ($object.Enabled -eq "false") { $false } else { $true }
+                $ctv2JsonObject.resources[0].properties.dataSources.extensions[1].extensionSettings.enableRegistry = $false
+            }
+            "WindowsServices" { $ctv2JsonObject.resources[0].properties.dataSources.extensions[0].extensionSettings.enableServices = if ($object.Enabled -eq "false") { $false } else { $true } }
         }
     }
 }
@@ -293,6 +319,9 @@ $token = GetAccessToken
 $headers = @{
     Authorization = "Bearer " + $token[-1]
 }
+
+# Performance: fetch the workspace data-source catalog once and reuse it across the conversion steps.
+$script:WorkspaceDataSourceCache = Get-WorkspaceDataSourceCache
 
 # creating DCR arm template pscustom object
 $ctv2JsonObject = GetDcrArmTemplate -paramDCRName $OutputDCRName -paramWorkspaceId $OutputWorkspaceResourceId -paramWorkspaceLocation $OutputDCRLocation
