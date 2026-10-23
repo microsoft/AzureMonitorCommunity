@@ -1,0 +1,41 @@
+# List Virtual Machines
+
+resources
+| where type =~ 'Microsoft.Compute/virtualMachines'
+| project name, location, resourceGroup, subscriptionId
+
+
+# Get VM details including size and operating system:
+  
+resources  
+| where type =~ 'Microsoft.Compute/virtualMachines' 
+| project name, location, resourceGroup, vmSize = properties.hardwareProfile.vmSize, osType = properties.storageProfile.osDisk.osType   
+  
+ # Count VMs by location:
+resources  
+| where type =~ 'Microsoft.Compute/virtualMachines' | summarize  count() by location 
+
+# List virtual machines with their network interface and public IP
+
+resources
+| where type =~ 'microsoft.compute/virtualmachines'
+| extend nics=array_length(properties.networkProfile.networkInterfaces)
+| mv-expand nic=properties.networkProfile.networkInterfaces
+| where nics == 1 or nic.properties.primary =~ 'true' or isempty(nic)
+| project vmId = id, vmName = name, vmSize=tostring(properties.hardwareProfile.vmSize), nicId = tostring(nic.id)
+| join kind=leftouter (
+  Resources
+  | where type =~ 'microsoft.network/networkinterfaces'
+  | extend ipConfigsCount=array_length(properties.ipConfigurations)
+  | mv-expand ipconfig=properties.ipConfigurations
+  | where ipConfigsCount == 1 or ipconfig.properties.primary =~ 'true'
+  | project nicId = id, publicIpId = tostring(ipconfig.properties.publicIPAddress.id))
+  on nicId
+| project-away nicId1
+| summarize by vmId, vmName, vmSize, nicId, publicIpId
+| join kind=leftouter (
+  Resources
+  | where type =~ 'microsoft.network/publicipaddresses'
+  | project publicIpId = id, publicIpAddress = properties.ipAddress)
+on publicIpId
+| project-away publicIpId1
